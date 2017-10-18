@@ -44,7 +44,7 @@ const initialState = {
                 }]
             }
         },
-        layer: {
+        layers: [{
             id: "medias-layer",
             type: "circle",
             source: "medias-source",
@@ -60,31 +60,51 @@ const initialState = {
                     default: "#c53a4f"
                 }
             } 
-        },
-        events: [{ 
-            type: 'click', 
-            layerId: null, 
-            action: function (event) {
-                return { type: 'DESELECT_MEDIAS' }
-            }
-        }, {
-            type: 'click', 
-            layerId: "medias-layer", 
-            action: function (event) {
-               return { type: 'SELECT_MEDIA', payload: { features: event.features } }
-            }
         }],
-        dragndrop: {
-            mousedownAction: function (event) {
-                return { type: 'START_DRAG_MEDIA', payload: { features: event.features } }
+        interactions: {
+            // events contain all event handlers except dragndrop
+            // events listeners are added sequentially on map load
+            // dragndrop listeners are set up another way (cf Map component)
+            events: [{
+                type: 'click'
+                layer: null,
+                action: function (event) {
+                    return { type: 'DESELECT_MEDIAS' }
+                }
+            }, {
+                type: 'click',
+                layerId: "medias-layer",
+                action: function (event) {
+                   return { type: 'SELECT_MEDIA', payload: { features: event.features } }
+                }
+            }, {
+                type: 'mouseenter',
+                layerId: "medias-layer",
+                action: function (event) {
+                    return { type: 'START_HOVER_MEDIA', payload: { features: event.features } }
+                }
             },
-            mousemoveAction: function (event) {
-                return { type: 'DRAG_MEDIA', payload: { coords: event.lngLat } }
-            },
-            mouseupAction: function (event) {
-                return { type: 'END_DRAG_MEDIA' }
-            },
-            draggingFeatureId: null
+            {
+                type: 'mouseleave',
+                layerId: "medias-layer",
+                action: function (event) {
+                    return { type: 'END_HOVER_MEDIA', payload: { features: event.features } }
+                }
+            }],
+            dragndrop: {
+                "medias-layer": {
+                    mousedownAction: function (event) {
+                        return { type: 'START_DRAG_MEDIA', payload: { features: event.features } }
+                    },
+                    mousemoveAction: function (event) {
+                        return { type: 'DRAG_MEDIA', payload: { coords: event.lngLat } }
+                    },
+                    mouseupAction: function (event) {
+                        return { type: 'END_DRAG_MEDIA' }
+                    },
+                    draggingFeatureId: null
+                }
+            }
         },
         didChange: {
             source: false,
