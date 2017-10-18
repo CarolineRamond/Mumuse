@@ -13,6 +13,17 @@ const mediasReducer = (state = {}, action) => {
 			});
 			break;
 		}
+		case "SELECT_MEDIA_BY_ID": {
+	 		var newSourceData = selectMediaById(state.source.data, action.payload.mediaId);
+			return Object.assign({}, state, {
+				source: Object.assign({}, state.source, { data: newSourceData }),
+				didChange: {
+					source: true,
+					layer: false
+				}
+			});
+			break;
+		}
 		case "DESELECT_MEDIAS": {
 	 		var newSourceData = deselectMedias(state.source.data);
 			return Object.assign({}, state, {
@@ -74,6 +85,16 @@ function selectMedias(mediasCollection, selectedFeatures) {
 	const newMedias = mediasCollection.features.map((feature)=> {
 		const newProperties = Object.assign({}, feature.properties, {
 			selected: selectedIds.indexOf(feature.properties._id) > -1
+		});
+		return Object.assign({}, feature, { properties: newProperties });
+	});
+	return Object.assign({}, mediasCollection, { features: newMedias });
+}
+
+function selectMediaById(mediasCollection, mediaId) {
+	const newMedias = mediasCollection.features.map((feature)=> {
+		const newProperties = Object.assign({}, feature.properties, {
+			selected: feature.properties._id === mediaId
 		});
 		return Object.assign({}, feature, { properties: newProperties });
 	});
