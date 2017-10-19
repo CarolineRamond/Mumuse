@@ -19,7 +19,7 @@ import { updateWorldState } from '../actions/world.actions';
 	var dragndrop = {};
 	_.forIn(store, (item, key)=> {
 		if (item.source) {
-			sources = sources.concat(item.sources);
+			sources = sources.concat(item.source);
 		}
 		if (item.layers) {
 			layers = layers.concat(item.layers);
@@ -36,8 +36,7 @@ import { updateWorldState } from '../actions/world.actions';
 		layers: layers,
 		sources: sources,
 		events: events,
-		// dragndrop: store.medias.dragndrop,
-		didChange: store.medias.didChange
+		dragndrop: dragndrop
 	}
 })
 
@@ -51,23 +50,20 @@ export default class Map extends React.Component {
 			center: [long, lat],
 			zoom: zoom
 		});
-		this.isDragging = false;
-		this.draggingFeatureId;
+		this.draggingLayerId = null;
 
 		this.map.on('load', ()=> {
 			// load sources
 			this.props.sources.map((source)=>{
-				const sourceId = source.id;
-				delete source.id;
-				this.map.addSource(sourceId, source);
+				this.map.addSource(source.id, _.omit(source, ['id', 'didChange']));
 			});
 		
 			// load layers
 			this.props.layers.map((layer)=> {
-				this.map.addLayer(layer);
-			})
+				this.map.addLayer(_.omit(layer, ['didChange']));
+			});
 
-			// add event handlers
+			// add simple event handlers (click, hover, etc)
 			this.props.events.map((event)=> {
 				if (event.layerId) {
 					this.map.on(event.type, event.layerId, (evt)=> {
@@ -81,7 +77,7 @@ export default class Map extends React.Component {
 			});
 
 			// add dragndrop handling
-			_.forIn(dragndrop, (handlers, layerId)=> {
+			_.forIn(this.props.dragndrop, (handlers, layerId)=> {
 				// disable/enable map panning
 				// on enter/leave layer
 				this.map.on('mouseenter', layerId, (evt)=> {
@@ -95,22 +91,26 @@ export default class Map extends React.Component {
 				// and dispatch corresponding action
 				this.map.on('mousedown', layerId, (evt)=> {
 					this.props.dispatch(handlers.mousedownAction(evt));
-					this.isDragging = true;
-					this.draggingFeatureId = evt.features[0].properties._id;
+					this.draggingLayerId = layerId;
 
 					this.map.once('mouseup', (evt)=> {
 						this.props.dispatch(handlers.mouseupAction(evt));
-						this.draggingFeatureId = null;
-						this.isDragging = false;
+						this.draggingLayerId = null;
 					});
 				});
+			});	
 
-				// this.map.on('mousemove', (evt)=> {
-				// 	if (this.isDragging) {
-				// 		this.props.dispatch(this.props.dragndrop.mousemoveAction(evt));
-				// 	}
-				// });
-			});			
+			// add mousemove listener only if one of the layers
+			// has dragndrop interaction
+			if (Object.keys(this.props.dragndrop).length > 0) {
+				this.map.on('mousemove', (evt)=> {
+					if (this.draggingLayerId) {
+						var handlers = this.props.dragndrop[this.draggingLayerId];
+						this.props.dispatch(handlers.mousemoveAction(evt));
+					}
+				});
+			}
+
 		});
 
 		// add moveend handler : to change world's properties
@@ -126,10 +126,14 @@ export default class Map extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		// reload map sources that have changed
-		// &/or repaint map layers that have changed
-		if (nextProps.didChange.source) {
-			this.map.getSource("medias-source").setData(nextProps.source.data);
-		}
+		nextProps.sources.map((source)=> {
+			console.log(source);
+			if (source.didChange) {
+				this.map.getSource(source.id).setData(source.data);
+			}
+		});
+
+		// TODO : repaint map layers that have changed
 	}
 
 	render() {

@@ -1,29 +1,29 @@
 import _ from 'lodash'; 
 
-const mediasReducer = (state = {}, action) => {
+const sitesReducer = (state = {}, action) => {
 	switch (action.type) {
-	 	case "SELECT_MEDIA": {
+	 	case "SELECT_SITE": {
 	 		var newSourceData = selectMedias(state.source.data, action.payload.features);
 			return Object.assign({}, state, {
 				source: Object.assign({}, state.source, { data: newSourceData, didChange: true })
 			});
 			break;
 		}
-		case "SELECT_MEDIA_BY_ID": {
+		case "SELECT_SITE_BY_ID": {
 	 		var newSourceData = selectMediaById(state.source.data, action.payload.mediaId);
 			return Object.assign({}, state, {
 				source: Object.assign({}, state.source, { data: newSourceData, didChange: true })
 			});
 			break;
 		}
-		case "DESELECT_MEDIAS": {
+		case "DESELECT_SITES": {
 	 		var newSourceData = deselectMedias(state.source.data);
 			return Object.assign({}, state, {
 				source: Object.assign({}, state.source, { data: newSourceData, didChange: true })
 			});
 			break;
 		}
-		case "START_DRAG_MEDIA": {
+		case "START_DRAG_SITE": {
 	 		var newSourceData = selectMedias(state.source.data, action.payload.features);
 			return Object.assign({}, state, {
 				source: Object.assign({}, state.source, { data: newSourceData, didChange: true }),
@@ -31,14 +31,14 @@ const mediasReducer = (state = {}, action) => {
 			});
 			break;
 		}
-		case "DRAG_MEDIA": {
+		case "DRAG_SITE": {
 	 		var newSourceData = dragMedia(state.source.data, state.dragndrop.draggingFeatureId, action.payload.coords);
 			return Object.assign({}, state, {
 				source: Object.assign({}, state.source, { data: newSourceData, didChange: true })
 			});
 			break;
 		}
-		case "END_DRAG_MEDIA": {
+		case "END_DRAG_SITE": {
 	 		var newSourceData = deselectMedias(state.source.data);
 			return Object.assign({}, state, {
 				source: Object.assign({}, state.source, { data: newSourceData, didChange: true }),
@@ -51,7 +51,7 @@ const mediasReducer = (state = {}, action) => {
 	}
 }
 
-export default mediasReducer;
+export default sitesReducer;
 
 
 function selectMedias(mediasCollection, selectedFeatures) {

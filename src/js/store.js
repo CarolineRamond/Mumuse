@@ -14,6 +14,7 @@ const initialState = {
     medias: {
         source: {
             id: "medias-source",
+            didChange: false,
             type: "geojson",
             data: {
                 type: "FeatureCollection",
@@ -49,46 +50,38 @@ const initialState = {
             type: "circle",
             source: "medias-source",
             layout: {
-                visibility: "visible"
+               visibility: "visible"
             },
             paint: {
-                "circle-radius": 7,
-                "circle-color": {
-                    property: "selected",
-                    type: "categorical",
-                    stops: [[false, "red"], [true, "blue"]],
-                    default: "#c53a4f"
-                }
-            } 
+               "circle-radius": 7,
+               "circle-color": {
+                   property: "selected",
+                   type: "categorical",
+                   stops: [[false, "red"], [true, "blue"]],
+                   default: "#c53a4f"
+               }
+            },
+            didChange: {
+                paint: false,
+                layout: false
+            }
         }],
         interactions: {
             // events contain all event handlers except dragndrop
             // events listeners are added sequentially on map load
             // dragndrop listeners are set up another way (cf Map component)
             events: [{
-                type: 'click'
+                type: 'click',
                 layer: null,
                 action: function (event) {
                     return { type: 'DESELECT_MEDIAS' }
                 }
-            }, {
+            }, 
+            {
                 type: 'click',
                 layerId: "medias-layer",
                 action: function (event) {
                    return { type: 'SELECT_MEDIA', payload: { features: event.features } }
-                }
-            }, {
-                type: 'mouseenter',
-                layerId: "medias-layer",
-                action: function (event) {
-                    return { type: 'START_HOVER_MEDIA', payload: { features: event.features } }
-                }
-            },
-            {
-                type: 'mouseleave',
-                layerId: "medias-layer",
-                action: function (event) {
-                    return { type: 'END_HOVER_MEDIA', payload: { features: event.features } }
                 }
             }],
             dragndrop: {
@@ -105,11 +98,96 @@ const initialState = {
                     draggingFeatureId: null
                 }
             }
-        },
-        didChange: {
-            source: false,
-            layer: false
         }
-	}
+	},
+    sites: {
+        source: {
+            id: "sites-source",
+            didChange: false,
+            type: "geojson",
+            data: {
+                type: "FeatureCollection",
+                features: [{
+                    type: "Feature",
+                    geometry: {
+                        type: "Point",
+                        coordinates: [-76.03238902390978, 37.913189059745586]
+                    },
+                    properties: {
+                        _id: 1,
+                        title: "Mapbox DC",
+                        icon: "monument",
+                        selected: false
+                    }
+                }, {
+                    type: "Feature",
+                    geometry: {
+                        type: "Point",
+                        coordinates: [-121.414, 36.776]
+                    },
+                    properties: {
+                        _id: 2,
+                        title: "Mapbox SF",
+                        icon: "harbor",
+                        selected: false
+                    }
+                }]
+            }
+        },
+        layers: [{
+            id: "sites-layer",
+            type: "circle",
+            source: "sites-source",
+            layout: {
+               visibility: "visible"
+            },
+            paint: {
+               "circle-radius": 7,
+               "circle-color": {
+                   property: "selected",
+                   type: "categorical",
+                   stops: [[false, "orange"], [true, "green"]],
+                   default: "#c53a4f"
+               }
+            },
+            didChange: {
+                paint: false,
+                layout: false
+            }
+        }],
+        interactions: {
+            // events contain all event handlers except dragndrop
+            // events listeners are added sequentially on map load
+            // dragndrop listeners are set up another way (cf Map component)
+            events: [{
+                type: 'click',
+                layer: null,
+                action: function (event) {
+                    return { type: 'DESELECT_SITES' }
+                }
+            }, 
+            {
+                type: 'click',
+                layerId: "sites-layer",
+                action: function (event) {
+                   return { type: 'SELECT_SITE', payload: { features: event.features } }
+                }
+            }],
+            dragndrop: {
+                "sites-layer": {
+                    mousedownAction: function (event) {
+                        return { type: 'START_DRAG_SITE', payload: { features: event.features } }
+                    },
+                    mousemoveAction: function (event) {
+                        return { type: 'DRAG_SITE', payload: { coords: event.lngLat } }
+                    },
+                    mouseupAction: function (event) {
+                        return { type: 'END_DRAG_SITE' }
+                    },
+                    draggingFeatureId: null
+                }
+            }
+        }
+    }
 }
 export default createStore(reducer, initialState, middleware)
