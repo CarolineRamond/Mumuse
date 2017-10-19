@@ -26,8 +26,7 @@ const initialState = {
                     },
                     properties: {
                         _id: 1,
-                        title: "Mapbox DC",
-                        icon: "monument",
+                        title: "Media 1",
                         selected: false
                     }
                 }, {
@@ -38,8 +37,7 @@ const initialState = {
                     },
                     properties: {
                         _id: 2,
-                        title: "Mapbox SF",
-                        icon: "harbor",
+                        title: "Media 2",
                         selected: false
                     }
                 }]
@@ -62,6 +60,8 @@ const initialState = {
                }
             },
             didChange: {
+                filter: false,
+                zoom: false,
                 paint: false,
                 layout: false
             }
@@ -115,8 +115,7 @@ const initialState = {
                     },
                     properties: {
                         _id: 1,
-                        title: "Mapbox DC",
-                        icon: "monument",
+                        title: "Site 1",
                         selected: false
                     }
                 }, {
@@ -127,8 +126,7 @@ const initialState = {
                     },
                     properties: {
                         _id: 2,
-                        title: "Mapbox SF",
-                        icon: "harbor",
+                        title: "Site 2",
                         selected: false
                     }
                 }]
@@ -151,8 +149,9 @@ const initialState = {
                }
             },
             didChange: {
-                paint: false,
-                layout: false
+                filter: false,
+                style: false,
+                zoom: false
             }
         }],
         interactions: {

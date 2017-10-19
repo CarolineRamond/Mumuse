@@ -11,9 +11,13 @@ import '../../css/pannel.css'
 	const medias = store.medias.source.data.features.map((feature)=> {
 		return feature.properties;
 	});
+	const sites = store.sites.source.data.features.map((feature)=> {
+		return feature.properties;
+	});
 	return  {
 		world: store.world,
-		medias: medias
+		medias: medias,
+		sites: sites
 	}
 })
 
@@ -21,6 +25,10 @@ export default class Pannel extends React.Component {
 
 	selectMedia(mediaId) {
 		this.props.dispatch({ type: "SELECT_MEDIA_BY_ID", payload: { mediaId } });
+	}
+
+	selectSite(siteId) {
+		this.props.dispatch({ type: "SELECT_SITE_BY_ID", payload: { siteId } });
 	}
 
 	render() {
@@ -31,13 +39,23 @@ export default class Pannel extends React.Component {
 				{media.title}
 			</li>
 		});
+		const mappedSites = this.props.sites.map((site)=> {
+			var className = site.selected ? 'selected':''
+			return <li key={site._id} className={className} 
+				onClick={()=>this.selectSite(site._id)}>
+				{site.title}
+			</li>
+		});
 		return <div className="pannel">
 			<div>Latitude: {this.props.world.lat}</div>
 			<div>Longitude: {this.props.world.long}</div>
 			<div>Zoom: {this.props.world.zoom}</div>
 			<hr/>
-			<h3>Items</h3>
+			<h3>Medias</h3>
 			<ul>{mappedMedias}</ul>
+			<hr/>
+			<h3>Sites</h3>
+			<ul>{mappedSites}</ul>
 		</div>
 	}
 }
