@@ -162,30 +162,23 @@ export default class Map extends React.Component {
 				const newViewportCount = renderedFeatures.length;
 				this.props.dispatch(item.action(newViewportCount));
 			}
-			const sourceLoadHandler = (data)=> {
-				if (this.map.getLayer(item.layerId)) {
-					if (data.dataType==='source' && data.sourceId === item.sourceId
-					    && this.map.isSourceLoaded(item.sourceId)) {
-					    updateViewportCount();
-					    this.map.off('sourcedata', sourceLoadHandler);
-					}
-				} else {
-					this.map.off('sourcedata', sourceLoadHandler);
+			const renderHandler = (data)=> {
+				if (this.map.getLayer(item.layerId) && this.map.isStyleLoaded() && 
+					this.map.isSourceLoaded(item.sourceId)) {
+					updateViewportCount();
+					this.map.off('render', renderHandler);
 				}
 			}
 
-			// on map moveend : update viewport count
+			// on init : wait for a map rendering
+			// that displays item's source and layer
+			// once this rendering is done,
+			// update viewport count and cancels render listener
+			this.map.on('render', renderHandler);
+
+			// on map moveend : idem init
 			this.map.on('moveend', ()=> {
-				// if source is loaded, 
-				// we can compute new viewportcount immediately
-				if (this.map.isSourceLoaded(item.sourceId)) {
-					updateViewportCount();
-				}
-				// else, wait for source to be loaded to compute
-				// new viewport count 
-				else {
-					this.map.on('sourcedata', sourceLoadHandler);
-				}
+				this.map.on('render', renderHandler);
 			});
 		});
 	}
