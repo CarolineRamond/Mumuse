@@ -17,6 +17,8 @@ import { updateWorldState } from '../actions/world.actions';
 	var layers = [];
 	var events = [];
 	var dragndrop = {};
+	var viewportcount = [];
+
 	_.forIn(store, (item, key)=> {
 		if (item.source) {
 			sources = sources.concat(item.source);
@@ -24,11 +26,14 @@ import { updateWorldState } from '../actions/world.actions';
 		if (item.layers) {
 			layers = layers.concat(item.layers);
 		}
-		if (item.interactions && item.interactions.events) {
-			events = events.concat(item.interactions.events);
+		if (item.events) {
+			events = events.concat(item.events);
 		}
-		if (item.interactions && item.interactions.dragndrop) {
-			dragndrop = _.extend(dragndrop, item.interactions.dragndrop);
+		if (item.dragndrop) {
+			dragndrop = _.extend(dragndrop, item.dragndrop);
+		}
+		if (item.viewportcount) {
+			viewportcount = viewportcount.concat(item.viewportcount);
 		}
 	});
 	return {
@@ -36,7 +41,8 @@ import { updateWorldState } from '../actions/world.actions';
 		layers: layers,
 		sources: sources,
 		events: events,
-		dragndrop: dragndrop
+		dragndrop: dragndrop,
+		viewportcount: viewportcount
 	}
 })
 
@@ -135,6 +141,7 @@ export default class Map extends React.Component {
 	}
 
 	_addViewportChangeHandling() {
+		// update world on move end
 		this.map.on('moveend', ()=> {
 			const { lng, lat } = this.map.getCenter();
 			this.props.dispatch(updateWorldState({
@@ -142,6 +149,44 @@ export default class Map extends React.Component {
 				lat: lat,
 				zoom: this.map.getZoom(),
 			}));
+		});
+
+		// set up events to update viewport counts
+		// (and dispatch actions) when needed
+		this.props.viewportcount.map((item)=> {
+			const updateViewportCount = ()=> {
+				const renderedFeatures = getUniqueFeatures(
+					this.map.queryRenderedFeatures({layers: [item.layerId]}),
+					item.uniqueKey
+				);
+				const newViewportCount = renderedFeatures.length;
+				this.props.dispatch(item.action(newViewportCount));
+			}
+			const sourceLoadHandler = (data)=> {
+				if (this.map.getLayer(item.layerId)) {
+					if (data.dataType==='source' && data.sourceId === item.sourceId
+					    && this.map.isSourceLoaded(item.sourceId)) {
+					    updateViewportCount();
+					    this.map.off('sourcedata', sourceLoadHandler);
+					}
+				} else {
+					this.map.off('sourcedata', sourceLoadHandler);
+				}
+			}
+
+			// on map moveend : update viewport count
+			this.map.on('moveend', ()=> {
+				// if source is loaded, 
+				// we can compute new viewportcount immediately
+				if (this.map.isSourceLoaded(item.sourceId)) {
+					updateViewportCount();
+				}
+				// else, wait for source to be loaded to compute
+				// new viewport count 
+				else {
+					this.map.on('sourcedata', sourceLoadHandler);
+				}
+			});
 		});
 	}
 

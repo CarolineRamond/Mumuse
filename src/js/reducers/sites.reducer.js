@@ -46,6 +46,12 @@ const sitesReducer = (state = {}, action) => {
 			});
 			break;
 		}
+		case "UPDATE_SITE_VIEWPORT_COUNT": {
+			return Object.assign({}, state, {
+				viewportcount: Object.assign({}, state.viewportcount, { value: action.payload.count }),
+			});
+			break;
+		}
 		default:
 			return state;
 	}

@@ -46,6 +46,21 @@ const mediasReducer = (state = {}, action) => {
 			});
 			break;
 		}
+		case "UPDATE_MEDIA_VIEWPORT_COUNT": {
+			const newPaintProperties = { "circle-opacity" : action.payload.count * 0.4 };
+			const newLayers = state.layers.map((layer)=> {
+				return Object.assign({}, layer, {
+					didChange: { filter: false, zoom: false, paint: newPaintProperties, layout: false },
+					paint: Object.assign({}, layer.paint, newPaintProperties)
+				})
+			});
+
+			return Object.assign({}, state, {
+				layers: newLayers,
+				viewportcount: Object.assign({}, state.viewportcount, { value: action.payload.count }),
+			});
+			break;
+		}
 		default:
 			return state;
 	}

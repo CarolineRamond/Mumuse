@@ -14,10 +14,15 @@ import '../../css/pannel.css'
 	const sites = store.sites.source.data.features.map((feature)=> {
 		return feature.properties;
 	});
+	const viewportcount = {
+		medias: store.medias.viewportcount.value,
+		sites: store.sites.viewportcount.value
+	};
 	return  {
 		world: store.world,
 		medias: medias,
-		sites: sites
+		sites: sites,
+		viewportcount: viewportcount
 	}
 })
 
@@ -47,15 +52,24 @@ export default class Pannel extends React.Component {
 			</li>
 		});
 		return <div className="pannel">
-			<div>Latitude: {this.props.world.lat}</div>
-			<div>Longitude: {this.props.world.long}</div>
-			<div>Zoom: {this.props.world.zoom}</div>
+			<h3>World</h3>
+			<ul>
+				<li>Latitude: {this.props.world.lat}</li>
+				<li>Longitude: {this.props.world.long}</li>
+				<li>Zoom: {this.props.world.zoom}</li>
+			</ul>
 			<hr/>
 			<h3>Medias</h3>
 			<ul>{mappedMedias}</ul>
 			<hr/>
 			<h3>Sites</h3>
 			<ul>{mappedSites}</ul>
+			<hr/>
+			<h3>Viewport Count</h3>
+			<ul>
+				<li>medias : {this.props.viewportcount.medias}</li>
+				<li>sites : {this.props.viewportcount.sites}</li>
+			</ul>
 		</div>
 	}
 }
