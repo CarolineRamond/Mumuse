@@ -1,22 +1,22 @@
 import { combineReducers } from "redux";
 import mediasReducer from './medias/medias.reducer.js';
-import sitesReducer from './sites/sites.reducer.js';
+// import sitesReducer from './sites/sites.reducer.js';
 import worldReducer from './world/world.reducer.js';
 
 import mediasMapResource from './medias/medias.map.resource';
-import sitesMapResource from './sites/sites.map.resource';
+// import sitesMapResource from './sites/sites.map.resource';
 
 const reducer = combineReducers({
 	world: worldReducer,
 	mapResources: combineReducers({
 		medias: mediasReducer,
-		sites: sitesReducer
+		// sites: sitesReducer
 	})
 });
 
 const mapResources =  {
 	medias: mediasMapResource,
-	sites: sitesMapResource
+	// sites: sitesMapResource
 };
 
 export { reducer, mapResources }

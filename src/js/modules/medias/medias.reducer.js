@@ -121,7 +121,21 @@ const mediasReducer = (state = {}, action) => {
 		}
 		case "UPDATE_MEDIA_VIEWPORT_COUNT": {
 			return Object.assign({}, state, {
-				viewportcount: Object.assign({}, state.viewportcount, { value: action.payload.count }),
+				viewportcount: Object.assign({}, state.viewportcount, { 
+					medias: Object.assign({}, state.viewportcount.medias, {
+						value: action.payload.count 
+					})
+				}),
+			});
+			break;
+		}
+		case "UPDATE_GRID_VIEWPORT_COUNT": {
+			return Object.assign({}, state, {
+				viewportcount: Object.assign({}, state.viewportcount, { 
+					grid: Object.assign({}, state.viewportcount.grid, {
+						value: action.payload.count 
+					})
+				}),
 			});
 			break;
 		}

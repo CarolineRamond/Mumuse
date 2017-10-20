@@ -17,7 +17,7 @@ import { updateWorldState } from '../modules/world/world.actions';
 	var layers = {};
 	var events = [];
 	var dragndrop = {};
-	var viewportcount = [];
+	var viewportcount = {};
 
 	_.forIn(store.mapResources, (item, key)=> {
 		if (item.sources) {
@@ -33,7 +33,7 @@ import { updateWorldState } from '../modules/world/world.actions';
 			dragndrop = _.extend(dragndrop, item.dragndrop);
 		}
 		if (item.viewportcount) {
-			viewportcount = viewportcount.concat(item.viewportcount);
+			viewportcount = _.extend(viewportcount, item.viewportcount);
 		}
 	});
 	return {
@@ -59,9 +59,9 @@ export default class Map extends React.Component {
 			maxBounds: [[-180, -85], [180, 85]],
 			transformRequest: (url, resourceType) => {
 				if (url.match(/\/userdrive\/tile\/grid\/\d+\/\d+\/\d+.pbf$/)) {
-                    var bounds = this.map.getBounds().toString();
+                    var bounds = this.map.getBounds().toArray().toString();
                     return {
-                        url: url + '/?viewport=' + bounds.toString()
+                        url: url + '/?viewport=' + bounds
                     };
                 }
 			}
@@ -80,6 +80,12 @@ export default class Map extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		this._reloadSourcesData(nextProps);
 		this._updateLayersStyle(nextProps);
+	}
+
+	shouldComponentUpdate() {
+		// React does not need to re-render map component
+		// (mapbox will still re-render this.map)
+		return false;
 	}
 
 	render() {
@@ -163,13 +169,20 @@ export default class Map extends React.Component {
 
 		// set up events to update viewport counts
 		// (and dispatch actions) when needed
-		this.props.viewportcount.map((item)=> {
+		_.forIn(this.props.viewportcount, (item)=> {
 			const updateViewportCount = ()=> {
 				const renderedFeatures = getUniqueFeatures(
 					this.map.queryRenderedFeatures({ layers: item.layerIds }),
 					item.uniqueKey
 				);
-				const newViewportCount = renderedFeatures.length;
+				var newViewportCount;
+				if (item.reduceKey) {
+					newViewportCount = renderedFeatures.reduce((sum, feature)=> {
+						return sum + feature.properties[item.reduceKey];
+					}, 0);	
+				} else {
+					newViewportCount = renderedFeatures.length;
+				}
 				this.props.dispatch(item.action(newViewportCount));
 			}
 			const renderHandler = (data)=> {

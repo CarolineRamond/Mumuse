@@ -99,12 +99,24 @@ export default {
         }
     },
     viewportcount: {
-        layerIds: ["medias-layer", "selected-medias-layer"],
-        sourceId: "medias-source",
-        uniqueKey: "_id",
-        value: 0,
-        action: function (count) {
-            return { type: 'UPDATE_MEDIA_VIEWPORT_COUNT', payload: { count } }
+        medias: {
+            layerIds: ["medias-layer", "selected-medias-layer"],
+            sourceId: "medias-source",
+            uniqueKey: "_id",
+            value: 0,
+            action: function (count) {
+                return { type: 'UPDATE_MEDIA_VIEWPORT_COUNT', payload: { count } }
+            }
+        }, 
+        grid: {
+            layerIds: ["grid-medias-layer"],
+            sourceId: "grid-medias-source",
+            uniqueKey: "quadkey",
+            reduceKey: "allMediaCount",
+            value: 0,
+            action: function (count) {
+                return { type: 'UPDATE_GRID_VIEWPORT_COUNT', payload: { count } }
+            }
         }
     }
 }
