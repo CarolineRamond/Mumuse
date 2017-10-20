@@ -3,28 +3,28 @@ import _ from "lodash";
 import { connect } from "react-redux"
 import mapboxgl from "mapbox-gl"
 import 'mapbox-gl/dist/mapbox-gl.css'
-mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1NXZxa2sifQ.hgPcQvgkzpfYkHgfMRqcpw';
 
 import '../../css/map.css'
-import { updateWorldState } from '../actions/world.actions';
+import { updateWorldState } from '../modules/world/world.actions';
 
 // this is to set up component's props
 // component's props will be an excerpt
 // of the store
 // + some functions like dispatch (to fire actions)
 @connect((store)=> {
-	var sources = [];
-	var layers = [];
+	var sources = {};
+	var layers = {};
 	var events = [];
 	var dragndrop = {};
 	var viewportcount = [];
 
-	_.forIn(store, (item, key)=> {
-		if (item.source) {
-			sources = sources.concat(item.source);
+	_.forIn(store.mapResources, (item, key)=> {
+		if (item.sources) {
+			sources = _.extend(sources, item.sources);
 		}
 		if (item.layers) {
-			layers = layers.concat(item.layers);
+			layers = _.extend(layers, item.layers);
 		}
 		if (item.events) {
 			events = events.concat(item.events);
@@ -52,9 +52,19 @@ export default class Map extends React.Component {
 		const { lat, long, zoom } = this.props.world;
 		this.map = new mapboxgl.Map({
 			container: this.mapContainer,
-			style: 'mapbox://styles/mapbox/light-v9',
+			style: 'mapbox://styles/iconem/cio487j79006hc7m7wu00w6hw',
 			center: [long, lat],
-			zoom: zoom
+			zoom: zoom,
+			renderWorldCopies: false,
+			maxBounds: [[-180, -85], [180, 85]],
+			transformRequest: (url, resourceType) => {
+				if (url.match(/\/userdrive\/tile\/grid\/\d+\/\d+\/\d+.pbf$/)) {
+                    var bounds = this.map.getBounds().toString();
+                    return {
+                        url: url + '/?viewport=' + bounds.toString()
+                    };
+                }
+			}
 		});
 		this.draggingLayerId = null;
 
@@ -79,14 +89,14 @@ export default class Map extends React.Component {
 	}
 
 	_loadSources() {
-		this.props.sources.map((source)=>{
-			this.map.addSource(source.id, _.omit(source, ['id', 'didChange']));
+		_.forIn(this.props.sources, (source, sourceId)=>{
+			this.map.addSource(sourceId, source);
 		});
 	}
 
 	_loadLayers() {
-		this.props.layers.map((layer)=> {
-			this.map.addLayer(_.omit(layer, ['didChange']));
+		_.forIn(this.props.layers, (layer, layerId)=> {
+			this.map.addLayer(layer);
 		});
 	}
 
@@ -156,15 +166,14 @@ export default class Map extends React.Component {
 		this.props.viewportcount.map((item)=> {
 			const updateViewportCount = ()=> {
 				const renderedFeatures = getUniqueFeatures(
-					this.map.queryRenderedFeatures({layers: [item.layerId]}),
+					this.map.queryRenderedFeatures({ layers: item.layerIds }),
 					item.uniqueKey
 				);
 				const newViewportCount = renderedFeatures.length;
 				this.props.dispatch(item.action(newViewportCount));
 			}
 			const renderHandler = (data)=> {
-				if (this.map.getLayer(item.layerId) && this.map.isStyleLoaded() && 
-					this.map.isSourceLoaded(item.sourceId)) {
+				if (this.map.isStyleLoaded() && this.map.isSourceLoaded(item.sourceId)) {
 					updateViewportCount();
 					this.map.off('render', renderHandler);
 				}
@@ -184,27 +193,27 @@ export default class Map extends React.Component {
 	}
 
 	_reloadSourcesData(nextProps) {
-		nextProps.sources.map((source)=> {
+		_.forIn(nextProps.sources, (source, sourceId)=> {
 			if (source.didChange) {
-				this.map.getSource(source.id).setData(source.data);
+				this.map.getSource(sourceId).setData(source.data);
 			}
 		});
 	}
 
 	_updateLayersStyle(nextProps) {
-		nextProps.layers.map((layer)=> {
-			if (layer.didChange.filter) {
+		_.forIn(nextProps.layers, (layer)=> {
+			if (layer.didChange && layer.didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
 			}
-			if (layer.didChange.zoom) {
+			if (layer.didChange && layer.didChange.zoom) {
 				this.map.setLayerZoomRange(layer.id, layer.minzoom, layer.maxzoom);
 			}
-			if (layer.didChange.layout) {
+			if (layer.didChange && layer.didChange.layout) {
 				_.forIn(layer.didChange.layout, (value, key)=> {
 					this.map.setLayoutProperty(layer.id, key, value);
 				});
 			}
-			if (layer.didChange.paint) {
+			if (layer.didChange && layer.didChange.paint) {
 				_.forIn(layer.didChange.paint, (value, key)=> {
 					this.map.setPaintProperty(layer.id, key, value);
 				});

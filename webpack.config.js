@@ -32,4 +32,11 @@ module.exports = {
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
   ],
+  devServer: {
+    proxy: {
+      '/userdrive': {
+        target: 'http://localhost:9000'
+      }
+    }
+  }
 };

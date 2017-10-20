@@ -8,15 +8,12 @@ import '../../css/pannel.css'
 // of the store
 // + some functions like dispatch (to fire actions)
 @connect((store)=> {
-	const medias = store.medias.source.data.features.map((feature)=> {
-		return feature.properties;
-	});
-	const sites = store.sites.source.data.features.map((feature)=> {
-		return feature.properties;
-	});
+	// const medias = store.mapResources.medias.sources["medias-source"].data.features;
+	const medias = [];
+	const sites = store.mapResources.sites.sources["sites-source"].data.features;
 	const viewportcount = {
-		medias: store.medias.viewportcount.value,
-		sites: store.sites.viewportcount.value
+		medias: store.mapResources.medias.viewportcount.value,
+		sites: store.mapResources.sites.viewportcount.value
 	};
 	return  {
 		world: store.world,
@@ -28,27 +25,27 @@ import '../../css/pannel.css'
 
 export default class Pannel extends React.Component {
 
-	selectMedia(mediaId) {
-		this.props.dispatch({ type: "SELECT_MEDIA_BY_ID", payload: { mediaId } });
+	selectMedia(media) {
+		this.props.dispatch({ type: "SELECT_MEDIA", payload: { features: [media] } });
 	}
 
-	selectSite(siteId) {
-		this.props.dispatch({ type: "SELECT_SITE_BY_ID", payload: { siteId } });
+	selectSite(site) {
+		this.props.dispatch({ type: "SELECT_SITE", payload: { features: [site] } });
 	}
 
 	render() {
 		const mappedMedias = this.props.medias.map((media)=> {
 			var className = media.selected ? 'selected':''
-			return <li key={media._id} className={className} 
-				onClick={()=>this.selectMedia(media._id)}>
-				{media.title}
+			return <li key={media.properties._id} className={className} 
+				onClick={()=>this.selectMedia(media)}>
+				{media.properties.title}
 			</li>
 		});
 		const mappedSites = this.props.sites.map((site)=> {
 			var className = site.selected ? 'selected':''
-			return <li key={site._id} className={className} 
-				onClick={()=>this.selectSite(site._id)}>
-				{site.title}
+			return <li key={site.properties._id} className={className} 
+				onClick={()=>this.selectSite(site)}>
+				{site.properties.title}
 			</li>
 		});
 		return <div className="pannel">

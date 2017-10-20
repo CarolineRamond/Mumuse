@@ -3,45 +3,69 @@ import _ from 'lodash';
 const sitesReducer = (state = {}, action) => {
 	switch (action.type) {
 	 	case "SELECT_SITE": {
-	 		var newSourceData = selectSites(state.source.data, action.payload.features);
+	 		var newSourceData = selectSites(state.sources["sites-source"].data, action.payload.features);
 			return Object.assign({}, state, {
-				source: Object.assign({}, state.source, { data: newSourceData, didChange: true })
+				sources: Object.assign({}, state.sources, { 
+					"sites-source": Object.assign({}, state.sources["sites-source"], {
+						data: newSourceData, didChange: true 
+					})
+				})
 			});
 			break;
 		}
 		case "SELECT_SITE_BY_ID": {
-	 		var newSourceData = selectSiteById(state.source.data, action.payload.siteId);
+	 		var newSourceData = selectSiteById(state.sources["sites-source"].data, action.payload.siteId);
 			return Object.assign({}, state, {
-				source: Object.assign({}, state.source, { data: newSourceData, didChange: true })
+				sources: Object.assign({}, state.sources, { 
+					"sites-source": Object.assign({}, state.sources["sites-source"], {
+						data: newSourceData, didChange: true 
+					})
+				})
 			});
 			break;
 		}
 		case "DESELECT_SITES": {
-	 		var newSourceData = deselectSites(state.source.data);
+	 		var newSourceData = deselectSites(state.sources["sites-source"].data);
 			return Object.assign({}, state, {
-				source: Object.assign({}, state.source, { data: newSourceData, didChange: true })
+				sources: Object.assign({}, state.sources, { 
+					"sites-source": Object.assign({}, state.sources["sites-source"], {
+						data: newSourceData, didChange: true 
+					})
+				})
 			});
 			break;
 		}
 		case "START_DRAG_SITE": {
-	 		var newSourceData = selectSites(state.source.data, action.payload.features);
+	 		var newSourceData = selectSites(state.sources["sites-source"].data, action.payload.features);
 			return Object.assign({}, state, {
-				source: Object.assign({}, state.source, { data: newSourceData, didChange: true }),
+				sources: Object.assign({}, state.sources, { 
+					"sites-source": Object.assign({}, state.sources["sites-source"], {
+						data: newSourceData, didChange: true 
+					})
+				}),
 				dragndrop: Object.assign({}, state.dragndrop, { draggingFeatureId: action.payload.features[0].properties._id })
 			});
 			break;
 		}
 		case "DRAG_SITE": {
-	 		var newSourceData = dragSite(state.source.data, state.dragndrop.draggingFeatureId, action.payload.coords);
+	 		var newSourceData = dragSite(state.sources["sites-source"].data, state.dragndrop.draggingFeatureId, action.payload.coords);
 			return Object.assign({}, state, {
-				source: Object.assign({}, state.source, { data: newSourceData, didChange: true })
+				sources: Object.assign({}, state.sources, { 
+					"sites-source": Object.assign({}, state.sources["sites-source"], {
+						data: newSourceData, didChange: true 
+					})
+				})
 			});
 			break;
 		}
 		case "END_DRAG_SITE": {
-	 		var newSourceData = deselectSites(state.source.data);
+	 		var newSourceData = deselectSites(state.sources["sites-source"].data);
 			return Object.assign({}, state, {
-				source: Object.assign({}, state.source, { data: newSourceData, didChange: true }),
+				sources: Object.assign({}, state.sources, { 
+					"sites-source": Object.assign({}, state.sources["sites-source"], {
+						data: newSourceData, didChange: true 
+					})
+				}),
 				dragndrop: Object.assign({}, state.dragndrop, { draggingFeatureId: null })
 			});
 			break;
