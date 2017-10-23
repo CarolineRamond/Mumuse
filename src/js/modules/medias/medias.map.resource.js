@@ -30,6 +30,15 @@ export default {
             paint: {
                "circle-radius": 7,
                "circle-color": "red"
+            },
+            filter: [ 'all', ['has', 'loc'] ],
+            minzoom: 13,
+            maxzoom: 24,
+            metadata: {
+                isLocked: true,
+                isShown: false,
+                wasShownBeforeLock: true,
+                renderedFeatures: []
             }
         },
         "grid-medias-layer": {
@@ -52,6 +61,12 @@ export default {
                         [100, 0.8]
                     ]
                 }
+            },
+            metadata: {
+                isLocked: false,
+                isShown: false,
+                wasShownBeforeLock: false,
+                renderedFeatures: []
             }
         },
         "selected-medias-layer": {
@@ -64,6 +79,11 @@ export default {
             paint: {
                "circle-radius": 8,
                "circle-color": "blue"
+            },
+            metadata: {
+                isLocked: false,
+                isShown: false,
+                wasShownBeforeLock: false
             }
         }
     },
@@ -74,14 +94,15 @@ export default {
         type: 'click',
         layer: null,
         action: function (event) {
-            return { type: 'DESELECT_MEDIAS' }
+            return { type: 'DESELECT_MEDIAS', payload: { ctrlKey: event.originalEvent.ctrlKey  } }
         }
     }, 
     {
         type: 'click',
         layerId: "medias-layer",
         action: function (event) {
-           return { type: 'SELECT_MEDIA', payload: { features: event.features } }
+            console.log('SELECT MEDIA ', event);
+           return { type: 'SELECT_MEDIA', payload: { features: event.features, ctrlKey: event.originalEvent.ctrlKey } }
         }
     }],
     dragndrop: {
@@ -96,27 +117,6 @@ export default {
                 return { type: 'END_DRAG_MEDIA' }
             },
             draggingFeatureId: null
-        }
-    },
-    viewportcount: {
-        medias: {
-            layerIds: ["medias-layer", "selected-medias-layer"],
-            sourceId: "medias-source",
-            uniqueKey: "_id",
-            value: 0,
-            action: function (count) {
-                return { type: 'UPDATE_MEDIA_VIEWPORT_COUNT', payload: { count } }
-            }
-        }, 
-        grid: {
-            layerIds: ["grid-medias-layer"],
-            sourceId: "grid-medias-source",
-            uniqueKey: "quadkey",
-            reduceKey: "allMediaCount",
-            value: 0,
-            action: function (count) {
-                return { type: 'UPDATE_GRID_VIEWPORT_COUNT', payload: { count } }
-            }
         }
     }
 }

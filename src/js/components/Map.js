@@ -17,7 +17,6 @@ import { updateWorldState } from '../modules/world/world.actions';
 	var layers = {};
 	var events = [];
 	var dragndrop = {};
-	var viewportcount = {};
 
 	_.forIn(store.mapResources, (item, key)=> {
 		if (item.sources) {
@@ -32,17 +31,13 @@ import { updateWorldState } from '../modules/world/world.actions';
 		if (item.dragndrop) {
 			dragndrop = _.extend(dragndrop, item.dragndrop);
 		}
-		if (item.viewportcount) {
-			viewportcount = _.extend(viewportcount, item.viewportcount);
-		}
 	});
 	return {
 		world: store.world,
 		layers: layers,
 		sources: sources,
 		events: events,
-		dragndrop: dragndrop,
-		viewportcount: viewportcount
+		dragndrop: dragndrop
 	}
 })
 
@@ -169,39 +164,30 @@ export default class Map extends React.Component {
 
 		// set up events to update viewport counts
 		// (and dispatch actions) when needed
-		_.forIn(this.props.viewportcount, (item)=> {
-			const updateViewportCount = ()=> {
-				const renderedFeatures = getUniqueFeatures(
-					this.map.queryRenderedFeatures({ layers: item.layerIds }),
-					item.uniqueKey
-				);
-				var newViewportCount;
-				if (item.reduceKey) {
-					newViewportCount = renderedFeatures.reduce((sum, feature)=> {
-						return sum + feature.properties[item.reduceKey];
-					}, 0);	
-				} else {
-					newViewportCount = renderedFeatures.length;
+		_.forIn(this.props.layers, (layer)=> {
+			if (layer.metadata && layer.metadata.renderedFeatures) {
+				const getRenderedFeatures = ()=> {
+					const renderedFeatures = this.map.queryRenderedFeatures({ layers: [layer.id] });
+					this.props.dispatch(updateRenderedFeatures(layer.id, renderedFeatures, this.map.getZoom()));
 				}
-				this.props.dispatch(item.action(newViewportCount));
-			}
-			const renderHandler = (data)=> {
-				if (this.map.isStyleLoaded() && this.map.isSourceLoaded(item.sourceId)) {
-					updateViewportCount();
-					this.map.off('render', renderHandler);
+				const renderHandler = (data)=> {
+					if (this.map.isStyleLoaded() && this.map.isSourceLoaded(layer.source)) {
+						getRenderedFeatures();
+						this.map.off('render', renderHandler);
+					}
 				}
-			}
 
-			// on init : wait for a map rendering
-			// that displays item's source and layer
-			// once this rendering is done,
-			// update viewport count and cancels render listener
-			this.map.on('render', renderHandler);
-
-			// on map moveend : idem init
-			this.map.on('moveend', ()=> {
+				// on init : wait for a map rendering
+				// that displays item's source and layer
+				// once this rendering is done,
+				// update viewport count and cancels render listener
 				this.map.on('render', renderHandler);
-			});
+
+				// on map moveend : idem init
+				this.map.on('moveend', ()=> {
+					this.map.on('render', renderHandler);
+				});
+			}
 		});
 	}
 
@@ -217,6 +203,19 @@ export default class Map extends React.Component {
 		_.forIn(nextProps.layers, (layer)=> {
 			if (layer.didChange && layer.didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
+				if (layer.metadata && layer.metadata.renderedFeatures) {
+					const getRenderedFeatures = ()=> {
+						const renderedFeatures = this.map.queryRenderedFeatures({ layers: [layer.id] });
+						this.props.dispatch(updateRenderedFeatures(layer.id, renderedFeatures, this.map.getZoom()));
+					}
+					const renderHandler = (data)=> {
+						if (this.map.isStyleLoaded() && this.map.isSourceLoaded(layer.source)) {
+							getRenderedFeatures();
+							this.map.off('render', renderHandler);
+						}
+					}
+					this.map.on('render', renderHandler);
+				}
 			}
 			if (layer.didChange && layer.didChange.zoom) {
 				this.map.setLayerZoomRange(layer.id, layer.minzoom, layer.maxzoom);
@@ -233,6 +232,13 @@ export default class Map extends React.Component {
 			}
 		});
 	}
+}
+
+function updateRenderedFeatures(layerId, features, zoom) {
+	return  {
+		type: 'UPDATE_FEATURES_' + layerId.toUpperCase(),
+		payload: { features, zoom }
+	};
 }
 
 function getUniqueFeatures(array, comparatorProperty) {

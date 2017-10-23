@@ -9,7 +9,7 @@ const initialState = {
 	world: {
         lat: 37.8,
 	    long: -96,
-	    zoom: 3
+	    zoom: 0
     },
     mapResources: mapResources
 }

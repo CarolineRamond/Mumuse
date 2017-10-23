@@ -1,0 +1,9 @@
+.preview {
+	position:absolute;
+	z-index: 1;
+	bottom: 0;
+	left: 0;
+	height: 300px;
+	width: 300px;
+	border: 2px solid blue;
+}

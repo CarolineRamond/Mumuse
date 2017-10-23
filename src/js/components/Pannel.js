@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux"
 
 import '../../css/pannel.css'
+import { getVisibleMedias, getSelectedMedias, getViewportMediaCount } from '../modules/medias/medias.reducer'
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -10,8 +11,9 @@ import '../../css/pannel.css'
 @connect((store)=> {
 	return  {
 		world: store.world,
-		medias: [],
-		viewportcount: store.mapResources.medias.viewportcount
+		medias: getVisibleMedias(store.mapResources.medias),
+		selectedMedias: getSelectedMedias(store.mapResources.medias),
+		viewportMediaCount: getViewportMediaCount(store.mapResources.medias)
 	}
 })
 
@@ -21,16 +23,10 @@ export default class Pannel extends React.Component {
 		this.props.dispatch({ type: "SELECT_MEDIA", payload: { features: [media] } });
 	}
 
-	selectSite(site) {
-		this.props.dispatch({ type: "SELECT_SITE", payload: { features: [site] } });
-	}
-
 	render() {
-		const mappedMedias = this.props.medias.map((media)=> {
-			var className = media.selected ? 'selected':''
-			return <li key={media.properties._id} className={className} 
-				onClick={()=>this.selectMedia(media)}>
-				{media.properties.title}
+		const mappedSelectedMedias = this.props.selectedMedias.map((media)=> {
+			return <li key={media.properties._id}>
+				{media.properties.name} {media.properties._id}
 			</li>
 		});
 		return <div className="pannel">
@@ -41,13 +37,17 @@ export default class Pannel extends React.Component {
 				<li>Zoom: {this.props.world.zoom}</li>
 			</ul>
 			<hr/>
-			<h3>Medias</h3>
-			<ul>{mappedMedias}</ul>
-			<hr/>
 			<h3>Viewport Count</h3>
 			<ul>
-				<li>Medias : {this.props.viewportcount.medias.value}</li>
-				<li>Grid : {this.props.viewportcount.grid.value}</li>
+				<li>Medias : {this.props.viewportMediaCount}</li>
+			</ul>
+			<h3>Visible medias</h3>
+			<ul>
+				{this.props.medias.length}
+			</ul>
+			<h3>Selected medias</h3>
+			<ul>
+				{mappedSelectedMedias}
 			</ul>
 		</div>
 	}
