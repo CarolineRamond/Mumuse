@@ -12,7 +12,7 @@ const defaultLayerReducer = (state) => {
 // (pointwise media representation, originated from vector tiles)
 const mediasLayerReducer = (state = {}, action) => {
 	switch (action.type) {
-	 	case "SELECT_MEDIA": {
+	 	case "MEDIAS_SELECT": {
 	 		// filter out selected medias
 	 		const selectedIds = action.payload.features.map((feature)=> {
 	 			return feature.properties._id;
@@ -28,7 +28,7 @@ const mediasLayerReducer = (state = {}, action) => {
 	 		});
 			break;
 		}
-		case "DESELECT_MEDIAS": {
+		case "MEDIAS_DESELECT": {
 			if (action.payload.ctrlKey || !state.filter) {
 				return defaultLayerReducer(state);
 			}

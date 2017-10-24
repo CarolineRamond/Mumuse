@@ -1,3 +1,5 @@
+import { selectMedias, deselectMedias, startDragMedias, dragMedias, endDragMedias } from './medias.actions';
+
 export default {
     sources: {
         "medias-source": {
@@ -96,27 +98,26 @@ export default {
         type: 'click',
         layer: null,
         action: function (event) {
-            return { type: 'DESELECT_MEDIAS', payload: { ctrlKey: event.originalEvent.ctrlKey  } }
+            return deselectMedias(event);
         }
     }, 
     {
         type: 'click',
         layerId: "medias-layer",
         action: function (event) {
-            console.log('SELECT MEDIA ', event);
-           return { type: 'SELECT_MEDIA', payload: { features: event.features, ctrlKey: event.originalEvent.ctrlKey } }
+           return selectMedias(event);
         }
     }],
     dragndrop: {
         "selected-medias-layer": {
             mousedownAction: function (event) {
-                return { type: 'START_DRAG_MEDIA', payload: { features: event.features } }
+                return startDragMedias(event);
             },
             mousemoveAction: function (event) {
-                return { type: 'DRAG_MEDIA', payload: { coords: event.lngLat } }
+                return dragMedias(event);
             },
             mouseupAction: function (event) {
-                return { type: 'END_DRAG_MEDIA' }
+                return endDragMedias(event);
             }
         }
     }

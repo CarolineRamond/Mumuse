@@ -30,7 +30,7 @@ export default class Timeline extends React.Component {
 	}
 
 	render() {
-		var strValue = new Date(this.state.value).toString();
+		var strValue = new Date(this.state.value).toLocaleDateString();
 		return <div className="timeline">
 			<div className="timeline-infos">
 				<div className="timeline-date">{strValue}</div>
