@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux"
 
 import '../../css/pannel.css'
-import { getVisibleMedias, getSelectedMedias, getViewportMediaCount } from '../modules/medias/medias.reducer'
+import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, getFilters } from '../modules/medias/medias.reducer'
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -13,7 +13,7 @@ import { getVisibleMedias, getSelectedMedias, getViewportMediaCount } from '../m
 		world: store.world,
 		medias: getVisibleMedias(store.mapResources.medias),
 		selectedMedias: getSelectedMedias(store.mapResources.medias),
-		viewportMediaCount: getViewportMediaCount(store.mapResources.medias)
+		viewportMediaCount: getViewportMediaCount(store.mapResources.medias),
 	}
 })
 
@@ -29,6 +29,7 @@ export default class Pannel extends React.Component {
 				{media.properties.name} {media.properties._id}
 			</li>
 		});
+
 		return <div className="pannel">
 			<h3>World</h3>
 			<ul>

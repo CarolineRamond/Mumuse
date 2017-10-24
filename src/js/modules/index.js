@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
 import mediasReducer from './medias/medias.reducer.js';
 // import sitesReducer from './sites/sites.reducer.js';
-import worldReducer from './world/world.reducer.js';
+import worldReducer from './map/world';
 
 import mediasMapResource from './medias/medias.map.resource';
 // import sitesMapResource from './sites/sites.map.resource';

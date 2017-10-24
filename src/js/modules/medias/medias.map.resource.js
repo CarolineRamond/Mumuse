@@ -1,5 +1,3 @@
-import * as actions from './medias.actions' ;
-
 export default {
     sources: {
         "medias-source": {
@@ -119,8 +117,7 @@ export default {
             },
             mouseupAction: function (event) {
                 return { type: 'END_DRAG_MEDIA' }
-            },
-            draggingFeatureId: null
+            }
         }
     }
 }

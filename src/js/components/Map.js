@@ -6,7 +6,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1NXZxa2sifQ.hgPcQvgkzpfYkHgfMRqcpw';
 
 import '../../css/map.css'
-import { updateWorldState } from '../modules/world/world.actions';
+import { updateWorldState } from '../modules/map/world';
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -91,7 +91,7 @@ export default class Map extends React.Component {
 
 	_loadSources() {
 		_.forIn(this.props.sources, (source, sourceId)=>{
-			this.map.addSource(sourceId, source);
+			this.map.addSource(sourceId, _.omit(source, ['metadata']));
 		});
 	}
 
@@ -196,7 +196,7 @@ export default class Map extends React.Component {
 
 	_reloadSourcesData(nextProps) {
 		_.forIn(nextProps.sources, (source, sourceId)=> {
-			if (source.didChange) {
+			if (source.metadata && source.metadata.didChange) {
 				this.map.getSource(sourceId).setData(source.data);
 			}
 		});
@@ -204,7 +204,8 @@ export default class Map extends React.Component {
 
 	_updateLayersStyle(nextProps) {
 		_.forIn(nextProps.layers, (layer)=> {
-			if (layer.didChange && layer.didChange.filter) {
+			var didChange = layer.metadata && layer.metadata.didChange || {};
+			if (didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
 				if (layer.metadata && layer.metadata.renderedFeatures) {
 					const getRenderedFeatures = ()=> {
@@ -220,16 +221,16 @@ export default class Map extends React.Component {
 					this.map.on('render', renderHandler);
 				}
 			}
-			if (layer.didChange && layer.didChange.zoom) {
+			if (didChange.zoom) {
 				this.map.setLayerZoomRange(layer.id, layer.minzoom, layer.maxzoom);
 			}
-			if (layer.didChange && layer.didChange.layout) {
-				_.forIn(layer.didChange.layout, (value, key)=> {
+			if (didChange.layout) {
+				_.forIn(didChange.layout, (value, key)=> {
 					this.map.setLayoutProperty(layer.id, key, value);
 				});
 			}
-			if (layer.didChange && layer.didChange.paint) {
-				_.forIn(layer.didChange.paint, (value, key)=> {
+			if (didChange.paint) {
+				_.forIn(didChange.paint, (value, key)=> {
 					this.map.setPaintProperty(layer.id, key, value);
 				});
 			}
