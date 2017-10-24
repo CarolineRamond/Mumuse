@@ -4,11 +4,11 @@ export default {
     sources: {
         "medias-source": {
             type: "vector",
-            tiles: ['http://localhost:8080/userdrive/tile/{z}/{x}/{y}.pbf']
+            tiles: ['http://localhost:8081/userdrive/tile/{z}/{x}/{y}.pbf']
         },
         "grid-medias-source": {
             type: "vector",
-            tiles: ['http://localhost:8080/userdrive/tile/grid/{z}/{x}/{y}.pbf']
+            tiles: ['http://localhost:8081/userdrive/tile/grid/{z}/{x}/{y}.pbf']
         },
         "selected-medias-source": {
             type: "geojson",
@@ -38,7 +38,8 @@ export default {
                 isLocked: true,
                 isShown: false,
                 wasShownBeforeLock: true,
-                renderedFeatures: []
+                renderedFeatures: [],
+                featureKey: "_id"
             }
         },
         "grid-medias-layer": {
@@ -62,11 +63,14 @@ export default {
                     ]
                 }
             },
+            minzoom: 0,
+            maxzoom: 24,
             metadata: {
                 isLocked: false,
                 isShown: false,
                 wasShownBeforeLock: false,
-                renderedFeatures: []
+                renderedFeatures: [],
+                featureKey: "quadkey"
             }
         },
         "selected-medias-layer": {

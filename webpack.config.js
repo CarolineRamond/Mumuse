@@ -33,6 +33,7 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
   ],
   devServer: {
+    port: 8081,
     proxy: {
       '/userdrive': {
         target: 'http://localhost:9000'

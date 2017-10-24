@@ -74,16 +74,6 @@ const mediasReducer = (state = {}, action) => {
 		}
 		case "DRAG_MEDIA": {
 			const coords = action.payload.coords;
-			const newFeatures = state.sources["medias-source"].data.features.map((feature)=> {
-				if (feature.properties._id === state.dragndrop.draggingFeatureId) {
-					return Object.assign({}, feature, {
-						geometry: Object.assign({}, feature.geometry, {
-							coordinates: [coords.lng, coords.lat]
-						})
-					});
-				}
-				return feature;
-			});
 			const newSelectedFeatures = state.sources["selected-medias-source"].data.features.map((feature)=> {
 				if (feature.properties._id === state.dragndrop.draggingFeatureId) {
 					return Object.assign({}, feature, {
@@ -98,13 +88,6 @@ const mediasReducer = (state = {}, action) => {
 	 			"selected-medias-source": Object.assign({}, state.sources["selected-medias-source"], {
 	 					data: Object.assign({}, state.sources["selected-medias-source"].data, {
 	 						features: newSelectedFeatures
-	 					}),
-	 					didChange: true
-	 				}
-	 			),
-	 			"medias-source": Object.assign({}, state.sources["medias-source"], {
-	 					data: Object.assign({}, state.sources["medias-source"].data, {
-	 						features: newFeatures
 	 					}),
 	 					didChange: true
 	 				}
@@ -157,7 +140,8 @@ const mediasReducer = (state = {}, action) => {
 					"grid-medias-layer": Object.assign({}, gridLayer, {
 						metadata: Object.assign({}, gridLayer.metadata, {
 							renderedFeatures: action.payload.features
-						})
+						}),
+						didChange: undefined
 					}),
 					"medias-layer": Object.assign({}, mediasLayer, {
 						metadata: Object.assign({}, mediasLayer.metadata, {
@@ -178,7 +162,8 @@ const mediasReducer = (state = {}, action) => {
 					"grid-medias-layer": Object.assign({}, gridLayer, {
 						metadata: Object.assign({}, gridLayer.metadata, {
 							renderedFeatures: action.payload.features
-						})
+						}),
+						didChange: undefined
 					}),
 					"medias-layer": Object.assign({}, mediasLayer, {
 						metadata: Object.assign({}, mediasLayer.metadata, {
@@ -199,7 +184,8 @@ const mediasReducer = (state = {}, action) => {
 					"grid-medias-layer": Object.assign({}, gridLayer, {
 						metadata: Object.assign({}, gridLayer.metadata, {
 							renderedFeatures: action.payload.features
-						})
+						}),
+						didChange: undefined
 					})
 				});
 			}
@@ -208,6 +194,32 @@ const mediasReducer = (state = {}, action) => {
 	 			layers: newLayers
 	 		});
 	 		break;
+		}
+		case 'TIMELINE_CHANGE': {
+	 		// filter layers: 
+	 		const mediasLayer = state.layers["medias-layer"];
+	 		const gridLayer = state.layers["grid-medias-layer"];
+	 		const selectedLayer = state.layers["selected-medias-layer"];
+
+	 		const newLayers = Object.assign({}, state.layers, {
+	 			"medias-layer": Object.assign({}, mediasLayer, {
+ 					filter: ["<=", "date", action.payload.value],
+ 					didChange: { filter: true }
+ 				}),
+	 			"grid-medias-layer": Object.assign({}, gridLayer, {
+ 					filter: ["<=", "minDate", action.payload.value],
+ 					didChange: { filter: true }
+ 				}),
+	 			"selected-medias-layer": Object.assign({}, selectedLayer, {
+ 					filter: ["<=", "date", action.payload.value],
+ 					didChange: { filter: true }
+ 				})
+	 		});
+
+	 		return Object.assign({}, state, {
+	 			layers: newLayers
+	 		});
+			break;
 		}
 		default:
 			return state;
@@ -220,7 +232,9 @@ export default mediasReducer;
 // other exports : selectors
 // (to expose data to components)
 export const getVisibleMedias = (state) => {
-	return state.layers["medias-layer"].metadata.renderedFeatures;
+	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
+	const geoJSONMedias = state.sources["selected-medias-source"].data.features;
+	return vectorMedias.concat(geoJSONMedias);
 }
 
 export const getSelectedMedias = (state) => {
@@ -239,5 +253,20 @@ export const getViewportMediaCount = (state) => {
 			return c + feature.properties.allMediaCount;
 		}, 0);
 		return '~' + count.toString();
+	}
+}
+
+export const getMediasMinDate = (state) => {
+	if (!state.layers["medias-layer"].metadata.isLocked && 
+		state.layers["medias-layer"].metadata.renderedFeatures.length > 0) {
+		// point layer is visible : return medias min date
+		return state.layers["medias-layer"].metadata.renderedFeatures.reduce((min, feature)=> {
+			return Math.min(min, new Date(feature.properties.date).getTime());
+		}, Date.now());
+	} else {
+		// point layer is locked : return grid cells min date
+		return state.layers["grid-medias-layer"].metadata.renderedFeatures.reduce((min, feature)=> {
+			return Math.min(min, new Date(feature.properties.minDate).getTime());
+		}, Date.now());
 	}
 }

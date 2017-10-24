@@ -167,7 +167,10 @@ export default class Map extends React.Component {
 		_.forIn(this.props.layers, (layer)=> {
 			if (layer.metadata && layer.metadata.renderedFeatures) {
 				const getRenderedFeatures = ()=> {
-					const renderedFeatures = this.map.queryRenderedFeatures({ layers: [layer.id] });
+					const renderedFeatures = getUniqueFeatures(
+						this.map.queryRenderedFeatures({ layers: [layer.id] }),
+						layer.metadata.featureKey
+					);
 					this.props.dispatch(updateRenderedFeatures(layer.id, renderedFeatures, this.map.getZoom()));
 				}
 				const renderHandler = (data)=> {
