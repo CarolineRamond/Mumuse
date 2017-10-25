@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux"
 
 import '../../css/timeline.css'
-import { getViewportMediaCount, getMediasMinDate } from '../modules/medias/medias.reducer'
+import { getViewportMediaCount, getMediasMinDate } from '../modules/medias'
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -10,8 +10,8 @@ import { getViewportMediaCount, getMediasMinDate } from '../modules/medias/media
 // + some functions like dispatch (to fire actions)
 @connect((store)=> {
 	return  {
-		viewportMediaCount: getViewportMediaCount(store.mapResources.medias),
-		minDate: getMediasMinDate(store.mapResources.medias)
+		viewportMediaCount: getViewportMediaCount(store.medias),
+		minDate: getMediasMinDate(store.medias)
 	}
 })
 

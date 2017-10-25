@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux"
 
 import '../../css/pannel.css'
-import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, getFilters } from '../modules/medias/medias.reducer'
+import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, getFilters } from '../modules/medias'
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -11,9 +11,9 @@ import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, getFilters 
 @connect((store)=> {
 	return  {
 		world: store.world,
-		medias: getVisibleMedias(store.mapResources.medias),
-		selectedMedias: getSelectedMedias(store.mapResources.medias),
-		viewportMediaCount: getViewportMediaCount(store.mapResources.medias),
+		medias: getVisibleMedias(store.medias),
+		selectedMedias: getSelectedMedias(store.medias),
+		viewportMediaCount: getViewportMediaCount(store.medias),
 	}
 })
 

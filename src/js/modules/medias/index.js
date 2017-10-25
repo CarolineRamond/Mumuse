@@ -1,22 +1,22 @@
 import { combineReducers } from 'redux';
 
-import layersReducer from './medias.layers.reducer';
-import sourcesReducer from './medias.sources.reducer';
+import layersReducer from './reducers/medias.layers.reducer';
+import sourcesReducer from './reducers/medias.sources.reducer';
+import mediasInitialState from './medias.initialState';
+import mediasMapConfig from './medias.map.config';
 
-const mediasReducer = (state = {}, action) => {
-	switch (action.type) {
-		default:
-			return Object.assign({}, state, {
-				layers: layersReducer(state.layers, action),
-				sources: sourcesReducer(state.sources, action)
-			});
-	}
-}
+const mediasReducer = combineReducers({
+	layers: layersReducer,
+	sources: sourcesReducer
+});
 
 // default export : reducer function
 export default mediasReducer;
 
-// other exports : selectors
+// export initialState & mapInteractions
+export { mediasInitialState, mediasMapConfig };
+
+// export selectors
 // (to expose data to components)
 export const getVisibleMedias = (state) => {
 	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;

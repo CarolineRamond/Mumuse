@@ -1,16 +1,17 @@
 import React from "react";
 import { connect } from "react-redux"
 
-import { getSelectedMedias } from '../modules/medias/medias.reducer'
+import { getSelectedMedias } from '../modules/medias'
 import '../../css/preview.css'
 
 // this is to set up component's props
 // component's props will be an excerpt
 // of the store
 // + some functions like dispatch (to fire actions)
+// also, this will be rendered each time store changes
 @connect((store)=> {
 	return  {
-		selectedMedias: getSelectedMedias(store.mapResources.medias)
+		selectedMedias: getSelectedMedias(store.medias)
 	}
 })
 

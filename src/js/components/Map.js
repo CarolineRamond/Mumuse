@@ -6,7 +6,6 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1NXZxa2sifQ.hgPcQvgkzpfYkHgfMRqcpw';
 
 import '../../css/map.css'
-import { updateWorldState } from '../modules/map/world';
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -15,40 +14,30 @@ import { updateWorldState } from '../modules/map/world';
 @connect((store)=> {
 	var sources = {};
 	var layers = {};
-	var events = [];
-	var dragndrop = {};
 
-	_.forIn(store.mapResources, (item, key)=> {
+	_.forIn(store, (item, key)=> {
 		if (item.sources) {
 			sources = _.extend(sources, item.sources);
 		}
 		if (item.layers) {
 			layers = _.extend(layers, item.layers);
 		}
-		if (item.events) {
-			events = events.concat(item.events);
-		}
-		if (item.dragndrop) {
-			dragndrop = _.extend(dragndrop, item.dragndrop);
-		}
 	});
 	return {
 		world: store.world,
 		layers: layers,
-		sources: sources,
-		events: events,
-		dragndrop: dragndrop
+		sources: sources
 	}
 })
 
 export default class Map extends React.Component {
 
 	componentDidMount() {
-		const { lat, long, zoom } = this.props.world;
+		const { lat, lng, zoom } = this.props.world;
 		this.map = new mapboxgl.Map({
 			container: this.mapContainer,
 			style: 'mapbox://styles/iconem/cio487j79006hc7m7wu00w6hw',
-			center: [long, lat],
+			center: [lng, lat],
 			zoom: zoom,
 			renderWorldCopies: false,
 			maxBounds: [[-180, -85], [180, 85]],
@@ -102,7 +91,7 @@ export default class Map extends React.Component {
 	}
 
 	_addSimpleEventsHandling() {
-		this.props.events.map((event)=> {
+		this.props.config.events.map((event)=> {
 			if (event.layerId) {
 				this.map.on(event.type, event.layerId, (evt)=> {
 					this.props.dispatch(event.action(evt));
@@ -116,24 +105,24 @@ export default class Map extends React.Component {
 	}
 
 	_addDragndropHandling() {
-		_.forIn(this.props.dragndrop, (handlers, layerId)=> {
+		this.props.config.dragndrop.map((item)=> {
 			// disable/enable map panning
 			// on enter/leave layer
-			this.map.on('mouseenter', layerId, (evt)=> {
+			this.map.on('mouseenter', item.layerId, (evt)=> {
 				this.map.dragPan.disable();
 			});
-			this.map.on('mouseleave', layerId, (evt)=> {
+			this.map.on('mouseleave', item.layerId, (evt)=> {
 				this.map.dragPan.enable();
 			});
 
 			// detect mousedown on layer, setup mouseup event (once)
 			// and dispatch corresponding action
-			this.map.on('mousedown', layerId, (evt)=> {
-				this.props.dispatch(handlers.mousedownAction(evt));
-				this.draggingLayerId = layerId;
+			this.map.on('mousedown', item.layerId, (evt)=> {
+				this.props.dispatch(item.mousedownAction(evt));
+				this.draggingLayerId = item.layerId;
 
 				this.map.once('mouseup', (evt)=> {
-					this.props.dispatch(handlers.mouseupAction(evt));
+					this.props.dispatch(item.mouseupAction(evt));
 					this.draggingLayerId = null;
 				});
 			});
@@ -141,27 +130,20 @@ export default class Map extends React.Component {
 
 		// add mousemove listener only if one of the layers
 		// has dragndrop interaction
-		if (Object.keys(this.props.dragndrop).length > 0) {
+		if (this.props.config.dragndrop.length > 0) {
 			this.map.on('mousemove', (evt)=> {
 				if (this.draggingLayerId) {
-					var handlers = this.props.dragndrop[this.draggingLayerId];
-					this.props.dispatch(handlers.mousemoveAction(evt));
+					this.props.config.dragndrop.map((item)=> {
+						if (item.layerId === this.draggingLayerId) {
+							this.props.dispatch(item.mousemoveAction(evt));
+						}
+					});
 				}
 			});
 		}
 	}
 
 	_addViewportChangeHandling() {
-		// update world on move end
-		this.map.on('moveend', ()=> {
-			const { lng, lat } = this.map.getCenter();
-			this.props.dispatch(updateWorldState({
-				long: lng,
-				lat: lat,
-				zoom: this.map.getZoom(),
-			}));
-		});
-
 		// set up events to update viewport counts
 		// (and dispatch actions) when needed
 		_.forIn(this.props.layers, (layer)=> {

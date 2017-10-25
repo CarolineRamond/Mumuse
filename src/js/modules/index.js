@@ -1,22 +1,24 @@
 import { combineReducers } from "redux";
-import mediasReducer from './medias/medias.reducer.js';
-// import sitesReducer from './sites/sites.reducer.js';
-import worldReducer from './map/world';
 
-import mediasMapResource from './medias/medias.map.resource';
-// import sitesMapResource from './sites/sites.map.resource';
+import mediasReducer, { mediasInitialState, mediasMapConfig } from './medias';
+import worldReducer, { worldInitialState, worldMapConfig } from './world';
 
 const reducer = combineReducers({
 	world: worldReducer,
-	mapResources: combineReducers({
-		medias: mediasReducer,
-		// sites: sitesReducer
-	})
+	medias: mediasReducer
 });
+export default reducer;
 
-const mapResources =  {
-	medias: mediasMapResource,
-	// sites: sitesMapResource
+const defaultInitialState = {
+	world: worldInitialState,
+	medias: mediasInitialState
 };
 
-export { reducer, mapResources }
+const mapEvents = mediasMapConfig.events.concat(worldMapConfig.events);
+const mapDragndrop = mediasMapConfig.dragndrop.concat(worldMapConfig.dragndrop);
+const mapConfig = {
+	events: mapEvents,
+	dragndrop: mapDragndrop
+};
+
+export { defaultInitialState, mapConfig };
