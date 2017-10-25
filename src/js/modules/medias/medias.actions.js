@@ -1,44 +1,44 @@
-export const selectMedias = (mapEvent)=> {
+export const selectMapMedias = (mapEvent)=> {
 	return { 
-		type: 'MEDIAS_SELECT', 
+		type: 'MEDIAS_MAP_SELECT', 
 		payload: { 
 			features: mapEvent.features,
-			ctrlKey: mapEvent.ctrlKey
+			ctrlKey: mapEvent.originalEvent.ctrlKey
 		}
 	};
 };
 
-export const deselectMedias = (mapEvent)=> {
+export const deselectMapMedias = (mapEvent)=> {
 	return { 
-		type: 'MEDIAS_DESELECT', 
+		type: 'MEDIAS_MAP_DESELECT', 
 		payload: { 
 			features: mapEvent.features,
-			ctrlKey: mapEvent.ctrlKey
+			ctrlKey: mapEvent.originalEvent.ctrlKey
 		}
 	};
 }
 
-export const startDragMedia = (mapEvent)=> {
+export const startDragMapMedias = (mapEvent)=> {
 	return {
-		type: 'MEDIAS_START_DRAG',
+		type: 'MEDIAS_MAP_START_DRAG',
 		payload: {
 			features: mapEvent.features
 		}
 	};
 }
 
-export const dragMedia = (mapEvent)=> {
+export const dragMapMedias = (mapEvent)=> {
 	return {
-		type: 'MEDIAS_DRAG',
+		type: 'MEDIAS_MAP_DRAG',
 		payload: {
 			coords: mapEvent.lngLat
 		}
 	};
 }
 
-export const endDragMedia = (mapEvent)=> {
+export const endDragMapMedias = (mapEvent)=> {
 	return {
-		type: 'MEDIAS_END_DRAG'
+		type: 'MEDIAS_MAP_END_DRAG'
 	};
 }
 

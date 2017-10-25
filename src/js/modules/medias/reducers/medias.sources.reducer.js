@@ -12,7 +12,7 @@ const defaultSourceReducer = (state) => {
 // (geojson source representing selected medias)
 const selectedMediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
-	 	case "MEDIAS_SELECT": {
+	 	case "MEDIAS_MAP_SELECT": {
 	 		// add selected features to source data
 	 		return Object.assign({}, state, {
 				data: Object.assign({}, state.data, {
@@ -24,7 +24,7 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 			});
 			break;
 		}
-		case "MEDIAS_DESELECT": {
+		case "MEDIAS_MAP_DESELECT": {
 			if (action.payload.ctrlKey) {
 				return defaultSourceReducer(state);
 			}
@@ -39,7 +39,7 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 	 		});
 			break;
 		}
-		case "MEDIAS_START_DRAG": {
+		case "MEDIAS_MAP_START_DRAG": {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, { 
 					draggingFeatureId: action.payload.features[0].properties._id 
@@ -47,7 +47,7 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 			});
 			break;
 		}
-		case "MEDIAS_DRAG": {
+		case "MEDIAS_MAP_DRAG": {
 			const coords = action.payload.coords;
 			const newFeatures = state.data.features.map((feature)=> {
 				if (feature.properties._id === state.metadata.draggingFeatureId) {
@@ -62,11 +62,14 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 	 		return Object.assign({}, state, {
 	 			data: Object.assign({}, state.data, {
 	 				features: newFeatures
-	 			})
+	 			}),
+	 			metadata: Object.assign({}, state.metadata, {
+					didChange: true
+				})
 	 		});
 			break;
 		}
-		case "MEDIAS_END_DRAG": {
+		case "MEDIAS_MAP_END_DRAG": {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, { 
 					draggingFeatureId: null 

@@ -118,11 +118,11 @@ export default class Map extends React.Component {
 			// detect mousedown on layer, setup mouseup event (once)
 			// and dispatch corresponding action
 			this.map.on('mousedown', item.layerId, (evt)=> {
-				this.props.dispatch(item.mousedownAction(evt));
+				this.props.dispatch(item.mousedown(evt));
 				this.draggingLayerId = item.layerId;
 
 				this.map.once('mouseup', (evt)=> {
-					this.props.dispatch(item.mouseupAction(evt));
+					this.props.dispatch(item.mouseup(evt));
 					this.draggingLayerId = null;
 				});
 			});
@@ -135,7 +135,7 @@ export default class Map extends React.Component {
 				if (this.draggingLayerId) {
 					this.props.config.dragndrop.map((item)=> {
 						if (item.layerId === this.draggingLayerId) {
-							this.props.dispatch(item.mousemoveAction(evt));
+							this.props.dispatch(item.mousemove(evt));
 						}
 					});
 				}

@@ -18,6 +18,25 @@ export { mediasInitialState, mediasMapConfig };
 
 // export selectors
 // (to expose data to components)
+export const serializeState = (state) => {
+	const newLayers = Object.assign({}, state.layers, {
+		"medias-layer": Object.assign({}, state.layers["medias-layer"], {
+			metadata: Object.assign({}, state.layers["medias-layer"].metadata, {
+				renderedFeatures: []
+			})
+		}),
+		"grid-medias-layer": Object.assign({}, state.layers["grid-medias-layer"], {
+			metadata: Object.assign({}, state.layers["grid-medias-layer"].metadata, {
+				renderedFeatures: []
+			})
+		})
+	});
+	
+	return Object.assign({}, state, {
+		layers: newLayers 
+	});
+}
+
 export const getVisibleMedias = (state) => {
 	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
 	const geoJSONMedias = state.sources["selected-medias-source"].data.features;

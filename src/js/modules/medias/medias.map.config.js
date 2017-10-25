@@ -1,4 +1,4 @@
-import { selectMedias, deselectMedias, startDragMedias, dragMedias, endDragMedias } from './medias.actions';
+import { selectMapMedias, deselectMapMedias, startDragMapMedias, dragMapMedias, endDragMapMedias } from './medias.actions';
 
 export default {
     // events contain all event handlers except dragndrop
@@ -7,27 +7,17 @@ export default {
     events: [{
         type: 'click',
         layer: null,
-        action: function (event) {
-            return deselectMedias(event);
-        }
+        action: deselectMapMedias
     }, 
     {
         type: 'click',
         layerId: "medias-layer",
-        action: function (event) {
-           return selectMedias(event);
-        }
+        action: selectMapMedias
     }],
     dragndrop: [{
         layerId: "selected-medias-layer",
-        mousedownAction: function (event) {
-            return startDragMedias(event);
-        },
-        mousemoveAction: function (event) {
-            return dragMedias(event);
-        },
-        mouseupAction: function (event) {
-            return endDragMedias(event);
-        }
+        mousedown: startDragMapMedias,
+        mousemove: dragMapMedias,
+        mouseup: endDragMapMedias
     }]
 }
