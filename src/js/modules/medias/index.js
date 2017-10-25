@@ -2,12 +2,14 @@ import { combineReducers } from 'redux';
 
 import layersReducer from './reducers/medias.layers.reducer';
 import sourcesReducer from './reducers/medias.sources.reducer';
+import timelineReducer from './reducers/medias.timeline.reducer';
 import mediasInitialState from './medias.initialState';
 import mediasMapConfig from './medias.map.config';
 
 const mediasReducer = combineReducers({
 	layers: layersReducer,
-	sources: sourcesReducer
+	sources: sourcesReducer,
+	timeline: timelineReducer
 });
 
 // default export : reducer function
@@ -31,7 +33,7 @@ export const serializeState = (state) => {
 			})
 		})
 	});
-	
+
 	return Object.assign({}, state, {
 		layers: newLayers 
 	});
@@ -75,4 +77,8 @@ export const getMediasMinDate = (state) => {
 			return Math.min(min, new Date(feature.properties.minDate).getTime());
 		}, Date.now());
 	}
+}
+
+export const getTimelineValue = (state) => {
+	return state.timeline;
 }

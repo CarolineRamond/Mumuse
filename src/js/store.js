@@ -8,6 +8,7 @@ import { serializeState } from "./modules/medias"
 
 const middleware = applyMiddleware(promise(), logger());
 const initialState = loadState() || defaultInitialState;
+// const initialState = defaultInitialState;
 
 const store = createStore(reducer, initialState, middleware);
 const serialize = (state)=> {

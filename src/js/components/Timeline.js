@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux"
 
 import '../../css/timeline.css'
-import { getViewportMediaCount, getMediasMinDate } from '../modules/medias'
+import { getViewportMediaCount, getMediasMinDate, getTimelineValue } from '../modules/medias'
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -11,6 +11,7 @@ import { getViewportMediaCount, getMediasMinDate } from '../modules/medias'
 @connect((store)=> {
 	return  {
 		viewportMediaCount: getViewportMediaCount(store.medias),
+		value: getTimelineValue(store.medias),
 		minDate: getMediasMinDate(store.medias)
 	}
 })
@@ -19,14 +20,25 @@ export default class Timeline extends React.Component {
 
 	constructor(props) {
 		super(props);
-		var now = Date.now();
-		this.state = { maxDate: now, value: now };
+		this.state = { 
+			maxDate: Date.now(), 
+			value: this.props.value, 
+			minDate: this.props.minDate 
+		};
 		this.handleSlideChange = this.handleSlideChange.bind(this);
 	}
 
 	handleSlideChange(event) {
-		this.setState({ value: parseInt(event.target.value) });
 		this.props.dispatch({ type: 'TIMELINE_CHANGE', payload: { value: parseInt(event.target.value) } });
+	}
+
+	componentWillReceiveProps(nextProps) {
+		this.setState((prevState)=> {
+			return Object.assign({}, prevState, {  
+				value: nextProps.value, 
+				minDate: nextProps.minDate 
+			});
+		});
 	}
 
 	render() {
@@ -39,7 +51,7 @@ export default class Timeline extends React.Component {
 				</div>
 			</div>
 			<input className="timeline-slider" type="range" 
-				min={this.props.minDate} max={this.state.maxDate}
+				min={this.state.minDate} max={this.state.maxDate}
 				value={this.state.value}
 				onChange={this.handleSlideChange}>
 			</input>
