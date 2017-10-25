@@ -200,6 +200,7 @@ export default class Map extends React.Component {
 							this.map.off('render', renderHandler);
 						}
 					}
+					this.map.on('render', renderHandler);
 				}
 			}
 			if (didChange.zoom) {
