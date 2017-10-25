@@ -223,7 +223,10 @@ export default class Map extends React.Component {
 function updateRenderedFeatures(layerId, features, zoom) {
 	return  {
 		type: 'UPDATE_FEATURES_' + layerId.toUpperCase(),
-		payload: { features, zoom }
+		payload: { features, zoom },
+		meta: {
+			throttle: 500
+		}
 	};
 }
 

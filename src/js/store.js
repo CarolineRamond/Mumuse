@@ -1,14 +1,15 @@
 import { applyMiddleware, createStore } from "redux"
 import logger from "redux-logger"
 import promise from "redux-promise-middleware"
+import throttle from "redux-throttle"
 
 import reducer, { defaultInitialState } from "./modules"
 import { loadState, saveState } from "./localStorage"
 import { serializeState } from "./modules/medias"
 
-const middleware = applyMiddleware(promise(), logger());
+// const middleware = applyMiddleware(throttle(), promise(), logger());
+const middleware = applyMiddleware(throttle(), promise());
 const initialState = loadState() || defaultInitialState;
-// const initialState = defaultInitialState;
 
 const store = createStore(reducer, initialState, middleware);
 const serialize = (state)=> {
