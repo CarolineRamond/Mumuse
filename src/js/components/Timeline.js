@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux"
+import { Slider } from "react-mdl"
 
 import '../../css/timeline.css'
 import { getViewportMediaCount, getMediasMinDate, getTimelineValue } from '../modules/medias'
@@ -29,15 +30,15 @@ export default class Timeline extends React.Component {
 	}
 
 	handleSlideChange(event) {
+		this.setState({
+			value: parseInt(event.target.value)
+		});
 		this.props.dispatch({ type: 'TIMELINE_CHANGE', payload: { value: parseInt(event.target.value) } });
 	}
 
 	componentWillReceiveProps(nextProps) {
-		this.setState((prevState)=> {
-			return Object.assign({}, prevState, {  
-				value: nextProps.value, 
-				minDate: nextProps.minDate 
-			});
+		this.setState({  
+			minDate: nextProps.minDate 
 		});
 	}
 
@@ -50,11 +51,8 @@ export default class Timeline extends React.Component {
 					{this.props.viewportMediaCount} media(s) in this zone
 				</div>
 			</div>
-			<input className="timeline-slider" type="range" 
-				min={this.state.minDate} max={this.state.maxDate}
-				value={this.state.value}
-				onChange={this.handleSlideChange}>
-			</input>
+			<Slider min={this.state.minDate} max={this.state.maxDate}
+				value={this.state.value} onChange={this.handleSlideChange}/>
 		</div>
 	}
 }

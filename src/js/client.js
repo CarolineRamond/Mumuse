@@ -1,4 +1,6 @@
 import React from "react"
+import "react-mdl/extra/material.js"
+import "react-mdl/extra/material.css"
 import ReactDOM from "react-dom"
 import { Provider } from "react-redux"
 
