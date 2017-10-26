@@ -1,28 +1,47 @@
 import React from "react";
 import { Link } from "react-router-dom"
+import Button from "material-ui/Button"
+import Dialog, { DialogTitle, DialogContent, DialogActions } from 'material-ui/Dialog';
+import Input, { InputLabel } from 'material-ui/Input';
+import { FormControl, FormHelperText } from 'material-ui/Form';
 
 import '../../css/auth.css'
 
 export default class Login extends React.Component {
 	render() {
-		return <div className="auth-background">
-			<div className="auth-pannel">
-				<div className="auth-pannel-title">
-					Login
+		return <Dialog open={true}>
+			<DialogTitle>
+				<div>Login</div>
+				<div>
+					or <Link to="/register">Create an Account</Link>
 				</div>
-				<div className="auth-pannel-content">
-					<div className="auth-pannel-form">
-					</div>
-					<div className="auth-pannel-actions">
-						<button>
-							<Link to="/register">Register</Link>
-						</button>
-						<button>
-							<Link to="/">Cancel</Link>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
+			</DialogTitle>
+			<DialogContent>
+
+				<FormControl>
+		          <InputLabel htmlFor="email">Email</InputLabel>
+		          <Input id="email"/>
+		        </FormControl>
+
+		        <FormControl>
+		          <InputLabel htmlFor="password">Password</InputLabel>
+		          <Input
+		            id="password"
+		            type='password'/>
+		        </FormControl>
+
+
+			</DialogContent>
+			<DialogActions>
+				<Link to="/">
+					<Button color="primary">
+	              		Cancel
+	            	</Button>
+	            </Link>
+	            <Button color="primary">
+	              Login
+	            </Button>
+			</DialogActions>
+		</Dialog>
 	}
 }
