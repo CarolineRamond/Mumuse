@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux"
 import { Link } from "react-router-dom"
+import Button from "material-ui/Button"
+import Tooltip from "material-ui/Tooltip"
 
 import Map from './Map'
 import Pannel from './Pannel'
@@ -17,9 +19,11 @@ export default class Layout extends React.Component {
 			<Timeline></Timeline>
 			<Preview></Preview>
 				<Link to="/login">
-					<button className="auth-button">
-						Login
-					</button>
+					<Tooltip title="Login" placement="bottom">
+						<Button fab mini className="auth-button">
+							<i className="material-icons">account_box</i>
+						</Button>
+					</Tooltip>
 				</Link>
 			
 		</div>

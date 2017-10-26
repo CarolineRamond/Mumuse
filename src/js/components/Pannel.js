@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux"
 import _ from "lodash"
-import { Button } from 'react-mdl';
+import IconButton from "material-ui/IconButton"
 
 import '../../css/pannel.css'
 import { toggleLayerMedias } from '../modules/medias/medias.actions'
@@ -44,9 +44,10 @@ export default class Pannel extends React.Component {
 				icon = "visibility";
 			}
 			mappedLayers.push(<div key={layerId} className="layer">
-				<Button className="layer-toggle" onClick={()=> {this.toggleLayer(layerId)}}>
+				<IconButton className="layer-toggle" disabled={layer.metadata.isLocked}
+					onClick={()=> {this.toggleLayer(layerId)}}>
 					<i className="material-icons">{icon}</i>
-				</Button>
+				</IconButton>
 				{layer.metadata.name}
 			</div>);
 		});

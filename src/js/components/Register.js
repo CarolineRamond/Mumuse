@@ -12,6 +12,8 @@ export default class Register extends React.Component {
 				</div>
 				<div className="auth-pannel-content">
 					<div className="auth-pannel-form">
+						<input type="text" placeholder="Username"></input>
+						<input type="password" placeholder="Password"></input>
 					</div>
 					<div className="auth-pannel-actions">
 						<button>

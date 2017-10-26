@@ -16,6 +16,7 @@
     "babel-preset-stage-0": "^6.3.13",
     "immutable": "^3.8.2",
     "mapbox-gl": "^0.40.0",
+    "material-ui": "^1.0.0-beta.18",
     "react": "^0.14.6",
     "react-dom": "^0.14.6",
     "react-mdl": "^1.10.3",
