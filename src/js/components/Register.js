@@ -6,8 +6,11 @@ import '../../css/auth.css'
 
 export default class Register extends React.Component {
 	render() {
-		return <Dialog open={true}>
+		return <div>
 			<DialogTitle>Register</DialogTitle>
-		</Dialog>
+			<DialogActions>
+				<Link to="/">Cancel</Link>
+			</DialogActions>
+		</div>
 	}
 }

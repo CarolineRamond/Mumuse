@@ -2,8 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import Layout from './Layout'
-import Login from './Login'
-import Register from './Register'
+import Auth from './Auth'
 
 export default class App extends React.Component {
 	render() {
@@ -11,10 +10,11 @@ export default class App extends React.Component {
 			<div>
 				<Layout/>
 				<Switch>
-			      <Route path="/register" component={Register}/>
-			      <Route path="/login" component={Login}/>
+			      <Route path="/auth" component={Auth}/>
 		     	</Switch>
 	     	</div>
 	    </Router>
 	}
 }
+
+

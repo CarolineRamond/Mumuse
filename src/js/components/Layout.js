@@ -18,7 +18,7 @@ export default class Layout extends React.Component {
 			<Pannel></Pannel>
 			<Timeline></Timeline>
 			<Preview></Preview>
-				<Link to="/login">
+				<Link to="/auth/login">
 					<Tooltip title="Login" placement="bottom">
 						<Button fab mini className="auth-button">
 							<i className="material-icons">account_box</i>
