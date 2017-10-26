@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux"
+import { Link } from "react-router-dom"
 
 import Map from './Map'
 import Pannel from './Pannel'
@@ -15,6 +16,12 @@ export default class Layout extends React.Component {
 			<Pannel></Pannel>
 			<Timeline></Timeline>
 			<Preview></Preview>
+				<Link to="/login">
+					<button className="auth-button">
+						Login
+					</button>
+				</Link>
+			
 		</div>
 	}
 }
