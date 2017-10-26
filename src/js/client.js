@@ -1,12 +1,12 @@
 import React from "react"
-import "react-mdl/extra/material.js"
-import "react-mdl/extra/material.css"
 import ReactDOM from "react-dom"
 import { Provider } from "react-redux"
+import "react-mdl/extra/material.js"
+import "react-mdl/extra/material.css"
 
-import Layout from "./components/Layout"
+import App from "./components/App"
 import store from "./store"
 
 ReactDOM.render(<Provider store={store}>
-	<Layout/>
+	<App/>
 </Provider>, document.getElementById('app'));

@@ -1,7 +1,10 @@
 import React from "react";
 import { connect } from "react-redux"
+import _ from "lodash"
+import { Button } from 'react-mdl';
 
 import '../../css/pannel.css'
+import { toggleLayerMedias } from '../modules/medias/medias.actions'
 import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, getFilters } from '../modules/medias'
 
 // this is to set up component's props
@@ -14,13 +17,15 @@ import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, getFilters 
 		medias: getVisibleMedias(store.medias),
 		selectedMedias: getSelectedMedias(store.medias),
 		viewportMediaCount: getViewportMediaCount(store.medias),
+		layers: store.medias.layers
 	}
 })
 
 export default class Pannel extends React.Component {
 
-	selectMedia(media) {
-		this.props.dispatch({ type: "SELECT_MEDIA", payload: { features: [media] } });
+
+	toggleLayer(layerId) {
+		this.props.dispatch(toggleLayerMedias(layerId));
 	}
 
 	render() {
@@ -30,26 +35,46 @@ export default class Pannel extends React.Component {
 			</li>
 		});
 
+		const mappedLayers = [];
+		_.forIn(this.props.layers, (layer, layerId)=> {
+			var icon = "visibility_off";
+			if (layer.metadata.isLocked) {
+				icon = "lock";
+			} else if (layer.metadata.isShown) {
+				icon = "visibility";
+			}
+			mappedLayers.push(<div key={layerId} className="layer">
+				<Button className="layer-toggle" onClick={()=> {this.toggleLayer(layerId)}}>
+					<i className="material-icons">{icon}</i>
+				</Button>
+				{layer.metadata.name}
+			</div>);
+		});
+
 		return <div className="pannel">
-			<h3>World</h3>
+			<strong>World</strong>
 			<ul>
 				<li>Latitude: {this.props.world.lat}</li>
 				<li>Longitude: {this.props.world.long}</li>
 				<li>Zoom: {this.props.world.zoom}</li>
 			</ul>
 			<hr/>
-			<h3>Viewport Count</h3>
+			<strong>Viewport Count</strong>
 			<ul>
 				<li>Medias : {this.props.viewportMediaCount}</li>
 			</ul>
-			<h3>Visible medias</h3>
+			<strong>Visible medias</strong>
 			<ul>
 				{this.props.medias.length}
 			</ul>
-			<h3>Selected medias</h3>
+			<strong>Selected medias</strong>
 			<ul>
 				{mappedSelectedMedias}
 			</ul>
+			<strong>Layers</strong>
+			<div>
+				{mappedLayers}
+			</div>
 		</div>
 	}
 }

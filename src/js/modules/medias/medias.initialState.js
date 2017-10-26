@@ -1,10 +1,38 @@
 export default {
     sources: {
         "medias-source": {
+            // type: "geojson",
+            // data: {
+            //     type: "FeatureCollection",
+            //     "features": [{
+            //         "type": "Feature",
+            //         "geometry": {
+            //             "type": "Point",
+            //             "coordinates": [-77.03238901390978, 38.913188059745586]
+            //         },
+            //         properties: {
+            //             _id: 1
+            //         }
+            //     }, {
+            //         "type": "Feature",
+            //         "geometry": {
+            //             "type": "Point",
+            //             "coordinates": [-122.414, 37.776]
+            //         },
+            //         properties: {
+            //             _id: 2
+            //         }
+            //     }]
+            // }
             type: "vector",
             tiles: ['http://localhost:8081/userdrive/tile/{z}/{x}/{y}.pbf']
         },
         "grid-medias-source": {
+            // type: "geojson",
+            // data: {
+            //     type: "FeatureCollection",
+            //     features: []
+            // }
             type: "vector",
             tiles: ['http://localhost:8081/userdrive/tile/grid/{z}/{x}/{y}.pbf']
         },
@@ -33,6 +61,7 @@ export default {
             minzoom: 13,
             maxzoom: 24,
             metadata: {
+                name: "Medias",
                 isLocked: true,
                 isShown: false,
                 wasShownBeforeLock: true,
@@ -64,9 +93,10 @@ export default {
             minzoom: 0,
             maxzoom: 24,
             metadata: {
+                name: "Medias Grid",
                 isLocked: false,
-                isShown: false,
-                wasShownBeforeLock: false,
+                isShown: true,
+                wasShownBeforeLock: true,
                 renderedFeatures: [],
                 featureKey: "quadkey"
             }
@@ -83,9 +113,10 @@ export default {
                "circle-color": "blue"
             },
             metadata: {
+                name: "Selected Medias",
                 isLocked: false,
-                isShown: false,
-                wasShownBeforeLock: false
+                isShown: true,
+                wasShownBeforeLock: true
             }
         }
     }

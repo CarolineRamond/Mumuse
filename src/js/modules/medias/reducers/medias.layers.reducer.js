@@ -44,6 +44,25 @@ const mediasLayerReducer = (state = {}, action) => {
 	 		});
 			break;
 		}
+		case "MEDIAS_TOGGLE_LAYER": {
+			if (action.payload.layerId === state.id) {
+				return Object.assign({}, state, {
+					layout: { 
+						visibility: state.metadata.isShown ? 'none':'visible'
+					},
+					metadata: Object.assign({}, state.metadata, {
+						isShown: !state.metadata.isShown,
+						didChange: {
+							layout: { 
+								visibility: state.metadata.isShown ? 'none':'visible'
+							}
+						}
+					})
+				});
+			}
+			return defaultLayerReducer(state);
+			break;
+		}
 		case "UPDATE_FEATURES_MEDIAS-LAYER": {
 			// store rendered features in layer's metadata
 			return Object.assign({}, state, {
@@ -130,6 +149,29 @@ const mediasLayerReducer = (state = {}, action) => {
 // (density media representation, originated from vector tiles)
 const gridLayerReducer = (state = {}, action) => {
 	switch (action.type) {
+		case "MEDIAS_TOGGLE_LAYER": {
+			if (action.payload.layerId === state.id) {
+				return Object.assign({}, state, {
+					paint: Object.assign({},state.paint, {
+						"fill-opacity": Object.assign({}, state.paint["fill-opacity"], {
+		                    property: state.metadata.isShown ? "zeroMediaOpacity": "allMediaOpacity"
+		                })
+					}),
+					metadata: Object.assign({}, state.metadata, {
+						isShown: !state.metadata.isShown,
+						didChange: {
+							paint: { 
+								"fill-opacity": Object.assign({}, state.paint["fill-opacity"], {
+				                    property: state.metadata.isShown ? "zeroMediaOpacity": "allMediaOpacity"
+				                })
+							}
+						}
+					})
+				});
+			}
+			return defaultLayerReducer(state);
+			break;
+		}
 		case "UPDATE_FEATURES_GRID-MEDIAS-LAYER": {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
@@ -164,6 +206,25 @@ const gridLayerReducer = (state = {}, action) => {
 // (geojson source, containing only selected medias)
 const selectedMediasLayerReducer = (state = {}, action) => {
 	switch (action.type) {
+		case "MEDIAS_TOGGLE_LAYER": {
+			if (action.payload.layerId === state.id) {
+				return Object.assign({}, state, {
+					layout: { 
+						visibility: state.metadata.isShown ? 'none':'visible'
+					},
+					metadata: Object.assign({}, state.metadata, {
+						isShown: !state.metadata.isShown,
+						didChange: {
+							layout: { 
+								visibility: state.metadata.isShown ? 'none':'visible'
+							}
+						}
+					})
+				});
+			}
+			return defaultLayerReducer(state);
+			break;
+		}
 		default:
 			return defaultLayerReducer(state);
 	}

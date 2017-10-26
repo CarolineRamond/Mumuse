@@ -42,3 +42,12 @@ export const endDragMapMedias = (mapEvent)=> {
 	};
 }
 
+export const toggleLayerMedias = (layerId)=> {
+	return {
+		type: 'MEDIAS_TOGGLE_LAYER',
+		payload: {
+			layerId
+		}
+	};
+}
+

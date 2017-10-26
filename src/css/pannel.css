@@ -7,6 +7,12 @@
 	padding: 10px;
 }
 
-.selected {
-	border: 1px solid blue;
+.layer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.layer .material-icons {
+	margin: 8px;
 }

@@ -7,19 +7,19 @@ import reducer, { defaultInitialState } from "./modules"
 import { loadState, saveState } from "./localStorage"
 import { serializeState } from "./modules/medias"
 
-// const middleware = applyMiddleware(throttle(), promise(), logger());
-const middleware = applyMiddleware(throttle(), promise());
-const initialState = loadState() || defaultInitialState;
+const middleware = applyMiddleware(throttle(), promise(), logger());
+// const initialState = loadState() || defaultInitialState;
+const initialState = defaultInitialState;
 
 const store = createStore(reducer, initialState, middleware);
-const serialize = (state)=> {
-	return Object.assign({}, state, {
-		medias: serializeState(state.medias)
-	});
-}
+// const serialize = (state)=> {
+// 	return Object.assign({}, state, {
+// 		medias: serializeState(state.medias)
+// 	});
+// }
 
-store.subscribe(()=> {
-	saveState(serialize(store.getState()));
-});
+// store.subscribe(()=> {
+// 	saveState(serialize(store.getState()));
+// });
 
 export default store;
