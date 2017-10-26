@@ -55,7 +55,7 @@ export default class Pannel extends React.Component {
 			<strong>World</strong>
 			<ul>
 				<li>Latitude: {this.props.world.lat}</li>
-				<li>Longitude: {this.props.world.long}</li>
+				<li>Longitude: {this.props.world.lng}</li>
 				<li>Zoom: {this.props.world.zoom}</li>
 			</ul>
 			<hr/>
