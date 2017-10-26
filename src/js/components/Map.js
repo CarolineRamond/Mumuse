@@ -146,34 +146,42 @@ export default class Map extends React.Component {
 	_addViewportChangeHandling() {
 		// set up events to update viewport counts
 		// (and dispatch actions) when needed
-		_.forIn(this.props.layers, (layer)=> {
-			if (layer.metadata && layer.metadata.renderedFeatures) {
-				const getRenderedFeatures = ()=> {
-					const renderedFeatures = getUniqueFeatures(
-						this.map.queryRenderedFeatures({ layers: [layer.id] }),
-						layer.metadata.featureKey
-					);
-					this.props.dispatch(updateRenderedFeatures(layer.id, renderedFeatures, this.map.getZoom()));
-				}
-				const renderHandler = (data)=> {
-					if (this.map.isStyleLoaded() && this.map.isSourceLoaded(layer.source)) {
-						getRenderedFeatures();
-						this.map.off('render', renderHandler);
-					}
-				}
-
-				// on init : wait for a map rendering
-				// that displays item's source and layer
-				// once this rendering is done,
-				// update viewport count and cancels render listener
-				this.map.on('render', renderHandler);
-
-				// on map moveend : idem init
-				this.map.on('moveend', ()=> {
-					this.map.on('render', renderHandler);
-				});
-			}
+		this.props.config.renderedFeatures.map((item)=> {
+			const init = true;
+			this._setRenderedFeaturesHandler(item, init);
 		});
+	}
+
+	_setRenderedFeaturesHandler(item, init) {
+		const getRenderedFeatures = ()=> {
+			const renderedFeatures = getUniqueFeatures(
+				this.map.queryRenderedFeatures({ layers: item.layerIds }),
+				item.uniqueKey
+			);
+			this.props.dispatch(item.action(renderedFeatures, this.map.getZoom()));
+		}
+		const renderHandler = (data)=> {
+			if (this.map.isStyleLoaded() && this.map.isSourceLoaded(item.source)) {
+				getRenderedFeatures();
+				this.map.off('render', renderHandler);
+			}
+		}
+
+		// wait for a map rendering
+		// that displays item's source and layer
+		// once this rendering is done,
+		// update viewport count and cancels render listener
+
+		//TODO : see if we can delete previous 'render' listeners
+		// to avoid too many listeners
+		this.map.on('render', renderHandler);
+
+		// only on init : does same thing on map moveend
+		if (init) {
+			this.map.on('moveend', ()=> {
+				this.map.on('render', renderHandler);
+			});
+		}
 	}
 
 	_reloadSourcesData(nextProps) {
@@ -189,19 +197,11 @@ export default class Map extends React.Component {
 			var didChange = layer.metadata && layer.metadata.didChange || {};
 			if (didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
-				if (layer.metadata && layer.metadata.renderedFeatures) {
-					const getRenderedFeatures = ()=> {
-						const renderedFeatures = this.map.queryRenderedFeatures({ layers: [layer.id] });
-						this.props.dispatch(updateRenderedFeatures(layer.id, renderedFeatures, this.map.getZoom()));
+				this.props.config.renderedFeatures.map((item)=> {
+					if (item.layerIds.indexOf(layer.id) > -1) {
+						this._setRenderedFeaturesHandler(item);
 					}
-					const renderHandler = (data)=> {
-						if (this.map.isStyleLoaded() && this.map.isSourceLoaded(layer.source)) {
-							getRenderedFeatures();
-							this.map.off('render', renderHandler);
-						}
-					}
-					this.map.on('render', renderHandler);
-				}
+				});
 			}
 			if (didChange.zoom) {
 				this.map.setLayerZoomRange(layer.id, layer.minzoom, layer.maxzoom);
@@ -218,16 +218,6 @@ export default class Map extends React.Component {
 			}
 		});
 	}
-}
-
-function updateRenderedFeatures(layerId, features, zoom) {
-	return  {
-		type: 'UPDATE_FEATURES_' + layerId.toUpperCase(),
-		payload: { features, zoom },
-		meta: {
-			throttle: 500
-		}
-	};
 }
 
 function getUniqueFeatures(array, comparatorProperty) {

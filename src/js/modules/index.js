@@ -16,9 +16,11 @@ const defaultInitialState = {
 
 const mapEvents = mediasMapConfig.events.concat(worldMapConfig.events);
 const mapDragndrop = mediasMapConfig.dragndrop.concat(worldMapConfig.dragndrop);
+const mapRenderedFeatures = mediasMapConfig.renderedFeatures.concat(worldMapConfig.renderedFeatures);
 const mapConfig = {
 	events: mapEvents,
-	dragndrop: mapDragndrop
+	dragndrop: mapDragndrop,
+	renderedFeatures: mapRenderedFeatures
 };
 
 export { defaultInitialState, mapConfig };

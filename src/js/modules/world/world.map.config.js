@@ -11,5 +11,6 @@ export default {
             return updateWorldState(event);
         }
     }],
-    dragndrop: []
+    dragndrop: [],
+    renderedFeatures: []
 }

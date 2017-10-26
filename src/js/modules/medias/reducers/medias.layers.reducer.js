@@ -63,7 +63,7 @@ const mediasLayerReducer = (state = {}, action) => {
 			return defaultLayerReducer(state);
 			break;
 		}
-		case "UPDATE_FEATURES_MEDIAS-LAYER": {
+		case "MEDIAS_UPDATE_FEATURES": {
 			// store rendered features in layer's metadata
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
@@ -73,7 +73,7 @@ const mediasLayerReducer = (state = {}, action) => {
 			});
 			break;
 		}
-		case "UPDATE_FEATURES_GRID-MEDIAS-LAYER": {
+		case "MEDIAS_GRID_UPDATE_FEATURES": {
 			const mediaCount = action.payload.features.reduce((count, feature)=> {
 				return count + feature.properties.allMediaCount
 			}, 0);
@@ -124,7 +124,7 @@ const mediasLayerReducer = (state = {}, action) => {
 			}
 	 		break;
 		}
-		case 'TIMELINE_CHANGE': {
+		case 'MEDIAS_TIMELINE_UPDATE': {
 	 		// filter medias according to date:
 			const currentFilter = state.filter || ['all'];
 	 		const noDateFilter = currentFilter.filter((item)=> {
@@ -172,7 +172,7 @@ const gridLayerReducer = (state = {}, action) => {
 			return defaultLayerReducer(state);
 			break;
 		}
-		case "UPDATE_FEATURES_GRID-MEDIAS-LAYER": {
+		case "MEDIAS_GRID_UPDATE_FEATURES": {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
 					renderedFeatures: action.payload.features,
@@ -181,7 +181,7 @@ const gridLayerReducer = (state = {}, action) => {
 			});
 	 		break;
 		}
-		case 'TIMELINE_CHANGE': {
+		case 'MEDIAS_TIMELINE_UPDATE': {
 	 		// filter grid cells according to date 
 			const currentFilter = state.filter || ['all'];
 	 		const noDateFilter = currentFilter.filter((item)=> {

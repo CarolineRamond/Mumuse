@@ -4,7 +4,7 @@ import { Slider } from "react-mdl"
 
 import '../../css/timeline.css'
 import { getViewportMediaCount, getMediasMinDate, getTimelineValue } from '../modules/medias'
-
+import { updateTimelineMedias } from "../modules/medias/medias.actions"
 // this is to set up component's props
 // component's props will be an excerpt
 // of the store
@@ -33,7 +33,7 @@ export default class Timeline extends React.Component {
 		this.setState({
 			value: parseInt(event.target.value)
 		});
-		this.props.dispatch({ type: 'TIMELINE_CHANGE', payload: { value: parseInt(event.target.value) } });
+		this.props.dispatch(updateTimelineMedias(parseInt(event.target.value)));
 	}
 
 	componentWillReceiveProps(nextProps) {

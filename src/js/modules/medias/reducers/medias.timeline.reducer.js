@@ -1,6 +1,6 @@
 const timelineReducer = (state = Date.now(), action) => {
 	switch (action.type) {
-		case "TIMELINE_CHANGE": {
+		case "MEDIAS_TIMELINE_UPDATE": {
 			return action.payload.value;
 			break;
 		}

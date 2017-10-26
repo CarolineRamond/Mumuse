@@ -1,4 +1,6 @@
-import { selectMapMedias, deselectMapMedias, startDragMapMedias, dragMapMedias, endDragMapMedias } from './medias.actions';
+import { selectMapMedias, deselectMapMedias, 
+    startDragMapMedias, dragMapMedias, endDragMapMedias, 
+    updateFeaturesMedias, updateFeaturesGridMedias } from './medias.actions';
 
 export default {
     // events contain all event handlers except dragndrop
@@ -19,5 +21,16 @@ export default {
         mousedown: startDragMapMedias,
         mousemove: dragMapMedias,
         mouseup: endDragMapMedias
+    }],
+    renderedFeatures: [{
+        layerIds: ["medias-layer"],
+        source: "medias-source",
+        uniqueKey: "_id",
+        action: updateFeaturesMedias
+    }, {
+        layerIds: ["grid-medias-layer"],
+        source: "grid-medias-source",
+        uniqueKey: "quadkey",
+        action: updateFeaturesGridMedias
     }]
 }
