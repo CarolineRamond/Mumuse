@@ -16,6 +16,19 @@ const Login = ({ match })=> {
 		</div>
 		<div className="auth-pannel-content">
 			<div className="auth-pannel-form">
+
+				<FormControl classes={{root:"auth-pannel-form-item"}}>
+		          <InputLabel htmlFor="name-helper">Email</InputLabel>
+		          <Input id="name-helper"/>
+		          <FormHelperText>Some important helper text</FormHelperText>
+		        </FormControl>
+
+		        <FormControl>
+                  <InputLabel htmlFor="pwd-helper">Password</InputLabel>
+                  <Input id="pwd-helper"/>
+                  <FormHelperText>Some important helper text</FormHelperText>
+                </FormControl>
+
 			</div>
 			<div className="auth-pannel-links">
 				<Link to={registerUrl}>Create an Account</Link>

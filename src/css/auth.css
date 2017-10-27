@@ -14,7 +14,7 @@
 .auth-pannel-container {
 	background-color:white;
 	width: 400px;
-	height: 400px;
+	height: 500px;
 	display: flex;
 	flex-direction: column;
 }
@@ -49,6 +49,10 @@
 	flex-direction:column;
 	flex-grow: 1;
 	padding: 10px;
+}
+
+.auth-pannel-form .auth-pannel-form-item {
+	min-width: 300px;
 }
 
 .auth-pannel-links {
