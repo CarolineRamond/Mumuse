@@ -1,22 +1,12 @@
 export default {
     sources: {
         "medias-source": {
-            // type: "vector",
-            // tiles: ['http://localhost:8081/userdrive/tile/{z}/{x}/{y}.pbf']
-            type: "geojson",
-            data: {
-                type: "FeatureCollection",
-                features: []
-            }
+            type: "vector",
+            tiles: ['http://localhost:8081/userdrive/tile/{z}/{x}/{y}.pbf']
         },
         "grid-medias-source": {
-            // type: "vector",
-            // tiles: ['http://localhost:8081/userdrive/tile/grid/{z}/{x}/{y}.pbf']
-            type: "geojson",
-            data: {
-                type: "FeatureCollection",
-                features: []
-            }
+            type: "vector",
+            tiles: ['http://localhost:8081/userdrive/tile/grid/{z}/{x}/{y}.pbf']
         },
         "selected-medias-source": {
             type: "geojson",
@@ -31,7 +21,7 @@ export default {
             id: "medias-layer",
             type: "circle",
             source: "medias-source",
-            // "source-layer": "user-space-tile-media-source",
+            "source-layer": "user-space-tile-media-source",
             layout: {
                visibility: "visible"
             },
@@ -55,7 +45,7 @@ export default {
             id: "grid-medias-layer",
             type: "fill",
             source: "grid-medias-source",
-            // "source-layer": "user-space-grid-tile-media-source",
+            "source-layer": "user-space-grid-tile-media-source",
             layout: {
                visibility: "visible"
             },

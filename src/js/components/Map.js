@@ -32,6 +32,8 @@ import '../../css/map.css'
 
 export default class Map extends React.Component {
 
+	renderHandlers = {}
+
 	componentDidMount() {
 		const { lat, lng, zoom } = this.props.world;
 		this.map = new mapboxgl.Map({
@@ -153,33 +155,38 @@ export default class Map extends React.Component {
 	}
 
 	_setRenderedFeaturesHandler(item, init) {
-		const getRenderedFeatures = ()=> {
-			const renderedFeatures = getUniqueFeatures(
-				this.map.queryRenderedFeatures({ layers: item.layerIds }),
-				item.uniqueKey
-			);
-			this.props.dispatch(item.action(renderedFeatures, this.map.getZoom()));
-		}
-		const renderHandler = (data)=> {
-			if (this.map.isStyleLoaded() && this.map.isSourceLoaded(item.source)) {
-				getRenderedFeatures();
-				this.map.off('render', renderHandler);
+		if (!this.renderHandlers[item.layerIds.toString()]) {
+			// register handler into this.renderHandlers
+			// this will allow render listeners to be deleted
+			// before being put back
+			const getRenderedFeatures = ()=> {
+				const renderedFeatures = getUniqueFeatures(
+					this.map.queryRenderedFeatures({ layers: item.layerIds }),
+					item.uniqueKey
+				);
+				this.props.dispatch(item.action(renderedFeatures, this.map.getZoom()));
 			}
+			const renderHandler = (data)=> {
+				if (this.map.isStyleLoaded() && this.map.isSourceLoaded(item.source)) {
+					getRenderedFeatures();
+					this.map.off('render', renderHandler);
+				}
+			}
+			this.renderHandlers[item.layerIds.toString()] = renderHandler;
 		}
+		
 
 		// wait for a map rendering
 		// that displays item's source and layer
 		// once this rendering is done,
 		// update viewport count and cancels render listener
-
-		//TODO : see if we can delete previous 'render' listeners
-		// to avoid too many listeners
-		this.map.on('render', renderHandler);
+		this.map.off('render', this.renderHandlers[item.layerIds.toString()]);
+		this.map.on('render', this.renderHandlers[item.layerIds.toString()]);
 
 		// only on init : does same thing on map moveend
 		if (init) {
 			this.map.on('moveend', ()=> {
-				this.map.on('render', renderHandler);
+				this.map.on('render', this.renderHandlers[item.layerIds.toString()]);
 			});
 		}
 	}
