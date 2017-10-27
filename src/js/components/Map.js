@@ -159,6 +159,8 @@ export default class Map extends React.Component {
 			// register handler into this.renderHandlers
 			// this will allow render listeners to be deleted
 			// before being put back
+			// => there is at most one listener per renderedFeatures item
+			// at any time
 			const getRenderedFeatures = ()=> {
 				const renderedFeatures = getUniqueFeatures(
 					this.map.queryRenderedFeatures({ layers: item.layerIds }),

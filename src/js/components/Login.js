@@ -5,15 +5,17 @@ import Dialog, { DialogTitle, DialogContent, DialogActions } from 'material-ui/D
 import Input, { InputLabel } from 'material-ui/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 
-import '../../css/auth.css'
 
-export default class Login extends React.Component {
-	render() {
-		return <DialogTitle>
-			<div>Login</div>
-			<div>
-				or <Link to="/auth/register">Create an Account</Link>
-			</div>
-		</DialogTitle>
-	}
+const Login = ({ match })=> {
+	const url = match.url.split('/');
+	const registerUrl = url.slice(0, url.length-1).concat('register').join('/');
+	return <h3>
+		<div>Login</div>
+		<div>
+			or <Link to={registerUrl}>Create an Account</Link>
+		</div>
+		<Link to="/">Cancel</Link>
+	</h3>
 }
+
+export default Login;

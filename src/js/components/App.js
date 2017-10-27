@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom'
 
 import Layout from './Layout'
 import Auth from './Auth'
@@ -16,5 +16,3 @@ export default class App extends React.Component {
 	    </Router>
 	}
 }
-
-
