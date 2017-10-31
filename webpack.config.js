@@ -1,3 +1,4 @@
+const debug = process.env.NODE_ENV !== "production";
 const path = require('path');
 const webpack = require('webpack');
 
@@ -20,17 +21,12 @@ const settings = {
   module: {
     rules: [
       {
-        test: /\.js?$/,
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
         loader: 'babel-loader',
         options: {
-          presets: [
-            ["es2015", { modules: false }],
-            "stage-2",
-            "react"
-          ],
-          plugins: [
-            "transform-node-env-inline"
-          ],
+          presets: ['react', 'es2015'],
+          plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy'],
           env: {
             development: {
               plugins: ["react-hot-loader/babel"]
@@ -40,6 +36,7 @@ const settings = {
       },
       {
         test: /\.css$/,
+        exclude: /mapbox-gl\.css/,
         use: [
           "style-loader",
           {
@@ -54,22 +51,29 @@ const settings = {
           "postcss-loader" // has separate config, see postcss.config.js nearby
         ]
       },
+      {
+        test: /mapbox-gl\.css$/,
+        use: [
+          "style-loader",
+          "css-loader"
+        ]
+      },
     ]
   },
   devServer: {
     contentBase: path.resolve("src/www"),
-    publicPath: "http://localhost:8080/", // full URL is necessary for Hot Module Replacement if additional path will be added.
-    quiet: false,
-    hot: true,
     historyApiFallback: true,
-    inline: true
+    port: 8081,
+    proxy: {
+      '/userdrive': {
+        target: 'http://localhost:9000'
+      }
+    }
   },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(),
-    new webpack.LoaderOptionsPlugin({
-      debug: true
-    }),
+  plugins: debug ? [] : [
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
   ],
 };
 

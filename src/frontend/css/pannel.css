@@ -1,0 +1,18 @@
+.pannel {
+	position:absolute;
+	z-index: 1;
+	top: 0;
+	right: 0;
+	background-color: rgba(255,255,255,0.8);
+	padding: 10px;
+}
+
+.layer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.layer .material-icons {
+	margin: 8px;
+}
