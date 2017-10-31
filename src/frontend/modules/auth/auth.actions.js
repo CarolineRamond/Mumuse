@@ -14,9 +14,23 @@ export function login(form) {
 	}
 }
 
+export function register(form) {
+	return { 
+		type: "REGISTER", 
+		payload: axios.post('/userdrive/auth/register', form)
+	}
+}
+
 export function logout() {
 	return { 
 		type: "LOGOUT", 
 		payload: axios.get('/userdrive/auth/logout')
+	}
+}
+
+export function forgotPassword(form) {
+	return { 
+		type: "FORGOT_PASSWORD", 
+		payload: axios.post('/userdrive/auth/forgot', form)
 	}
 }

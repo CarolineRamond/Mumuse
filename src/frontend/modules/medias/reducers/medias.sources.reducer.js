@@ -8,6 +8,40 @@ const defaultSourceReducer = (state) => {
 	});
 }
 
+const mediasSourceReducer = (state = {}, action) => {
+	switch (action.type) {
+		case 'LOGOUT_FULFILLED':
+		case 'FETCH_USER_FULFILLED':
+		case 'LOGIN_FULFILLED': {
+			return Object.assign({}, state, {
+				metadata: Object.assign({}, state.metadata, {
+					didChange: true
+				})
+			});
+			break;
+		}
+		default:
+			return defaultSourceReducer(state);
+	}
+}
+
+const gridMediasSourceReducer = (state = {}, action) => {
+	switch (action.type) {
+		case 'LOGOUT_FULFILLED':
+		case 'FETCH_USER_FULFILLED':
+		case 'LOGIN_FULFILLED': {
+			return Object.assign({}, state, {
+				metadata: Object.assign({}, state.metadata, {
+					didChange: true
+				})
+			});
+			break;
+		}
+		default:
+			return defaultSourceReducer(state);
+	}
+}
+
 // Reducer for selected medias source
 // (geojson source representing selected medias)
 const selectedMediasSourceReducer = (state = {}, action) => {
@@ -83,7 +117,7 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 }
 
 export default combineReducers({
-	'medias-source': defaultSourceReducer,
-	'grid-medias-source': defaultSourceReducer,
+	'medias-source': mediasSourceReducer,
+	'grid-medias-source': gridMediasSourceReducer,
 	'selected-medias-source': selectedMediasSourceReducer
 });

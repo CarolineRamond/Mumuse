@@ -43,6 +43,11 @@
 	flex-grow: 1;
 }
 
+.authPannelError {
+	color:red;
+	padding: 10px;
+}
+
 .authPannelForm {
 	min-height: 0;
 	display: flex;

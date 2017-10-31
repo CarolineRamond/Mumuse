@@ -193,8 +193,14 @@ export default class Map extends React.Component {
 
 	_reloadSourcesData(nextProps) {
 		_.forIn(nextProps.sources, (source, sourceId)=> {
-			if (source.metadata && source.metadata.didChange) {
-				this.map.getSource(sourceId).setData(source.data);
+			if (source.metadata && source.metadata.didChange && this.map.getSource(sourceId)) {
+				if (source.type === "geojson") {
+					this.map.getSource(sourceId).setData(source.data);
+				}
+				if (source.type === "vector") {
+					this.map.removeSource(sourceId);
+					this.map.addSource(sourceId, _.omit(source, ['metadata']));
+				}
 			}
 		});
 	}

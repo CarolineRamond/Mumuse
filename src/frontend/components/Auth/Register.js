@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux"
 import { Link } from "react-router-dom"
 import Button from "react-toolbox/lib/button"
 import Input from "react-toolbox/lib/input"
@@ -6,6 +7,13 @@ import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
 
 import styles from '../../css/auth.css'
+import { register } from '../../modules/auth/auth.actions'
+
+@connect((store)=> {
+	return {
+		serverError: store.auth.registerError
+	}
+})
 
 class Register extends React.Component {
 
@@ -31,6 +39,7 @@ class Register extends React.Component {
 			confirmPasswordValid: false,
 			formValid: false
 		};
+		this.register = this.register.bind(this);
 	}
 
 	handleUserInput(name, value) {
@@ -113,7 +122,12 @@ class Register extends React.Component {
 	}
 
 	register() {
-		console.log('REGISTER');
+		this.props.dispatch(register({
+			firstname: this.state.firstname,
+			lastname: this.state.lastname,
+			email: this.state.email,
+			password: this.state.password
+		}));
 	}
 
 	render() {

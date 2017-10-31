@@ -13,7 +13,7 @@ import { logout } from '../modules/auth/auth.actions'
 
 @connect((store)=> {
 	return {
-		auth: store.auth
+		user: store.auth.user
 	}
 })
 
@@ -30,7 +30,7 @@ export default class Layout extends React.Component {
 
 	render() {
 		var authButton;
-		if (this.props.auth) {
+		if (this.props.user) {
 			authButton = <Button icon='directions_run' onClick={this.logout}
 				floating className={styles.authButton}/>
 		} else {

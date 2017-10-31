@@ -11,7 +11,8 @@ import { login } from '../../modules/auth/auth.actions'
 
 @connect((store)=> {
 	return {
-		auth: store.auth
+		user: store.auth.user,
+		serverError: store.auth.loginError
 	}
 })
 
@@ -76,12 +77,18 @@ class Login extends React.Component {
 
 
  	render () {
- 		if (this.props.auth) {
+ 		if (this.props.user) {
  			return <Redirect to="/"/>
  		} else {
 			const url = this.props.match.url.split('/');
 			const registerUrl = url.slice(0, url.length-1).concat('register').join('/');
 			const forgotUrl = url.slice(0, url.length-1).concat('forgot').join('/');
+			var errorMessage = <div></div>;
+			if (this.props.serverError) {
+				errorMessage = <div className={styles.authPannelError}>
+					Error : bad username or password
+				</div>
+			} 
 
 			return <div className={styles.authPannel}>
 				<div className={styles.authPannelTitle}>
@@ -89,6 +96,7 @@ class Login extends React.Component {
 				</div>
 				<div className={styles.authPannelContent}>
 					<div className={styles.authPannelForm}>
+						{errorMessage}
 
 						<Input type='text' label='Email' name='email'
 							required 
