@@ -1,22 +1,37 @@
-import React from "react"
+import React from 'react'
 import ReactDOM from "react-dom"
 import { Provider } from "react-redux"
-import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom'
-
-import store from "./store"
+import { CSSTransitionGroup } from 'react-transition-group'
+import { HashRouter as Router, Route, Switch } from 'react-router-dom'
+import styles from './css/test.css'
 import Layout from './components/Layout'
 import Auth from './components/Auth'
+import store from "./store"
 
-const App = ()=>(
+const App = () => (
   <Router>
-    <div>
-      <Layout/>
-      <Switch>
-        <Route path="/auth" component={Auth}/>
-      </Switch>
-    </div>
+    <Route render={({ location }) => (
+    	<div>
+	        <Layout/>
+	        <CSSTransitionGroup
+	            transitionName={{
+					enter: styles.enter,
+				    enterActive: styles.enterActive,
+				    leave: styles.leave,
+				    leaveActive: styles.leaveActive,
+	            }}
+	            transitionEnterTimeout={300}
+	            transitionLeaveTimeout={300}
+	        >
+        		<Switch key={location.pathname} location={location}>
+		            <Route path="/auth" component={Auth}/>
+	        	</Switch>
+		    </CSSTransitionGroup>
+        </div>
+    )}/>
   </Router>
 )
+
 
 ReactDOM.render(<Provider store={store}>
   <App/>
