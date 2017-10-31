@@ -1,11 +1,19 @@
 import React from "react";
-import { Link } from "react-router-dom"
+import { connect } from "react-redux"
+import { Link, Redirect } from "react-router-dom"
 import Button from "react-toolbox/lib/button"
 import Input from 'react-toolbox/lib/input';
 import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
 
 import styles from '../../css/auth.css'
+import { login } from '../../modules/auth/auth.actions'
+
+@connect((store)=> {
+	return {
+		auth: store.auth
+	}
+})
 
 class Login extends React.Component {
 	constructor(props) {
@@ -18,6 +26,8 @@ class Login extends React.Component {
 			passwordValid: false,
 			formValid: false
 		};
+
+		this.login = this.login.bind(this);
 	}
 
 	handleUserInput(name, value) {
@@ -58,50 +68,57 @@ class Login extends React.Component {
 	}
 
 	login() {
-		console.log('LOGIN');
+		this.props.dispatch(login({
+			email: this.state.email,
+			password: this.state.password
+		}));
 	}
 
 
  	render () {
-		const url = this.props.match.url.split('/');
-		const registerUrl = url.slice(0, url.length-1).concat('register').join('/');
-		const forgotUrl = url.slice(0, url.length-1).concat('forgot').join('/');
+ 		if (this.props.auth) {
+ 			return <Redirect to="/"/>
+ 		} else {
+			const url = this.props.match.url.split('/');
+			const registerUrl = url.slice(0, url.length-1).concat('register').join('/');
+			const forgotUrl = url.slice(0, url.length-1).concat('forgot').join('/');
 
-		return <div className={styles.authPannel}>
-			<div className={styles.authPannelTitle}>
-				Login
-			</div>
-			<div className={styles.authPannelContent}>
-				<div className={styles.authPannelForm}>
-
-					<Input type='text' label='Email' name='email'
-						required 
-						value={this.state.email}
-						error={this.state.formErrors.email}
-						onChange={this.handleUserInput.bind(this, 'email')}/>
-
-					<Input type='password' label='Password' name='password'
-						required 
-						value={this.state.password}
-						error={this.state.formErrors.password}
-						onChange={this.handleUserInput.bind(this, 'password')}/>
-
-				</div>
-				<div className={styles.authPannelLinks}>
-					<Link to={registerUrl}>Create an Account</Link>
-					<Link to={forgotUrl}>Forgot your password ?</Link>
-				</div>
-			</div>
-			<div className={styles.authPannelActions}>
-				<Button primary disabled={!this.state.formValid}
-					onClick={this.login}>
+			return <div className={styles.authPannel}>
+				<div className={styles.authPannelTitle}>
 					Login
-				</Button>
-				<Link to="/">
-					<Button>Cancel</Button>
-				</Link>
+				</div>
+				<div className={styles.authPannelContent}>
+					<div className={styles.authPannelForm}>
+
+						<Input type='text' label='Email' name='email'
+							required 
+							value={this.state.email}
+							error={this.state.formErrors.email}
+							onChange={this.handleUserInput.bind(this, 'email')}/>
+
+						<Input type='password' label='Password' name='password'
+							required 
+							value={this.state.password}
+							error={this.state.formErrors.password}
+							onChange={this.handleUserInput.bind(this, 'password')}/>
+
+					</div>
+					<div className={styles.authPannelLinks}>
+						<Link to={registerUrl}>Create an Account</Link>
+						<Link to={forgotUrl}>Forgot your password ?</Link>
+					</div>
+				</div>
+				<div className={styles.authPannelActions}>
+					<Button primary disabled={!this.state.formValid}
+						onClick={this.login}>
+						Login
+					</Button>
+					<Link to="/">
+						<Button>Cancel</Button>
+					</Link>
+				</div>
 			</div>
-		</div>
+		}
 	}
 }
 

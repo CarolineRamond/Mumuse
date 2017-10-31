@@ -14,10 +14,10 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1N
 	var layers = {};
 
 	_.forIn(store, (item, key)=> {
-		if (item.sources) {
+		if (item && item.sources) {
 			sources = _.extend(sources, item.sources);
 		}
-		if (item.layers) {
+		if (item && item.layers) {
 			layers = _.extend(layers, item.layers);
 		}
 	});

@@ -4,9 +4,12 @@ import promise from "redux-promise-middleware"
 import throttle from "redux-throttle"
 
 import reducer, { defaultInitialState } from "./modules"
-import { serializeState } from "./modules/medias"
+import { fetchUser } from "./modules/auth/auth.actions"
 
 const middleware = applyMiddleware(throttle(), promise(), createLogger());
 
 const store = createStore(reducer, defaultInitialState, middleware);
+store.dispatch(fetchUser());
+
+
 export default store;

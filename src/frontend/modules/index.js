@@ -2,10 +2,12 @@ import { combineReducers } from "redux";
 
 import mediasReducer, { mediasInitialState, mediasMapConfig } from './medias';
 import worldReducer, { worldInitialState, worldMapConfig } from './world';
+import authReducer from './auth';
 
 const reducer = combineReducers({
 	world: worldReducer,
-	medias: mediasReducer
+	medias: mediasReducer,
+	auth: authReducer
 });
 export default reducer;
 

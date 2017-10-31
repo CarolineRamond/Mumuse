@@ -4,7 +4,6 @@ import Button from "react-toolbox/lib/button"
 import Input from "react-toolbox/lib/input"
 import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
-import contains from 'validator/lib/contains'
 
 import styles from '../../css/auth.css'
 
@@ -62,8 +61,28 @@ class Register extends React.Component {
 		    	fieldValidationErrors.email = emailValid ? '' : 'Email is invalid';
 		    	break;
 		    case 'password':
-	    		passwordValid = isLength(value, { min: 8 });
-	    		fieldValidationErrors.password = passwordValid ? '': 'Password is too short';
+		    	fieldValidationErrors.password = [];
+		    	passwordValid = true;
+		    	if (!isLength(value, { min: 8 })) {
+		    		passwordValid = false;
+		    		fieldValidationErrors.password.push('Password is too short');
+		    	}
+		    	if (!/\d/.test(value)) {
+		    		passwordValid = false;
+		    		fieldValidationErrors.password.push('Password should contain at least one number');
+		    	}
+		    	if (!/[a-z]/.test(value)) {
+		    		passwordValid = false;
+		    		fieldValidationErrors.password.push('Password should contain at least one lowercase character');
+		    	}
+		    	if (!/[A-Z]/.test(value)) {
+		    		passwordValid = false;
+		    		fieldValidationErrors.password.push('Password should contain at least one uppercase character');
+		    	}
+		    	if (!/[$&+,:;=?@#|'<>.^*()%!-]/.test(value)) {
+		    		passwordValid = false;
+		    		fieldValidationErrors.password.push('Password should contain at least one special character (*,!,etc)');
+		    	}
 		    	break;
     	    case 'confirmPassword':
         		confirmPasswordValid = (this.state.password === value);
