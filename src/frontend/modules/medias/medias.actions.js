@@ -8,6 +8,16 @@ export const selectMapMedias = (mapEvent)=> {
 	};
 };
 
+export const selectCarouselMedias = (features, ctrlKey)=> {
+	return { 
+		type: 'MEDIAS_CAROUSEL_SELECT', 
+		payload: { 
+			features: features,
+			ctrlKey: ctrlKey
+		}
+	};
+};
+
 export const deselectMapMedias = (mapEvent)=> {
 	return { 
 		type: 'MEDIAS_MAP_DESELECT', 

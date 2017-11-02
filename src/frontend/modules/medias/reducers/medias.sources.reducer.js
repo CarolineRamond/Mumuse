@@ -73,6 +73,23 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 	 		});
 			break;
 		}
+		case "MEDIAS_CAROUSEL_SELECT": {
+			var newFeatures;
+			if (action.payload.ctrlKey) {
+				newFeatures = state.data.features.concat(action.payload.features);
+			} else {
+				newFeatures = action.payload.features;
+			}
+	 		return Object.assign({}, state, {
+				data: Object.assign({}, state.data, {
+					features: newFeatures
+				}),
+				metadata: Object.assign({}, state.metadata, {
+					didChange: true
+				})
+			});
+			break;
+		}
 		case "MEDIAS_MAP_START_DRAG": {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, { 

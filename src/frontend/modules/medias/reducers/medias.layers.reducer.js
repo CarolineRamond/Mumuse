@@ -44,6 +44,30 @@ const mediasLayerReducer = (state = {}, action) => {
 	 		});
 			break;
 		}
+		case "MEDIAS_CAROUSEL_SELECT": {
+			var newFilter = state.filter || ['all'];
+			if (!action.payload.ctrlKey) {
+				// remove selected medias filter
+		 		newFilter = state.filter.filter((item)=> {
+		 			return (item.indexOf('_id') === -1);
+		 		});
+			}
+
+			// filter out selected medias
+			const selectedIds = action.payload.features.map((feature)=> {
+				return feature.properties._id;
+			});
+			const filterToAdd = ['!in', '_id'].concat(selectedIds);
+			const currentFilter = newFilter || ['all'];
+	 		
+	 		return Object.assign({}, state, {
+				filter: currentFilter.concat([filterToAdd]),
+				metadata: Object.assign({}, state.metadata, {
+					didChange: { filter: true }
+	 			})
+	 		});
+			break;
+		}
 		case "MEDIAS_TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {
 				return Object.assign({}, state, {
