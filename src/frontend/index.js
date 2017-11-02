@@ -11,9 +11,9 @@ import store from "./store"
 const App = () => (
   <Router>
   	<Switch>
-	    <Route path="/:loc" render={({ location }) => {
+	    <Route path="/:loc" render={({ history, location }) => {
 	    	return <div>
-		        <Layout location={location}/>
+		        <Layout location={location} history={history}/>
 		        <CSSTransitionGroup
 		            transitionName={{
 						enter: styles.enter,

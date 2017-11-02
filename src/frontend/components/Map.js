@@ -1,6 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { connect } from "react-redux"
+import withRouter from "react-router-dom"
 import mapboxgl from "mapbox-gl"
 import 'mapbox-gl/dist/mapbox-gl.css'
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1NXZxa2sifQ.hgPcQvgkzpfYkHgfMRqcpw';
@@ -146,6 +147,14 @@ export default class Map extends React.Component {
 	}
 
 	_addViewportChangeHandling() {
+		// update window location on moveend
+		this.map.on('moveend', (e)=> {
+			const { lng, lat } = this.map.getCenter();
+			const zoom = this.map.getZoom();
+			const newLocation = '/' + [lng, lat, zoom].join(',');
+			this.props.history.replace(newLocation);
+		});
+
 		// set up events to update viewport counts
 		// (and dispatch actions) when needed
 		this.props.config.renderedFeatures.map((item)=> {
