@@ -34,10 +34,11 @@ export default class Pannel extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-    	console.log(this.props.medias.length + 'vs ' + nextProps.medias.length);
-    	var diff = this.props.medias.length - nextProps.medias.length
-    	if (Math.abs(diff) > 1) {
-    		console.log('RELOAD THUMBNAILS');
+    	var diffLat = Math.abs(this.props.world.lat - nextProps.world.lat);
+    	var diffLng = Math.abs(this.props.world.lng - nextProps.world.lng);
+    	var diffZoom = Math.abs(this.props.world.zoom - nextProps.world.zoom);
+    	if ((this.props.medias.length === 0 && nextProps.medias.length > 0) ||
+    		diffLat > 0 || diffLng > 0 || diffZoom > 0) {
     		this.setState({
 	    		thumbnails: [],
 	    		hasMore: nextProps.medias.length > 0
@@ -47,7 +48,6 @@ export default class Pannel extends React.Component {
 
     loadThumbnails() {
     	const n = this.state.thumbnails.length;
-    	console.log("LOAD THUMBNAILS ", n);
     	if (this.state.hasMore) {
     		const newSlice = this.props.medias.slice(n, n + 10);
 			this.setState({

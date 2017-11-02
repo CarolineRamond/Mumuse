@@ -4,7 +4,11 @@ export default {
     // events contain all event handlers except dragndrop
     // events listeners are added sequentially on map load
     // dragndrop listeners are set up another way (cf Map component)
-    events: [],
+    events: [{
+    	type: 'moveend',
+        layer: null,
+        action: updateWorldState
+    }],
     dragndrop: [],
     renderedFeatures: []
 }
