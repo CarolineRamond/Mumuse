@@ -54,6 +54,8 @@ class ForgotPassword extends React.Component {
 
 
  	render () {
+ 		const url = this.props.match.url.split('/');
+		const rootUrl = url.slice(0, url.length-2).join('/');
 		return <div className={styles.authPannel}>
 			<div className={styles.authPannelTitle}>
 				Forgot Password
@@ -76,7 +78,7 @@ class ForgotPassword extends React.Component {
 					onClick={this.submit}>
 					Ok
 				</Button>
-				<Link to="/">
+				<Link to={rootUrl}>
 					<Button>Cancel</Button>
 				</Link>
 			</div>

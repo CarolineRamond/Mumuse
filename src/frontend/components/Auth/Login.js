@@ -77,12 +77,13 @@ class Login extends React.Component {
 
 
  	render () {
+ 		const url = this.props.match.url.split('/');
+		const rootUrl = url.slice(0, url.length-2).join('/');
+ 		const registerUrl = url.slice(0, url.length-1).concat('register').join('/');
+		const forgotUrl = url.slice(0, url.length-1).concat('forgot').join('/');		
  		if (this.props.user) {
- 			return <Redirect to="/"/>
+ 			return <Redirect to={rootUrl}/>
  		} else {
-			const url = this.props.match.url.split('/');
-			const registerUrl = url.slice(0, url.length-1).concat('register').join('/');
-			const forgotUrl = url.slice(0, url.length-1).concat('forgot').join('/');
 			var errorMessage = <div></div>;
 			if (this.props.serverError) {
 				errorMessage = <div className={styles.authPannelError}>
@@ -121,7 +122,7 @@ class Login extends React.Component {
 						onClick={this.login}>
 						Login
 					</Button>
-					<Link to="/">
+					<Link to={rootUrl}>
 						<Button>Cancel</Button>
 					</Link>
 				</div>

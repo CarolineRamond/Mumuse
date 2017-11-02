@@ -131,6 +131,8 @@ class Register extends React.Component {
 	}
 
 	render() {
+		const url = this.props.match.url.split('/');
+		const rootUrl = url.slice(0, url.length-2).join('/');
 		var errorMessage = <div></div>;
 		if (this.props.serverError) {
 			errorMessage = <div className={styles.authPannelError}>
@@ -182,7 +184,7 @@ class Register extends React.Component {
 					onClick={this.register}>
 					Register
 				</Button>
-				<Link to="/">
+				<Link to={rootUrl}>
 					<Button>Cancel</Button>
 				</Link>
 			</div>
