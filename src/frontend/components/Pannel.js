@@ -34,22 +34,23 @@ export default class Pannel extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-    	this.setState({
-    		thumbnails: [],
-    		hasMore: nextProps.medias.length > 0
-    	});
+    	console.log(this.props.medias.length + 'vs ' + nextProps.medias.length);
+    	var diff = this.props.medias.length - nextProps.medias.length
+    	if (Math.abs(diff) > 1) {
+    		console.log('RELOAD THUMBNAILS');
+    		this.setState({
+	    		thumbnails: [],
+	    		hasMore: nextProps.medias.length > 0
+	    	});
+    	}
     }
 
     loadThumbnails() {
-    	console.log("LOAD THUMBNAILS");
-    	console.log(this.state);
     	const n = this.state.thumbnails.length;
+    	console.log("LOAD THUMBNAILS ", n);
     	if (this.state.hasMore) {
-    		console.log('coucou')
-    		console.log(this.props.medias);
-    		const newSlice = this.props.medias.slice(n, n+10);
-    		console.log(newSlice);
-    		this.setState({
+    		const newSlice = this.props.medias.slice(n, n + 10);
+			this.setState({
     			thumbnails: this.state.thumbnails.concat(newSlice),
     			hasMore: this.props.medias.length > n + 10
     		});
@@ -79,8 +80,11 @@ export default class Pannel extends React.Component {
 		var mappedThumbnails = [];
         this.state.thumbnails.map((thumbnail, i) => {
             mappedThumbnails.push(
-                <img className={styles.thumbnail} key={i}
+            	<div className={styles.thumbnail} key={i}>
+                	<img className={styles.thumbnail} key={i}
                     src="http://wskg.org/wp-content/uploads/2017/06/BIP20150609A01_BP-0564.jpg"/>
+            		<div style={{position:"absolute", color: "white", top: "20%", left: "50%"}}>{i}</div>
+            	</div>
             );
         });
 
@@ -91,13 +95,16 @@ export default class Pannel extends React.Component {
 			</div>
 			<hr/>
 			<strong>Medias</strong>
-			<InfiniteScroll className={styles.infiniteScroll}
-			    pageStart={0}
-			    loadMore={this.loadThumbnails}
-			    hasMore={this.state.hasMore}
-			    loader={<div className="loader">Loading ...</div>}>
-			  {mappedThumbnails}
-			</InfiniteScroll>
+			<div className={styles.infiniteScrollContainer}>
+				<InfiniteScroll className={styles.infiniteScroll}
+				    pageStart={0}
+				    loadMore={this.loadThumbnails}
+				    hasMore={this.state.hasMore}
+				    useWindow={false}
+				    loader={<div className="loader">Loading ...</div>}>
+				  {mappedThumbnails}
+				</InfiniteScroll>
+			</div>
 		</div>
 	}
 }
