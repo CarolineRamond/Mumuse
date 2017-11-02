@@ -34,11 +34,9 @@ export default class Pannel extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-    	var diffLat = Math.abs(this.props.world.lat - nextProps.world.lat);
-    	var diffLng = Math.abs(this.props.world.lng - nextProps.world.lng);
-    	var diffZoom = Math.abs(this.props.world.zoom - nextProps.world.zoom);
-    	if ((this.props.medias.length === 0 && nextProps.medias.length > 0) ||
-    		diffLat > 0 || diffLng > 0 || diffZoom > 0) {
+    	const diffMedias = Math.abs(this.props.medias.length - nextProps.medias.length);
+    	if (diffMedias > 0) {
+    		// visible medias changed : reload thumbnails
     		this.setState({
 	    		thumbnails: [],
 	    		hasMore: nextProps.medias.length > 0
