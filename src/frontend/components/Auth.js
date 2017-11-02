@@ -6,18 +6,17 @@ import Register from './Auth/Register'
 import ForgotPassword from './Auth/ForgotPassword'
 import { authBackground, authPannelContainer } from '../css/auth.css'
 
-const Auth = ({ match })=> (
-	<div className={authBackground}>
+const Auth = ({ location, match })=> {
+	return <div className={authBackground}>
 		<div className={authPannelContainer}>
 			<Switch>
-				<Route exact path={`${match.url}/register`} component={Register}/>
-				<Route exact path={`${match.url}/login`} component={Login}/>
-				<Route exact path={`${match.url}/forgot`} component={ForgotPassword}/>
-				<Redirect to={`${match.url}/login`}/>
+				<Route path="/:loc/auth/register" component={Register}/>
+				<Route path="/:loc/auth/login" component={Login}/>
+				<Route path="/:loc/auth/forgot" component={ForgotPassword}/>
 			</Switch>
 	    </div>
     </div>
-)
+}
 
 export default Auth;
 

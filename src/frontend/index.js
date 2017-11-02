@@ -15,6 +15,7 @@ const App = () => (
 	    	return <div>
 		        <Layout location={location} history={history}/>
 		        <CSSTransitionGroup
+		        	component="div"
 		            transitionName={{
 						enter: styles.enter,
 					    enterActive: styles.enterActive,
@@ -22,15 +23,14 @@ const App = () => (
 					    leaveActive: styles.leaveActive,
 		            }}
 		            transitionEnterTimeout={300}
-		            transitionLeaveTimeout={300}
-		        >
-	        		<Switch key={location.pathname} location={location}>
-			            <Route path="/:loc/auth" component={Auth}/>
-		        	</Switch>
+		            transitionLeaveTimeout={300}>
+		            <Switch key={location.pathname} location={location}>
+			        	<Route path="/:loc/auth" component={Auth}/>
+			       	</Switch>
 			    </CSSTransitionGroup>
 	        </div>
 	    }}/>
-	    <Redirect to="/23,6,1"/>
+	    <Redirect to="/21,6,1"/>
     </Switch>
   </Router>
 )
