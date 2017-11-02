@@ -9,7 +9,27 @@ import mediasMapConfig from './medias.map.config';
 const mediasReducer = combineReducers({
 	layers: layersReducer,
 	sources: sourcesReducer,
-	timeline: timelineReducer
+	timeline: timelineReducer,
+	mediasUpdate: (state= { justSelected:false, didNbChange: false } , action) => {
+		switch(action.type) {
+			case 'MEDIAS_MAP_SELECT':
+			case 'MEDIAS_MAP_DESELECT':
+				return {
+					justSelected: true,
+					didNbChange: false
+				}
+			case 'MEDIAS_UPDATE_FEATURES':
+				return {
+					justSelected: false,
+					didNbChange: !state.justSelected
+				}
+			default:
+				return {
+					justSelected: false,
+					didNbChange: false
+				};
+		}
+	}
 });
 
 // default export : reducer function
@@ -20,25 +40,6 @@ export { mediasInitialState, mediasMapConfig };
 
 // export selectors
 // (to expose data to components)
-export const serializeState = (state) => {
-	const newLayers = Object.assign({}, state.layers, {
-		"medias-layer": Object.assign({}, state.layers["medias-layer"], {
-			metadata: Object.assign({}, state.layers["medias-layer"].metadata, {
-				renderedFeatures: []
-			})
-		}),
-		"grid-medias-layer": Object.assign({}, state.layers["grid-medias-layer"], {
-			metadata: Object.assign({}, state.layers["grid-medias-layer"].metadata, {
-				renderedFeatures: []
-			})
-		})
-	});
-
-	return Object.assign({}, state, {
-		layers: newLayers 
-	});
-}
-
 export const getVisibleMedias = (state) => {
 	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
 	const geoJSONMedias = state.sources["selected-medias-source"].data.features;
@@ -81,4 +82,8 @@ export const getMediasMinDate = (state) => {
 
 export const getTimelineValue = (state) => {
 	return state.timeline;
+}
+
+export const getDidMediasNbChange = (state) => {
+	return state.mediasUpdate.didNbChange;
 }

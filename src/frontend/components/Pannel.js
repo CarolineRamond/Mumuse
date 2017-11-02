@@ -6,7 +6,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 
 import styles from '../css/pannel.css'
 import { toggleLayerMedias } from '../modules/medias/medias.actions'
-import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, getFilters } from '../modules/medias'
+import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, getFilters, getDidMediasNbChange } from '../modules/medias'
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -18,6 +18,7 @@ import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, getFilters 
 		medias: getVisibleMedias(store.medias),
 		selectedMedias: getSelectedMedias(store.medias),
 		viewportMediaCount: getViewportMediaCount(store.medias),
+		shouldCarouselUpdate: getDidMediasNbChange(store.medias),
 		layers: store.medias.layers
 	}
 })
@@ -34,9 +35,9 @@ export default class Pannel extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-    	const diffMedias = Math.abs(this.props.medias.length - nextProps.medias.length);
-    	if (diffMedias > 0) {
+    	if (nextProps.shouldCarouselUpdate) {
     		// visible medias changed : reload thumbnails
+    		console.log('RELOAD THUMBNAILS');
     		this.setState({
 	    		thumbnails: [],
 	    		hasMore: nextProps.medias.length > 0
