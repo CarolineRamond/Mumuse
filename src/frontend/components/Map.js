@@ -33,11 +33,13 @@ export default class Map extends React.Component {
 	renderHandlers = {}
 
 	componentDidMount() {
-		const { lat, lng, zoom } = this.props.world;
+		const world = this.props.location.pathname.split('/')[1].split(',');
+		const lngLat = world.slice(0,2);
+		const zoom = world[2];
 		this.map = new mapboxgl.Map({
 			container: this.mapContainer,
 			style: 'mapbox://styles/iconem/cio487j79006hc7m7wu00w6hw',
-			center: [lng, lat],
+			center: lngLat,
 			zoom: zoom,
 			renderWorldCopies: false,
 			maxBounds: [[-180, -85], [180, 85]],

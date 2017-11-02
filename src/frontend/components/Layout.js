@@ -39,7 +39,7 @@ export default class Layout extends React.Component {
 			</Link>
 		}
 		return <div>
-			<Map config={mapConfig}></Map>
+			<Map config={mapConfig} location={this.props.location}></Map>
 			<Pannel></Pannel>
 			<Timeline></Timeline>
 			<Preview></Preview>
