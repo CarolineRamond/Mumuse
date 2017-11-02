@@ -131,13 +131,20 @@ class Register extends React.Component {
 	}
 
 	render() {
+		var errorMessage = <div></div>;
+		if (this.props.serverError) {
+			errorMessage = <div className={styles.authPannelError}>
+				Error : bad username or password
+			</div>
+		}
+
 		return <div className={styles.authPannel}>
 			<div className={styles.authPannelTitle}>
 				Register
 			</div>
 			<div className={styles.authPannelContent}>
 				<div className={styles.authPannelForm}>
-
+					{errorMessage}
 					<Input type='text' label='Firstname' name='firstname'
 						required 
 						value={this.state.firstname}

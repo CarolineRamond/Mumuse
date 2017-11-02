@@ -20,7 +20,6 @@ import { logout } from '../modules/auth/auth.actions'
 export default class Layout extends React.Component {
 	constructor(props) {
 		super(props);
-
 		this.logout = this.logout.bind(this);
 	}
 
@@ -34,7 +33,8 @@ export default class Layout extends React.Component {
 			authButton = <Button icon='directions_run' onClick={this.logout}
 				floating className={styles.authButton}/>
 		} else {
-			authButton = <Link to="/auth/login">
+			const loginUrl = this.props.location.pathname + '/auth/login';
+			authButton = <Link to={loginUrl}>
 				<Button icon='account_box' floating className={styles.authButton}/>
 			</Link>
 		}

@@ -1,24 +1,16 @@
 const initialState = {
 	user: null,
-	login: {
-		successMessage: null,
-		errorMessage: null
-	},
-	register: {
-		successMessage: null,
-		errorMessage: null
-	},
-	forgotPassword: {
-		successMessage: null,
-		errorMessage: null
-	},
+	errorMessage: null,
+	successMessage: null
 }
 
 const authReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case "FETCH_USER_FULFILLED": {
 			return Object.assign({}, state, {
-				user: action.payload.data
+				user: action.payload.data,
+				errorMessage: false,
+				successMessage: false
 			});
 			break;
 		}
@@ -30,15 +22,13 @@ const authReducer = (state = initialState, action) => {
 		}
 		case "LOGIN_FULFILLED": {
 			return Object.assign({}, state, {
-				user: action.payload.data,
-				loginError: null
+				user: action.payload.data
 			});
 			break;
 		}
 		case "LOGIN_REJECTED": {
 			return Object.assign({}, state, {
-				user: null,
-				loginError: action.payload.response.data.message
+				user: null
 			});
 			break;
 		}
@@ -49,14 +39,14 @@ const authReducer = (state = initialState, action) => {
 			break;
 		}
 		case "REGISTER_FULFILLED": {
-			console.log(action.payload);
-			return state;
+			return Object.assign({}, state, {
+				user: null
+			});
 			break;
 		}
 		case "REGISTER_REJECTED": {
 			return Object.assign({}, state, {
-				user: null,
-				registerError: action.payload.response.data.message
+				user: null
 			});
 			break;
 		}
