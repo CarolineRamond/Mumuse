@@ -10,8 +10,8 @@ const Auth = ({ location, match })=> {
 	return <div className={authBackground}>
 		<div className={authPannelContainer}>
 			<Switch>
-				<Route path="/:loc/auth/register" component={Register}/>
 				<Route path="/:loc/auth/login" component={Login}/>
+				<Route path="/:loc/auth/register" component={Register}/>
 				<Route path="/:loc/auth/forgot" component={ForgotPassword}/>
 			</Switch>
 	    </div>
@@ -19,7 +19,6 @@ const Auth = ({ location, match })=> {
 }
 
 export default Auth;
-
 
 
 			
