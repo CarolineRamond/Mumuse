@@ -7,9 +7,11 @@ import SplitPane from "react-split-pane"
 import Map from './Map'
 import Preview from './Preview'
 import Timeline from './Timeline'
+import Pannel from './Pannel'
 import { mapConfig } from '../modules'
 import styles from '../css/layout.css'
 import { logout } from '../modules/auth/auth.actions'
+import { resizeMap } from '../modules/world/world.actions'
 
 @connect((store)=> {
 	return {
@@ -21,6 +23,11 @@ export default class Layout extends React.Component {
 	constructor(props) {
 		super(props);
 		this.logout = this.logout.bind(this);
+		this.handleResizePannel = this.handleResizePannel.bind(this);
+	}
+
+	handleResizePannel(props) {
+		this.props.dispatch(resizeMap());
 	}
 
 	logout() {
@@ -40,14 +47,15 @@ export default class Layout extends React.Component {
 		}
 		return <SplitPane split="vertical" defaultSize="70%"
 	    	minSize={500}
-	    	resizerStyle={{border: "2px solid blue"}}>
+	    	resizerStyle={{border: "2px solid blue"}}
+	    	onDragFinished={this.handleResizePannel}>
 	        <div>
 	        	<Map config={mapConfig} location={this.props.location} history={this.props.history}></Map>
 				<Timeline></Timeline>
 				<Preview></Preview>
 				{authButton}
 	        </div>
-	        <div>PANNEL</div>
+	        <Pannel/>
 	    </SplitPane>
 	}
 }

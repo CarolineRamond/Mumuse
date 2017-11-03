@@ -65,6 +65,7 @@ export default class Map extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
+		this._resizeMap(nextProps);
 		this._reloadSourcesData(nextProps);
 		this._updateLayersStyle(nextProps);
 	}
@@ -199,6 +200,12 @@ export default class Map extends React.Component {
 			this.map.on('moveend', ()=> {
 				this.map.on('render', this.renderHandlers[item.layerIds.toString()]);
 			});
+		}
+	}
+
+	_resizeMap(nextProps) {
+		if (nextProps.world.shouldMapResize) {
+			this.map.resize();
 		}
 	}
 

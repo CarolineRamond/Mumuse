@@ -10,3 +10,10 @@ export function updateWorldState(event) {
 		} 
 	}
 }
+
+export function resizeMap() {
+	return { 
+		type: "RESIZE_MAP", 
+		payload: {} 
+	}
+}

@@ -4,11 +4,23 @@ import worldMapConfig from './world.map.config'
 const worldReducer = (state = {}, action) => {
 	switch (action.type) {
 	 	case "UPDATE_WORLD_STATE": {
-			return Object.assign({}, state, action.payload);
+			return Object.assign({}, state, {
+				lat: action.payload.lat,
+				lng: action.payload.lng,
+				zoom: action.payload.zoom,
+				shouldMapResize: false
+			});
 			break;
 		}
+		case "RESIZE_MAP": {
+			return Object.assign({}, state, {
+				shouldMapResize: true 
+			})
+		}
 		default:
-			return state;
+			return Object.assign({}, state, {
+				shouldMapResize: false
+			});
 	}
 }
 
