@@ -46,14 +46,16 @@ export default class Layout extends React.Component {
 			</Link>
 		}
 		return <SplitPane split="vertical" defaultSize="70%"
-	    	minSize={500}
+	    	minSize={750}
 	    	resizerStyle={{border: "2px solid blue"}}
 	    	onDragFinished={this.handleResizePannel}>
 	        <div>
-	        	<Map config={mapConfig} location={this.props.location} history={this.props.history}></Map>
-				<Timeline></Timeline>
-				<Preview></Preview>
 				{authButton}
+	        	<Map config={mapConfig} location={this.props.location} history={this.props.history}></Map>
+				<div className={styles.bottomContainer}>
+					<Preview></Preview>
+					<Timeline></Timeline>
+				</div>
 	        </div>
 	        <Pannel/>
 	    </SplitPane>
