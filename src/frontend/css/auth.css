@@ -14,7 +14,7 @@
 .authPannelContainer {
 	background-color:white;
 	width: 400px;
-	height: 500px;
+	height: 520px;
 	display: flex;
 	flex-direction: column;
 }
@@ -41,6 +41,7 @@
 	justify-content: space-between;
 	align-items: center;
 	flex-grow: 1;
+	overflow-y: scroll;
 }
 
 .authPannelError {
