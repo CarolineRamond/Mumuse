@@ -37,7 +37,6 @@ export default class Pannel extends React.Component {
 
     componentWillReceiveProps(nextProps) {
     	if (nextProps.shouldCarouselUpdate) {
-    		console.log('RELOAD THUMBNAILS');
     		// visible medias changed : reload thumbnails
     		this.setState({
 	    		mediasSlice: [],

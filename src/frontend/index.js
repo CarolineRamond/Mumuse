@@ -9,30 +9,30 @@ import Auth from './components/Auth'
 import store from "./store"
 
 const App = () => (
-  <Router>
-  	<Switch>
-	    <Route path="/:loc" render={({ history, location }) => {
-	    	return <div>
-		        <Layout location={location} history={history}/>
-		        <CSSTransitionGroup
-		        	component="div"
-		            transitionName={{
-						enter: styles.enter,
-					    enterActive: styles.enterActive,
-					    leave: styles.leave,
-					    leaveActive: styles.leaveActive,
-		            }}
-		            transitionEnterTimeout={300}
-		            transitionLeaveTimeout={300}>
-		            <Switch key={location.pathname} location={location}>
-			        	<Route path="/:loc/auth" component={Auth}/>
-			       	</Switch>
-			    </CSSTransitionGroup>
-	        </div>
-	    }}/>
-	    <Redirect to="/21,6,1"/>
-    </Switch>
-  </Router>
+	<Router>
+	  	<Switch>
+		    <Route path="/:loc" render={({ history, location }) => {
+		    	return <div>
+			        <Layout location={location} history={history}/>
+			        <CSSTransitionGroup
+			        	component="div"
+			            transitionName={{
+							enter: styles.enter,
+						    enterActive: styles.enterActive,
+						    leave: styles.leave,
+						    leaveActive: styles.leaveActive,
+			            }}
+			            transitionEnterTimeout={300}
+			            transitionLeaveTimeout={300}>
+			            <Switch key={location.pathname} location={location}>
+				        	<Route path="/:loc/auth" component={Auth}/>
+				       	</Switch>
+				    </CSSTransitionGroup>
+		        </div>
+		    }}/>
+		    <Redirect to="/21,6,1"/>
+	    </Switch>
+	</Router>
 )
 
 

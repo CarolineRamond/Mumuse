@@ -2,9 +2,9 @@ import React from "react";
 import { connect } from "react-redux"
 import { Link } from "react-router-dom"
 import Button from "react-toolbox/lib/button"
+import SplitPane from "react-split-pane"
 
 import Map from './Map'
-import Pannel from './Pannel'
 import Preview from './Preview'
 import Timeline from './Timeline'
 import { mapConfig } from '../modules'
@@ -38,13 +38,17 @@ export default class Layout extends React.Component {
 				<Button icon='account_box' floating className={styles.authButton}/>
 			</Link>
 		}
-		return <div>
-			<Map config={mapConfig} location={this.props.location} history={this.props.history}></Map>
-			<Pannel></Pannel>
-			<Timeline></Timeline>
-			<Preview></Preview>
-			{authButton}
-		</div>
+		return <SplitPane split="vertical" defaultSize="70%"
+	    	minSize={500}
+	    	resizerStyle={{border: "2px solid blue"}}>
+	        <div>
+	        	<Map config={mapConfig} location={this.props.location} history={this.props.history}></Map>
+				<Timeline></Timeline>
+				<Preview></Preview>
+				{authButton}
+	        </div>
+	        <div>PANNEL</div>
+	    </SplitPane>
 	}
 }
 
