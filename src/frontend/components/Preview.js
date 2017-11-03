@@ -17,11 +17,11 @@ import styles from '../css/preview.css'
 
 export default class Preview extends React.Component {
 	render() {
-		if (this.props.selectedMedias.length === 1) {
+		// if (this.props.selectedMedias.length === 1) {
 			return <div className={styles.preview}>
-				{this.props.selectedMedias[0].name}
+				COUCOU
 			</div>
-		}
-		return <div></div>;
+		// }
+		// return <div></div>;
 	}
 }

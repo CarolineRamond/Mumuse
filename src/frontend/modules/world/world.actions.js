@@ -17,3 +17,10 @@ export function resizeMap() {
 		payload: {} 
 	}
 }
+
+export function switchPreviewMode() {
+	return {
+		type: "SWITCH_PREVIEW_MODE",
+		payload: {}
+	}
+}

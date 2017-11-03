@@ -44,23 +44,15 @@ export default class Timeline extends React.Component {
 
 	render() {
 		var strValue = new Date(this.state.value).toLocaleDateString();
-		return <div className={styles.timelineContainer}>
-			<div className={styles.timeline}>
-				<div className={styles.timelineInfos}>
-					<div className={styles.timelineDate}>{strValue}</div>
-					<div className={styles.timelineCount}>
-						{this.props.viewportMediaCount} media(s) in this zone
-					</div>
+		return <div className={styles.timeline}>
+			<div className={styles.timelineInfos}>
+				<div className={styles.timelineDate}>{strValue}</div>
+				<div className={styles.timelineCount}>
+					{this.props.viewportMediaCount} media(s) in this zone
 				</div>
-				<Slider min={this.state.minDate} max={this.state.maxDate}
-					value={this.state.value} onChange={this.handleSlideChange}/>
 			</div>
+			<Slider min={this.state.minDate} max={this.state.maxDate}
+				value={this.state.value} onChange={this.handleSlideChange}/>
 		</div>
 	}
 }
-
-
-
-
-// <Slider value={4} min={0} max={10}/>
-// 			<Button raised primary>coucou</Button>

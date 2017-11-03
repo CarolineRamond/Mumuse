@@ -17,6 +17,11 @@ const worldReducer = (state = {}, action) => {
 				shouldMapResize: true 
 			})
 		}
+		case "SWITCH_PREVIEW_MODE": {
+			return Object.assign({}, state, {
+				previewMode: !state.previewMode,
+			})
+		}
 		default:
 			return Object.assign({}, state, {
 				shouldMapResize: false

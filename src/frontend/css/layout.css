@@ -5,11 +5,53 @@
 	left: 20px;
 }
 
-.bottomContainer {
+.mainContainer {
 	position:absolute;
-	bottom: 0px;
+	z-index: 0;
+	top:0;
+	bottom:0;
+	width: 100%;
+	height: 100%;
+}
+
+.timelineContainer {
+	position:absolute;
+	bottom: 80px;
 	z-index: 1;
 	width: 100%;
 	display: flex;
 	flex-direction: row;
+	justify-content: center;
+}
+
+.dummyPreview {
+	width: 250px;
+}
+
+.preview {
+	height: 250px;
+	width: 250px;
+	border: 2px solid blue;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
+}
+
+.previewSwitch {
+	position:absolute;
+	top: 5px;
+	right: 5px;
+	height: 25px;
+	width: 25px;
+	border: none;
+	border-top-right-radius: 10px;
+	border-right: 3px solid black;
+	border-top: 3px solid black;
+	background: none;
+	cursor: pointer;
+}
+
+.previewSwitch:focus {
+	outline: none;
 }
