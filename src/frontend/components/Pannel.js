@@ -5,7 +5,7 @@ import { IconButton } from "react-toolbox/lib/button"
 import InfiniteScroll from 'react-infinite-scroller'
 
 import styles from '../css/pannel.css'
-import { toggleLayerMedias, selectCarouselMedias } from '../modules/medias/medias.actions'
+import { toggleLayerMedias, selectCarouselMedias, deselectCarouselMedias } from '../modules/medias/medias.actions'
 import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, 
 	getFilters, getDidMediasNbChange } from '../modules/medias'
 
@@ -58,6 +58,7 @@ export default class Pannel extends React.Component {
     }
 
     selectMedia(media, ctrlKey) {
+    	this.props.dispatch(deselectCarouselMedias(ctrlKey));
     	this.props.dispatch(selectCarouselMedias([media], ctrlKey));
     }
 

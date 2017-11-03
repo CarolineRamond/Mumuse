@@ -12,7 +12,7 @@ const defaultLayerReducer = (state) => {
 // (pointwise media representation, originated from vector tiles)
 const mediasLayerReducer = (state = {}, action) => {
 	switch (action.type) {
-	 	case "MEDIAS_MAP_SELECT": {
+	 	case "MEDIAS_SELECT": {
 	 		// filter out selected medias
 	 		const selectedIds = action.payload.features.map((feature)=> {
 	 			return feature.properties._id;
@@ -28,7 +28,7 @@ const mediasLayerReducer = (state = {}, action) => {
 	 		});
 			break;
 		}
-		case "MEDIAS_MAP_DESELECT": {
+		case "MEDIAS_DESELECT": {
 			if (action.payload.ctrlKey || !state.filter) {
 				return defaultLayerReducer(state);
 			}
@@ -38,30 +38,6 @@ const mediasLayerReducer = (state = {}, action) => {
 	 		});
 	 		return Object.assign({}, state, {
 				filter: newFilter,
-				metadata: Object.assign({}, state.metadata, {
-					didChange: { filter: true }
-	 			})
-	 		});
-			break;
-		}
-		case "MEDIAS_CAROUSEL_SELECT": {
-			var newFilter = state.filter || ['all'];
-			if (!action.payload.ctrlKey) {
-				// remove selected medias filter
-		 		newFilter = state.filter.filter((item)=> {
-		 			return (item.indexOf('_id') === -1);
-		 		});
-			}
-
-			// filter out selected medias
-			const selectedIds = action.payload.features.map((feature)=> {
-				return feature.properties._id;
-			});
-			const filterToAdd = ['!in', '_id'].concat(selectedIds);
-			const currentFilter = newFilter || ['all'];
-	 		
-	 		return Object.assign({}, state, {
-				filter: currentFilter.concat([filterToAdd]),
 				metadata: Object.assign({}, state.metadata, {
 					didChange: { filter: true }
 	 			})

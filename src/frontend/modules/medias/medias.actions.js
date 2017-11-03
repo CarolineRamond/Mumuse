@@ -1,6 +1,6 @@
 export const selectMapMedias = (mapEvent)=> {
 	return { 
-		type: 'MEDIAS_MAP_SELECT', 
+		type: 'MEDIAS_SELECT', 
 		payload: { 
 			features: mapEvent.features,
 			ctrlKey: mapEvent.originalEvent.ctrlKey
@@ -10,7 +10,7 @@ export const selectMapMedias = (mapEvent)=> {
 
 export const selectCarouselMedias = (features, ctrlKey)=> {
 	return { 
-		type: 'MEDIAS_CAROUSEL_SELECT', 
+		type: 'MEDIAS_SELECT', 
 		payload: { 
 			features: features,
 			ctrlKey: ctrlKey
@@ -20,13 +20,22 @@ export const selectCarouselMedias = (features, ctrlKey)=> {
 
 export const deselectMapMedias = (mapEvent)=> {
 	return { 
-		type: 'MEDIAS_MAP_DESELECT', 
+		type: 'MEDIAS_DESELECT', 
 		payload: { 
-			features: mapEvent.features,
 			ctrlKey: mapEvent.originalEvent.ctrlKey
 		}
 	};
 }
+
+export const deselectCarouselMedias = (ctrlKey)=> {
+	return { 
+		type: 'MEDIAS_DESELECT', 
+		payload: { 
+			ctrlKey: ctrlKey
+		}
+	};
+};
+
 
 export const startDragMapMedias = (mapEvent)=> {
 	return {

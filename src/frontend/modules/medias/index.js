@@ -12,9 +12,8 @@ const mediasReducer = combineReducers({
 	timeline: timelineReducer,
 	mediasUpdate: (state= { justSelected:false, didNbChange: false } , action) => {
 		switch(action.type) {
-			case 'MEDIAS_MAP_SELECT':
-			case 'MEDIAS_CAROUSEL_SELECT':
-			case 'MEDIAS_MAP_DESELECT':
+			case 'MEDIAS_SELECT':
+			case 'MEDIAS_DESELECT':
 				return {
 					justSelected: true,
 					didNbChange: false
