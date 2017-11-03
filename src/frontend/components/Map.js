@@ -211,6 +211,11 @@ export default class Map extends React.Component {
 				if (source.type === "vector") {
 					this.map.removeSource(sourceId);
 					this.map.addSource(sourceId, _.omit(source, ['metadata']));
+					this.props.config.renderedFeatures.map((item)=> {
+						if (item.source === sourceId) {
+							this._setRenderedFeaturesHandler(item);
+						}
+					});
 				}
 			}
 		});
