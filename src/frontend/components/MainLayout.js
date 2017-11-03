@@ -22,7 +22,7 @@ import { getSelectedMedias } from '../modules/medias'
 	}
 })
 
-export default class Layout extends React.Component {
+export default class MainLayout extends React.Component {
 	constructor(props) {
 		super(props);
 		this.logout = this.logout.bind(this);
