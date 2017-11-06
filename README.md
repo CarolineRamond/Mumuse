@@ -4,7 +4,7 @@ To launch : ``npm run dev``
 
 ## Components
 
-``<App>
+```<App>
 	<Main (if url="/:loc")>
 		<Auth (if url="/:loc/auth")>
 			<Login (if url="/:loc/auth/login")/>
@@ -31,4 +31,4 @@ To launch : ``npm run dev``
 	<Admin (if url="/admin")>
 		<AdminUsers (if url="/admin/users")/>
 	</Admin>
-</App>``
+</App>```
