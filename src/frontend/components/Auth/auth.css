@@ -1,3 +1,22 @@
+.authEnter {
+  opacity: 0;
+  z-index: 1;
+}
+
+.authEnterActive {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.authLeave {
+  opacity: 1
+}
+
+.authLeaveActive {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
 .authBackground {
 	position:absolute;
 	top: 0;
@@ -81,12 +100,10 @@
 	margin-left: 10px;
 }
 
-.enter {
-  opacity: 0;
-  z-index: 2;
+.authButton {
+	position:absolute;
+	z-index:1;
+	top: 20px;
+	left: 20px;
 }
 
-.enterActive {
-  opacity: 1;
-  transition: opacity 250ms ease-in;
-}

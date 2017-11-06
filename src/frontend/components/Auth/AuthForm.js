@@ -4,7 +4,7 @@ import Button from "react-toolbox/lib/button"
 import Input from "react-toolbox/lib/input"
 import { forIn } from "lodash"
 
-import styles from '../../css/auth.css'
+import styles from './auth.css'
 
 class AuthForm extends React.Component {
 

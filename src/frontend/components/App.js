@@ -2,7 +2,6 @@ import React from "react";
 import { HashRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 
 import Main from './Main'
-import Auth from './Auth'
 
 const App = () => (
 	<Router>

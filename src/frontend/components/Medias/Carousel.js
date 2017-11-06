@@ -1,13 +1,10 @@
 import React from "react";
 import { connect } from "react-redux"
-import _ from "lodash"
-import { IconButton } from "react-toolbox/lib/button"
 import InfiniteScroll from 'react-infinite-scroller'
 
 import styles from '../css/pannel.css'
-import { toggleLayerMedias, selectCarouselMedias, deselectCarouselMedias } from '../modules/medias/medias.actions'
-import { getVisibleMedias, getSelectedMedias, getViewportMediaCount, 
-	getFilters, getDidMediasNbChange } from '../modules/medias'
+import { selectCarouselMedias, deselectCarouselMedias } from '../modules/medias/medias.actions'
+import { getVisibleMedias, getSelectedMedias, getDidMediasNbChange } from '../modules/medias'
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -15,16 +12,13 @@ import { getVisibleMedias, getSelectedMedias, getViewportMediaCount,
 // + some functions like dispatch (to fire actions)
 @connect((store)=> {
 	return  {
-		world: store.world,
 		medias: getVisibleMedias(store.medias),
 		selectedMedias: getSelectedMedias(store.medias),
-		viewportMediaCount: getViewportMediaCount(store.medias),
-		shouldCarouselUpdate: getDidMediasNbChange(store.medias),
-		layers: store.medias.layers
+		shouldCarouselUpdate: getDidMediasNbChange(store.medias)
 	}
 })
 
-export default class Pannel extends React.Component {
+export default class Carousel extends React.Component {
 	constructor(props) {
         super(props);
 
@@ -61,26 +55,7 @@ export default class Pannel extends React.Component {
     	this.props.dispatch(selectCarouselMedias([media], ctrlKey));
     }
 
-	toggleLayer(layerId) {
-		this.props.dispatch(toggleLayerMedias(layerId));
-	}
-
 	render() {
-		const mappedLayers = [];
-		_.forIn(this.props.layers, (layer, layerId)=> {
-			var icon = "visibility_off";
-			if (layer.metadata.isLocked) {
-				icon = "lock";
-			} else if (layer.metadata.isShown) {
-				icon = "visibility";
-			}
-			mappedLayers.push(<div key={layerId} className={styles.layer}>
-				<IconButton disabled={layer.metadata.isLocked}
-					onClick={()=> {this.toggleLayer(layerId)}} icon={icon}/>
-				{layer.metadata.name}
-			</div>);
-		});
-
 		var mappedThumbnails = [];
         this.state.mediasSlice.map((media, i) => {
             mappedThumbnails.push(
@@ -93,13 +68,8 @@ export default class Pannel extends React.Component {
             );
         });
 
-		return <div className={styles.pannel}>
-			<strong>Layers</strong>
-			<div>
-				{mappedLayers}
-			</div>
-			<hr/>
-			<strong>Medias</strong>
+		return <div>
+			<h3>Medias</h3>
 			<div className={styles.infiniteScrollContainer}>
 				<InfiniteScroll className={styles.infiniteScroll}
 				    pageStart={0}

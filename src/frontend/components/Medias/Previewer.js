@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux"
 
-import { getSelectedMedias } from '../modules/medias'
-import styles from '../css/preview.css'
+import { getSelectedMedias } from '../../modules/medias'
+import styles from './preview.css'
 
 // this is to set up component's props
 // component's props will be an excerpt

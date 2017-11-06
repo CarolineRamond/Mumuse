@@ -2,18 +2,18 @@ import React from "react";
 import { Route, Switch } from 'react-router-dom'
 import { CSSTransitionGroup } from 'react-transition-group'
 
-import MainLayout from "./MainLayout"
-import Auth from "./Auth"
-import styles from "../css/test.css"
+import Layout from "./Layout"
+import Auth from "../Auth"
+import { authEnter, authEnterActive, authLeave, authLeaveActive } from "../Auth/auth.css"
 
 const AuthRoute = ({location})=> (
     <CSSTransitionGroup
     	component="div"
         transitionName={{
-			enter: styles.enter,
-		    enterActive: styles.enterActive,
-		    leave: styles.leave,
-		    leaveActive: styles.leaveActive,
+			enter: authEnter,
+		    enterActive: authEnterActive,
+		    leave: authLeave,
+		    leaveActive: authLeaveActive,
         }}
         transitionEnterTimeout={300}
         transitionLeaveTimeout={300}>
@@ -23,10 +23,12 @@ const AuthRoute = ({location})=> (
     </CSSTransitionGroup>
 )
 
+
+
 const Main = ({history, location}) => (
-	<div>
-        <MainLayout location={location} history={history}/>
-        <AuthRoute location={location}/>
+    <div>
+        <Layout location={location} history={history}/>
+        <AuthRoute location={location}/>	
     </div>
 )
 

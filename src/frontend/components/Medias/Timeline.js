@@ -2,9 +2,9 @@ import React from "react";
 import { connect } from "react-redux"
 import Slider from "react-toolbox/lib/slider"
 
-import styles from '../css/timeline.css'
-import { getViewportMediaCount, getMediasMinDate, getTimelineValue } from '../modules/medias'
-import { updateTimelineMedias } from "../modules/medias/medias.actions"
+import styles from './timeline.css'
+import { getViewportMediaCount, getMediasMinDate, getTimelineValue } from '../../modules/medias'
+import { updateTimelineMedias } from "../../modules/medias/medias.actions"
 // this is to set up component's props
 // component's props will be an excerpt
 // of the store

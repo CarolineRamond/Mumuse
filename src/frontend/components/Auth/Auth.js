@@ -1,10 +1,10 @@
 import React from "react";
 import { Switch, Route, Redirect } from 'react-router-dom'
 
-import Login from './Auth/Login'
-import Register from './Auth/Register'
-import ForgotPassword from './Auth/ForgotPassword'
-import { authBackground, authPannelContainer } from '../css/auth.css'
+import Login from './Login'
+import Register from './Register'
+import ForgotPassword from './ForgotPassword'
+import { authBackground, authPannelContainer } from './auth.css'
 
 const Auth = ({ location, match })=> {
 	return <div className={authBackground}>
