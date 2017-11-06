@@ -21,17 +21,19 @@ class MapScreen extends React.Component {
 		const previewerClass = this.props.previewMode ? styles.mainContainer : styles.preview;
 		const hasSelectedMedia = (this.props.selectedMedias.length === 1);
 		return <div>
-	    	<AuthButton/>
+			{/*Map*/} 
 	    	<div className={mapClass}>
 	    		<Map config={mapConfig}></Map>
 	    		{ this.props.previewMode && <PreviewSwitch/> }
-				{ !this.props.previewMode && 
-					<div className={styles.timelineContainer}>
-						{ hasSelectedMedia && <div className={styles.dummyPreview}/>}
-						<Timeline/>
-					</div> 
-				}
 	    	</div>
+	    	{/*Timeline*/} 
+	    	{ !this.props.previewMode && 
+				<div className={styles.timelineContainer}>
+					{ hasSelectedMedia && <div className={styles.dummyPreview}/>}
+					<Timeline/>
+				</div> 
+			}
+			{/*Previewer*/} 
 	    	{ hasSelectedMedia &&
 	    		<div className={previewerClass}>
 	    			{ !this.props.previewMode && <PreviewSwitch/> }
@@ -83,15 +85,18 @@ export default class Layout extends React.Component {
 		const resizerStyleHover = Object.assign({}, resizerStyle, {
 			borderLeft: "5px solid blue"
 		});
-		return <SplitPane split="vertical" defaultSize="70%"
-	    	minSize={750}
-	    	resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
-	    	onDragStarted={this.handleDragStarted}
-	    	onDragFinished={this.handleDragFinished}>
-	    	<MapScreen previewMode={this.props.previewMode}
-	    		selectedMedias={this.props.selectedMedias}/>
-	    	<SidePannel/>
-	    </SplitPane>
+		return <div>
+	    	<AuthButton/>
+			<SplitPane split="vertical" defaultSize="70%"
+		    	minSize={750}
+		    	resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
+		    	onDragStarted={this.handleDragStarted}
+		    	onDragFinished={this.handleDragFinished}>
+		    	<MapScreen previewMode={this.props.previewMode}
+		    		selectedMedias={this.props.selectedMedias}/>
+		    	<SidePannel/>
+		    </SplitPane>
+		</div>
 	}
 }
 

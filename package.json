@@ -23,6 +23,7 @@
   "dependencies": {
     "axios": "^0.17.0",
     "mapbox-gl": "^0.41.0",
+    "prop-types": "^15.6.0",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",
