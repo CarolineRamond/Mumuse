@@ -15,6 +15,34 @@ import styles from './layout.css'
 import { resizeMap } from '../../modules/world/world.actions'
 import { getSelectedMedias } from '../../modules/medias'
 
+const MapScreen =({location, history, previewMode, selectedMedias})=> {
+	const mapClass = previewMode ? styles.preview : styles.mainContainer;
+	const previewerClass = previewMode ? styles.mainContainer : styles.preview;
+	const hasSelectedMedia = (selectedMedias.length === 1);
+	return <div>
+    	<AuthButton location={location}/>
+    	<div className={mapClass}>
+    		<Map config={mapConfig} 
+    			location={location} 
+    			history={history}>
+    		</Map>
+    		{ previewMode && <PreviewSwitch/> }
+			{ !previewMode && 
+				<div className={styles.timelineContainer}>
+					{ hasSelectedMedia && <div className={styles.dummyPreview}/>}
+					<Timeline/>
+				</div> 
+			}
+    	</div>
+    	{ hasSelectedMedia &&
+    		<div className={previewerClass}>
+    			{ !previewMode && <PreviewSwitch/> }
+    			<Previewer media={selectedMedias[0]}/>
+    		</div>
+    	}
+    </div>
+}
+
 @connect((store)=> {
 	return  {
 		previewMode: store.world.previewMode,
@@ -50,7 +78,8 @@ export default class Layout extends React.Component {
 			width:"12px", 
 			background:"transparent", 
 			borderLeft: "5px solid #ccc", 
-			cursor: "ew-resize"
+			cursor: "ew-resize",
+			zIndex: "2"
 		}
 		const resizerStyleHover = Object.assign({}, resizerStyle, {
 			borderLeft: "5px solid blue"
@@ -69,30 +98,3 @@ export default class Layout extends React.Component {
 	}
 }
 
-const MapScreen =({location, history, previewMode, selectedMedias})=> {
-	const mapClass = previewMode ? styles.preview : styles.mainContainer;
-	const previewerClass = previewMode ? styles.mainContainer : styles.preview;
-	const hasSelectedMedia = (selectedMedias.length === 1);
-	return <div>
-    	<AuthButton location={location}/>
-    	<div className={mapClass}>
-    		<Map config={mapConfig} 
-    			location={location} 
-    			history={history}>
-    		</Map>
-    		{ previewMode && <PreviewSwitch/> }
-			{ !previewMode && 
-				<div className={styles.timelineContainer}>
-					{ hasSelectedMedia && <div className={styles.dummyPreview}/>}
-					<Timeline/>
-				</div> 
-			}
-    	</div>
-    	{ hasSelectedMedia &&
-    		<div className={previewerClass}>
-    			{ !previewMode && <PreviewSwitch/> }
-    			<Previewer media={selectedMedias[0]}/>
-    		</div>
-    	}
-    </div>
-}

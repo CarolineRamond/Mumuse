@@ -2,9 +2,9 @@ import React from "react";
 import { connect } from "react-redux"
 import InfiniteScroll from 'react-infinite-scroller'
 
-import styles from '../css/pannel.css'
-import { selectCarouselMedias, deselectCarouselMedias } from '../modules/medias/medias.actions'
-import { getVisibleMedias, getSelectedMedias, getDidMediasNbChange } from '../modules/medias'
+import { selectCarouselMedias, deselectCarouselMedias } from '../../modules/medias/medias.actions'
+import { getVisibleMedias, getSelectedMedias, getDidMediasNbChange } from '../../modules/medias'
+import styles from "./carousel.css"
 
 // this is to set up component's props
 // component's props will be an excerpt
@@ -68,18 +68,16 @@ export default class Carousel extends React.Component {
             );
         });
 
-		return <div>
-			<h3>Medias</h3>
-			<div className={styles.infiniteScrollContainer}>
-				<InfiniteScroll className={styles.infiniteScroll}
-				    pageStart={0}
-				    loadMore={this.loadThumbnails}
-				    hasMore={this.state.hasMore}
-				    useWindow={false}
-				    loader={<div className="loader">Loading ...</div>}>
-				  {mappedThumbnails}
-				</InfiniteScroll>
-			</div>
-		</div>
+		return <div className={styles.infiniteScrollContainer}>
+            <InfiniteScroll className={styles.infiniteScroll}
+                pageStart={0}
+                loadMore={this.loadThumbnails}
+                hasMore={this.state.hasMore}
+                useWindow={false}
+                loader={<div className="loader">Loading ...</div>}>
+              {mappedThumbnails}
+            </InfiniteScroll>
+        </div>
 	}
 }
+

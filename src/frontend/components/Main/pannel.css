@@ -2,31 +2,15 @@
 	display: flex;
 	flex-direction: column;
 	max-height: 100%;
+	margin-left: -11px;
 }
 
-.layer {
+.pannelTab {
 	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-
-.infiniteScrollContainer {
+	flex-grow:1;
 	min-height: 0;
-	flex-grow: 1;
-	overflow: auto;
 }
 
-.infiniteScroll {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: flex-start;
-}
-
-.thumbnail {
-	position:relative;
-	height: 100px;
-	width: 100px;
-	margin: 8px;
+.pannelNavigationContainer {
+	flex-shrink: 0;
 }
