@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux"
 import Button from "react-toolbox/lib/button"
 import { Link } from "react-router-dom"
+import { withRouter } from "react-router"
 
 import { authButton } from './auth.css'
 import { logout } from '../../modules/auth/auth.actions'
@@ -42,5 +43,5 @@ class AuthButton extends React.Component {
 	}
 }
 
-export default AuthButton
+export default withRouter(AuthButton)
 

@@ -15,32 +15,31 @@ import styles from './layout.css'
 import { resizeMap } from '../../modules/world/world.actions'
 import { getSelectedMedias } from '../../modules/medias'
 
-const MapScreen =({location, history, previewMode, selectedMedias})=> {
-	const mapClass = previewMode ? styles.preview : styles.mainContainer;
-	const previewerClass = previewMode ? styles.mainContainer : styles.preview;
-	const hasSelectedMedia = (selectedMedias.length === 1);
-	return <div>
-    	<AuthButton location={location}/>
-    	<div className={mapClass}>
-    		<Map config={mapConfig} 
-    			location={location} 
-    			history={history}>
-    		</Map>
-    		{ previewMode && <PreviewSwitch/> }
-			{ !previewMode && 
-				<div className={styles.timelineContainer}>
-					{ hasSelectedMedia && <div className={styles.dummyPreview}/>}
-					<Timeline/>
-				</div> 
-			}
-    	</div>
-    	{ hasSelectedMedia &&
-    		<div className={previewerClass}>
-    			{ !previewMode && <PreviewSwitch/> }
-    			<Previewer media={selectedMedias[0]}/>
-    		</div>
-    	}
-    </div>
+class MapScreen extends React.Component {
+	render() {
+		const mapClass = this.props.previewMode ? styles.preview : styles.mainContainer;
+		const previewerClass = this.props.previewMode ? styles.mainContainer : styles.preview;
+		const hasSelectedMedia = (this.props.selectedMedias.length === 1);
+		return <div>
+	    	<AuthButton/>
+	    	<div className={mapClass}>
+	    		<Map config={mapConfig}></Map>
+	    		{ this.props.previewMode && <PreviewSwitch/> }
+				{ !this.props.previewMode && 
+					<div className={styles.timelineContainer}>
+						{ hasSelectedMedia && <div className={styles.dummyPreview}/>}
+						<Timeline/>
+					</div> 
+				}
+	    	</div>
+	    	{ hasSelectedMedia &&
+	    		<div className={previewerClass}>
+	    			{ !this.props.previewMode && <PreviewSwitch/> }
+	    			<Previewer media={this.props.selectedMedias[0]}/>
+	    		</div>
+	    	}
+	    </div>
+	}
 }
 
 @connect((store)=> {
@@ -89,11 +88,9 @@ export default class Layout extends React.Component {
 	    	resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
 	    	onDragStarted={this.handleDragStarted}
 	    	onDragFinished={this.handleDragFinished}>
-	    	<MapScreen location={this.props.location}
-	    		history={this.props.history}
-	    		previewMode={this.props.previewMode}
+	    	<MapScreen previewMode={this.props.previewMode}
 	    		selectedMedias={this.props.selectedMedias}/>
-	    	<SidePannel location={this.props.location}/>
+	    	<SidePannel/>
 	    </SplitPane>
 	}
 }

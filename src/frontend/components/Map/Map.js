@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { connect } from "react-redux"
-import withRouter from "react-router-dom"
+import { withRouter } from "react-router"
 import mapboxgl from "mapbox-gl"
 import 'mapbox-gl/dist/mapbox-gl.css'
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1NXZxa2sifQ.hgPcQvgkzpfYkHgfMRqcpw';
@@ -29,7 +29,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1N
 	}
 })
 
-export default class Map extends React.Component {
+class Map extends React.Component {
 
 	renderHandlers = {}
 
@@ -271,3 +271,5 @@ function getUniqueFeatures(array, comparatorProperty) {
     });
     return uniqueFeatures;
 }
+
+export default withRouter(Map)
