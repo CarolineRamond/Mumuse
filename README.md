@@ -6,13 +6,16 @@ To launch : ``npm run dev``
 
 ```
 <App>
-	<Main (if url="/:loc")>
+	<Admin (if url="/admin")>
+		<AdminUsers (if url="/admin/users")/>
+	</Admin>
+	<div (if url="/:loc")>
 		<Auth (if url="/:loc/auth")>
 			<Login (if url="/:loc/auth/login")/>
 			<Register (if url="/:loc/auth/register")/>
 			<ForgotPassword (if url="/:loc/auth/forgot")/>
 		</Auth>
-		<Layout>
+		<Main>
 			<AuthButton/>
 			<SplitPane>
 				<MapScreen>
@@ -27,10 +30,7 @@ To launch : ``npm run dev``
 					</Tabs>
 				</SidePannel>
 			</SplitPane>
-		</Layout>
-	</Main>
-	<Admin (if url="/admin")>
-		<AdminUsers (if url="/admin/users")/>
-	</Admin>
+		</Main>
+	</div>
 </App>
 ```

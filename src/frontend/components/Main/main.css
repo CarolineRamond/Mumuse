@@ -30,21 +30,3 @@
 	left: 0;
 	z-index: 1;
 }
-
-.previewSwitch {
-	position:absolute;
-	top: 5px;
-	right: 5px;
-	height: 25px;
-	width: 25px;
-	border: none;
-	border-top-right-radius: 10px;
-	border-right: 3px solid black;
-	border-top: 3px solid black;
-	background: none;
-	cursor: pointer;
-}
-
-.previewSwitch:focus {
-	outline: none;
-}
