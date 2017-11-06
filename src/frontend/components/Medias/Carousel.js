@@ -3,7 +3,8 @@ import { connect } from "react-redux"
 import InfiniteScroll from 'react-infinite-scroller'
 
 import { selectCarouselMedias, deselectCarouselMedias } from '../../modules/medias/medias.actions'
-import { getVisibleMedias, getSelectedMedias, getDidMediasNbChange } from '../../modules/medias'
+import { getVisibleMedias, getSelectedMedias, getDidMediasNbChange,
+    areMediasLocked } from '../../modules/medias'
 import styles from "./carousel.css"
 
 // this is to set up component's props
@@ -14,7 +15,8 @@ import styles from "./carousel.css"
 	return  {
 		medias: getVisibleMedias(store.medias),
 		selectedMedias: getSelectedMedias(store.medias),
-		shouldCarouselUpdate: getDidMediasNbChange(store.medias)
+		shouldCarouselUpdate: getDidMediasNbChange(store.medias),
+        areMediasLocked: areMediasLocked(store.medias)
 	}
 })
 
@@ -68,16 +70,22 @@ export default class Carousel extends React.Component {
             );
         });
 
-		return <div className={styles.infiniteScrollContainer}>
-            <InfiniteScroll className={styles.infiniteScroll}
-                pageStart={0}
-                loadMore={this.loadThumbnails}
-                hasMore={this.state.hasMore}
-                useWindow={false}
-                loader={<div className="loader">Loading ...</div>}>
-              {mappedThumbnails}
-            </InfiniteScroll>
-        </div>
+		if (this.props.areMediasLocked) {
+            return <div className={styles.mediasLockedMessage}>
+                <div>Please zoom in to view individual media.</div>
+            </div>
+        } else {
+            return <div className={styles.infiniteScrollContainer}>
+                <InfiniteScroll className={styles.infiniteScroll}
+                    pageStart={0}
+                    loadMore={this.loadThumbnails}
+                    hasMore={this.state.hasMore}
+                    useWindow={false}
+                    loader={<div className="loader">Loading ...</div>}>
+                  {mappedThumbnails}
+                </InfiniteScroll>
+            </div>
+        }
 	}
 }
 

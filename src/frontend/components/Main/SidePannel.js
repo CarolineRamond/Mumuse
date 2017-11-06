@@ -21,18 +21,14 @@ export default class SidePannel extends React.Component {
 	render() {
 		return <div className={styles.pannel}>
 			<Tabs className={styles.pannelTabs}
-				theme={{navigationContainer:styles.pannelNavigationContainer}}
+				theme={{navigationContainer:styles.pannelNavigationContainer, tab: styles.pannelTab}}
 				index={this.state.index} 
 				onChange={this.handleTabChange}>
 	          	<Tab label='Medias'>
-	          		<div className={styles.pannelTab}>
-	          			<Carousel/>
-	          		</div>
+          			<Carousel/>
 	          	</Tab>
 	          	<Tab label='Layers'>
-	          		<div className={styles.pannelTab}>
-	          			<Layers/>
-	          		</div>
+          			<Layers/>
 	          	</Tab>
 	        </Tabs>
 	    </div>

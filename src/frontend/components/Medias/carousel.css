@@ -18,3 +18,14 @@
 	width: 100px;
 	margin: 8px;
 }
+
+.mediasLockedMessage {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	min-height: 0;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 20px;
+}

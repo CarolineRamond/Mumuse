@@ -87,3 +87,7 @@ export const getTimelineValue = (state) => {
 export const getDidMediasNbChange = (state) => {
 	return state.mediasUpdate.didNbChange;
 }
+
+export const areMediasLocked = (state) => {
+	return state.layers["medias-layer"].metadata.isLocked;
+}
