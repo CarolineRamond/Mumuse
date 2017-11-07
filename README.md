@@ -7,7 +7,11 @@ To launch : ``npm run dev``
 ```
 <App>
 	<Admin (if url="/admin")>
-		<AdminUsers (if url="/admin/users")/>
+		<Users (if url="/admin/users")/>
+			<UsersTable/>
+			<UsersCreate (if url="/admin/users/create")/>
+			<UsersEdit (if url="/admin/users/edit/:userId")/>
+		</Users>
 	</Admin>
 	<div (if url="/:loc")>
 		<Auth (if url="/:loc/auth")>

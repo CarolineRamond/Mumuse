@@ -13,3 +13,18 @@ export function adminCreateUser(form) {
 		payload: axios.post('/userdrive/users', form)
 	}
 }
+
+export function adminFetchUserById(userId) {
+	return { 
+		type: "ADMIN_FETCH_USER", 
+		payload: axios.get('/userdrive/users/' + userId)
+	}
+}
+
+export function adminUpdateUser(form, userId) {
+	return { 
+		type: "ADMIN_FETCH_USER", 
+		payload: axios.get('/userdrive/users/' + userId)
+	}
+}
+

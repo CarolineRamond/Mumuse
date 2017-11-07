@@ -6,7 +6,6 @@ const usersInitialState = {
 const usersReducer = (state = usersInitialState, action) => {
 	switch (action.type) {
 		case "ADMIN_FETCH_USERS_FULFILLED": {
-			console.log('fetch users fulfilled ', action.payload);
 			return Object.assign({}, state, {
 				list: action.payload.data,
 				serverError: null
