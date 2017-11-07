@@ -3,15 +3,10 @@ import { Redirect } from "react-router-dom"
 import { connect } from "react-redux"
 import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
+import PropTypes from "prop-types"
 
 import AuthForm from './AuthForm'
 import { login } from '../../modules/auth/auth.actions'
-
-@connect((store)=> {
-	return {
-		user: store.auth.user,
-	}
-})
 
 class Login extends React.Component {
 	render() {
@@ -69,4 +64,23 @@ class Login extends React.Component {
 	}
 }
 
-export default Login;
+// Props :
+// * user : currently logged in user (if any), provided by @connect
+// * location : current route location, provided by function withRouter 
+// * match : current route match, provided by function withRouter (required)
+// * history : current router history, provided by function withRouter (required)
+Login.propTypes = {
+	user: PropTypes.object,
+    location: PropTypes.object, 
+    match: PropTypes.object.isRequired, 
+    history: PropTypes.object.isRequired
+}
+
+// Store connection
+const ConnectedLogin = connect((store)=> {
+	return {
+		user: store.auth.user,
+	}
+})(Login);
+
+export default ConnectedLogin;

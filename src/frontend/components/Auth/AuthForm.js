@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import Button from "react-toolbox/lib/button"
 import Input from "react-toolbox/lib/input"
 import { forIn } from "lodash"
+import PropTypes from "prop-types"
 
 import styles from './auth.css'
 
@@ -82,11 +83,14 @@ class AuthForm extends React.Component {
 				style={{width:"250px"}}/>
 			);
 		});
-		const links = this.props.links.map((link, i)=> {
-			return <Link key={`link-${i}`} to={link.to}>
-				{link.text}
-			</Link>
-		});
+		var links = <div/>
+		if (this.props.links) {
+			links = this.props.links.map((link, i)=> {
+				return <Link key={`link-${i}`} to={link.to}>
+					{link.text}
+				</Link>
+			});
+		};
 		return <div className={styles.authPannel}>
 			<div className={styles.authPannelTitle}>
 				{this.props.title}
@@ -113,6 +117,31 @@ class AuthForm extends React.Component {
 			</div>
 		</div>
 	}
+}
+
+// Props :
+// * title: form title (required) 
+// * fields: form fields (required) 
+// * submit: submit function (required)
+// * cancel: cancel function (required)
+// * links: other links,
+// * helper: helper text
+AuthForm.propTypes = {
+    title: PropTypes.string.isRequired, 
+    fields: PropTypes.objectOf(PropTypes.shape({
+    	label: PropTypes.string.isRequired,
+    	type: PropTypes.string.isRequired,
+    	required: PropTypes.boolean,
+    	refValue: PropTypes.string,
+    	validate: PropTypes.func.isRequired
+    })).isRequired, 
+    submit: PropTypes.func.isRequired,
+    cancel: PropTypes.func.isRequired,
+    links: PropTypes.arrayOf(PropTypes.shape({
+    	to: PropTypes.string,
+    	text: PropTypes.string
+    })),
+    helper: PropTypes.string
 }
 
 export default AuthForm;

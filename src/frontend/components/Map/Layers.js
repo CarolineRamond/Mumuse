@@ -2,21 +2,12 @@ import React from "react";
 import { connect } from "react-redux"
 import { forIn } from "lodash"
 import { IconButton } from "react-toolbox/lib/button"
+import PropTypes from "prop-types"
 
 import { toggleLayerMedias } from '../../modules/medias/medias.actions'
 import styles from './layers.css'
 
-// this is to set up component's props
-// component's props will be an excerpt
-// of the store
-// + some functions like dispatch (to fire actions)
-@connect((store)=> {
-  return  {
-    layers: store.medias.layers
-  }
-})
-
-export default class Layers extends React.Component {
+class Layers extends React.Component {
 	constructor(props) {
     super(props);
     this.state = {
@@ -48,3 +39,18 @@ export default class Layers extends React.Component {
 		return <div>{mappedLayers}</div>
 	}
 }
+
+// Props :
+// * layers: map layers, provided by @connect (required),
+Layers.propTypes = {
+  layers: PropTypes.objectOf(PropTypes.object).isRequired,
+}
+
+// Store connection
+const ConnectedLayers = connect((store)=> {
+  return  {
+    layers: store.medias.layers
+  }
+})(Layers);
+
+export default ConnectedLayers;

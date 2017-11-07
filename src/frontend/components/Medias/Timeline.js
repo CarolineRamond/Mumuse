@@ -1,23 +1,14 @@
 import React from "react";
 import { connect } from "react-redux"
 import Slider from "react-toolbox/lib/slider"
+import PropTypes from "prop-types"
 
 import styles from './timeline.css'
 import { getViewportMediaCount, getMediasMinDate, getTimelineValue } from '../../modules/medias'
 import { updateTimelineMedias } from "../../modules/medias/medias.actions"
-// this is to set up component's props
-// component's props will be an excerpt
-// of the store
-// + some functions like dispatch (to fire actions)
-@connect((store)=> {
-	return  {
-		viewportMediaCount: getViewportMediaCount(store.medias),
-		value: getTimelineValue(store.medias),
-		minDate: getMediasMinDate(store.medias)
-	}
-})
 
-export default class Timeline extends React.Component {
+
+class Timeline extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -56,3 +47,28 @@ export default class Timeline extends React.Component {
 		</div>
 	}
 }
+
+// Props :
+// * viewportMediaCount : ready to display viewport media count 
+// (string with ~ if approximative count) ; provided by @connect (required)
+// * value : current slider value, provided by @connect (required)
+// * minDate : minimum date of the visible medias, provided by @connect (required) 
+Timeline.propTypes = {
+	viewportMediaCount: PropTypes.oneOfType([
+		PropTypes.string,
+		PropTypes.number
+	]).isRequired,
+	value: PropTypes.number.isRequired,
+	minDate: PropTypes.number.isRequired
+}
+
+// Store connection
+const ConnectedTimeline = connect((store)=> {
+	return  {
+		viewportMediaCount: getViewportMediaCount(store.medias),
+		value: getTimelineValue(store.medias),
+		minDate: getMediasMinDate(store.medias)
+	}
+})(Timeline);
+
+export default ConnectedTimeline;

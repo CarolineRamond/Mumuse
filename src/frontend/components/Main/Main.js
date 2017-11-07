@@ -5,13 +5,10 @@ import SplitPane from "react-split-pane"
 import styles from './main.css'
 import { resizeMap } from '../../modules/world/world.actions'
 import AuthButton from '../Auth/AuthButton'
-import MapScreen from './MapScreen'
-import SidePannel from './SidePannel'
+import MainPanel from './MainPanel'
+import SidePanel from './SidePanel'
 
-@connect((store)=> {
-    return  {}
-})
-export default class Main extends React.Component {
+class Main extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleDragStarted = this.handleDragStarted.bind(this);
@@ -40,7 +37,7 @@ export default class Main extends React.Component {
 			background:"transparent", 
 			borderLeft: "5px solid #ccc", 
 			cursor: "ew-resize",
-			zIndex: "2"
+			zIndex: "1"
 		}
 		const resizerStyleHover = Object.assign({}, resizerStyle, {
 			borderLeft: "5px solid blue"
@@ -52,10 +49,16 @@ export default class Main extends React.Component {
 		    	resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
 		    	onDragStarted={this.handleDragStarted}
 		    	onDragFinished={this.handleDragFinished}>
-		    	<MapScreen/>
-		    	<SidePannel/>
+		    	<MainPanel/>
+		    	<SidePanel/>
 		    </SplitPane>
 		</div>
 	}
 }
 
+// Store connection (to dispatch resizeMap action)
+const ConnectedMain = connect((store)=> {
+    return  {}
+})(Main);
+
+export default ConnectedMain;

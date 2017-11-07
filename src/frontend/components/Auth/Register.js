@@ -3,13 +3,10 @@ import { Redirect } from "react-router-dom"
 import { connect } from "react-redux"
 import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
+import PropTypes from "prop-types"
 
 import AuthForm from './AuthForm'
 import { register } from '../../modules/auth/auth.actions'
-
-@connect((store)=> {
-	return {}
-})
 
 class Register extends React.Component {
 	render() {
@@ -115,18 +112,30 @@ class Register extends React.Component {
 			this.props.history.push(rootUrl);
 		}
 				
-		if (this.props.user) {
-			return <Redirect to={rootUrl}/>
-		} else {
-			return <AuthForm title="Register"
-				fields={fields}
-				submit={submit}
-				cancel={cancel}
-				links={links}
-				helper=""
-			/>
-		}
+		
+		return <AuthForm title="Register"
+			fields={fields}
+			submit={submit}
+			cancel={cancel}
+			links={links}
+			helper=""
+		/>
 	}
 }
 
-export default Register;
+// Props :
+// * location : current route location, provided by function withRouter 
+// * match : current route match, provided by function withRouter (required)
+// * history : current router history, provided by function withRouter (required)
+Register.propTypes = {
+    location: PropTypes.object, 
+    match: PropTypes.object.isRequired, 
+    history: PropTypes.object.isRequired
+}
+
+// Store connection
+const ConnectedRegister = connect((store)=> {
+	return {}
+})(Register);
+
+export default ConnectedRegister;

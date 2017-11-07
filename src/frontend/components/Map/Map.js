@@ -5,29 +5,24 @@ import { withRouter } from "react-router"
 import mapboxgl from "mapbox-gl"
 import 'mapbox-gl/dist/mapbox-gl.css'
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1NXZxa2sifQ.hgPcQvgkzpfYkHgfMRqcpw';
+import PropTypes from "prop-types"
 
-// this is to set up component's props
-// component's props will be an excerpt
-// of the store
-// + some functions like dispatch (to fire actions)
-@connect((store)=> {
-	var sources = {};
-	var layers = {};
-
-	_.forIn(store, (item, key)=> {
-		if (item && item.sources) {
-			sources = _.extend(sources, item.sources);
-		}
-		if (item && item.layers) {
-			layers = _.extend(layers, item.layers);
-		}
-	});
-	return {
-		world: store.world,
-		layers: layers,
-		sources: sources
-	}
-})
+import { mapConfig } from '../../modules'
+function getUniqueFeatures(array, comparatorProperty) {
+    var existingFeatureKeys = {};
+    // Because features come from tiled vector data, feature geometries may be split
+    // or duplicated across tile boundaries and, as a result, features may appear
+    // multiple times in query results.
+    var uniqueFeatures = array.filter(function(el) {
+        if (existingFeatureKeys[el.properties[comparatorProperty]]) {
+            return false;
+        } else {
+            existingFeatureKeys[el.properties[comparatorProperty]] = true;
+            return true;
+        }
+    });
+    return uniqueFeatures;
+}
 
 class Map extends React.Component {
 
@@ -95,7 +90,7 @@ class Map extends React.Component {
 	}
 
 	_addSimpleEventsHandling() {
-		this.props.config.events.map((event)=> {
+		mapConfig.events.map((event)=> {
 			if (event.layerId) {
 				this.map.on(event.type, event.layerId, (evt)=> {
 					this.props.dispatch(event.action(evt));
@@ -109,7 +104,7 @@ class Map extends React.Component {
 	}
 
 	_addDragndropHandling() {
-		this.props.config.dragndrop.map((item)=> {
+		mapConfig.dragndrop.map((item)=> {
 			// disable/enable map panning
 			// on enter/leave layer
 			this.map.on('mouseenter', item.layerId, (evt)=> {
@@ -134,10 +129,10 @@ class Map extends React.Component {
 
 		// add mousemove listener only if one of the layers
 		// has dragndrop interaction
-		if (this.props.config.dragndrop.length > 0) {
+		if (mapConfig.dragndrop.length > 0) {
 			this.map.on('mousemove', (evt)=> {
 				if (this.draggingLayerId) {
-					this.props.config.dragndrop.map((item)=> {
+					mapConfig.dragndrop.map((item)=> {
 						if (item.layerId === this.draggingLayerId) {
 							this.props.dispatch(item.mousemove(evt));
 						}
@@ -158,7 +153,7 @@ class Map extends React.Component {
 
 		// set up events to update viewport counts
 		// (and dispatch actions) when needed
-		this.props.config.renderedFeatures.map((item)=> {
+		mapConfig.renderedFeatures.map((item)=> {
 			const init = true;
 			this._setRenderedFeaturesHandler(item, init);
 		});
@@ -218,7 +213,7 @@ class Map extends React.Component {
 				if (source.type === "vector") {
 					this.map.removeSource(sourceId);
 					this.map.addSource(sourceId, _.omit(source, ['metadata']));
-					this.props.config.renderedFeatures.map((item)=> {
+					mapConfig.renderedFeatures.map((item)=> {
 						if (item.source === sourceId) {
 							this._setRenderedFeaturesHandler(item);
 						}
@@ -233,7 +228,7 @@ class Map extends React.Component {
 			var didChange = layer.metadata && layer.metadata.didChange || {};
 			if (didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
-				this.props.config.renderedFeatures.map((item)=> {
+				mapConfig.renderedFeatures.map((item)=> {
 					if (item.layerIds.indexOf(layer.id) > -1) {
 						this._setRenderedFeaturesHandler(item);
 					}
@@ -256,20 +251,45 @@ class Map extends React.Component {
 	}
 }
 
-function getUniqueFeatures(array, comparatorProperty) {
-    var existingFeatureKeys = {};
-    // Because features come from tiled vector data, feature geometries may be split
-    // or duplicated across tile boundaries and, as a result, features may appear
-    // multiple times in query results.
-    var uniqueFeatures = array.filter(function(el) {
-        if (existingFeatureKeys[el.properties[comparatorProperty]]) {
-            return false;
-        } else {
-            existingFeatureKeys[el.properties[comparatorProperty]] = true;
-            return true;
-        }
-    });
-    return uniqueFeatures;
+// Props :
+// * world : current world state (lat, lng, zoom + resize), provided by @connect
+// * layers : map layers, provided by @connect
+// * sources : map sources, provided by @connect
+// * location : current route location, provided by function withRouter 
+// * match : current route match, provided by function withRouter (required)
+// * history : current router history, provided by function withRouter (required)
+Map.propTypes = {
+	world: PropTypes.shape({
+		lat: PropTypes.number.isRequired,
+		lng: PropTypes.number.isRequired,
+		zoom: PropTypes.number.isRequired,
+		shouldMapResize: PropTypes.bool
+	}),
+	layers: PropTypes.object,
+	sources: PropTypes.object,
+    location: PropTypes.object.isRequired, 
+    match: PropTypes.object, 
+    history: PropTypes.object.isRequired
 }
 
-export default withRouter(Map)
+// Store connection
+const ConnectedMap = connect((store)=> {
+	var sources = {};
+	var layers = {};
+
+	_.forIn(store, (item, key)=> {
+		if (item && item.sources) {
+			sources = _.extend(sources, item.sources);
+		}
+		if (item && item.layers) {
+			layers = _.extend(layers, item.layers);
+		}
+	});
+	return {
+		world: store.world,
+		layers: layers,
+		sources: sources
+	}
+})(Map);
+
+export default withRouter(ConnectedMap);

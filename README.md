@@ -18,17 +18,17 @@ To launch : ``npm run dev``
 		<Main>
 			<AuthButton/>
 			<SplitPane>
-				<MapScreen>
+				<MainPanel>
 					<Map/>
 					<Timeline/>
 					<Previewer/>
-				</MapScreen>
-				<SidePannel>
+				</MainPanel>
+				<SidePanel>
 					<Tabs>
 						<Tab><Carousel/></Tab>
 						<Tab><Layers/></Tab>
 					</Tabs>
-				</SidePannel>
+				</SidePanel>
 			</SplitPane>
 		</Main>
 	</div>

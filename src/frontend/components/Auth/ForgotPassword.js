@@ -1,13 +1,10 @@
 import React from "react";
 import { connect } from "react-redux"
 import isEmail from 'validator/lib/isEmail'
+import PropTypes from "prop-types"
 
 import AuthForm from './AuthForm'
 import { forgotPassword } from '../../modules/auth/auth.actions'
-
-@connect((store)=> {
-	return {}
-})
 
 class ForgotPassword extends React.Component {
 	render() {
@@ -44,4 +41,19 @@ class ForgotPassword extends React.Component {
 	}
 }
 
-export default ForgotPassword;
+// Props :
+// * location : current route location, provided by function withRouter 
+// * match : current route match, provided by function withRouter (required)
+// * history : current router history, provided by function withRouter (required)
+ForgotPassword.propTypes = {
+    location: PropTypes.object, 
+    match: PropTypes.object.isRequired, 
+    history: PropTypes.object.isRequired
+}
+
+// Store connection
+const ConnectedForgotPassword = connect((store)=> {
+	return {}
+})(ForgotPassword);
+
+export default ConnectedForgotPassword;
