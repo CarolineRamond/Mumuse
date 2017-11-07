@@ -20,6 +20,12 @@ const usersReducer = (state = usersInitialState, action) => {
 			});
 			break;
 		}
+		case "ADMIN_CREATE_USER_FULFILLED": {
+			return Object.assign({}, state, {
+				list: state.list.concat(action.payload.data),
+				serverError: null
+			});
+		}
 		default:
 			return state;
 	}

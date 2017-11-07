@@ -5,7 +5,7 @@ import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
 import PropTypes from "prop-types"
 
-import AuthForm from './AuthForm'
+import Form from '../Common/Form'
 import { register } from '../../modules/auth/auth.actions'
 
 class Register extends React.Component {
@@ -113,7 +113,7 @@ class Register extends React.Component {
 		}
 				
 		
-		return <AuthForm title="Register"
+		return <Form title="Register"
 			fields={fields}
 			submit={submit}
 			cancel={cancel}

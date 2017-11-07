@@ -7,24 +7,24 @@ import PropTypes from "prop-types"
 import Login from './Login'
 import Register from './Register'
 import ForgotPassword from './ForgotPassword'
-import styles from './auth.css'
+import styles from '../Common/form.css'
 
 class Auth extends React.Component {
     render() {
         return <CSSTransitionGroup
         	component="div"
             transitionName={{
-    			enter: styles.authEnter,
-    		    enterActive: styles.authEnterActive,
-    		    leave: styles.authLeave,
-    		    leaveActive: styles.authLeaveActive,
+    			enter: styles.formDialogEnter,
+    		    enterActive: styles.formDialogEnterActive,
+    		    leave: styles.formDialogLeave,
+    		    leaveActive: styles.formDialogLeaveActive,
             }}
             transitionEnterTimeout={300}
             transitionLeaveTimeout={300}>
             <Switch key={this.props.location.pathname} location={this.props.location}>
             	<Route path="/:loc/auth" component={()=>(
-            		<div className={styles.authBackground}>
-        				<div className={styles.authPannelContainer}>
+            		<div className={styles.formDialogBackground}>
+        				<div className={styles.formDialogContainer}>
         					<Switch>
         						<Route path="/:loc/auth/login" component={Login}/>
         						<Route path="/:loc/auth/register" component={Register}/>

@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import { Switch, Route, Redirect } from 'react-router-dom'
 import {Tab, Tabs} from 'react-toolbox';
 
-import AdminUsers from "./AdminUsers"
+import Users from "./Users"
 import styles from "./admin.css"
 
 @connect((store)=> {
@@ -15,17 +15,13 @@ class Admin extends React.Component {
 	constructor(props) {
 		super(props)
 		var index;
-		switch (this.props.location.pathname) {
-			case "/admin/users":
-				index = 0;
-				break;
-			case "/admin/test":
-				index = 1;
-				break;
-			default:
-				index = 0;
-				this.props.history.push("/admin/users");
-				break;
+		if (this.props.location.pathname.indexOf('/admin/users') > -1) {
+			index = 0;
+		} else if (this.props.location.pathname.indexOf('/admin/test') > -1) {
+			index = 1;
+		} else {
+			index = 0;
+			this.props.history.push("/admin/users");
 		}
 		this.state = {
 			index: index
@@ -54,10 +50,10 @@ class Admin extends React.Component {
 			  		onChange={this.handleTabChange}
 			  		theme={{navigationContainer: styles.adminNavigationContainer, tab: styles.adminTab}}>
 				  	<Tab label='Users'>
-				  		<Route exact path="/admin/users" component={AdminUsers}/>
+				  		<Route path="/admin/users" component={Users}/>
 				  	</Tab>
 				  	<Tab label='Test'>
-				  		<Route exact path="/admin/test" component={()=>(<div>TEST</div>)}/>
+				  		<Route path="/admin/test" component={()=>(<div>TEST</div>)}/>
 				  	</Tab>
 				</Tabs>
 			</div>

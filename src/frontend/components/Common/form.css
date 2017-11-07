@@ -1,0 +1,102 @@
+.formDialogEnter {
+  opacity: 0;
+  z-index: 1;
+}
+
+.formDialogEnterActive {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.formDialogLeave {
+  opacity: 1
+}
+
+.formDialogLeaveActive {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
+.formDialogBackground {
+	position:absolute;
+	top: 0;
+	left: 0;
+	z-index: 2;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.5);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+.formDialogContainer {
+	background-color:white;
+	width: 400px;
+	height: 520px;
+	display: flex;
+	flex-direction: column;
+}
+
+.formDialog {
+	min-height: 0;
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	padding: 8px;
+}
+
+.formDialogTitle {
+	text-align:center;
+	font-weight: bold;
+	font-size: 24px;
+	padding: 16px;
+}
+
+.formDialogContent {
+	min-height: 0;
+	display: flex;
+	flex-direction:column;
+	justify-content: space-between;
+	align-items: center;
+	flex-grow: 1;
+	overflow-y: scroll;
+}
+
+.formDialogError {
+	color:red;
+	padding: 10px;
+}
+
+.formDialogForm {
+	min-height: 0;
+	display: flex;
+	flex-direction:column;
+	flex-grow: 1;
+	padding: 10px;
+}
+
+.formDialogLinks {
+	min-height: 0;
+	display: flex;
+	flex-direction:column;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+}
+
+.formDialogActions {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	padding: 10px;
+}
+
+.formDialogActions a:hover {
+	text-decoration: none;
+}
+
+.formDialogActions button {
+	margin-left: 10px;
+}
+

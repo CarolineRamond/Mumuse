@@ -5,9 +5,9 @@ import Input from "react-toolbox/lib/input"
 import { forIn } from "lodash"
 import PropTypes from "prop-types"
 
-import styles from './auth.css'
+import styles from './form.css'
 
-class AuthForm extends React.Component {
+class Form extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -91,22 +91,22 @@ class AuthForm extends React.Component {
 				</Link>
 			});
 		};
-		return <div className={styles.authPannel}>
-			<div className={styles.authPannelTitle}>
+		return <div className={styles.formDialog}>
+			<div className={styles.formDialogTitle}>
 				{this.props.title}
 			</div>
-			<div className={styles.authPannelContent}>
-				<div className={styles.authPannelHelper}>
+			<div className={styles.formDialogContent}>
+				<div className={styles.formDialogHelper}>
 					{this.props.helper}
 				</div>
-				<div className={styles.authPannelForm}>
+				<div className={styles.formDialogForm}>
 					{inputs}
 				</div>
-				<div className={styles.authPannelLinks}>
+				<div className={styles.formDialogLinks}>
 					{links}
 				</div>
 			</div>
-			<div className={styles.authPannelActions}>
+			<div className={styles.formDialogActions}>
 				<Button primary disabled={!this.state.formValid}
 					onClick={()=>{this.props.submit(this.state.fieldValues)}}>
 					Submit
@@ -126,7 +126,7 @@ class AuthForm extends React.Component {
 // * cancel: cancel function (required)
 // * links: other links,
 // * helper: helper text
-AuthForm.propTypes = {
+Form.propTypes = {
     title: PropTypes.string.isRequired, 
     fields: PropTypes.objectOf(PropTypes.shape({
     	label: PropTypes.string.isRequired,
@@ -144,4 +144,4 @@ AuthForm.propTypes = {
     helper: PropTypes.string
 }
 
-export default AuthForm;
+export default Form;

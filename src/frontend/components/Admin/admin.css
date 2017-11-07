@@ -34,6 +34,10 @@
 	flex-direction: column;
 }
 
+.adminTab:focus {
+	outline: none;
+}
+
 .adminTabContent {
 	display: flex;
 	flex-direction: column;

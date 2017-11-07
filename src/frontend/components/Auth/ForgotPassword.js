@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import isEmail from 'validator/lib/isEmail'
 import PropTypes from "prop-types"
 
-import AuthForm from './AuthForm'
+import Form from '../Common/Form'
 import { forgotPassword } from '../../modules/auth/auth.actions'
 
 class ForgotPassword extends React.Component {
@@ -31,7 +31,7 @@ class ForgotPassword extends React.Component {
 		}
 		const helper = "Please enter your email to reset your password";
 				
-		return <AuthForm title="Forgot Password"
+		return <Form title="Forgot Password"
 			fields={fields}
 			submit={submit}
 			cancel={cancel}

@@ -5,7 +5,7 @@ import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
 import PropTypes from "prop-types"
 
-import AuthForm from './AuthForm'
+import Form from '../Common/Form'
 import { login } from '../../modules/auth/auth.actions'
 
 class Login extends React.Component {
@@ -53,7 +53,7 @@ class Login extends React.Component {
 		if (this.props.user) {
 			return <Redirect to={rootUrl}/>
 		} else {
-			return <AuthForm title="Login"
+			return <Form title="Login"
 				fields={fields}
 				submit={submit}
 				cancel={cancel}
