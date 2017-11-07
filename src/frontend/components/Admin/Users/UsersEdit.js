@@ -77,12 +77,12 @@ class UsersEdit extends React.Component {
 }
 
 // Props :
-// * location : current route location, provided by function withRouter (required)
+// * location : current route location, provided by function withRouter
 // * match : current route match, provided by function withRouter
-// * history : current router history, provided by function withRouter
+// * history : current router history, provided by function withRouter (required)
 UsersEdit.propTypes = {
-    location: PropTypes.object.isRequired, 
-    match: PropTypes.object, 
+    location: PropTypes.object, 
+    match: PropTypes.object.isRequired, 
     history: PropTypes.object 
 }
 

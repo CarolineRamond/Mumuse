@@ -79,8 +79,8 @@ const mediasLayerReducer = (state = {}, action) => {
 			}, 0);
 			const previousLocked = state.metadata.isLocked;
 			const wasShownBeforeLock = state.metadata.wasShownBeforeLock;
-			const newLocked = (mediaCount > 2000 && action.payload.zoom <= 14 ||
-				mediaCount / action.payload.features.length > 10);
+			const newLocked = action.payload.zoom <= 14 &&
+				( mediaCount > 2000 || mediaCount / action.payload.features.length > 10);
 
 			// UNLOCK medias
 			if (!newLocked && previousLocked && wasShownBeforeLock) {

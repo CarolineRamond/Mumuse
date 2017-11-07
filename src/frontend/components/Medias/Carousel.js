@@ -53,7 +53,7 @@ class Carousel extends React.Component {
             	<div className={styles.thumbnail} key={i}
             		onClick={(e)=>{this.selectMedia(media, e.ctrlKey)}}>
                 	<img className={styles.thumbnail}
-                    src="http://wskg.org/wp-content/uploads/2017/06/BIP20150609A01_BP-0564.jpg"/>
+                    src={media.properties.thumbnail_url}/>
             		<div style={{position:"absolute", color: "white", top: "20%", left: "50%"}}>{i}</div>
             	</div>
             );
