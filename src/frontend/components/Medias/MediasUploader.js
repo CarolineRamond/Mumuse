@@ -10,12 +10,16 @@ class MediasUploader extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleFileUpload = this.handleFileUpload.bind(this);
+		this.handleClick = this.handleClick.bind(this);
 	}
 
 	handleFileUpload(event) {
 	  	this.props.dispatch(uploadMedias(event.target.files, this.props.position));
 	}
 
+	handleClick(event) {
+	  	this.input.click();
+	}
 
 	shouldComponentUpdate() {
 		// React does not need to re-render component
@@ -25,12 +29,14 @@ class MediasUploader extends React.Component {
 
 	render() {
 		return <div className={styles.mediasUploader}>
-			<Button primary>
-				Upload medias
-			</Button>
 			<input type="file"
 				onChange={this.handleFileUpload}
-				multiple/>
+				multiple
+				ref={(input)=>{this.input = input}}/>
+			<Button primary
+				onClick={this.handleClick}>
+				Upload medias
+			</Button>
 		</div>
 	}
 }

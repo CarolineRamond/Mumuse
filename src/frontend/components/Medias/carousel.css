@@ -25,6 +25,10 @@
 	object-fit: cover;
 }
 
+.thumbnailSelected {
+	border: 2px solid blue;
+}
+
 .mediasLockedMessage {
 	display: flex;
 	flex-direction: column;
