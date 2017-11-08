@@ -18,6 +18,7 @@ class Carousel extends React.Component {
             hasMore: true
         };
         this.loadMoreThumbnails = this.loadMoreThumbnails.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -39,6 +40,13 @@ class Carousel extends React.Component {
     			hasMore: this.props.medias.length > n + 10
     		});
     	}
+    }
+
+    handleClick(target, ctrlKey) {
+        const isOutside = target.tagName !== "IMG";
+        if (isOutside) {
+            this.props.dispatch(deselectCarouselMedias(ctrlKey));
+        }
     }
 
     selectMedia(media, ctrlKey) {
@@ -64,7 +72,8 @@ class Carousel extends React.Component {
                 <div>Please zoom in to view individual media.</div>
             </div>
         } else {
-            return <div className={styles.infiniteScrollContainer}>
+            return <div className={styles.infiniteScrollContainer}
+                onClick={(e)=>{this.handleClick(e.target, e.ctrlKey)}}>
                 <InfiniteScroll className={styles.infiniteScroll}
                     pageStart={0}
                     loadMore={this.loadMoreThumbnails}
