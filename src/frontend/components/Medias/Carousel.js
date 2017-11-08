@@ -50,7 +50,7 @@ class Carousel extends React.Component {
 		var mappedThumbnails = [];
         this.state.mediasSlice.map((media, i) => {
             mappedThumbnails.push(
-            	<div className={styles.thumbnail} key={i}
+            	<div className={styles.thumbnailContainer} key={i}
             		onClick={(e)=>{this.selectMedia(media, e.ctrlKey)}}>
                 	<img className={styles.thumbnail}
                     src={media.properties.thumbnail_url}/>

@@ -25,10 +25,7 @@ class MediasUploader extends React.Component {
 
 	render() {
 		return <div className={styles.mediasUploaderContainer}>
-			<BrowseButton primary 
-				onChange={this.handleFileUpload}>
-				Upload medias
-			</BrowseButton>
+			<input type="file" onChange={this.handleFileUpload}/>
 		</div>
 	}
 }

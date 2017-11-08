@@ -15,6 +15,10 @@
 	min-height: 0;
 }
 
+.pannelTab:focus {
+	outline: none;
+}
+
 .pannelNavigationContainer {
 	flex-shrink: 0;
 }

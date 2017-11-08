@@ -12,7 +12,8 @@ const mediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
-		case 'LOGIN_FULFILLED': {
+		case 'LOGIN_FULFILLED':
+		case 'MEDIAS_UPLOAD_FULFILLED': {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true
@@ -29,7 +30,8 @@ const gridMediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
-		case 'LOGIN_FULFILLED': {
+		case 'LOGIN_FULFILLED':
+		case 'MEDIAS_UPLOAD_FULFILLED': {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true

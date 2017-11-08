@@ -24,9 +24,9 @@
 .preview {
 	height: 250px;
 	width: 250px;
-	border: 2px solid blue;
 	position: absolute;
-	bottom: 0;
-	left: 0;
+	bottom: 10px;
+	left: 10px;
 	z-index: 1;
+	border: 1px solid rgb(140, 140, 140);
 }
