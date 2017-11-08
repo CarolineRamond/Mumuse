@@ -100,14 +100,34 @@ export const updateTimelineMedias = (value)=> {
 	};
 }
 
-export const uploadMedia = (file, position)=> {
-	return _uploadMedia(file, position);
+export const deleteMedias = (medias)=> {
+    const mediaId = medias[0].properties._id;
+    return { 
+		type: "MEDIAS_DELETE",
+		payload: axios.delete('/userdrive/media/' + mediaId)
+	}
+}
+
+export const uploadMedias = (files, position)=> {
+	return _uploadMedia(files[0], position);
+	// // sequentially upload files
+ //    var promise = Promise.resolve();
+ //    for (var i=0; i<files.length; i++) {
+ //        let file = files[i];
+ //        promise = promise.then(()=> {
+ //            _uploadMedia(file, position)
+ //        });
+ //    }
+ //    return { 
+	// 	type: "MEDIAS_UPLOAD",
+	// 	payload: promise
+	// }
 }
 
 
 
 function _uploadMedia(file, currentPosition) {
-	const payload = new Promise((resolve, reject) => {
+	var promise = new Promise((resolve, reject) => {
 	    //Should fail and warn the service an error occurer if not instane of blob
 	    if (!file instanceof Blob){
 	        console.warn("Error : file is not an instance of Blob");
@@ -144,9 +164,9 @@ function _uploadMedia(file, currentPosition) {
 	        file.slice(0, 90000, file.type)
 	    );
 	});
-	return { 
+	return {
 		type: "MEDIAS_UPLOAD",
-		payload: payload
+		payload: promise
 	}
 }
 

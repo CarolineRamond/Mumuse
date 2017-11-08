@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { BrowseButton } from "react-toolbox/lib/button"
 
-import { uploadMedia } from "../../modules/medias/medias.actions"
+import { uploadMedias } from "../../modules/medias/medias.actions"
 import styles from './carousel.css'
 
 class MediasUploader extends React.Component {
@@ -13,8 +13,7 @@ class MediasUploader extends React.Component {
 	}
 
 	handleFileUpload(event) {
-	  	const file = event.target.files[0];
-	  	this.props.dispatch(uploadMedia(file, this.props.position));
+	  	this.props.dispatch(uploadMedias(event.target.files, this.props.position));
 	}
 
 	shouldComponentUpdate() {
@@ -24,9 +23,9 @@ class MediasUploader extends React.Component {
 	}
 
 	render() {
-		return <div className={styles.mediasUploaderContainer}>
-			<input type="file" onChange={this.handleFileUpload}/>
-		</div>
+		return <input type="file" 
+			onChange={this.handleFileUpload}
+			multiple/>
 	}
 }
 
@@ -35,7 +34,7 @@ const ConnectedMediasUploader = connect((store)=> {
 		position: {
 			lng: store.world.lng,
 			lat: store.world.lat
-		} 
+		}
 	}
 })(MediasUploader);
 

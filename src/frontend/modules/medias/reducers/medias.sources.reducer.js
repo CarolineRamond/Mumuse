@@ -13,7 +13,8 @@ const mediasSourceReducer = (state = {}, action) => {
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
 		case 'LOGIN_FULFILLED':
-		case 'MEDIAS_UPLOAD_FULFILLED': {
+		case 'MEDIAS_UPLOAD_FULFILLED':
+		case 'MEDIAS_DELETE_FULFILLED': {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true
@@ -31,7 +32,8 @@ const gridMediasSourceReducer = (state = {}, action) => {
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
 		case 'LOGIN_FULFILLED':
-		case 'MEDIAS_UPLOAD_FULFILLED': {
+		case 'MEDIAS_UPLOAD_FULFILLED':
+		case 'MEDIAS_DELETE_FULFILLED': {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true
@@ -111,6 +113,17 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 					draggingFeatureId: null 
 				})
 			});
+			break;
+		}
+		case 'MEDIAS_DELETE_FULFILLED': {
+			return Object.assign({}, state, {
+	 			data: Object.assign({}, state.data, {
+	 				features: []
+	 			}),
+	 			metadata: Object.assign({}, state.metadata, {
+					didChange: true
+				})
+	 		});
 			break;
 		}
 		default:

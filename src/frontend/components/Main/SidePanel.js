@@ -4,7 +4,7 @@ import {Tab, Tabs} from 'react-toolbox';
 
 import Layers from "../Map/Layers"
 import Carousel from "../Medias/Carousel"
-import MediasUploader from "../Medias/MediasUploader"
+import MediasActions from "../Medias/MediasActions"
 import styles from './pannel.css'
 
 class SidePanel extends React.Component {
@@ -29,7 +29,8 @@ class SidePanel extends React.Component {
 	          	<Tab label='Medias'>
           			<Carousel/>
           			{this.props.user && this.props.user.roles.indexOf('admin') > -1 &&
-          				<MediasUploader/>}
+          				<MediasActions/>
+          			}
 	          	</Tab>
 	          	<Tab label='Layers'>
           			<Layers/>
