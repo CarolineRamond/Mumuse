@@ -30,3 +30,11 @@
 	font-size: 20px;
 	text-align: center;
 }
+
+.mediasUploaderContainer {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	flex-shrink: 0;
+	margin: 16px 0;
+}

@@ -1,8 +1,10 @@
 import React from "react";
+import { connect } from "react-redux";
 import {Tab, Tabs} from 'react-toolbox';
 
 import Layers from "../Map/Layers"
 import Carousel from "../Medias/Carousel"
+import MediasUploader from "../Medias/MediasUploader"
 import styles from './pannel.css'
 
 class SidePanel extends React.Component {
@@ -26,6 +28,8 @@ class SidePanel extends React.Component {
 				onChange={this.handleTabChange}>
 	          	<Tab label='Medias'>
           			<Carousel/>
+          			{this.props.user && this.props.user.roles.indexOf('admin') > -1 &&
+          				<MediasUploader/>}
 	          	</Tab>
 	          	<Tab label='Layers'>
           			<Layers/>
@@ -35,4 +39,11 @@ class SidePanel extends React.Component {
 	}
 }
 
-export default SidePanel;
+const ConnectedSidePanel = connect((store)=> {
+	console.log(store);
+	return {
+		user: store.auth.user
+	}
+})(SidePanel);
+
+export default ConnectedSidePanel;
