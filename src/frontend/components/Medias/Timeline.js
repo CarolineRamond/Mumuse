@@ -13,7 +13,6 @@ class Timeline extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = { 
-			maxDate: Date.now(), 
 			value: this.props.value, 
 			minDate: this.props.minDate 
 		};

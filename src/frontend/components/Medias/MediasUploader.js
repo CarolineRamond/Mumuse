@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { BrowseButton } from "react-toolbox/lib/button"
+import { Button } from "react-toolbox/lib/button"
 
 import { uploadMedias } from "../../modules/medias/medias.actions"
 import styles from './carousel.css'
@@ -16,6 +16,7 @@ class MediasUploader extends React.Component {
 	  	this.props.dispatch(uploadMedias(event.target.files, this.props.position));
 	}
 
+
 	shouldComponentUpdate() {
 		// React does not need to re-render component
 		// when map position changes
@@ -23,9 +24,14 @@ class MediasUploader extends React.Component {
 	}
 
 	render() {
-		return <input type="file" 
-			onChange={this.handleFileUpload}
-			multiple/>
+		return <div className={styles.mediasUploader}>
+			<Button primary>
+				Upload medias
+			</Button>
+			<input type="file"
+				onChange={this.handleFileUpload}
+				multiple/>
+		</div>
 	}
 }
 
