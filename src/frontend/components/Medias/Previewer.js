@@ -8,18 +8,32 @@ class ImagePreviewer extends React.Component {
 	
 	constructor(props) {
 		super(props);
+		// preload preview & full image
+		const previewImg = document.createElement('img');
+		const fullImg = document.createElement('img');
+		previewImg.src = this.props.media.properties.preview_url;
+		fullImg.src = this.props.media.properties.url;
+
 		this.state = {
-			loading: true
+			loading: true,
+			previewImg: previewImg,
+			fullImg: fullImg
 		}
-		this.handleLoadError = this.handleLoadError.bind(this);
+
 		this.handleLoadComplete = this.handleLoadComplete.bind(this);
+		this.handleLoadError = this.handleLoadError.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.media.properties._id !== this.props.media.properties._id ||
-			nextProps.previewMode !== this.props.previewMode) {
-			// the image to be loaded will change (new media or preview vs full)
-			// => set loading to true
+		if (nextProps.media.properties._id !== this.props.media.properties._id) {
+			// media did change => preload previewImg & fullImg
+			this.state.previewImg.src = this.props.media.properties.preview_url;
+			this.state.fullImg.src = this.props.media.properties.url;
+			this.setState({
+				loading: true
+			});
+		}
+		if (nextProps.previewMode !== this.props.previewMode) {
 			this.setState({
 				loading: true
 			});
@@ -39,7 +53,7 @@ class ImagePreviewer extends React.Component {
 	}
 
 	render() {
-		const imgUrl = this.props.previewMode ? this.props.media.properties.preview_url :
+		const imgUrl = this.props.previewMode ? this.props.media.properties.preview_url : 
 			this.props.media.properties.url;
 
 		return <div className={styles.previewImageContainer}>
