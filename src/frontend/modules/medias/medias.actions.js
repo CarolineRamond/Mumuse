@@ -101,33 +101,50 @@ export const updateTimelineMedias = (value)=> {
 }
 
 export const deleteMedias = (medias)=> {
-    const mediaId = medias[0].properties._id;
+	const payload = new Promise((resolve, reject)=> {
+		var promise = medias.reduce((promise, media)=> {
+			return promise.then(() => { 
+				return _deleteMedia(media);
+			})
+		}, Promise.resolve());
+		promise.then(()=> resolve())
+	});
+	
     return { 
 		type: "MEDIAS_DELETE",
-		payload: axios.delete('/userdrive/media/' + mediaId)
+		payload: payload
 	}
 }
 
+
+
+function _deleteMedia(media) {
+    const mediaId = media.properties._id;
+    return axios.delete('/userdrive/media/' + mediaId);
+}
+
 export const uploadMedias = (files, position)=> {
-	return _uploadMedia(files[0], position);
-	// // sequentially upload files
- //    var promise = Promise.resolve();
- //    for (var i=0; i<files.length; i++) {
- //        let file = files[i];
- //        promise = promise.then(()=> {
- //            _uploadMedia(file, position)
- //        });
- //    }
- //    return { 
-	// 	type: "MEDIAS_UPLOAD",
-	// 	payload: promise
-	// }
+	const iter = new Array(files.length).fill(1);
+	const payload = new Promise((resolve, reject)=> {
+		var promise = iter.reduce((promise, item, index)=> {
+			return promise.then(() => { 
+				return _uploadMedia(files[index], position);
+			})
+		}, Promise.resolve())
+		
+		promise.then(()=> resolve())
+	});
+	
+    return { 
+		type: "MEDIAS_UPLOAD",
+		payload: payload
+	}
 }
 
 
 
 function _uploadMedia(file, currentPosition) {
-	var promise = new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 	    //Should fail and warn the service an error occurer if not instane of blob
 	    if (!file instanceof Blob){
 	        console.warn("Error : file is not an instance of Blob");
@@ -150,7 +167,10 @@ function _uploadMedia(file, currentPosition) {
             form.append("size", file.size);
             form.append("file", file);
             return axios.post('/userdrive/media', form)
-            	.then((response)=> { return resolve(response) })
+            	.then((response)=> { 
+            		console.log('uploaded file ', file);
+            		return resolve(response) 
+            	})
             	.catch((error)=> { return reject(error) });
 	    };
 
@@ -164,10 +184,6 @@ function _uploadMedia(file, currentPosition) {
 	        file.slice(0, 90000, file.type)
 	    );
 	});
-	return {
-		type: "MEDIAS_UPLOAD",
-		payload: promise
-	}
 }
 
 /**
