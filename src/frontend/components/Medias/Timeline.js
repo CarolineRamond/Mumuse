@@ -28,9 +28,11 @@ class Timeline extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		this.setState({  
-			minDate: nextProps.minDate 
-		});
+		if (nextProps.minDate <= this.state.value) {
+			this.setState({  
+				minDate: nextProps.minDate
+			});
+		}
 	}
 
 	render() {

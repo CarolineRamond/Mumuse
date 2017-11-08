@@ -40,7 +40,6 @@ class SidePanel extends React.Component {
 }
 
 const ConnectedSidePanel = connect((store)=> {
-	console.log(store);
 	return {
 		user: store.auth.user
 	}
