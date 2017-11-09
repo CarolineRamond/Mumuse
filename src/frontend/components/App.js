@@ -5,8 +5,8 @@ import Admin from './Admin'
 import Auth from './Auth'
 import Main from './Main'
 
-const App = () => (
-	<Router>
+const App = () => {
+	return <Router>
 	  	<Switch>
 		    <Route path="/admin*" component={Admin}/>
 		    <Route path="/:loc" component={()=>(
@@ -18,6 +18,6 @@ const App = () => (
 		    <Redirect to="/21,6,1"/>
 	    </Switch>
 	</Router>
-)
+}
 
 export default App;

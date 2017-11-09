@@ -60,7 +60,8 @@ export const dragMapMedias = (mapEvent)=> {
 
 export const endDragMapMedias = (mapEvent)=> {
 	return {
-		type: 'MEDIAS_MAP_END_DRAG'
+		type: 'MEDIAS_MAP_END_DRAG',
+		// payload: _updateMedia
 	};
 }
 

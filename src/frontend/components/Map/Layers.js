@@ -16,6 +16,15 @@ class Layers extends React.Component {
     this.toggleLayer = this.toggleLayer.bind(this);
   }
 
+  shouldComponentUpdate(nextProps) {
+    // component should re-render only if one of the layers was modified
+    var shouldUpdate = false;
+    forIn(nextProps.layers, (layer)=> {
+      shouldUpdate = (layer.metadata.didChange || shouldUpdate);
+    });
+    return shouldUpdate;
+  }
+
   toggleLayer(layerId) {
     this.props.dispatch(toggleLayerMedias(layerId));
   }

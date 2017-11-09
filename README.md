@@ -29,7 +29,10 @@ To launch : ``npm run dev``
 				</MainPanel>
 				<SidePanel>
 					<Tabs>
-						<Tab><Carousel/></Tab>
+						<Tab>
+							<Carousel/>
+							<MediasActions (if user is admin)/>
+						</Tab>
 						<Tab><Layers/></Tab>
 					</Tabs>
 				</SidePanel>

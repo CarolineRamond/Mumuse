@@ -4,7 +4,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 import PropTypes from "prop-types"
 
 import { selectCarouselMedias, deselectCarouselMedias } from '../../modules/medias/medias.actions'
-import { getVisibleMedias, getSelectedMedias, getDidMediasNbChange,
+import { getVisibleMedias, getSelectedMedias, shouldCarouselReload, 
     areMediasLocked } from '../../modules/medias'
 import styles from "./carousel.css"
 
@@ -22,7 +22,7 @@ class Carousel extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-    	if (nextProps.shouldCarouselUpdate) {
+    	if (nextProps.shouldCarouselReload) {
     		// visible medias changed : reload thumbnails
     		this.setState({
 	    		mediasSlice: [],
@@ -58,12 +58,14 @@ class Carousel extends React.Component {
 		var mappedThumbnails = [];
         this.state.mediasSlice.map((media, i) => {
             var classes = [styles.thumbnail];
+            if (this.props.medias[i] && this.props.medias[i].properties.selected) {
+                classes.push(styles.thumbnailSelected);
+            }
             mappedThumbnails.push(
             	<div className={styles.thumbnailContainer} key={i}
             		onClick={(e)=>{this.selectMedia(media, e.ctrlKey)}}>
-                	<img className={styles.thumbnail}
+                	<img className={classes.join(' ')}
                     src={media.properties.thumbnail_url}/>
-            		<div style={{position:"absolute", color: "white", top: "20%", left: "50%"}}>{i}</div>
             	</div>
             );
         });
@@ -96,7 +98,7 @@ class Carousel extends React.Component {
 // provided by @connect (required)
 Carousel.propTypes = {
     medias: PropTypes.arrayOf(PropTypes.object).isRequired,
-    shouldCarouselUpdate: PropTypes.bool.isRequired,
+    shouldCarouselReload: PropTypes.bool.isRequired,
     areMediasLocked: PropTypes.bool.isRequired
 }
 
@@ -104,7 +106,7 @@ Carousel.propTypes = {
 const ConnectedCarousel = connect((store)=> {
     return  {
         medias: getVisibleMedias(store.medias),
-        shouldCarouselUpdate: getDidMediasNbChange(store.medias),
+        shouldCarouselReload: shouldCarouselReload(store.medias),
         areMediasLocked: areMediasLocked(store.medias)
     }
 })(Carousel);

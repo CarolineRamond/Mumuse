@@ -42,8 +42,17 @@ export { mediasInitialState, mediasMapConfig };
 // (to expose data to components)
 export const getVisibleMedias = (state) => {
 	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
-	const geoJSONMedias = state.sources["selected-medias-source"].data.features;
-	return vectorMedias.concat(geoJSONMedias);
+	const geoJSONMedias = state.sources["selected-medias-source"].data.features.map((feature)=> {
+		return Object.assign({}, feature, {
+			properties: Object.assign({}, feature.properties, {
+				selected: true
+			})
+		});
+	});
+	return vectorMedias.concat(geoJSONMedias).sort((a,b)=> {
+		return (a.properties._id < b.properties._id);
+	});
+	// always keep same set of media in same order for carousel display
 }
 
 export const getSelectedMedias = (state) => {
@@ -85,6 +94,10 @@ export const getTimelineValue = (state) => {
 }
 
 export const getDidMediasNbChange = (state) => {
+	return state.mediasUpdate.didNbChange;
+}
+
+export const shouldCarouselReload = (state) => {
 	return state.mediasUpdate.didNbChange;
 }
 
