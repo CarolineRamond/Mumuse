@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 
 const defaultSourceReducer = (state) => {
 	return Object.assign({}, state, { 
-		metadata: Object.assign({}, state, {
+		metadata: Object.assign({}, state.metadata, {
 			didChange: undefined 
 		})
 	});

@@ -13,6 +13,9 @@ export default {
             data: { 
                 type: "FeatureCollection",
                 features: []
+            },
+            metadata: {
+                didChange: false
             }
         }
     },

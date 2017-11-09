@@ -42,7 +42,7 @@ export { mediasInitialState, mediasMapConfig };
 // export selectors
 // (to expose data to components)
 export const getVisibleMedias = (state) => {
-	console.log('\n\nGET VISIBLE MEDIAS ');
+	// console.log('\n\nGET VISIBLE MEDIAS ', state.mediasUpdate.justSelected);
 
 	var vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
 	const geoJSONMedias = state.sources["selected-medias-source"].data.features.map((feature)=> {
@@ -53,15 +53,15 @@ export const getVisibleMedias = (state) => {
 		});
 	});
 
-	const titi = vectorMedias.map((media)=> {
-		return media.properties.name;
-	});
-	console.log('renderedFeatures : ', titi.sort());
+	// const titi = vectorMedias.map((media)=> {
+	// 	return media.properties.name;
+	// });
+	// console.log('renderedFeatures : ', titi.sort());
 
-	const tata = geoJSONMedias.map((media)=> {
-		return media.properties.name;
-	});
-	console.log('selected features : ', tata.sort());
+	// const tata = geoJSONMedias.map((media)=> {
+	// 	return media.properties.name;
+	// });
+	// console.log('selected features : ', tata.sort());
 
 	// some medias were just selected : they are not yet filtered on medias-layer
 	// => they should be filtered out of visible medias
@@ -78,6 +78,8 @@ export const getVisibleMedias = (state) => {
 			return media.properties.name;
 		});
 		console.log('just selected : ', toto);
+	} else {
+		console.log('just selected empty');
 	}
 	
 
@@ -90,6 +92,8 @@ export const getVisibleMedias = (state) => {
 			return media.properties.name;
 		});
 		console.log('just deselected : ', tutu);
+	} else {
+		console.log('just deselected empty');
 	}
 
 	const result = vectorMedias.concat(geoJSONMedias)
@@ -98,10 +102,10 @@ export const getVisibleMedias = (state) => {
 			return (a.properties._id < b.properties._id);
 		});
 
-	const yoyo = result.map((media)=> {
-		return media.properties.name;
-	}).sort();
-	console.log('result ', yoyo);
+	// const yoyo = result.map((media)=> {
+	// 	return media.properties.name;
+	// }).sort();
+	// console.log('result ', yoyo);
 	return result;
 }
 
