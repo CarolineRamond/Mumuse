@@ -12,8 +12,7 @@ const mediasReducer = combineReducers({
 	timeline: timelineReducer,
 	mediasUpdate: (state= { justSelected:false, didNbChange: false } , action) => {
 		switch(action.type) {
-			case 'MEDIAS_SELECT':
-			case 'MEDIAS_DESELECT':
+			case 'MEDIAS_CLICK':
 				return {
 					justSelected: true,
 					didNbChange: false
@@ -93,7 +92,7 @@ export const getTimelineValue = (state) => {
 	return state.timeline;
 }
 
-export const getDidMediasNbChange = (state) => {
+export const didMediasNbChange = (state) => {
 	return state.mediasUpdate.didNbChange;
 }
 

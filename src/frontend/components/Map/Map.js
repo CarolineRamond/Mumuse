@@ -54,6 +54,7 @@ class Map extends React.Component {
 			this._loadSources();
 			this._loadLayers();
 			this._addSimpleEventsHandling();
+			this._addClickHandling();
 			this._addDragndropHandling();
 			this._addViewportChangeHandling();
 		});
@@ -101,6 +102,21 @@ class Map extends React.Component {
 				});
 			}
 		});
+	}
+
+	_addClickHandling() {
+		if (mapConfig.click.length > 0) {
+			this.map.on('click', (evt)=> {
+				mapConfig.click.map((item)=> {
+					const features = this.map.queryRenderedFeatures(
+						evt.point, 
+						{ layers: item.layerIds }
+					);
+					const ctrlKey = evt.originalEvent.ctrlKey;
+					this.props.dispatch(item.action({ features, ctrlKey }));
+				});
+			});
+		}
 	}
 
 	_addDragndropHandling() {

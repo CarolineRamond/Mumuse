@@ -1,19 +1,9 @@
 import axios from "axios";
 import EXIF from 'exif-parser';
 
-export const selectMapMedias = (mapEvent)=> {
+export const clickMedias = ({ features, ctrlKey })=> {
 	return { 
-		type: 'MEDIAS_SELECT', 
-		payload: { 
-			features: mapEvent.features,
-			ctrlKey: mapEvent.originalEvent.ctrlKey
-		}
-	};
-};
-
-export const selectCarouselMedias = (features, ctrlKey)=> {
-	return { 
-		type: 'MEDIAS_SELECT', 
+		type: 'MEDIAS_CLICK', 
 		payload: { 
 			features: features,
 			ctrlKey: ctrlKey

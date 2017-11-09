@@ -1,20 +1,11 @@
-import { selectMapMedias, deselectMapMedias, 
+import { clickMedias, deselectMapMedias, 
     startDragMapMedias, dragMapMedias, endDragMapMedias, 
     updateFeaturesMedias, updateFeaturesGridMedias } from './medias.actions';
 
 export default {
-    // events contain all event handlers except dragndrop
-    // events listeners are added sequentially on map load
-    // dragndrop listeners are set up another way (cf Map component)
-    events: [{
-        type: 'click',
-        layer: null,
-        action: deselectMapMedias
-    }, 
-    {
-        type: 'click',
-        layerId: "medias-layer",
-        action: selectMapMedias
+    click: [{
+        layerIds: ["medias-layer"],
+        action: clickMedias
     }],
     dragndrop: [{
         layerId: "selected-medias-layer",
@@ -32,5 +23,6 @@ export default {
         source: "grid-medias-source",
         uniqueKey: "quadkey",
         action: updateFeaturesGridMedias
-    }]
+    }],
+    events: []
 }

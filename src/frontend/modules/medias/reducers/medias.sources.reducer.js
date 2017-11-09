@@ -50,31 +50,22 @@ const gridMediasSourceReducer = (state = {}, action) => {
 // (geojson source representing selected medias)
 const selectedMediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
-	 	case "MEDIAS_SELECT": {
-	 		// add selected features to source data
+		case "MEDIAS_CLICK": {
+			var newFeatures = [];
+			if (action.payload.ctrlKey) {
+				// keep previously selected medias (remove features)
+				newFeatures = newFeatures.concat(state.data.features);
+			}
+			// select clicked medias
+			newFeatures = newFeatures.concat(action.payload.features);
 	 		return Object.assign({}, state, {
 				data: Object.assign({}, state.data, {
-					features: state.data.features.concat(action.payload.features)
+					features: newFeatures
 				}),
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true
 				})
 			});
-			break;
-		}
-		case "MEDIAS_DESELECT": {
-			if (action.payload.ctrlKey) {
-				return defaultSourceReducer(state);
-			}
-	 		// remove all features from source data
-	 		return Object.assign({}, state, {
-				data: Object.assign({}, state.data, {
-					features: []
-				}),
-				metadata: Object.assign({}, state.metadata, {
-					didChange: true
-				})
-	 		});
 			break;
 		}
 		case "MEDIAS_MAP_START_DRAG": {

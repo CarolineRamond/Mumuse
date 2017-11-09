@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import InfiniteScroll from 'react-infinite-scroller'
 import PropTypes from "prop-types"
 
-import { selectCarouselMedias, deselectCarouselMedias } from '../../modules/medias/medias.actions'
+import { clickMedias } from '../../modules/medias/medias.actions'
 import { getVisibleMedias, getSelectedMedias, shouldCarouselReload, 
     areMediasLocked } from '../../modules/medias'
 import styles from "./carousel.css"
@@ -45,22 +45,23 @@ class Carousel extends React.Component {
     handleClick(target, ctrlKey) {
         const isOutside = target.tagName !== "IMG";
         if (isOutside) {
-            this.props.dispatch(deselectCarouselMedias(ctrlKey));
+            const features = [];
+            this.props.dispatch(clickMedias({ features, ctrlKey }));
         }
     }
 
     selectMedia(media, ctrlKey) {
-    	this.props.dispatch(deselectCarouselMedias(ctrlKey));
-    	this.props.dispatch(selectCarouselMedias([media], ctrlKey));
+        const features = [media];
+    	this.props.dispatch(clickMedias({ features, ctrlKey }));
     }
 
 	render() {
 		var mappedThumbnails = [];
         this.state.mediasSlice.map((media, i) => {
             var classes = [styles.thumbnail];
-            if (this.props.medias[i] && this.props.medias[i].properties.selected) {
-                classes.push(styles.thumbnailSelected);
-            }
+            // if (this.props.medias[i] && this.props.medias[i].properties.selected) {
+            //     classes.push(styles.thumbnailSelected);
+            // }
             mappedThumbnails.push(
             	<div className={styles.thumbnailContainer} key={i}
             		onClick={(e)=>{this.selectMedia(media, e.ctrlKey)}}>

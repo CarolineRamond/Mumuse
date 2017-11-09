@@ -12,35 +12,27 @@ const defaultLayerReducer = (state) => {
 // (pointwise media representation, originated from vector tiles)
 const mediasLayerReducer = (state = {}, action) => {
 	switch (action.type) {
-	 	case "MEDIAS_SELECT": {
-	 		// filter out selected medias
-	 		const selectedIds = action.payload.features.map((feature)=> {
+		case "MEDIAS_CLICK": {
+			const currentFilter  = state.filter || ['all'];
+			var newFilter = ['all'];
+			if (!action.payload.ctrlKey) {
+				// deselect previously selected medias (remove filters)
+				newFilter = currentFilter.filter((item)=> {
+					return (item.indexOf('_id') === -1);
+				});
+			}
+			// select newly selected medias (add filters)
+			const selectedIds = action.payload.features.map((feature)=> {
 	 			return feature.properties._id;
 	 		});
-	 		const filterToAdd = ['!in', '_id'].concat(selectedIds);
-	 		const currentFilter = state.filter || ['all'];
+			const filterToAdd = ['!in', '_id'].concat(selectedIds);
+			newFilter = newFilter.concat([filterToAdd]);
 
-	 		return Object.assign({}, state, {
-				filter: currentFilter.concat([filterToAdd]),
+			return Object.assign({}, state, {
+				filter: newFilter.concat([filterToAdd]),
 				metadata: Object.assign({}, state.metadata, {
 					didChange: { filter: true }
 				})
-	 		});
-			break;
-		}
-		case "MEDIAS_DESELECT": {
-			if (action.payload.ctrlKey || !state.filter) {
-				return defaultLayerReducer(state);
-			}
-	 		// remove selected medias filter
-	 		const newFilter = state.filter.filter((item)=> {
-	 			return (item.indexOf('_id') === -1);
-	 		});
-	 		return Object.assign({}, state, {
-				filter: newFilter,
-				metadata: Object.assign({}, state.metadata, {
-					didChange: { filter: true }
-	 			})
 	 		});
 			break;
 		}
