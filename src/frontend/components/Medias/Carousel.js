@@ -4,8 +4,8 @@ import InfiniteScroll from 'react-infinite-scroller'
 import PropTypes from "prop-types"
 
 import { clickMedias } from '../../modules/medias/medias.actions'
-import { getVisibleMedias, getSelectedMedias, shouldCarouselReload, 
-    areMediasLocked } from '../../modules/medias'
+import { getVisibleMedias, shouldCarouselReload, areMediasLocked , 
+    justSelectedMedias } from '../../modules/medias'
 import styles from "./carousel.css"
 
 
@@ -28,8 +28,27 @@ class Carousel extends React.Component {
 	    		mediasSlice: [],
 	    		hasMore: nextProps.medias.length > 0
 	    	});
-    	}
+    	} else if (nextProps.justSelectedMedias) {
+            // console.log('coucou');
+            // const tutu = nextProps.medias.map((media)=> {
+            //     return { name: media.properties.name, selected: media.properties.selected };
+            // })
+            // console.log("next medias ", tutu);
+
+            const newMediasSlice = nextProps.medias.slice(0, this.state.mediasSlice.length);
+            // const toto = newMediasSlice.map((media)=> {
+            //     return { name: media.properties.name, selected: media.properties.selected };
+            // })
+            // console.log("next state ", toto);
+            this.setState({
+                mediasSlice: newMediasSlice
+            });
+        }
     }
+
+    // shouldComponentUpdate(nextProps) {
+        // return (nextProps.shouldCarouselReload || nextProps.justSelectedMedias);
+    // }
 
     loadMoreThumbnails() {
     	const n = this.state.mediasSlice.length;
@@ -56,12 +75,18 @@ class Carousel extends React.Component {
     }
 
 	render() {
+        // console.log("RENDER CAROUSEL ");
+        // const toto = this.state.mediasSlice.map((media)=> {
+        //     return { name: media.properties.name, selected: media.properties.selected };
+        // })
+        // console.log("carousel ", toto);
+
 		var mappedThumbnails = [];
         this.state.mediasSlice.map((media, i) => {
             var classes = [styles.thumbnail];
-            // if (this.props.medias[i] && this.props.medias[i].properties.selected) {
-            //     classes.push(styles.thumbnailSelected);
-            // }
+            if (media.properties.selected) {
+                classes.push(styles.thumbnailSelected);
+            }
             mappedThumbnails.push(
             	<div className={styles.thumbnailContainer} key={i}
             		onClick={(e)=>{this.selectMedia(media, e.ctrlKey)}}>
@@ -108,6 +133,7 @@ const ConnectedCarousel = connect((store)=> {
     return  {
         medias: getVisibleMedias(store.medias),
         shouldCarouselReload: shouldCarouselReload(store.medias),
+        justSelectedMedias: justSelectedMedias(store.medias),
         areMediasLocked: areMediasLocked(store.medias)
     }
 })(Carousel);

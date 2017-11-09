@@ -63,7 +63,9 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 					features: newFeatures
 				}),
 				metadata: Object.assign({}, state.metadata, {
-					didChange: true
+					didChange: true,
+					justSelected: action.payload.features,
+					justDeselected: state.data.features
 				})
 			});
 			break;
