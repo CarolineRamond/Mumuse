@@ -14,10 +14,10 @@ const mediasLayerReducer = (state = {}, action) => {
 	switch (action.type) {
 		case "MEDIAS_CLICK": {
 			const currentFilter  = state.filter || ['all'];
-			var newFilter = ['all'];
+			var newFilter = currentFilter;
 			if (!action.payload.ctrlKey) {
 				// deselect previously selected medias (remove filters)
-				newFilter = currentFilter.filter((item)=> {
+				newFilter = newFilter.filter((item)=> {
 					return (item.indexOf('_id') === -1);
 				});
 			}
@@ -29,7 +29,7 @@ const mediasLayerReducer = (state = {}, action) => {
 			newFilter = newFilter.concat([filterToAdd]);
 
 			return Object.assign({}, state, {
-				filter: newFilter.concat([filterToAdd]),
+				filter: newFilter,
 				metadata: Object.assign({}, state.metadata, {
 					didChange: { filter: true }
 				})

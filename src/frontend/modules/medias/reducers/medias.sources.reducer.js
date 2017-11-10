@@ -51,6 +51,7 @@ const gridMediasSourceReducer = (state = {}, action) => {
 const selectedMediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
 		case "MEDIAS_CLICK": {
+			console.log("\n\nSELECT MEDIA ", action.payload.features.map((item)=> {return item.properties.name}));
 			var newFeatures = [];
 			var newJustSelected = action.payload.features;
 			var newJustDeselected = state.metadata.justDeselected;
@@ -77,6 +78,7 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 			break;
 		}
 		case 'MEDIAS_UPDATE_FEATURES':
+			console.log('resolve pending');
 			if (state.metadata.selectFilterPending) {
 		 		return Object.assign({}, state, {
 					metadata: Object.assign({}, state.metadata, {

@@ -17,7 +17,7 @@ const mediasReducer = combineReducers({
 				return {
 					justSelected: true,
 					selectFilterPending: true,
-					didNbChange: false
+					didNbChange: false,
 				}
 				break;
 			case 'MEDIAS_UPDATE_FEATURES':
@@ -45,44 +45,55 @@ export { mediasInitialState, mediasMapConfig };
 
 // export selectors
 // (to expose data to components)
-export const getVisibleMedias = (state) => {
-	var result;
-	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
-	const geoJSONMedias = state.sources["selected-medias-source"].data.features.map((feature)=> {
-		return Object.assign({}, feature, {
-			properties: Object.assign({}, feature.properties, {
-				selected: true
-			})
-		});
-	});
+// export const getVisibleMedias = (state) => {
+// 	console.log("GET VISIBLE MEDIAS ", state.mediasUpdate.selectFilterPending);
+// 	var result;
+// 	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
+// 	const geoJSONMedias = state.sources["selected-medias-source"].data.features.map((feature)=> {
+// 		return Object.assign({}, feature, {
+// 			properties: Object.assign({}, feature.properties, {
+// 				selected: true
+// 			})
+// 		});
+// 	});
 
-	if (state.mediasUpdate.selectFilterPending) {
-		// the selection filters are not active yet :
-		// deselected medias are not yet added back to vectorMedias => add them
-		const justDeselected = state.sources["selected-medias-source"].metadata.justDeselected;
-		result = vectorMedias.concat(justDeselected);
+// 	console.log("vector : ", vectorMedias.map((item)=> {return item.properties.name}).sort());
 
-		// the selection filters are not active yet :
-		// selected medias are not yet removed from vectorMedias => remove them
-		const justSelected = state.sources["selected-medias-source"].metadata.justSelected;
-		justSelected.map((media)=> {
-			const mediaId = media.properties._id;
-			const index = result.findIndex((item)=> {return item.properties._id === mediaId });
-			if (index > -1) {
-				result.splice(index, 1);
-			}
-		});
-	} else {
-		result = vectorMedias;
-	}
+// 	if (state.mediasUpdate.selectFilterPending) {
+// 		// the selection filters are not active yet :
+// 		// deselected medias are not yet added back to vectorMedias => add them
+// 		const justDeselected = state.sources["selected-medias-source"].metadata.justDeselected;
+// 		result = vectorMedias.concat(justDeselected);
+// 		console.log(" + deselected : ", justDeselected.map((item)=> {item.properties.name}));
+// 		console.log(" => ", result.map((item)=> {return item.properties.name}).sort())
 
-	result = result.concat(geoJSONMedias)
-		// always keep same set of media in same order for carousel display
-		.sort((a,b)=> {
-			return (a.properties._id > b.properties._id);
-		});
-	return result;
-}
+// 		// the selection filters are not active yet :
+// 		// selected medias are not yet removed from vectorMedias => remove them
+// 		const justSelected = state.sources["selected-medias-source"].metadata.justSelected;
+// 		justSelected.map((media)=> {
+// 			const mediaId = media.properties._id;
+// 			const index = result.findIndex((item)=> {return item.properties._id === mediaId });
+// 			if (index > -1) {
+// 				result.splice(index, 1);
+// 			}
+// 		});
+// 		console.log(" - selected : ", justSelected.map((item)=> {return item.properties.name}).sort());
+// 		console.log(" => ", result.map((item)=> {return item.properties.name}).sort())
+// 	} else {
+// 		result = vectorMedias;
+// 	}
+
+// 	result = result.concat(geoJSONMedias)
+// 	console.log(' + selected feature : ', geoJSONMedias.map((item)=> {return item.properties.name}).sort());
+// 	console.log(" => ", result.map((item)=> {return item.properties.name}).sort())
+
+// 		// always keep same set of media in same order for carousel display
+		
+// 	console.log(" => result : ", result.map((item)=> {return item.properties.name}));
+// 	return result.sort((a,b)=> {
+// 			return (a.properties._id < b.properties._id);
+// 		});;
+// }
 
 export const getSelectedMedias = (state) => {
 	return state.sources["selected-medias-source"].data.features;
