@@ -51,40 +51,40 @@ const gridMediasSourceReducer = (state = {}, action) => {
 const selectedMediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
 		case "MEDIAS_CLICK": {
-			console.log("\n\nSELECT MEDIA ", action.payload.features.map((item)=> {return item.properties.name}));
 			var newFeatures = [];
-			var newJustSelected = action.payload.features;
-			var newJustDeselected = state.metadata.justDeselected;
 			if (action.payload.ctrlKey) {
 				// keep previously selected medias (remove features)
 				newFeatures = newFeatures.concat(state.data.features);
-			} else {
-				newJustSelected = newJustSelected.concat(state.metadata.justSelected);
-				newJustDeselected = newJustDeselected.concat(state.data.features);
 			}
 			// select clicked medias
 			newFeatures = newFeatures.concat(action.payload.features);
+
+			var stillFiltered = [];
+			if (state.metadata.selectFilterPending) {
+				stillFiltered = state.metadata.stillFiltered;
+			} else {
+				stillFiltered = state.data.features;
+			}
+
 	 		return Object.assign({}, state, {
 				data: Object.assign({}, state.data, {
 					features: newFeatures
 				}),
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true,
-					justSelected: newJustSelected,
-					justDeselected: newJustDeselected,
-					selectFilterPending: true
+					selectFilterPending: true,
+					stillFiltered: stillFiltered
 				})
 			});
 			break;
 		}
 		case 'MEDIAS_UPDATE_FEATURES':
-			console.log('resolve pending');
 			if (state.metadata.selectFilterPending) {
 		 		return Object.assign({}, state, {
 					metadata: Object.assign({}, state.metadata, {
-						justSelected: [],
-						justDeselected: [],
-						selectFilterPending: false
+						didChange: false,
+						selectFilterPending: false,
+						stillFiltered: []
 					})
 				});
 			}

@@ -16,9 +16,8 @@ export default {
             },
             metadata: {
                 didChange: false,
-                justSelected: [],
-                justDeselected: [],
-                selectFilterPending: false
+                selectFilterPending: false,
+                stillFiltered: []
             }
         }
     },

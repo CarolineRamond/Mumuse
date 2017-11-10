@@ -67,20 +67,14 @@ export const toggleLayerMedias = (layerId)=> {
 export const updateFeaturesMedias = (features, zoom)=> {
 	return {
 		type: 'MEDIAS_UPDATE_FEATURES',
-		payload: { features, zoom },
-		meta: {
-			throttle: 1000
-		}
+		payload: { features, zoom }
 	};
 }
 
 export const updateFeaturesGridMedias = (features, zoom)=> {
 	return {
 		type: 'MEDIAS_GRID_UPDATE_FEATURES',
-		payload: { features, zoom },
-		meta: {
-			throttle: 1000
-		}
+		payload: { features, zoom }
 	};
 }
 

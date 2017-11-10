@@ -4,8 +4,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 import PropTypes from "prop-types"
 
 import { clickMedias } from '../../modules/medias/medias.actions'
-import { getVisibleMedias, shouldCarouselReload, areMediasLocked , 
-    justSelectedMedias } from '../../modules/medias'
+import { getVisibleMedias, getSelectFilterPending, areMediasLocked } from '../../modules/medias'
 import styles from "./carousel.css"
 
 
@@ -22,33 +21,18 @@ class Carousel extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-    	if (nextProps.shouldCarouselReload) {
-    		// visible medias changed : reload thumbnails
-    		this.setState({
-	    		mediasSlice: [],
-	    		hasMore: nextProps.medias.length > 0
-	    	});
-    	} else if (nextProps.justSelectedMedias) {
-            // console.log('coucou');
-            // const tutu = nextProps.medias.map((media)=> {
-            //     return { name: media.properties.name, selected: media.properties.selected };
-            // })
-            // console.log("next medias ", tutu);
-
+        if (!nextProps.selectFilterPending && this.props.selectFilterPending) {
             const newMediasSlice = nextProps.medias.slice(0, this.state.mediasSlice.length);
-            // const toto = newMediasSlice.map((media)=> {
-            //     return { name: media.properties.name, selected: media.properties.selected };
-            // })
-            // console.log("next state ", toto);
             this.setState({
                 mediasSlice: newMediasSlice
             });
+        } else if (nextProps.medias.length !== this.props.medias.length) {
+            this.setState({
+                mediasSlice: [],
+                hasMore: nextProps.medias.length > 0
+            });
         }
     }
-
-    // shouldComponentUpdate(nextProps) {
-        // return (nextProps.shouldCarouselReload || nextProps.justSelectedMedias);
-    // }
 
     loadMoreThumbnails() {
     	const n = this.state.mediasSlice.length;
@@ -124,7 +108,7 @@ class Carousel extends React.Component {
 // provided by @connect (required)
 Carousel.propTypes = {
     medias: PropTypes.arrayOf(PropTypes.object).isRequired,
-    shouldCarouselReload: PropTypes.bool.isRequired,
+    selectFilterPending: PropTypes.bool.isRequired,
     areMediasLocked: PropTypes.bool.isRequired
 }
 
@@ -132,8 +116,7 @@ Carousel.propTypes = {
 const ConnectedCarousel = connect((store)=> {
     return  {
         medias: getVisibleMedias(store.medias),
-        shouldCarouselReload: shouldCarouselReload(store.medias),
-        justSelectedMedias: justSelectedMedias(store.medias),
+        selectFilterPending: getSelectFilterPending(store.medias),
         areMediasLocked: areMediasLocked(store.medias)
     }
 })(Carousel);

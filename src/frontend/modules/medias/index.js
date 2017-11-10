@@ -11,28 +11,17 @@ const mediasReducer = combineReducers({
 	layers: layersReducer,
 	sources: sourcesReducer,
 	timeline: timelineReducer,
-	mediasUpdate: (state= { justSelected:false, didNbChange: false } , action) => {
+	selectFilterPending: (state= false , action) => {
 		switch(action.type) {
 			case 'MEDIAS_CLICK':
-				return {
-					justSelected: true,
-					selectFilterPending: true,
-					didNbChange: false,
-				}
+				return true;
 				break;
 			case 'MEDIAS_UPDATE_FEATURES':
-				return {
-					justSelected: false,
-					selectFilterPending: false,
-					didNbChange: !state.justSelected
-				}
+				return false;
 				break;
 			default:
-				return {
-					justSelected: false,
-					selectFilterPending: state.selectFilterPending,
-					didNbChange: false
-				};
+				return state;
+				break;
 		}
 	}
 });
@@ -45,55 +34,46 @@ export { mediasInitialState, mediasMapConfig };
 
 // export selectors
 // (to expose data to components)
-// export const getVisibleMedias = (state) => {
-// 	console.log("GET VISIBLE MEDIAS ", state.mediasUpdate.selectFilterPending);
-// 	var result;
-// 	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
-// 	const geoJSONMedias = state.sources["selected-medias-source"].data.features.map((feature)=> {
-// 		return Object.assign({}, feature, {
-// 			properties: Object.assign({}, feature.properties, {
-// 				selected: true
-// 			})
-// 		});
-// 	});
+export const getVisibleMedias = (state) => {
+	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures
+		.map((feature)=> {
+			var featureClone = Object.assign( Object.create( Object.getPrototypeOf(feature)), feature)
+			featureClone.properties.selected = false;
+			return featureClone;
+		});
+	const selectedIds = state.sources["selected-medias-source"].data.features.map((feature)=> {
+		return feature.properties._id;
+	});
 
-// 	console.log("vector : ", vectorMedias.map((item)=> {return item.properties.name}).sort());
+	var result;
+	if (state.selectFilterPending) {
+		const stillFiltered = state.sources["selected-medias-source"].metadata.stillFiltered
+			.map((feature)=> {
+				var featureClone = Object.assign( Object.create( Object.getPrototypeOf(feature)), feature)
+				featureClone.properties.selected = false;
+				return featureClone;
+			});
+		result = vectorMedias.concat(stillFiltered);
+	} else {
+		const selectedFeatures = state.sources["selected-medias-source"].data.features
+			.map((feature)=> {
+				return Object.assign( Object.create( Object.getPrototypeOf(feature)), feature)
+			});
+		result = vectorMedias.concat(selectedFeatures);
+	}
+	
+	result = result
+		.map((item)=> {
+			if (selectedIds.indexOf(item.properties._id) > -1) {
+				item.properties.selected = true;
+			}
+			return item;
+		}).sort((a,b)=> {
+			return (a.properties._id > b.properties._id);
+		});
 
-// 	if (state.mediasUpdate.selectFilterPending) {
-// 		// the selection filters are not active yet :
-// 		// deselected medias are not yet added back to vectorMedias => add them
-// 		const justDeselected = state.sources["selected-medias-source"].metadata.justDeselected;
-// 		result = vectorMedias.concat(justDeselected);
-// 		console.log(" + deselected : ", justDeselected.map((item)=> {item.properties.name}));
-// 		console.log(" => ", result.map((item)=> {return item.properties.name}).sort())
-
-// 		// the selection filters are not active yet :
-// 		// selected medias are not yet removed from vectorMedias => remove them
-// 		const justSelected = state.sources["selected-medias-source"].metadata.justSelected;
-// 		justSelected.map((media)=> {
-// 			const mediaId = media.properties._id;
-// 			const index = result.findIndex((item)=> {return item.properties._id === mediaId });
-// 			if (index > -1) {
-// 				result.splice(index, 1);
-// 			}
-// 		});
-// 		console.log(" - selected : ", justSelected.map((item)=> {return item.properties.name}).sort());
-// 		console.log(" => ", result.map((item)=> {return item.properties.name}).sort())
-// 	} else {
-// 		result = vectorMedias;
-// 	}
-
-// 	result = result.concat(geoJSONMedias)
-// 	console.log(' + selected feature : ', geoJSONMedias.map((item)=> {return item.properties.name}).sort());
-// 	console.log(" => ", result.map((item)=> {return item.properties.name}).sort())
-
-// 		// always keep same set of media in same order for carousel display
-		
-// 	console.log(" => result : ", result.map((item)=> {return item.properties.name}));
-// 	return result.sort((a,b)=> {
-// 			return (a.properties._id < b.properties._id);
-// 		});;
-// }
+	return result;
+}
 
 export const getSelectedMedias = (state) => {
 	return state.sources["selected-medias-source"].data.features;
@@ -133,16 +113,8 @@ export const getTimelineValue = (state) => {
 	return state.timeline;
 }
 
-export const didMediasNbChange = (state) => {
-	return state.mediasUpdate.didNbChange;
-}
-
-export const shouldCarouselReload = (state) => {
-	return state.mediasUpdate.didNbChange;
-}
-
-export const justSelectedMedias = (state) => {
-	return state.mediasUpdate.justSelected;
+export const getSelectFilterPending = (state) => {
+	return state.selectFilterPending;
 }
 
 export const areMediasLocked = (state) => {
