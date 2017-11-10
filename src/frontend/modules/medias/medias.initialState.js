@@ -15,7 +15,10 @@ export default {
                 features: []
             },
             metadata: {
-                didChange: false
+                didChange: false,
+                justSelected: [],
+                justDeselected: [],
+                selectFilterPending: false
             }
         }
     },

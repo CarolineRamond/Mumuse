@@ -51,6 +51,7 @@ const gridMediasSourceReducer = (state = {}, action) => {
 const selectedMediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
 		case "MEDIAS_CLICK": {
+			console.log("\n\nSELECT ", action.payload.features.map((media)=> {return media.properties.name}));
 			var newFeatures = [];
 			if (action.payload.ctrlKey) {
 				// keep previously selected medias (remove features)
@@ -64,12 +65,26 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 				}),
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true,
-					justSelected: action.payload.features,
-					justDeselected: state.data.features
+					justSelected: state.metadata.justSelected.concat(action.payload.features),
+					justDeselected: state.metadata.justDeselected.concat(state.data.features),
+					selectFilterPending: true
 				})
 			});
 			break;
 		}
+		case 'MEDIAS_UPDATE_FEATURES':
+			if (state.metadata.selectFilterPending) {
+				console.log('reset pending');
+		 		return Object.assign({}, state, {
+					metadata: Object.assign({}, state.metadata, {
+						justSelected: [],
+						justDeselected: [],
+						selectFilterPending: false
+					})
+				});
+			}
+			return defaultSourceReducer(state);
+			break;
 		case "MEDIAS_MAP_START_DRAG": {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, { 

@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { uniq } from "lodash";
 
 import layersReducer from './reducers/medias.layers.reducer';
 import sourcesReducer from './reducers/medias.sources.reducer';
@@ -15,18 +16,21 @@ const mediasReducer = combineReducers({
 			case 'MEDIAS_CLICK':
 				return {
 					justSelected: true,
+					selectFilterPending: true,
 					didNbChange: false
 				}
 				break;
 			case 'MEDIAS_UPDATE_FEATURES':
 				return {
 					justSelected: false,
+					selectFilterPending: false,
 					didNbChange: !state.justSelected
 				}
 				break;
 			default:
 				return {
 					justSelected: false,
+					selectFilterPending: state.selectFilterPending,
 					didNbChange: false
 				};
 		}
@@ -42,9 +46,10 @@ export { mediasInitialState, mediasMapConfig };
 // export selectors
 // (to expose data to components)
 export const getVisibleMedias = (state) => {
-	// console.log('\n\nGET VISIBLE MEDIAS ', state.mediasUpdate.justSelected);
+	console.log('GET VISIBLE MEDIAS ', state.mediasUpdate.selectFilterPending);
 
-	var vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
+	var result;
+	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures;
 	const geoJSONMedias = state.sources["selected-medias-source"].data.features.map((feature)=> {
 		return Object.assign({}, feature, {
 			properties: Object.assign({}, feature.properties, {
@@ -53,59 +58,60 @@ export const getVisibleMedias = (state) => {
 		});
 	});
 
-	// const titi = vectorMedias.map((media)=> {
-	// 	return media.properties.name;
-	// });
-	// console.log('renderedFeatures : ', titi.sort());
+	const tutu = vectorMedias.map((media)=> { return media.properties.name });
+	console.log("vector medias : ", tutu.sort());
 
-	// const tata = geoJSONMedias.map((media)=> {
-	// 	return media.properties.name;
-	// });
-	// console.log('selected features : ', tata.sort());
+	// the selection filters are not active yet :
+	// deselected medias are not yet added back to vectorMedias => add them
+	const justDeselected = state.sources["selected-medias-source"].metadata.justDeselected;
+	result = vectorMedias.concat(justDeselected);
 
-	// some medias were just selected : they are not yet filtered on medias-layer
-	// => they should be filtered out of visible medias
+	
+	const titi = state.sources["selected-medias-source"].metadata.justDeselected.map((media)=> {
+		return media.properties.name;
+	});
+
+	console.log("+ justDeselected : ", titi.sort());
+	console.log("=> ", result.map((media)=> { return media.properties.name }).sort())
+
+	// the selection filters are not active yet :
+	// selected medias are not yet removed from vectorMedias => remove them
+	// const justSelectedIds = state.sources["selected-medias-source"].metadata.justSelected.map((media)=> {
+	// 	return media.properties._id;
+	// });
+	// result = result.filter((media)=> {
+	// 	return (justSelectedIds.indexOf(media.properties._id) === -1);
+	// });
 	const justSelected = state.sources["selected-medias-source"].metadata.justSelected;
-	if (justSelected) {
-		const justSelectedIds = justSelected.map((item)=> {
-			return item.properties._id;
-		});
-		vectorMedias = vectorMedias.filter((item)=> {
-			return justSelectedIds.indexOf(item.properties._id) === -1;
-		});
+	justSelected.map((media)=> {
+		const mediaId = media.properties._id;
+		const index = result.findIndex((item)=> {return item.properties._id === mediaId });
+		if (index > -1) {
+			result.splice(index, 1);
+		}
+	});
+	const toto = state.sources["selected-medias-source"].metadata.justSelected.map((media)=> {
+		return media.properties.name;
+	});
+	console.log("- justSelected : ", toto.sort());
+	console.log("=> ", result.map((media)=> { return media.properties.name }).sort())
 
-		const toto = justSelected.map((media)=> {
-			return media.properties.name;
-		});
-		console.log('just selected : ', toto);
-	} else {
-		console.log('just selected empty');
-	}
 	
 
-	// some medias were just deselected : they are not "unfiltered" yet on medias-layer
-	// => they should be added to visible medias
-	const justDeselected = state.sources["selected-medias-source"].metadata.justDeselected;
-	if (justDeselected) {
-		vectorMedias = vectorMedias.concat(justDeselected);
-		const tutu = justDeselected.map((media)=> {
-			return media.properties.name;
-		});
-		console.log('just deselected : ', tutu);
-	} else {
-		console.log('just deselected empty');
-	}
+	result = result.concat(geoJSONMedias);
+	const juju = geoJSONMedias.map((media)=> { return media.properties.name });
+	console.log("+ selected medias : ", juju.sort());
+	console.log("=> ", result.map((media)=> { return media.properties.name }).sort())
 
-	const result = vectorMedias.concat(geoJSONMedias)
-		// always keep same set of media in same order for carousel display
-		.sort((a,b)=> {
-			return (a.properties._id < b.properties._id);
-		});
+	// always keep same set of media in same order for carousel display
+	result = result.sort((a,b)=> {
+		return (a.properties._id < b.properties._id);
+	});
 
-	// const yoyo = result.map((media)=> {
-	// 	return media.properties.name;
-	// }).sort();
-	// console.log('result ', yoyo);
+	const yoyo = result.map((media)=> {
+		return media.properties.name;
+	}).sort();
+	console.log('result ', yoyo);
 	return result;
 }
 
