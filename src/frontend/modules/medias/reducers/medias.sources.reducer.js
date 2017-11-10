@@ -51,11 +51,15 @@ const gridMediasSourceReducer = (state = {}, action) => {
 const selectedMediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
 		case "MEDIAS_CLICK": {
-			console.log("\n\nSELECT ", action.payload.features.map((media)=> {return media.properties.name}));
 			var newFeatures = [];
+			var newJustSelected = action.payload.features;
+			var newJustDeselected = state.metadata.justDeselected;
 			if (action.payload.ctrlKey) {
 				// keep previously selected medias (remove features)
 				newFeatures = newFeatures.concat(state.data.features);
+			} else {
+				newJustSelected = newJustSelected.concat(state.metadata.justSelected);
+				newJustDeselected = newJustDeselected.concat(state.data.features);
 			}
 			// select clicked medias
 			newFeatures = newFeatures.concat(action.payload.features);
@@ -65,8 +69,8 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 				}),
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true,
-					justSelected: state.metadata.justSelected.concat(action.payload.features),
-					justDeselected: state.metadata.justDeselected.concat(state.data.features),
+					justSelected: newJustSelected,
+					justDeselected: newJustDeselected,
 					selectFilterPending: true
 				})
 			});
@@ -74,7 +78,6 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 		}
 		case 'MEDIAS_UPDATE_FEATURES':
 			if (state.metadata.selectFilterPending) {
-				console.log('reset pending');
 		 		return Object.assign({}, state, {
 					metadata: Object.assign({}, state.metadata, {
 						justSelected: [],
