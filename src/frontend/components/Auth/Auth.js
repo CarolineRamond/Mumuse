@@ -8,33 +8,15 @@ import Login from './Login'
 import Register from './Register'
 import ForgotPassword from './ForgotPassword'
 import styles from '../Common/form.css'
+import Dialog from "react-toolbox/lib/dialog"
 
 class Auth extends React.Component {
     render() {
-        return <CSSTransitionGroup
-        	component="div"
-            transitionName={{
-    			enter: styles.formDialogEnter,
-    		    enterActive: styles.formDialogEnterActive,
-    		    leave: styles.formDialogLeave,
-    		    leaveActive: styles.formDialogLeaveActive,
-            }}
-            transitionEnterTimeout={300}
-            transitionLeaveTimeout={300}>
-            <Switch key={this.props.location.pathname} location={this.props.location}>
-            	<Route path="/:loc/auth" component={()=>(
-            		<div className={styles.formDialogBackground}>
-        				<div className={styles.formDialogContainer}>
-        					<Switch>
-        						<Route path="/:loc/auth/login" component={Login}/>
-        						<Route path="/:loc/auth/register" component={Register}/>
-        						<Route path="/:loc/auth/forgot" component={ForgotPassword}/>
-        					</Switch>
-        			    </div>
-        		    </div>
-            	)}/>
-           	</Switch>
-        </CSSTransitionGroup>
+        return <Switch>
+			<Route path="/:loc/auth/login" component={Login}/>
+			<Route path="/:loc/auth/register" component={Register}/>
+			<Route path="/:loc/auth/forgot" component={ForgotPassword}/>
+		</Switch>
     }
 }
 

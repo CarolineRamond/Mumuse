@@ -1,7 +1,6 @@
 import React from "react";
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { withRouter } from "react-router"
-import { CSSTransitionGroup } from 'react-transition-group'
 import PropTypes from "prop-types"
 
 import UsersTable from './UsersTable'

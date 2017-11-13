@@ -4,11 +4,26 @@ import { connect } from "react-redux"
 import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
 import PropTypes from "prop-types"
+import Dialog from "react-toolbox/lib/dialog"
 
 import Form from '../Common/Form'
 import { register } from '../../modules/auth/auth.actions'
 
 class Register extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			active: false
+		};
+	}
+
+	componentDidMount() {
+		this.setState({
+			active: true
+		});
+	}
+
 	render() {
 		const url = this.props.match.url.split('/');
 		const rootUrl = url.slice(0, url.length-2).join('/');
@@ -109,17 +124,23 @@ class Register extends React.Component {
 			this.props.dispatch(register(form));
 		}
 		const cancel = ()=> {
-			this.props.history.push(rootUrl);
+			this.setState({
+			    active: false
+			});
+			setTimeout(()=> {
+			    this.props.history.push(rootUrl);
+			}, 500);
 		}
-				
 		
-		return <Form title="Register"
-			fields={fields}
-			submit={submit}
-			cancel={cancel}
-			links={links}
-			helper=""
-		/>
+		return <Dialog title="Register" 
+            active={this.state.active}>
+            <Form fields={fields}
+                helper=""
+                links={links}
+                cancel={cancel}
+                submit={submit}
+            />
+        </Dialog>
 	}
 }
 

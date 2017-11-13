@@ -11,7 +11,7 @@ const App = () => {
 		    <Route path="/admin*" component={Admin}/>
 		    <Route path="/:loc" component={()=>(
 		    	<div>
-		    		<Auth/>	
+		    		<Route path="/:loc/auth" component={Auth}/>	
 			        <Main/>
 			    </div>
 		    )}/>
