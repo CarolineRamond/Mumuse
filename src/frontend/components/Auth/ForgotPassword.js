@@ -7,6 +7,7 @@ import Dialog from "react-toolbox/lib/dialog"
 import Form from '../Common/Form'
 import { forgotPassword } from '../../modules/auth/auth.actions'
 import { getRootUrl } from '../../modules/world'
+import { getForgotPasswordState } from "../../modules/auth"
 import styles from '../Common/form.css'
 
 class ForgotPassword extends React.Component {
@@ -71,6 +72,8 @@ class ForgotPassword extends React.Component {
             }}>
             <Form fields={fields}
                 helper={helper}
+                error={this.props.serverState.error}
+                success={this.props.serverState.data}
                 links={links}
                 cancel={this.cancel}
                 submit={this.submit}
@@ -92,7 +95,8 @@ ForgotPassword.propTypes = {
 // Store connection
 const ConnectedForgotPassword = connect((store)=> {
 	return {
-		rootUrl: getRootUrl(store.world)
+		rootUrl: getRootUrl(store.world),
+		serverState: getForgotPasswordState(store.auth)
 	}
 })(ForgotPassword);
 

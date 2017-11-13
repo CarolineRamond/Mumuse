@@ -3,12 +3,14 @@ import currentUserReducer from "./reducers/auth.currentUser.reducer"
 import loginReducer from "./reducers/auth.login.reducer"
 import logoutReducer from "./reducers/auth.logout.reducer"
 import registerReducer from "./reducers/auth.register.reducer"
+import forgotPasswordReducer from "./reducers/auth.forgotPassword.reducer"
 
 const authReducer = combineReducers({
 	currentUser: currentUserReducer,
 	login: loginReducer,
 	logout: logoutReducer,
-	register: registerReducer
+	register: registerReducer,
+	forgotPassword: forgotPasswordReducer
 });
 
 export default authReducer;
@@ -31,4 +33,8 @@ export function getRegisterState(state) {
 
 export function getLogoutState(state) {
 	return state.logout;
+}
+
+export function getForgotPasswordState(state) {
+	return state.forgotPassword;
 }
