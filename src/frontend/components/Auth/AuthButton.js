@@ -1,21 +1,32 @@
 import React from "react";
 import { connect } from "react-redux"
+import { withRouter } from "react-router"
 import Button from "react-toolbox/lib/button"
 import Tooltip from "react-toolbox/lib/tooltip"
 const TooltipButton = Tooltip(Button);
-import { Link } from "react-router-dom"
-import { withRouter } from "react-router"
 import PropTypes from "prop-types"
 
 import { authButton } from './auth.css'
+import { getRootUrl } from "../../modules/world"
 import { logout } from '../../modules/auth/auth.actions'
 
 class AuthButton extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.login = this.login.bind(this);
 		this.logout = this.logout.bind(this);
-		this.loginUrl = this.props.location.pathname + '/auth/login';
+	}
+
+	shouldComponentUpdate(nextProps) {
+		return (nextProps.user && !this.props.user) ||
+			(!nextProps.user && this.props.user) ||
+			(nextProps.user && this.props.user && nextProps.user.email !== this.props.user.email);
+	}
+
+	login() {
+		const loginUrl = this.props.rootUrl + '/auth/login';
+		this.props.history.push(loginUrl);
 	}
 
 	logout() {
@@ -31,13 +42,12 @@ class AuthButton extends React.Component {
 				className={authButton}
 				tooltip="Logout"/>
 		} else {
-			return <Link to={this.loginUrl}>
-				<TooltipButton 
+			return <TooltipButton 
 				icon='account_box' 
 				floating 
 				className={authButton}
-				tooltip="Login"/>
-			</Link>
+				tooltip="Login"
+				onClick={this.login}/>
 		}
 	}
 }
@@ -48,16 +58,14 @@ class AuthButton extends React.Component {
 // * match : current route match, provided by function withRouter
 // * history : current router history, provided by function withRouter (required)
 AuthButton.propTypes = {
-	user: PropTypes.object,
-    location: PropTypes.object.isRequired, 
-    match: PropTypes.object, 
-    history: PropTypes.object.isRequired
+	user: PropTypes.object
 }
 
 // Store connection
 const ConnectedAuthButton = connect((store)=> {
 	return {
 		user: store.auth.user,
+		rootUrl: getRootUrl(store.world)
 	}
 })(AuthButton);
 

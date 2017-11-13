@@ -2,14 +2,49 @@ import React from "react";
 import { connect } from "react-redux"
 import isEmail from 'validator/lib/isEmail'
 import PropTypes from "prop-types"
+import Dialog from "react-toolbox/lib/dialog"
 
 import Form from '../Common/Form'
 import { forgotPassword } from '../../modules/auth/auth.actions'
+import { getRootUrl } from '../../modules/world'
+import styles from '../Common/form.css'
 
 class ForgotPassword extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			active: false
+		};
+		this.cancel = this.cancel.bind(this);
+		this.submit = this.submit.bind(this);
+	}
+
+	cancel() {
+		this.setState({
+		    active: false
+		});
+		setTimeout(()=> {
+		    this.props.history.push(this.props.rootUrl);
+		}, 500);
+	}
+
+	submit(form) {
+		this.props.dispatch(forgotPassword(form));
+	}
+
+	componentDidMount() {
+		this.setState({
+			active: true
+		});
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.user) {
+			this.cancel.bind(this)();
+		}
+	}
+
 	render() {
-		const url = this.props.match.url.split('/');
-		const rootUrl = url.slice(0, url.length-2).join('/');
 		const fields = {
 			email: {
 				label: "Email",
@@ -23,21 +58,24 @@ class ForgotPassword extends React.Component {
 			}
 		};
 		const links = []
-		const submit = (form)=> {
-			this.props.dispatch(forgotPassword(form));
-		}
-		const cancel = ()=> {
-			this.props.history.push(rootUrl);
-		}
 		const helper = "Please enter your email to reset your password";
 				
-		return <Form title="Forgot Password"
-			fields={fields}
-			submit={submit}
-			cancel={cancel}
-			links={links}
-			helper={helper}
-		/>
+		return <Dialog title="Reset Password" 
+            active={this.state.active}
+            onEscKeyDown={this.cancel}
+            onOverlayClick={this.cancel}
+            theme={{
+            	dialog: styles.formDialogContainer,
+            	body: styles.formDialog,
+            	title: styles.formDialogTitle
+            }}>
+            <Form fields={fields}
+                helper={helper}
+                links={links}
+                cancel={this.cancel}
+                submit={this.submit}
+            />
+        </Dialog>
 	}
 }
 
@@ -53,7 +91,9 @@ ForgotPassword.propTypes = {
 
 // Store connection
 const ConnectedForgotPassword = connect((store)=> {
-	return {}
+	return {
+		rootUrl: getRootUrl(store.world)
+	}
 })(ForgotPassword);
 
 export default ConnectedForgotPassword;

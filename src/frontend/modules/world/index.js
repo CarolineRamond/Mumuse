@@ -31,5 +31,9 @@ const worldReducer = (state = {}, action) => {
 
 export default worldReducer;
 
+export const getRootUrl = (state)=> {
+	return '/' + [state.lng, state.lat, state.zoom].join(',');
+}
+
 // export initialState & mapInteractions
 export { worldInitialState, worldMapConfig };

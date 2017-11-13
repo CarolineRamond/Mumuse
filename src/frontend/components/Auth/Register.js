@@ -8,6 +8,8 @@ import Dialog from "react-toolbox/lib/dialog"
 
 import Form from '../Common/Form'
 import { register } from '../../modules/auth/auth.actions'
+import { getRootUrl } from '../../modules/world'
+import styles from "../Common/form.css"
 
 class Register extends React.Component {
 
@@ -16,6 +18,21 @@ class Register extends React.Component {
 		this.state = {
 			active: false
 		};
+		this.cancel = this.cancel.bind(this);
+		this.submit = this.submit.bind(this);
+	}
+
+	cancel() {
+		this.setState({
+		    active: false
+		});
+		setTimeout(()=> {
+		    this.props.history.push(this.props.rootUrl);
+		}, 500);
+	}
+
+	submit(form) {
+		this.props.dispatch(register(form));
 	}
 
 	componentDidMount() {
@@ -25,8 +42,6 @@ class Register extends React.Component {
 	}
 
 	render() {
-		const url = this.props.match.url.split('/');
-		const rootUrl = url.slice(0, url.length-2).join('/');
 		const fields = {
 			firstname: {
 				label: "First Name",
@@ -120,25 +135,21 @@ class Register extends React.Component {
 			}
 		};
 		const links = []
-		const submit = (form)=> {
-			this.props.dispatch(register(form));
-		}
-		const cancel = ()=> {
-			this.setState({
-			    active: false
-			});
-			setTimeout(()=> {
-			    this.props.history.push(rootUrl);
-			}, 500);
-		}
 		
 		return <Dialog title="Register" 
-            active={this.state.active}>
+            active={this.state.active}
+            onEscKeyDown={this.cancel}
+            onOverlayClick={this.cancel}
+            theme={{
+            	dialog: styles.formDialogContainer,
+            	body: styles.formDialog,
+            	title: styles.formDialogTitle
+            }}>
             <Form fields={fields}
                 helper=""
                 links={links}
-                cancel={cancel}
-                submit={submit}
+                cancel={this.cancel}
+                submit={this.submit}
             />
         </Dialog>
 	}
@@ -156,7 +167,9 @@ Register.propTypes = {
 
 // Store connection
 const ConnectedRegister = connect((store)=> {
-	return {}
+	return {
+		rootUrl: getRootUrl(store.world)
+	}
 })(Register);
 
 export default ConnectedRegister;

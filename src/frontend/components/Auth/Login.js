@@ -8,6 +8,8 @@ import Dialog from "react-toolbox/lib/dialog"
 
 import Form from '../Common/Form'
 import { login } from '../../modules/auth/auth.actions'
+import { getRootUrl } from '../../modules/world'
+import styles from '../Common/form.css'
 
 class Login extends React.Component {
 
@@ -16,6 +18,21 @@ class Login extends React.Component {
 		this.state = {
 			active: false
 		};
+		this.cancel = this.cancel.bind(this);
+		this.submit = this.submit.bind(this);
+	}
+
+	cancel() {
+		this.setState({
+		    active: false
+		});
+		setTimeout(()=> {
+		    this.props.history.push(this.props.rootUrl);
+		}, 500);
+	}
+
+	submit(form) {
+		this.props.dispatch(login(form));
 	}
 
 	componentDidMount() {
@@ -24,11 +41,15 @@ class Login extends React.Component {
 		});
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.user) {
+			this.cancel.bind(this)();
+		}
+	}
+
 	render() {
-		const url = this.props.match.url.split('/');
-		const rootUrl = url.slice(0, url.length-2).join('/');
-		const registerUrl = url.slice(0, url.length-1).concat('register').join('/');
-		const forgotUrl = url.slice(0, url.length-1).concat('forgot').join('/');
+		const registerUrl = this.props.rootUrl + '/auth/register'
+		const forgotUrl = this.props.rootUrl + '/auth/forgot';
 		const fields = {
 			email: {
 				label: "Email",
@@ -58,31 +79,23 @@ class Login extends React.Component {
 			to: forgotUrl,
 			text: "Forgot Password ?"
 		}]
-		const submit = (form)=> {
-			this.props.dispatch(login(form));
-		}
-		const cancel = ()=> {
-			this.setState({
-			    active: false
-			});
-			setTimeout(()=> {
-			    this.props.history.push(rootUrl);
-			}, 500);
-		}
 				
-		if (this.props.user) {
-			return <Redirect to={rootUrl}/>
-		} else {
-			return <Dialog title="Login" 
-	            active={this.state.active}>
-	            <Form fields={fields}
-	                helper=""
-	                links={links}
-	                cancel={cancel}
-	                submit={submit}
-	            />
-	        </Dialog>
-		}
+		return <Dialog title="Login" 
+            active={this.state.active}
+            onEscKeyDown={this.cancel}
+            onOverlayClick={this.cancel}
+            theme={{
+            	dialog: styles.formDialogContainer,
+            	body: styles.formDialog,
+            	title: styles.formDialogTitle
+            }}>
+            <Form fields={fields}
+                helper=""
+                links={links}
+                cancel={this.cancel}
+                submit={this.submit}
+            />
+        </Dialog>
 	}
 }
 
@@ -102,6 +115,7 @@ Login.propTypes = {
 const ConnectedLogin = connect((store)=> {
 	return {
 		user: store.auth.user,
+		rootUrl: getRootUrl(store.world)
 	}
 })(Login);
 
