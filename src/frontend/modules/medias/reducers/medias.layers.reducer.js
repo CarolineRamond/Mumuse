@@ -17,9 +17,9 @@ const mediasLayerReducer = (state = {}, action) => {
 			const feature = action.payload.data;
 			return Object.assign({}, state, {
 				filter: currentFilter.concat([['!in', '_id', feature.properties._id]]),
-				// metadata: Object.assign({}, state.metadata, {
-				// 	didChange: { filter: true }
-				// })
+				metadata: Object.assign({}, state.metadata, {
+					didChange: { filter: true }
+				})
 	 		});
 		}
 		case "MEDIAS_CLICK": {

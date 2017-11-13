@@ -245,7 +245,7 @@ class Map extends React.Component {
 	_updateLayersStyle(nextProps) {
 		_.forIn(nextProps.layers, (layer)=> {
 			var didChange = layer.metadata && layer.metadata.didChange || {};
-			if (didChange.filter) {
+			if (this.map.getLayer(layer.id) && didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
 				mapConfig.renderedFeatures.map((item)=> {
 					if (item.layerIds.indexOf(layer.id) > -1) {
@@ -253,15 +253,15 @@ class Map extends React.Component {
 					}
 				});
 			}
-			if (didChange.zoom) {
+			if (this.map.getLayer(layer.id) && didChange.zoom) {
 				this.map.setLayerZoomRange(layer.id, layer.minzoom, layer.maxzoom);
 			}
-			if (didChange.layout) {
+			if (this.map.getLayer(layer.id) && didChange.layout) {
 				_.forIn(didChange.layout, (value, key)=> {
 					this.map.setLayoutProperty(layer.id, key, value);
 				});
 			}
-			if (didChange.paint) {
+			if (this.map.getLayer(layer.id) && didChange.paint) {
 				_.forIn(didChange.paint, (value, key)=> {
 					this.map.setPaintProperty(layer.id, key, value);
 				});
