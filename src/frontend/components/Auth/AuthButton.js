@@ -8,6 +8,7 @@ import PropTypes from "prop-types"
 
 import { authButton } from './auth.css'
 import { getRootUrl } from "../../modules/world"
+import { getCurrentUser } from "../../modules/auth"
 import { logout } from '../../modules/auth/auth.actions'
 
 class AuthButton extends React.Component {
@@ -64,7 +65,7 @@ AuthButton.propTypes = {
 // Store connection
 const ConnectedAuthButton = connect((store)=> {
 	return {
-		user: store.auth.user,
+		user: getCurrentUser(store.auth),
 		rootUrl: getRootUrl(store.world)
 	}
 })(AuthButton);

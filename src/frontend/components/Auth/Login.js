@@ -16,8 +16,10 @@ class Login extends React.Component {
 
 	constructor(props) {
 		super(props);
+		const search = this.props.location.search;
 		this.state = {
-			active: false
+			active: false,
+			verifySuccess: /verifySuccess=true/.test(search)
 		};
 		this.cancel = this.cancel.bind(this);
 		this.submit = this.submit.bind(this);
@@ -79,7 +81,9 @@ class Login extends React.Component {
 		}, {
 			to: forgotUrl,
 			text: "Forgot Password ?"
-		}]
+		}];
+		const success = this.state.verifySuccess ? 
+			"Your account was successfully verified. You can now login." : null;
 				
 		return <Dialog title="Login" 
             active={this.state.active}
@@ -92,6 +96,7 @@ class Login extends React.Component {
             }}>
             <Form fields={fields}
                 helper=""
+                success={success}
                 error={this.props.serverState.error}
                 links={links}
                 cancel={this.cancel}

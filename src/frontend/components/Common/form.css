@@ -32,8 +32,8 @@
 }
 .formDialogContainer {
 	background-color:white;
-	width: 400px;
-	height: 550px;
+	width: 500px;
+	height: 620px;
 	display: flex;
 	flex-direction: column;
 }

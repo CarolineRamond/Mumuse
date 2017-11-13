@@ -16,8 +16,10 @@ class Register extends React.Component {
 
 	constructor(props) {
 		super(props);
+		const search = this.props.location.search;
 		this.state = {
-			active: false
+			active: false,
+			verifyError: /verifyError=true/.test(search)
 		};
 		this.cancel = this.cancel.bind(this);
 		this.submit = this.submit.bind(this);
@@ -135,7 +137,9 @@ class Register extends React.Component {
 				}
 			}
 		};
-		const links = []
+		const links = [];
+		const error = this.props.serverState.error || (this.state.verifyError ?
+			"Your verification session has expired. Please register again." : null);
 		
 		return <Dialog title="Register" 
             active={this.state.active}
@@ -148,7 +152,7 @@ class Register extends React.Component {
             }}>
             <Form fields={fields}
                 helper=""
-                error={this.props.serverState.error}
+                error={error}
                 success={this.props.serverState.data}
                 links={links}
                 cancel={this.cancel}
