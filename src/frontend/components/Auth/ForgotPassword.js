@@ -13,8 +13,10 @@ import styles from '../Common/form.css'
 class ForgotPassword extends React.Component {
 	constructor(props) {
 		super(props);
+		const search = this.props.location.search;
 		this.state = {
-			active: false
+			active: false,
+			verifyError: /verifyError=true/.test(search)
 		};
 		this.cancel = this.cancel.bind(this);
 		this.submit = this.submit.bind(this);
@@ -60,6 +62,8 @@ class ForgotPassword extends React.Component {
 		};
 		const links = []
 		const helper = "Please enter your email to reset your password";
+		const error = this.props.serverState.error || (this.state.verifyError ?
+			"Your reset session has expired. Please ask for a new session below." : null);
 				
 		return <Dialog title="Reset Password" 
             active={this.state.active}
@@ -72,7 +76,7 @@ class ForgotPassword extends React.Component {
             }}>
             <Form fields={fields}
                 helper={helper}
-                error={this.props.serverState.error}
+                error={error}
                 success={this.props.serverState.data}
                 links={links}
                 cancel={this.cancel}
