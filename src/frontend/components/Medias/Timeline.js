@@ -29,7 +29,8 @@ class Timeline extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		this.setState({  
-			minDate: nextProps.minDate
+			minDate: nextProps.minDate,
+			maxDate: Date.now()
 		});
 	}
 
