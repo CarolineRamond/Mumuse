@@ -57,11 +57,14 @@ class Map extends React.Component {
 			this._addClickHandling();
 			this._addDragndropHandling();
 			this._addViewportChangeHandling();
+			this._resizeMap();
 		});
 	}
 
 	componentWillReceiveProps(nextProps) {
-		this._resizeMap(nextProps);
+		if (nextProps.world.shouldMapResize) {
+			this._resizeMap();
+		}
 		this._reloadSourcesData(nextProps);
 		this._updateLayersStyle(nextProps);
 	}
@@ -214,10 +217,8 @@ class Map extends React.Component {
 		}
 	}
 
-	_resizeMap(nextProps) {
-		if (nextProps.world.shouldMapResize) {
-			this.map.resize();
-		}
+	_resizeMap() {
+		this.map.resize();
 	}
 
 	_reloadSourcesData(nextProps) {
