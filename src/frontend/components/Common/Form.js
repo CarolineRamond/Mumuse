@@ -103,9 +103,6 @@ class Form extends React.Component {
 			});
 		};
 		return <div className={styles.formDialog}>
-			<div className={styles.formDialogTitle}>
-				{this.props.title}
-			</div>
 			<div className={styles.formDialogContent}>
 				<div className={styles.formDialogHelper}>
 					{this.props.helper}
@@ -137,22 +134,22 @@ class Form extends React.Component {
 // * cancel: cancel function (required)
 // * links: other links,
 // * helper: helper text
-Form.propTypes = {
-    title: PropTypes.string.isRequired, 
-    fields: PropTypes.objectOf(PropTypes.shape({
-    	label: PropTypes.string.isRequired,
-    	type: PropTypes.string.isRequired,
-    	required: PropTypes.boolean,
-    	refValue: PropTypes.string,
-    	validate: PropTypes.func.isRequired
-    })).isRequired, 
-    submit: PropTypes.func.isRequired,
-    cancel: PropTypes.func.isRequired,
-    links: PropTypes.arrayOf(PropTypes.shape({
-    	to: PropTypes.string,
-    	text: PropTypes.string
-    })),
-    helper: PropTypes.string
-}
+// Form.propTypes = {
+//     title: PropTypes.string.isRequired, 
+//     fields: PropTypes.objectOf(PropTypes.shape({
+//     	label: PropTypes.string.isRequired,
+//     	type: PropTypes.string.isRequired,
+//     	required: PropTypes.boolean,
+//     	refValue: PropTypes.string,
+//     	validate: PropTypes.func.isRequired
+//     })).isRequired, 
+//     submit: PropTypes.func.isRequired,
+//     cancel: PropTypes.func.isRequired,
+//     links: PropTypes.arrayOf(PropTypes.shape({
+//     	to: PropTypes.string,
+//     	text: PropTypes.string
+//     })),
+//     helper: PropTypes.string
+// }
 
 export default Form;

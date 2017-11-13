@@ -13,21 +13,10 @@ class Users extends React.Component {
     render() {
         return <div>
             <UsersTable/>
-            <CSSTransitionGroup
-            	component="div"
-                transitionName={{
-        			enter: styles.formDialogEnter,
-        		    enterActive: styles.formDialogEnterActive,
-        		    leave: styles.formDialogLeave,
-        		    leaveActive: styles.formDialogLeaveActive,
-                }}
-                transitionEnterTimeout={300}
-                transitionLeaveTimeout={300}>
                 <Switch  key={this.props.location.pathname} location={this.props.location}>
                     <Route path="/admin/users/create" component={UsersCreate}/>
                     <Route path="/admin/users/edit/:userId" component={UsersEdit}/>
                 </Switch>
-            </CSSTransitionGroup>
         </div>
     }
 }

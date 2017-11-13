@@ -3,12 +3,27 @@ import { connect } from "react-redux"
 import PropTypes from "prop-types"
 import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
+import Dialog from "react-toolbox/lib/dialog"
 
 import Form from "../../Common/Form"
 import styles from '../../Common/form.css'
 import { adminCreateUser } from "../../../modules/admin/admin.actions"
 
 class UsersCreate extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            active: false
+        }
+    }
+
+    componentDidMount() {
+        this.setState({
+            active: true
+        });
+    }
+
     render() {
     	const rootUrl = '/admin/users';
     	const fields = {
@@ -103,25 +118,27 @@ class UsersCreate extends React.Component {
     			}
     		}
     	};
-    	const links = []
     	const submit = (form)=> {
     		this.props.dispatch(adminCreateUser(form));
     	}
     	const cancel = ()=> {
-    		this.props.history.push(rootUrl);
+            this.setState({
+                active: false
+            });
+            setTimeout(()=> {
+                this.props.history.push(rootUrl);
+            }, 500);
     	}
-    			
-        return <div className={styles.formDialogBackground}>
-        	<div className={styles.formDialogContainer}>
-        		<Form title="Create User"
-	    			fields={fields}
-	    			submit={submit}
-	    			cancel={cancel}
-	    			links={links}
-	    			helper=""
-	    		/>
-        	</div>
-        </div>
+
+        return <Dialog title="Create User" 
+            active={this.state.active}>
+            <Form fields={fields}
+                helper=""
+                links={[]}
+                cancel={cancel}
+                submit={submit}
+            />
+        </Dialog>
     }
 }
 

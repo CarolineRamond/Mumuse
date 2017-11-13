@@ -4,8 +4,10 @@ import { Link } from "react-router-dom"
 import { Table, TableHead, TableRow, TableCell } from 'react-toolbox/lib/table';
 import { Button } from "react-toolbox/lib/button"
 import Tooltip from "react-toolbox/lib/tooltip"
+import Dialog from "react-toolbox/lib/dialog"
 const TooltipButton = Tooltip(Button);
 
+import UsersDelete from "./UsersDelete"
 import { adminFetchUsers } from "../../../modules/admin/admin.actions"
 import { getUsers } from "../../../modules/admin"
 import styles from "../admin.css"
@@ -14,9 +16,12 @@ class UsersTable extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			selected: []
+			selected: [],
+			confirmDelete: false,
+			confirmDeleteUsers: []
 		}
 		this.handleUserSelect = this.handleUserSelect.bind(this);
+		this.toggleDeleteConfirmation = this.toggleDeleteConfirmation.bind(this);
 	}
 
 	componentDidMount() {
@@ -28,6 +33,13 @@ class UsersTable extends React.Component {
 			return this.props.users[index]._id;
 		});
 		this.setState({ selected });
+	}
+
+	toggleDeleteConfirmation(user) {
+		this.setState({
+			confirmDelete: !this.state.confirmDelete,
+			confirmDeleteUsers: user || this.state.selected
+		});
 	}
 
   	render() {
@@ -62,7 +74,8 @@ class UsersTable extends React.Component {
 							<TooltipButton primary mini floating
 								className={styles.actionButton} 
 								icon='delete'
-								tooltip="Delete user">
+								tooltip="Delete user"
+								onClick={()=>this.toggleDeleteConfirmation(user)}>
 							</TooltipButton>
 				        </TableCell>
 				      </TableRow>
@@ -76,10 +89,14 @@ class UsersTable extends React.Component {
 		      		</Button>
 	      		</Link>
 	      		<Button className={styles.actionButton} raised accent
-	      			disabled={this.state.selected.length === 0}>
+	      			disabled={this.state.selected.length === 0}
+	      			onClick={this.toggleDeleteConfirmation}>
 	      			Delete Users
 	      		</Button>
 	      	</div>
+	      	<UsersDelete active={this.state.confirmDelete} 
+	      		users={this.state.confirmDeleteUsers}
+	      		toggle={this.toggleDeleteConfirmation}/>
       	</div>
 	}
 }
