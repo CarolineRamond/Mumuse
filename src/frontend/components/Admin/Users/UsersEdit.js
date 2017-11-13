@@ -25,6 +25,7 @@ class UsersEdit extends React.Component {
             firstname: {
                 label: "First Name",
                 type: "text",
+                value: "this.props.user.firstname",
                 required: true,
                 validate: (value)=> {
                     const isValid = (value.length > 0);
@@ -35,6 +36,7 @@ class UsersEdit extends React.Component {
             lastname: {
                 label: "Last Name",
                 type: "text",
+                value: "this.props.user.lastname",
                 required: true,
                 validate: (value)=> {
                     const isValid = (value.length > 0);
@@ -45,6 +47,8 @@ class UsersEdit extends React.Component {
             email: {
                 label: "Email",
                 type: "email",
+                // value: "this.props.user.email",
+                value: "tutu@toto.com",
                 required: true,
                 validate: (value)=> {
                     const isValid = isEmail(value);

@@ -14,7 +14,8 @@ class Timeline extends React.Component {
 		super(props);
 		this.state = { 
 			value: this.props.value, 
-			minDate: this.props.minDate 
+			minDate: this.props.minDate,
+			maxDate: Date.now()
 		};
 		this.handleSlideChange = this.handleSlideChange.bind(this);
 	}
@@ -27,11 +28,9 @@ class Timeline extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.minDate <= this.state.value) {
-			this.setState({  
-				minDate: nextProps.minDate
-			});
-		}
+		this.setState({  
+			minDate: nextProps.minDate
+		});
 	}
 
 	render() {

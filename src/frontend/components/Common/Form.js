@@ -18,11 +18,22 @@ class Form extends React.Component {
 			formValid: false
 		};
 		forIn(this.props.fields, (field, name)=> {
-			state.fieldValues[name] = '';
-			state.formErrors[name] = '';
-			state.validFields[name] = false;
+			if (field.value) {
+				state.fieldValues[name] = field.value;
+				const validator = field.validate(field.value);
+				state.formErrors[name] = validator.error;
+				state.validFields[name] = validator.isValid;
+			} else {
+				state.fieldValues[name] = '';
+				state.formErrors[name] = '';
+				state.validFields[name] = false;
+			}
 		});
 		this.state = state;
+	}
+
+	componentDidMount() {
+		this.validateForm();
 	}
 
 	handleUserInput(name, value) {

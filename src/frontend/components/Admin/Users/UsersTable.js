@@ -41,7 +41,7 @@ class UsersTable extends React.Component {
 				      <TableCell>Created</TableCell>
 				      <TableCell>Email verified</TableCell>
 				      <TableCell>Roles</TableCell>
-				      <TableCell>Actions</TableCell>
+				      <TableCell>&nbsp;</TableCell>
 				    </TableHead>
 				    {this.props.users && this.props.users.map((user) => (
 				      <TableRow key={user._id} selected={this.state.selected.indexOf(user._id) > -1}>
