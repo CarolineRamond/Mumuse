@@ -50,6 +50,17 @@ const gridMediasSourceReducer = (state = {}, action) => {
 // (geojson source representing selected medias)
 const selectedMediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
+		case "MEDIAS_INIT_SELECTED_FULFILLED": {
+			const feature = action.payload.data;
+			return Object.assign({}, state, {
+				data: Object.assign({}, state.data, {
+					features: [feature]
+				}),
+				metadata: Object.assign({}, state.metadata, {
+					didChange: true,
+				})
+			});
+		}
 		case "MEDIAS_CLICK": {
 			var newFeatures = [];
 			if (action.payload.ctrlKey) {

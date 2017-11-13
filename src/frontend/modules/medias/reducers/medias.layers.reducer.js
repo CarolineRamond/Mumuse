@@ -12,6 +12,16 @@ const defaultLayerReducer = (state) => {
 // (pointwise media representation, originated from vector tiles)
 const mediasLayerReducer = (state = {}, action) => {
 	switch (action.type) {
+		case "MEDIAS_INIT_SELECTED_FULFILLED": {
+			const currentFilter  = state.filter || ['all'];
+			const feature = action.payload.data;
+			return Object.assign({}, state, {
+				filter: currentFilter.concat([['!in', '_id', feature.properties._id]]),
+				// metadata: Object.assign({}, state.metadata, {
+				// 	didChange: { filter: true }
+				// })
+	 		});
+		}
 		case "MEDIAS_CLICK": {
 			const currentFilter  = state.filter || ['all'];
 			var newFilter = currentFilter;

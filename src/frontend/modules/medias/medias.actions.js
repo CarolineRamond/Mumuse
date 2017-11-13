@@ -1,15 +1,6 @@
 import axios from "axios";
 import EXIF from 'exif-parser';
 
-export const selectMediaById = (mediaId) => {
-	return {
-		type: "MEDIAS_SELECT_BY_ID",
-		payload: {
-			mediaId: mediaId
-		}
-	}
-}
-
 export const clickMedias = ({ features, ctrlKey })=> {
 	return { 
 		type: 'MEDIAS_CLICK', 
@@ -73,6 +64,13 @@ export const updateTimelineMedias = (value)=> {
 		type: 'MEDIAS_TIMELINE_UPDATE',
 		payload: { value }
 	};
+}
+
+export const initSelectedMedia = (mediaId) => {
+	return {
+		type: "MEDIAS_INIT_SELECTED",
+		payload: axios.get('/userdrive/media/' + mediaId + '/?geojson=true')
+	}
 }
 
 export const deleteMedias = (medias)=> {
