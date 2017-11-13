@@ -66,6 +66,13 @@
 .formDialogError {
 	color:red;
 	padding: 10px;
+	text-align: center;
+}
+
+.formDialogSuccess {
+	color:green;
+	padding: 10px;
+	text-align: center;
 }
 
 .formDialogForm {

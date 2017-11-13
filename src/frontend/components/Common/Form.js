@@ -104,12 +104,21 @@ class Form extends React.Component {
 		};
 		return <div className={styles.formDialog}>
 			<div className={styles.formDialogContent}>
-				<div className={styles.formDialogError}>
-					{this.props.error}
-				</div>
-				<div className={styles.formDialogHelper}>
-					{this.props.helper}
-				</div>
+				{this.props.error &&
+					<div className={styles.formDialogError}>
+						{this.props.error}
+					</div>
+				}
+				{this.props.success &&
+					<div className={styles.formDialogSuccess}>
+						{this.props.success}
+					</div>
+				}
+				{!this.props.success && this.props.helper && 
+					<div className={styles.formDialogHelper}>
+						{this.props.helper}
+					</div>
+				}
 				<div className={styles.formDialogForm}>
 					{inputs}
 				</div>

@@ -18,14 +18,14 @@ const registerReducer = (state = initialState, action) => {
 			return Object.assign({}, state, {
 				pending: false,
 				error: null,
-				data: action.payload.data
+				data: "Your account was successfully created. Please check your emails to validate it."
 			});
 			break;
 		}
 		case "REGISTER_REJECTED": {
 			return Object.assign({}, state, {
 				pending: false,
-				error: action.payload.error,
+				error: "Error creating your account. Please try again later.",
 				data: null
 			});
 			break;

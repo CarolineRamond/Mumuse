@@ -9,6 +9,7 @@ import Dialog from "react-toolbox/lib/dialog"
 import Form from '../Common/Form'
 import { register } from '../../modules/auth/auth.actions'
 import { getRootUrl } from '../../modules/world'
+import { getRegisterState } from "../../modules/auth"
 import styles from "../Common/form.css"
 
 class Register extends React.Component {
@@ -147,6 +148,8 @@ class Register extends React.Component {
             }}>
             <Form fields={fields}
                 helper=""
+                error={this.props.serverState.error}
+                success={this.props.serverState.data}
                 links={links}
                 cancel={this.cancel}
                 submit={this.submit}
@@ -168,6 +171,7 @@ Register.propTypes = {
 // Store connection
 const ConnectedRegister = connect((store)=> {
 	return {
+		serverState: getRegisterState(store.auth),
 		rootUrl: getRootUrl(store.world)
 	}
 })(Register);
