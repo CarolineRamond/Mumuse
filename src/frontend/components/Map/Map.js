@@ -164,9 +164,11 @@ class Map extends React.Component {
 	_addViewportChangeHandling() {
 		// update window location on moveend
 		this.map.on('moveend', (e)=> {
+			const splitLocation = this.props.location.pathname.split('/');
 			const { lng, lat } = this.map.getCenter();
 			const zoom = this.map.getZoom();
-			const newLocation = '/' + [lng, lat, zoom].join(',');
+			splitLocation[1] = [lng, lat, zoom].join(',');
+			const newLocation = splitLocation.join('/');
 			this.props.history.replace(newLocation);
 		});
 

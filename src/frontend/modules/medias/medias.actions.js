@@ -1,6 +1,15 @@
 import axios from "axios";
 import EXIF from 'exif-parser';
 
+export const selectMediaById = (mediaId) => {
+	return {
+		type: "MEDIAS_SELECT_BY_ID",
+		payload: {
+			mediaId: mediaId
+		}
+	}
+}
+
 export const clickMedias = ({ features, ctrlKey })=> {
 	return { 
 		type: 'MEDIAS_CLICK', 
@@ -10,25 +19,6 @@ export const clickMedias = ({ features, ctrlKey })=> {
 		}
 	};
 };
-
-export const deselectMapMedias = (mapEvent)=> {
-	return { 
-		type: 'MEDIAS_DESELECT', 
-		payload: { 
-			ctrlKey: mapEvent.originalEvent.ctrlKey
-		}
-	};
-}
-
-export const deselectCarouselMedias = (ctrlKey)=> {
-	return { 
-		type: 'MEDIAS_DESELECT', 
-		payload: { 
-			ctrlKey: ctrlKey
-		}
-	};
-};
-
 
 export const startDragMapMedias = (mapEvent)=> {
 	return {

@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux"
 import Button from "react-toolbox/lib/button"
+import Tooltip from "react-toolbox/lib/tooltip"
+const TooltipButton = Tooltip(Button);
 import { Link } from "react-router-dom"
 import { withRouter } from "react-router"
 import PropTypes from "prop-types"
@@ -22,17 +24,19 @@ class AuthButton extends React.Component {
 
 	render() {
 		if (this.props.user) {
-			return <Button 
+			return <TooltipButton
 				icon='directions_run' 
 				onClick={this.logout}
 				floating 
-				className={authButton}/>
+				className={authButton}
+				tooltip="Logout"/>
 		} else {
 			return <Link to={this.loginUrl}>
-				<Button 
+				<TooltipButton 
 				icon='account_box' 
 				floating 
-				className={authButton}/>
+				className={authButton}
+				tooltip="Login"/>
 			</Link>
 		}
 	}
