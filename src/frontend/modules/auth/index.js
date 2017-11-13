@@ -1,64 +1,24 @@
-const initialState = {
-	user: null,
-	errorMessage: null,
-	successMessage: null
-}
+import { combineReducers } from "redux";
+import currentUserReducer from "./reducers/auth.currentUser.reducer"
+import loginReducer from "./reducers/auth.login.reducer"
+import logoutReducer from "./reducers/auth.logout.reducer"
+import registerReducer from "./reducers/auth.register.reducer"
 
-const authReducer = (state = initialState, action) => {
-	switch (action.type) {
-		case "FETCH_USER_FULFILLED": {
-			return Object.assign({}, state, {
-				user: action.payload.data,
-				errorMessage: false,
-				successMessage: false
-			});
-			break;
-		}
-		case "FETCH_USER_REJECTED": {
-			return Object.assign({}, state, {
-				user: null
-			});
-			break;
-		}
-		case "LOGIN_FULFILLED": {
-			return Object.assign({}, state, {
-				user: action.payload.data
-			});
-			break;
-		}
-		case "LOGIN_REJECTED": {
-			return Object.assign({}, state, {
-				user: null
-			});
-			break;
-		}
-		case "LOGOUT_FULFILLED": {
-			return Object.assign({}, state, {
-				user: null
-			});
-			break;
-		}
-		case "REGISTER_FULFILLED": {
-			return Object.assign({}, state, {
-				user: null
-			});
-			break;
-		}
-		case "REGISTER_REJECTED": {
-			return Object.assign({}, state, {
-				user: null
-			});
-			break;
-		}
-		default:
-			return state;
-	}
-}
+const authReducer = combineReducers({
+	currentUser: currentUserReducer,
+	login: loginReducer,
+	logout: logoutReducer,
+	register: registerReducer
+});
 
 export default authReducer;
 
-export function getUser(state) {
-	return state.user;
+export function getCurrentUser(state) {
+	return state.currentUser.data;
+}
+
+export function getCurrentUserState(state) {
+	return state.currentUser;
 }
 
 export function getLoginState(state) {
@@ -69,6 +29,6 @@ export function getRegisterState(state) {
 	return state.register;
 }
 
-export function getForgotPasswordState(state) {
-	return state.forgotPassword;
+export function getLogoutState(state) {
+	return state.logout;
 }

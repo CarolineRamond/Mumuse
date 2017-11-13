@@ -7,6 +7,7 @@ import PropTypes from "prop-types"
 import Dialog from "react-toolbox/lib/dialog"
 
 import Form from '../Common/Form'
+import { getLoginState } from '../../modules/auth'
 import { login } from '../../modules/auth/auth.actions'
 import { getRootUrl } from '../../modules/world'
 import styles from '../Common/form.css'
@@ -42,7 +43,7 @@ class Login extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.user) {
+		if (nextProps.serverState.data) {
 			this.cancel.bind(this)();
 		}
 	}
@@ -91,6 +92,7 @@ class Login extends React.Component {
             }}>
             <Form fields={fields}
                 helper=""
+                error={this.props.serverState.error}
                 links={links}
                 cancel={this.cancel}
                 submit={this.submit}
@@ -105,7 +107,6 @@ class Login extends React.Component {
 // * match : current route match, provided by function withRouter (required)
 // * history : current router history, provided by function withRouter (required)
 Login.propTypes = {
-	user: PropTypes.object,
     location: PropTypes.object, 
     match: PropTypes.object.isRequired, 
     history: PropTypes.object.isRequired
@@ -114,8 +115,8 @@ Login.propTypes = {
 // Store connection
 const ConnectedLogin = connect((store)=> {
 	return {
-		user: store.auth.user,
-		rootUrl: getRootUrl(store.world)
+		rootUrl: getRootUrl(store.world),
+		serverState: getLoginState(store.auth)
 	}
 })(Login);
 

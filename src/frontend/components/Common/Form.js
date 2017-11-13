@@ -104,6 +104,9 @@ class Form extends React.Component {
 		};
 		return <div className={styles.formDialog}>
 			<div className={styles.formDialogContent}>
+				<div className={styles.formDialogError}>
+					{this.props.error}
+				</div>
 				<div className={styles.formDialogHelper}>
 					{this.props.helper}
 				</div>
