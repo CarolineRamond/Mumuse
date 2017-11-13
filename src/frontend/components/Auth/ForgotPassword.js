@@ -65,7 +65,7 @@ class ForgotPassword extends React.Component {
 		const error = this.props.serverState.error || (this.state.verifyError ?
 			"Your reset session has expired. Please ask for a new session below." : null);
 				
-		return <Dialog title="Reset Password" 
+		return <Dialog title="Forgot Password" 
             active={this.state.active}
             onEscKeyDown={this.cancel}
             onOverlayClick={this.cancel}

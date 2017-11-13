@@ -34,3 +34,11 @@ export function forgotPassword(form) {
 		payload: axios.post('/userdrive/auth/forgot', form)
 	}
 }
+
+export function resetPassword(form, token) {
+	const url = '/userdrive/auth/reset/' + token;
+	return { 
+		type: "RESET_PASSWORD", 
+		payload: axios.post(url, form)
+	}
+}
