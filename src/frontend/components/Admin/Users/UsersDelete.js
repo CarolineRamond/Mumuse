@@ -47,7 +47,7 @@ class UsersDelete extends React.Component {
 
 const ConnectedUsersDelete = connect((store)=> {
     return {
-        serverState: getDeleteUsersState(store.users);
+        serverState: getDeleteUsersState(store.users)
     }
 })(UsersDelete);
 
