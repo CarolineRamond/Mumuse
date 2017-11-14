@@ -7,7 +7,8 @@ import Dialog from "react-toolbox/lib/dialog"
 
 import Form from "../../Common/Form"
 import styles from '../../Common/form.css'
-import { adminCreateUser } from "../../../modules/admin/admin.actions"
+import { createUser } from "../../../modules/users/users.actions"
+import { getCreateUserState } from "../../../modules/users"
 
 class UsersCreate extends React.Component {
 
@@ -15,7 +16,23 @@ class UsersCreate extends React.Component {
         super(props);
         this.state = {
             active: false
-        }
+        };
+        this.cancel = this.cancel.bind(this);
+        this.submit = this.submit.bind(this);
+    }
+
+    cancel() {
+        const rootUrl = "/admin/users";
+        this.setState({
+            active: false
+        });
+        setTimeout(()=> {
+            this.props.history.push(rootUrl);
+        }, 500);
+    }
+
+    submit(form) {
+        this.props.dispatch(createUser(form));
     }
 
     componentDidMount() {
@@ -24,8 +41,13 @@ class UsersCreate extends React.Component {
         });
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.serverState.data) {
+            this.cancel.bind(this)();
+        }
+    }
+
     render() {
-    	const rootUrl = '/admin/users';
     	const fields = {
     		firstname: {
     			label: "First Name",
@@ -118,25 +140,22 @@ class UsersCreate extends React.Component {
     			}
     		}
     	};
-    	const submit = (form)=> {
-    		this.props.dispatch(adminCreateUser(form));
-    	}
-    	const cancel = ()=> {
-            this.setState({
-                active: false
-            });
-            setTimeout(()=> {
-                this.props.history.push(rootUrl);
-            }, 500);
-    	}
 
         return <Dialog title="Create User" 
-            active={this.state.active}>
+            active={this.state.active}
+            onEscKeyDown={this.cancel}
+            onOverlayClick={this.cancel}
+            theme={{
+                dialog: styles.formDialogContainer,
+                body: styles.formDialog,
+                title: styles.formDialogTitle
+            }}>
             <Form fields={fields}
                 helper=""
+                error={this.props.serverState.error}
                 links={[]}
-                cancel={cancel}
-                submit={submit}
+                cancel={this.cancel}
+                submit={this.submit}
             />
         </Dialog>
     }
@@ -147,14 +166,16 @@ class UsersCreate extends React.Component {
 // * match : current route match, provided by function withRouter
 // * history : current router history, provided by function withRouter
 UsersCreate.propTypes = {
-    location: PropTypes.object.isRequired, 
-    match: PropTypes.object, 
-    history: PropTypes.object 
+    // location: PropTypes.object.isRequired, 
+    // match: PropTypes.object, 
+    // history: PropTypes.object 
 }
 
 // Store connection
 const ConnectedUsersCreate = connect((store)=> {
-	return {}
+	return {
+        serverState: getCreateUserState(store.users)
+    }
 })(UsersCreate);
 
 export default ConnectedUsersCreate;
