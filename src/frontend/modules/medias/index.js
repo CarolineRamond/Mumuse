@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import { difference } from "lodash";
 
 import layersReducer from './reducers/medias.layers.reducer';
 import sourcesReducer from './reducers/medias.sources.reducer';
