@@ -4,12 +4,14 @@ import mediasReducer, { mediasInitialState, mediasMapConfig } from './medias';
 import worldReducer, { worldInitialState, worldMapConfig } from './world';
 import usersReducer from './users';
 import authReducer from './auth';
+import rastertilesReducer from './rastertiles';
 
 const reducer = combineReducers({
 	world: worldReducer,
 	medias: mediasReducer,
 	auth: authReducer,
-	users: usersReducer
+	users: usersReducer,
+	rastertiles: rastertilesReducer
 });
 export default reducer;
 

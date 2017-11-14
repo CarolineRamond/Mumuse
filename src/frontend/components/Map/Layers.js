@@ -5,6 +5,7 @@ import { IconButton } from "react-toolbox/lib/button"
 import PropTypes from "prop-types"
 
 import { toggleLayerMedias } from '../../modules/medias/medias.actions'
+import { getRasterLayersInBounds } from "../../modules/rastertiles"
 import styles from './layers.css'
 
 class Layers extends React.Component {
@@ -14,15 +15,6 @@ class Layers extends React.Component {
       index: 0,
     };
     this.toggleLayer = this.toggleLayer.bind(this);
-  }
-
-  shouldComponentUpdate(nextProps) {
-    // component should re-render only if one of the layers was modified
-    var shouldUpdate = false;
-    forIn(nextProps.layers, (layer)=> {
-      shouldUpdate = (layer.metadata.didChange || shouldUpdate);
-    });
-    return shouldUpdate;
   }
 
   toggleLayer(layerId) {
@@ -57,8 +49,11 @@ Layers.propTypes = {
 
 // Store connection
 const ConnectedLayers = connect((store)=> {
+  const rasterLayers = getRasterLayersInBounds(store.rastertiles);
+  const mediaLayers = store.medias.layers;
+  const layers = Object.assign({}, rasterLayers, mediaLayers);
   return  {
-    layers: store.medias.layers
+    layers: layers
   }
 })(Layers);
 

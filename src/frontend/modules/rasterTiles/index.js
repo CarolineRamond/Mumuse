@@ -1,3 +1,5 @@
+import { forIn } from "lodash";
+
 const initialState = {
 	pending: false,
 	error: null,
@@ -35,6 +37,7 @@ const _formatTilesData = (tilesets)=> {
             },
             metadata: {
             	name: item.name,
+            	bounds: item.bounds,
                 isShown: true,
                 isInBounds: false
             }
@@ -43,7 +46,13 @@ const _formatTilesData = (tilesets)=> {
 	return { sources, layers };
 }
 
-const rasterTilesReducer = (state = initialState, action)=> {
+const _boundsIntersect = (boundsA, boundsB)=> {
+	const intersectLng = !(boundsA[2] < boundsB[0] || boundsA[0] > boundsB[2]);
+	const intersectLat = !(boundsA[3] < boundsB[1] || boundsA[1] > boundsB[3]);
+	return (intersectLng && intersectLat);
+}
+
+const rastertilesReducer = (state = initialState, action)=> {
 	switch(action.type) {
 		case "FETCH_RASTERTILSETS_PENDING": {
 			return Object.assign({}, state, {
@@ -93,8 +102,23 @@ const rasterTilesReducer = (state = initialState, action)=> {
 			});
 			break;
 		}
-		case "UPDATE_VISIBLE_RASTERTILESETS": {
-			return state;
+		case "UPDATE_WORLD_STATE": {
+			const mapBounds = action.payload.bounds
+				.toArray()
+				.reduce((tab, item)=> {
+					return tab.concat(item);
+				}, []);
+			var newLayers = {};
+			forIn(state.layers, (layer, layerId)=> {
+				newLayers[layerId] = Object.assign({}, layer, {
+					metadata: Object.assign({}, layer.metadata, {
+						isInBounds: _boundsIntersect(layer.metadata.bounds, mapBounds)
+					})
+				});
+			});
+			return Object.assign({}, state, {
+				layers: newLayers
+			});
 			break;
 		}
 		default: {
@@ -104,9 +128,14 @@ const rasterTilesReducer = (state = initialState, action)=> {
 }
 
 // default export : reducer function
-export default rasterTilesReducer;
+export default rastertilesReducer;
 
-export const getVisibleRasterTiles = (state)=> {
-	// TODO
-	return state;
+export const getRasterLayersInBounds = (state)=> {
+	var result = {};
+	forIn(state.layers, (layer, layerId)=> {
+		if (layer.metadata.isInBounds) {
+			result[layerId] = layer;
+		}
+	});
+	return result;
 }
