@@ -22,38 +22,58 @@ class Layers extends React.Component {
   }
 
 	render() {
-    const mappedLayers = [];
-    _.forIn(this.props.layers, (layer, layerId)=> {
+    const mappedMediaLayers = [];
+    const mappedRasterLayers = [];
+
+    forIn(this.props.mediaLayers, (layer, layerId)=> {
       var icon = "visibility_off";
       if (layer.metadata.isLocked) {
         icon = "lock";
       } else if (layer.metadata.isShown) {
         icon = "visibility";
       }
-      mappedLayers.push(<div key={layerId} className={styles.layer}>
+      mappedMediaLayers.push(<div key={layerId} className={styles.layer}>
         <IconButton disabled={layer.metadata.isLocked}
           onClick={()=> {this.toggleLayer(layerId)}} icon={icon}/>
         {layer.metadata.name}
       </div>);
     });
 
-		return <div>{mappedLayers}</div>
+    forIn(this.props.rasterLayers, (layer, layerId)=> {
+      var icon = "visibility_off";
+      if (layer.metadata.isLocked) {
+        icon = "lock";
+      } else if (layer.metadata.isShown) {
+        icon = "visibility";
+      }
+      mappedRasterLayers.push(<div key={layerId} className={styles.layer}>
+        <IconButton disabled={layer.metadata.isLocked}
+          onClick={()=> {this.toggleLayer(layerId)}} icon={icon}/>
+        {layer.metadata.name}
+      </div>);
+    });
+
+		return <div>
+      <h3>Medias</h3>
+      <div>{mappedMediaLayers}</div>
+      <hr/>
+      <h3>Orthophotos</h3>
+      <div>{mappedRasterLayers}</div>
+    </div>
 	}
 }
 
 // Props :
 // * layers: map layers, provided by @connect (required),
 Layers.propTypes = {
-  layers: PropTypes.objectOf(PropTypes.object).isRequired,
+  // layers: PropTypes.objectOf(PropTypes.object).isRequired,
 }
 
 // Store connection
 const ConnectedLayers = connect((store)=> {
-  const rasterLayers = getRasterLayersInBounds(store.rastertiles);
-  const mediaLayers = store.medias.layers;
-  const layers = Object.assign({}, rasterLayers, mediaLayers);
   return  {
-    layers: layers
+    mediaLayers: store.medias.layers,
+    rasterLayers: getRasterLayersInBounds(store.rastertiles)
   }
 })(Layers);
 

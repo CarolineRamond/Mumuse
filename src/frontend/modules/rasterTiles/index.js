@@ -54,7 +54,7 @@ const _boundsIntersect = (boundsA, boundsB)=> {
 
 const rastertilesReducer = (state = initialState, action)=> {
 	switch(action.type) {
-		case "FETCH_RASTERTILSETS_PENDING": {
+		case "FETCH_RASTERTILESETS_PENDING": {
 			return Object.assign({}, state, {
 				pending: true,
 				error: null,

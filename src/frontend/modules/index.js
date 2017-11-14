@@ -32,3 +32,47 @@ const mapConfig = {
 };
 
 export { defaultInitialState, mapConfig };
+
+export const getLayersState = (state)=> {
+	if (state.rastertiles.pending) {
+		return { 
+			pending: true,
+			error: null,
+			data: null
+		}
+	} else if (state.rastertiles.error) {
+		return {
+			pending: false,
+			error: state.rastertiles.error,
+			data: state.medias.layers
+		}
+	} else {
+		return {
+			pending: false,
+			error: null,
+			data: Object.assign({}, state.rastertiles.layers, state.medias.layers)
+		}
+	}
+}
+
+export const getSourcesState = (state)=> {
+	if (state.rastertiles.pending) {
+		return { 
+			pending: true,
+			error: null,
+			data: null
+		}
+	} else if (state.rastertiles.error) {
+		return {
+			pending: false,
+			error: state.rastertiles.error,
+			data: state.medias.sources
+		}
+	} else {
+		return {
+			pending: false,
+			error: null,
+			data: Object.assign({}, state.rastertiles.sources, state.medias.sources)
+		}
+	}
+}
