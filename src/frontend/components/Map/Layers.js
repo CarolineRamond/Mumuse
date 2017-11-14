@@ -4,7 +4,7 @@ import { forIn } from "lodash"
 import { IconButton } from "react-toolbox/lib/button"
 import PropTypes from "prop-types"
 
-import { toggleLayerMedias } from '../../modules/medias/medias.actions'
+import { toggleLayer } from '../../modules/world/world.actions'
 import { getRasterLayersInBounds } from "../../modules/rastertiles"
 import styles from './layers.css'
 
@@ -18,7 +18,7 @@ class Layers extends React.Component {
   }
 
   toggleLayer(layerId) {
-    this.props.dispatch(toggleLayerMedias(layerId));
+    this.props.dispatch(toggleLayer(layerId));
   }
 
 	render() {

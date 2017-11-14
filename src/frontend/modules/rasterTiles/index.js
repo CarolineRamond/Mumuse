@@ -80,26 +80,30 @@ const rastertilesReducer = (state = initialState, action)=> {
 			});
 			break;
 		}
-		case "TOGGLE_RASTERTILESET": {
-			const layer = state.layers[action.payload.layerId];
-			const isCurrentlyShown = layer.metadata.isShown;
-			const layoutChange = { visibility: isCurrentlyShown ? "none" : "visible" }
+		case "TOGGLE_LAYER": {
+			if (state.layers[action.payload.layerId]) {
+				const layer = state.layers[action.payload.layerId];
+				const isCurrentlyShown = layer.metadata.isShown;
+				const layoutChange = { visibility: isCurrentlyShown ? "none" : "visible" }
 
-			const toggledLayer = Object.assign({}, layer, {
-				layout: layoutChange,
-				metadata: Object.assign({}, layer.metadata, {
-					isShown: !isCurrentlyShown,
-					didChange: {
-						layout: layoutChange
-					}
-				})
-			});
+				const toggledLayer = Object.assign({}, layer, {
+					layout: layoutChange,
+					metadata: Object.assign({}, layer.metadata, {
+						isShown: !isCurrentlyShown,
+						didChange: {
+							layout: layoutChange
+						}
+					})
+				});
 
-			return Object.assign({}, state, {
-				layers: Object.assign({}, state.layers, {
-					[action.payload.layerId]: toggledLayer
-				})
-			});
+				return Object.assign({}, state, {
+					layers: Object.assign({}, state.layers, {
+						[action.payload.layerId]: toggledLayer
+					})
+				});
+			} else {
+				return state;
+			}
 			break;
 		}
 		case "UPDATE_WORLD_STATE": {

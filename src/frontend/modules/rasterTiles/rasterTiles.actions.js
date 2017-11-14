@@ -7,24 +7,6 @@ export const fetchRastertilesets = ()=> {
 	};
 };
 
-export const toggleRastertileset = (layerId)=> {
-	return {
-		type: 'TOGGLE_RASTERTILESETS',
-		payload: {
-			layerId: layerId
-		}
-	};
-}
-
-export const updateVisibleRastertilesets = (layerIds)=> {
-	return {
-		type: 'UPDATE_VISIBLE_RASTERTILESETS',
-		payload: {
-			layerIds: layerIds
-		}
-	}
-}
-
 
 
 

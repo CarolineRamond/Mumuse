@@ -26,3 +26,12 @@ export function switchPreviewMode() {
 		payload: {}
 	}
 }
+
+export const toggleLayer = (layerId)=> {
+	return {
+		type: 'TOGGLE_LAYER',
+		payload: {
+			layerId
+		}
+	};
+}
