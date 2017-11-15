@@ -46,7 +46,7 @@ const mediasLayerReducer = (state = {}, action) => {
 	 		});
 			break;
 		}
-		case "MEDIAS_TOGGLE_LAYER": {
+		case "TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {
 				return Object.assign({}, state, {
 					layout: { 
@@ -151,7 +151,7 @@ const mediasLayerReducer = (state = {}, action) => {
 // (density media representation, originated from vector tiles)
 const gridLayerReducer = (state = {}, action) => {
 	switch (action.type) {
-		case "MEDIAS_TOGGLE_LAYER": {
+		case "TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {
 				return Object.assign({}, state, {
 					paint: Object.assign({},state.paint, {
@@ -208,7 +208,7 @@ const gridLayerReducer = (state = {}, action) => {
 // (geojson source, containing only selected medias)
 const selectedMediasLayerReducer = (state = {}, action) => {
 	switch (action.type) {
-		case "MEDIAS_TOGGLE_LAYER": {
+		case "TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {
 				return Object.assign({}, state, {
 					layout: { 

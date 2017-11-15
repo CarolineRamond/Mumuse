@@ -1,12 +1,14 @@
 export function updateWorldState(event) {
 	const { lng, lat } = event.target.getCenter();
 	const zoom = event.target.getZoom();
+	const bounds = event.target.getBounds();
 	return { 
 		type: "UPDATE_WORLD_STATE", 
 		payload: {
 			lat,
 			lng,
-			zoom
+			zoom,
+			bounds
 		} 
 	}
 }
@@ -23,4 +25,13 @@ export function switchPreviewMode() {
 		type: "SWITCH_PREVIEW_MODE",
 		payload: {}
 	}
+}
+
+export const toggleLayer = (layerId)=> {
+	return {
+		type: 'TOGGLE_LAYER',
+		payload: {
+			layerId
+		}
+	};
 }

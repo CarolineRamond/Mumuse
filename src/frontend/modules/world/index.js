@@ -8,6 +8,7 @@ const worldReducer = (state = {}, action) => {
 				lat: action.payload.lat,
 				lng: action.payload.lng,
 				zoom: action.payload.zoom,
+				bounds: action.payload.bounds,
 				shouldMapResize: false
 			});
 			break;

@@ -67,6 +67,9 @@ const settings = {
     proxy: {
       '/userdrive': {
         target: 'http://localhost:9000'
+      },
+      '/map': {
+        target: 'http://localhost:9000'
       }
     }
   },

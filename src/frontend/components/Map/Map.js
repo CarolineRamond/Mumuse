@@ -7,7 +7,9 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1NXZxa2sifQ.hgPcQvgkzpfYkHgfMRqcpw';
 import PropTypes from "prop-types"
 
-import { mapConfig } from '../../modules'
+import { mapConfig, getLayersState, getSourcesState } from '../../modules'
+
+
 function getUniqueFeatures(array, comparatorProperty) {
     var existingFeatureKeys = {};
     // Because features come from tiled vector data, feature geometries may be split
@@ -26,12 +28,18 @@ function getUniqueFeatures(array, comparatorProperty) {
 
 class Map extends React.Component {
 
-	renderHandlers = {}
+	constructor(props) {
+		super(props);
+		this.state = {
+			loaded: false
+		};
+	}
 
 	componentDidMount() {
 		const world = this.props.location.pathname.split('/')[1].split(',');
 		const lngLat = world.slice(0,2);
 		const zoom = world[2];
+		this.renderHandlers = {};
 		this.map = new mapboxgl.Map({
 			container: this.mapContainer,
 			style: 'mapbox://styles/iconem/cio487j79006hc7m7wu00w6hw',
@@ -51,13 +59,9 @@ class Map extends React.Component {
 		this.draggingLayerId = null;
 
 		this.map.on('load', ()=> {
-			this._loadSources();
-			this._loadLayers();
-			this._addSimpleEventsHandling();
-			this._addClickHandling();
-			this._addDragndropHandling();
-			this._addViewportChangeHandling();
-			this._resizeMap();
+			this.setState({
+				loaded: true
+			});
 		});
 	}
 
@@ -65,8 +69,31 @@ class Map extends React.Component {
 		if (nextProps.world.shouldMapResize) {
 			this._resizeMap();
 		}
-		this._reloadSourcesData(nextProps);
-		this._updateLayersStyle(nextProps);
+		if (!nextProps.layersState.pending && this.props.layersState.pending) {
+			// layers are completely loaded => add sources, layers & events
+			if (this.state.loaded) {
+				this._loadSources(nextProps);
+				this._loadLayers(nextProps);
+				this._addSimpleEventsHandling();
+				this._addClickHandling();
+				this._addDragndropHandling();
+				this._addViewportChangeHandling();
+				this._resizeMap();
+			} else {
+				this.map.on('load', ()=> {
+					this._loadSources(nextProps);
+					this._loadLayers(nextProps);
+					this._addSimpleEventsHandling();
+					this._addClickHandling();
+					this._addDragndropHandling();
+					this._addViewportChangeHandling();
+					this._resizeMap();
+				});
+			}
+		} else if (!nextProps.layersState.pending) {
+			this._reloadSourcesData(nextProps);
+			this._updateLayersStyle(nextProps);
+		}
 	}
 
 	shouldComponentUpdate() {
@@ -81,14 +108,14 @@ class Map extends React.Component {
 		</div>
 	}
 
-	_loadSources() {
-		_.forIn(this.props.sources, (source, sourceId)=>{
+	_loadSources(nextProps) {
+		_.forIn(nextProps.sourcesState.data, (source, sourceId)=>{
 			this.map.addSource(sourceId, _.omit(source, ['metadata']));
 		});
 	}
 
-	_loadLayers() {
-		_.forIn(this.props.layers, (layer, layerId)=> {
+	_loadLayers(nextProps) {
+		_.forIn(nextProps.layersState.data, (layer, layerId)=> {
 			this.map.addLayer(layer);
 		});
 	}
@@ -224,7 +251,7 @@ class Map extends React.Component {
 	}
 
 	_reloadSourcesData(nextProps) {
-		_.forIn(nextProps.sources, (source, sourceId)=> {
+		_.forIn(nextProps.sourcesState.data, (source, sourceId)=> {
 			if (source.metadata && source.metadata.didChange && this.map.getSource(sourceId)) {
 				if (source.type === "geojson") {
 					this.map.getSource(sourceId).setData(source.data);
@@ -243,7 +270,7 @@ class Map extends React.Component {
 	}
 
 	_updateLayersStyle(nextProps) {
-		_.forIn(nextProps.layers, (layer)=> {
+		_.forIn(nextProps.layersState.data, (layer)=> {
 			var didChange = layer.metadata && layer.metadata.didChange || {};
 			if (this.map.getLayer(layer.id) && didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
@@ -293,21 +320,10 @@ Map.propTypes = {
 
 // Store connection
 const ConnectedMap = connect((store)=> {
-	var sources = {};
-	var layers = {};
-
-	_.forIn(store, (item, key)=> {
-		if (item && item.sources) {
-			sources = _.extend(sources, item.sources);
-		}
-		if (item && item.layers) {
-			layers = _.extend(layers, item.layers);
-		}
-	});
 	return {
 		world: store.world,
-		layers: layers,
-		sources: sources
+		layersState: getLayersState(store),
+		sourcesState: getSourcesState(store)
 	}
 })(Map);
 
