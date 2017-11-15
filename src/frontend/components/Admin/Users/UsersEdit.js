@@ -92,7 +92,20 @@ class UsersEdit extends React.Component {
                         const error = isValid ? '' : 'Email is invalid';
                         return { isValid, error }
                     }
-                }
+                },
+                roles: {
+                    label: "Role",
+                    type: "dropdown",
+                    value: this.props.currentUserState.data.roles[0],
+                    options: [
+                        { label: "User", value: "user" },
+                        { label: "Superuser", value: "superuser" },
+                        { label: "Admin", value: "admin" }
+                    ],
+                    validate: (value)=> {
+                        return { isValid: true, error: null };
+                    }
+                },
             };
             dialogContent = <Form fields={fields}
                 helper=""

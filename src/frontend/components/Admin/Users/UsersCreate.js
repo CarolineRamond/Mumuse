@@ -80,6 +80,19 @@ class UsersCreate extends React.Component {
     			    return { isValid, error }
     			}
     		},
+            roles: {
+                label: "Role",
+                type: "dropdown",
+                value: "user",
+                options: [
+                    { label: "User", value: "user" },
+                    { label: "Superuser", value: "superuser" },
+                    { label: "Admin", value: "admin" }
+                ],
+                validate: (value)=> {
+                    return { isValid: true, error: null };
+                }
+            },
     		password: {
     			label: "Password",
     			type: "password",

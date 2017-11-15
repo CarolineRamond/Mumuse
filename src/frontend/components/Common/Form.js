@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom"
 import Button from "react-toolbox/lib/button"
 import Input from "react-toolbox/lib/input"
+import Dropdown from "react-toolbox/lib/dropdown"
 import { forIn } from "lodash"
 import PropTypes from "prop-types"
 
@@ -83,16 +84,28 @@ class Form extends React.Component {
 	render() {
 		var inputs = [];
 		forIn(this.props.fields, (field, name)=> {
-			inputs.push(<Input key={name}
-				type={field.type} 
-				label={field.label} 
-				name={name}
-				required={field.required}
-				value={this.state.fieldValues[name]}
-				error={this.state.formErrors[name]}
-				onChange={this.handleUserInput.bind(this, name)}
-				style={{width:"250px"}}/>
-			);
+			if (field.type === "dropdown") {
+				inputs.push(<Dropdown key={name}
+					auto
+					label={field.label}
+					name={name}
+					source={field.options}
+					value={this.state.fieldValues[name]}
+					onChange={this.handleUserInput.bind(this, name)}
+					style={{width:"250px"}}/>)
+			}
+			else {
+				inputs.push(<Input key={name}
+					type={field.type} 
+					label={field.label} 
+					name={name}
+					required={field.required}
+					value={this.state.fieldValues[name]}
+					error={this.state.formErrors[name]}
+					onChange={this.handleUserInput.bind(this, name)}
+					style={{width:"250px"}}/>
+				);
+			}
 		});
 		var links = <div/>
 		if (this.props.links) {
