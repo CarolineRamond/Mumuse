@@ -25,7 +25,9 @@ class Main extends React.Component {
 	}
 
 	handleDragFinished(props) {
-		this.props.dispatch(resizeMap());
+		if (!this.props.mapPreviewMode) {
+			this.props.dispatch(resizeMap());
+		}
 		this.setState({
 			isResizing: false
 		});
@@ -58,7 +60,9 @@ class Main extends React.Component {
 
 // Store connection (to dispatch resizeMap action)
 const ConnectedMain = connect((store)=> {
-    return  {}
+    return  {
+    	mapPreviewMode: store.world.previewMode
+    }
 })(Main);
 
 export default ConnectedMain;

@@ -11,6 +11,7 @@ To launch : ``npm run dev``
 			<UsersTable/>
 			<UsersCreate (if url="/admin/users/create")/>
 			<UsersEdit (if url="/admin/users/edit/:userId")/>
+			<UsersDelete (if props.confirmDelete)/>
 		</Users>
 	</Admin>
 	<div (if url="/:loc")>
@@ -18,6 +19,7 @@ To launch : ``npm run dev``
 			<Login (if url="/:loc/auth/login")/>
 			<Register (if url="/:loc/auth/register")/>
 			<ForgotPassword (if url="/:loc/auth/forgot")/>
+			<ResetPassword (if url="/:loc/auth/reset")/>
 		</Auth>
 		<Main>
 			<AuthButton/>
