@@ -14,7 +14,8 @@ const mediasSourceReducer = (state = {}, action) => {
 		case 'FETCH_USER_FULFILLED':
 		case 'LOGIN_FULFILLED':
 		case 'MEDIAS_UPLOAD_FULFILLED':
-		case 'MEDIAS_DELETE_FULFILLED': {
+		case 'MEDIAS_DELETE_FULFILLED':
+		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true
@@ -33,7 +34,8 @@ const gridMediasSourceReducer = (state = {}, action) => {
 		case 'FETCH_USER_FULFILLED':
 		case 'LOGIN_FULFILLED':
 		case 'MEDIAS_UPLOAD_FULFILLED':
-		case 'MEDIAS_DELETE_FULFILLED': {
+		case 'MEDIAS_DELETE_FULFILLED':
+		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
 					didChange: true
@@ -45,6 +47,7 @@ const gridMediasSourceReducer = (state = {}, action) => {
 			return defaultSourceReducer(state);
 	}
 }
+
 
 // Reducer for selected medias source
 // (geojson source representing selected medias)
@@ -135,10 +138,19 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 	 		});
 			break;
 		}
-		case "MEDIAS_MAP_END_DRAG": {
+		case "MEDIAS_MAP_END_DRAG_PENDING": {
+			return Object.assign({}, state, {
+				metadata: Object.assign({}, state.metadata, {
+					draggingFeatureId: null,
+					didChange: false
+				})
+			});
+			break;
+		}
+		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, { 
-					draggingFeatureId: null 
+					didChange: true
 				})
 			});
 			break;

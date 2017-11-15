@@ -32,10 +32,15 @@ export const dragMapMedias = ({ event, isAdmin })=> {
 	};
 }
 
-export const endDragMapMedias = ({ event, isAdmin })=> {
+export const endDragMapMedias = ({ event, feature, isAdmin })=> {
+	const mediaId = feature.properties._id;
+	const newPosition = event.lngLat;
+	const form = {
+		loc: [newPosition.lng, newPosition.lat]
+	}
 	return {
 		type: 'MEDIAS_MAP_END_DRAG',
-		// payload: _updateMedia
+		payload: axios.put('/userdrive/media/' + mediaId, form)
 	};
 }
 

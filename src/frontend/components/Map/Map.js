@@ -179,7 +179,12 @@ class Map extends React.Component {
 				this.draggingLayerId = item.layerId;
 
 				this.map.once('mouseup', (evt)=> {
+					const features = this.map.queryRenderedFeatures(
+						evt.point, 
+						{ layers: [item.layerId] }
+					);
 					this.props.dispatch(item.mouseup({
+						feature: features[0],
 						event: evt, 
 						isAdmin: this.props.isAdmin
 					}));
