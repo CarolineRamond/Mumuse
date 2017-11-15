@@ -103,11 +103,14 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 			return defaultSourceReducer(state);
 			break;
 		case "MEDIAS_MAP_START_DRAG": {
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, { 
-					draggingFeatureId: action.payload.features[0].properties._id 
-				})
-			});
+			if (action.payload.isAdmin) {
+				return Object.assign({}, state, {
+					metadata: Object.assign({}, state.metadata, { 
+						draggingFeatureId: action.payload.features[0].properties._id 
+					})
+				});
+			}
+			return defaultSourceReducer(state);
 			break;
 		}
 		case "MEDIAS_MAP_DRAG": {
