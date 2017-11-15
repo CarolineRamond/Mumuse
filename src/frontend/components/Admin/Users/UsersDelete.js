@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux"
 import Dialog from "react-toolbox/lib/dialog"
+import { isEqual } from "lodash"
 
 import { deleteUsers } from "../../../modules/users/users.actions"
 import { getDeleteUsersState } from "../../../modules/users"
@@ -8,8 +9,9 @@ import styles from "../admin.css"
 
 class UsersDelete extends React.Component {
 
-	componentWillReceiveProps() {
-        if (serverState.data) {
+	componentWillReceiveProps(nextProps) {
+        if (nextProps.active && nextProps.serverState.data &&
+            isEqual(nextProps.serverState.data, this.props.users)) {
             this.props.cancel();
         }
     }

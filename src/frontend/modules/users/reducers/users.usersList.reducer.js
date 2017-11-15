@@ -31,6 +31,22 @@ const usersListReducer = (state = initialState, action) => {
 			});
 			break;
 		}
+		case "CREATE_USER_FULFILLED": {
+			return Object.assign({}, state, {
+				data: state.data.concat(action.payload.data)
+			});
+			break;
+		}
+		case "DELETE_USERS_FULFILLED": {
+			const deletedIds = action.payload;
+			const newData = state.data.filter((user)=> {
+				return deletedIds.indexOf(user._id) === -1;
+			});
+			return Object.assign({}, state, {
+				data: newData
+			});
+			break;
+		}
 		default:
 			return state;
 			break;

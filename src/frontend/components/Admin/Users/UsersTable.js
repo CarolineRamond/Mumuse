@@ -30,15 +30,16 @@ class UsersTable extends React.Component {
 
 	handleUserSelect(selectedIndexes) {
 		const selected = selectedIndexes.map((index)=> {
-			return this.props.users[index]._id;
+			return this.props.usersListState.data[index]._id;
 		});
 		this.setState({ selected });
 	}
 
 	toggleDeleteConfirmation(user) {
+		const confirmDeleteUsers = (user && user._id) ? [user._id] : this.state.selected;
 		this.setState({
 			confirmDelete: !this.state.confirmDelete,
-			confirmDeleteUsers: user._id || this.state.selected
+			confirmDeleteUsers: confirmDeleteUsers
 		});
 	}
 
@@ -60,7 +61,7 @@ class UsersTable extends React.Component {
 					      <TableCell>Roles</TableCell>
 					      <TableCell>&nbsp;</TableCell>
 					    </TableHead>
-					    {this.props.users && this.props.users.map((user) => (
+					    {this.props.usersListState.data && this.props.usersListState.data.map((user) => (
 					      <TableRow key={user._id} selected={this.state.selected.indexOf(user._id) > -1}>
 					        <TableCell>{user.email}</TableCell>
 					        <TableCell>{user.firstname}</TableCell>

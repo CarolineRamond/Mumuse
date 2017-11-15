@@ -18,15 +18,20 @@ const deleteUsersReducer = (state = initialState, action) => {
 			return Object.assign({}, state, {
 				pending: false,
 				error: null,
-				data: action.payload.data
+				data: action.payload
 			});
 			break;
 		}
 		case "DELETE_USERS_REJECTED": {
+			var error;
+			try {
+				error = action.payload.response.data.message
+			} catch(e) {
+				error = "Error : Could not delete user(s).";
+			}
 			return Object.assign({}, state, {
 				pending: false,
-				error: action.payload.response.data.message || 
-					"Error : Could not delete user(s).",
+				error: error,
 				data: null
 			});
 			break;
