@@ -6,7 +6,7 @@ const initialState = {
 
 const currentUserReducer = (state = initialState, action) => {
 	switch (action.type) {
-		case "FETCH_USER_PENDING": {
+		case "FETCH_AUTH_USER_PENDING": {
 			return Object.assign({}, state, {
 				pending: true,
 				data: null,
@@ -14,7 +14,7 @@ const currentUserReducer = (state = initialState, action) => {
 			});
 			break;
 		}
-		case "FETCH_USER_FULFILLED": {
+		case "FETCH_AUTH_USER_FULFILLED": {
 			return Object.assign({}, state, {
 				pending: false,
 				data: action.payload.data,
@@ -22,7 +22,7 @@ const currentUserReducer = (state = initialState, action) => {
 			});
 			break;
 		}
-		case "FETCH_USER_REJECTED": {
+		case "FETCH_AUTH_USER_REJECTED": {
 			return Object.assign({}, state, {
 				pending: false,
 				data: null,

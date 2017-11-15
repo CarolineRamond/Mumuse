@@ -19,6 +19,21 @@ class UsersEdit extends React.Component {
         };
         this.cancel = this.cancel.bind(this);
         this.submit = this.submit.bind(this);
+        this.userId = this.props.match.params.userId;
+    }
+
+    componentDidMount() {
+        this.setState({
+            active: true
+        });
+        this.props.dispatch(fetchUser(this.userId));
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.updateUserState.data && 
+            nextProps.updateUserState.data._id === this.userId) {
+            this.cancel.bind(this)();
+        }
     }
 
     cancel() {
@@ -32,28 +47,16 @@ class UsersEdit extends React.Component {
     }
 
     submit(form) {
-        this.props.dispatch(updateUser(form));
-    }
-
-    componentDidMount() {
-        this.setState({
-            active: true
-        });
-        const userId = this.props.match.userId;
-        this.props.dispatch(fetchUser(userId));
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.updateUserState.data) {
-            this.cancel.bind(this)();
-        }
+        this.props.dispatch(updateUser(form, this.userId));
     }
 
     render() {
         var dialogContent;
-        if (this.props.currentUserState.pending) {
+        if (this.props.currentUserState.pending ||
+            (!this.props.currentUserState.data && !this.props.currentUserState.error)) {
             dialogContent = <div>Loading...</div>
-        } else if (this.props.currentUserState.error) {
+        }
+        else if (this.props.currentUserState.error) {
             dialogContent = <div>{this.props.currentUserState.error}</div>
         } else {
             const fields = {

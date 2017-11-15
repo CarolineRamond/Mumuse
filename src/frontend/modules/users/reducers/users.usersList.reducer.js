@@ -37,6 +37,19 @@ const usersListReducer = (state = initialState, action) => {
 			});
 			break;
 		}
+		case "UPDATE_USER_FULFILLED": {
+			const updatedUser = action.payload.data;
+			const newData = state.data.map((user)=> {
+				if (user._id === updatedUser._id) {
+					return updatedUser;
+				}
+				return user;
+			});
+			return Object.assign({}, state, {
+				data: newData
+			});
+			break;
+		}
 		case "DELETE_USERS_FULFILLED": {
 			const deletedIds = action.payload;
 			const newData = state.data.filter((user)=> {

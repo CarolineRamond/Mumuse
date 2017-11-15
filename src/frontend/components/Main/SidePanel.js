@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import {Tab, Tabs} from 'react-toolbox';
 
-import { getCurrentUser } from "../../modules/auth"
+import { getAuthUser } from "../../modules/auth"
 import Layers from "../Map/Layers"
 import Carousel from "../Medias/Carousel"
 import MediasActions from "../Medias/MediasActions"
@@ -43,7 +43,7 @@ class SidePanel extends React.Component {
 
 const ConnectedSidePanel = connect((store)=> {
 	return {
-		user: getCurrentUser(store.auth)
+		user: getAuthUser(store.auth)
 	}
 })(SidePanel);
 

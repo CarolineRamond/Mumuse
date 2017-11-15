@@ -24,7 +24,7 @@ export function fetchUser(userId) {
 export function updateUser(form, userId) {
 	return { 
 		type: "UPDATE_USER", 
-		payload: axios.get('/userdrive/users/' + userId)
+		payload: axios.put('/userdrive/users/' + userId, form)
 	}
 }
 

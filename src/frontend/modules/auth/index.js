@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import currentUserReducer from "./reducers/auth.currentUser.reducer"
+import authUserReducer from "./reducers/auth.authUser.reducer"
 import loginReducer from "./reducers/auth.login.reducer"
 import logoutReducer from "./reducers/auth.logout.reducer"
 import registerReducer from "./reducers/auth.register.reducer"
@@ -7,7 +7,7 @@ import forgotPasswordReducer from "./reducers/auth.forgotPassword.reducer"
 import resetPasswordReducer from "./reducers/auth.resetPassword.reducer"
 
 const authReducer = combineReducers({
-	currentUser: currentUserReducer,
+	authUser: authUserReducer,
 	login: loginReducer,
 	logout: logoutReducer,
 	register: registerReducer,
@@ -17,12 +17,12 @@ const authReducer = combineReducers({
 
 export default authReducer;
 
-export function getCurrentUser(state) {
-	return state.currentUser.data;
+export function getAuthUser(state) {
+	return state.authUser.data;
 }
 
-export function getCurrentUserState(state) {
-	return state.currentUser;
+export function getAuthUserState(state) {
+	return state.authUser;
 }
 
 export function getLoginState(state) {

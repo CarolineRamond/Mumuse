@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export function fetchUser() {
+export function fetchAuthUser() {
 	return { 
-		type: "FETCH_USER", 
+		type: "FETCH_AUTH_USER", 
 		payload: axios.get('/userdrive/auth/me')
 	}
 }

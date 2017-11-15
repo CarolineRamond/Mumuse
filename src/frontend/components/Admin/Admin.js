@@ -5,8 +5,8 @@ import {Tab, Tabs} from 'react-toolbox';
 
 import Users from "./Users"
 import styles from "./admin.css"
-import { fetchUser } from "../../modules/auth/auth.actions"
-import { getCurrentUserState } from "../../modules/auth"
+import { fetchAuthUser } from "../../modules/auth/auth.actions"
+import { getAuthUserState } from "../../modules/auth"
 
 
 class Admin extends React.Component {
@@ -20,15 +20,15 @@ class Admin extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.dispatch(fetchUser());
+		this.props.dispatch(fetchAuthUser());
 	}
 	
 	componentWillReceiveProps(nextProps) {
-		if (!nextProps.currentUserState.pending && 
-			this.props.currentUserState.pending) {
+		if (!nextProps.authUserState.pending && 
+			this.props.authUserState.pending) {
 			// fetch user action is not pending anymore
-			if (nextProps.currentUserState.data &&
-  			nextProps.currentUserState.data.roles.indexOf("admin") > -1) {
+			if (nextProps.authUserState.data &&
+  			nextProps.authUserState.data.roles.indexOf("admin") > -1) {
 				// an admin user is connected : setup tabs & location
 				var index;
 				if (this.props.location.pathname.indexOf('/admin/users') > -1) {
@@ -64,7 +64,7 @@ class Admin extends React.Component {
 	}
 
   	render() {
-  		if (this.props.currentUserState.pending) {
+  		if (this.props.authUserState.pending) {
   			return <div>Loading...</div>
   		} else if (this.state.authorized) {
   			return <div className={styles.adminPanel}>
@@ -92,7 +92,7 @@ class Admin extends React.Component {
 
 const ConnectedAdmin = connect((store)=> {
 	return  {
-		currentUserState: getCurrentUserState(store.auth)
+		authUserState: getAuthUserState(store.auth)
 	}
 })(Admin);
 
