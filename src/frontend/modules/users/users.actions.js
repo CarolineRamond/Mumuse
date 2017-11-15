@@ -14,6 +14,12 @@ export function createUser(form) {
 	}
 }
 
+export function resetCreateState() {
+	return {
+		type: "RESET_CREATE_STATE"
+	};
+}
+
 export function fetchUser(userId) {
 	return { 
 		type: "FETCH_USER", 
@@ -26,6 +32,12 @@ export function updateUser(form, userId) {
 		type: "UPDATE_USER", 
 		payload: axios.put('/userdrive/users/' + userId, form)
 	}
+}
+
+export function resetUpdateState() {
+	return {
+		type: "RESET_UPDATE_STATE"
+	};
 }
 
 export function deleteUsers(userIds) {
@@ -44,6 +56,11 @@ export function deleteUsers(userIds) {
 	}
 }
 
+export function resetDeleteState() {
+	return {
+		type: "RESET_DELETE_STATE"
+	};
+}
 
 function _deleteUser(userId) {
     return axios.delete('/userdrive/users/' + userId);

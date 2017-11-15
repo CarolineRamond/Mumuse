@@ -36,6 +36,13 @@ const deleteUsersReducer = (state = initialState, action) => {
 			});
 			break;
 		}
+		case "RESET_DELETE_STATE": {
+			return Object.assign({}, state, {
+				pending: false,
+				error: null,
+				data: null
+			});
+		}
 		default:
 			return state;
 			break;

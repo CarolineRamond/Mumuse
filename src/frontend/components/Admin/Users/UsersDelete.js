@@ -10,8 +10,7 @@ import styles from "../admin.css"
 class UsersDelete extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
-        if (nextProps.active && nextProps.serverState.data &&
-            isEqual(nextProps.serverState.data, this.props.users)) {
+        if (nextProps.active && nextProps.serverState.data) {
             this.props.cancel();
         }
     }

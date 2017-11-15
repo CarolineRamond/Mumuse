@@ -31,6 +31,13 @@ const udpateUserReducer = (state = initialState, action) => {
 			});
 			break;
 		}
+		case "RESET_UPDATE_STATE": {
+			return Object.assign({}, state, {
+				pending: false,
+				error: null,
+				data: null
+			});
+		}
 		default:
 			return state;
 			break;

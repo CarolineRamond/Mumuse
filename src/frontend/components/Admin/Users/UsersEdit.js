@@ -7,7 +7,7 @@ import Dialog from "react-toolbox/lib/dialog"
 
 import Form from "../../Common/Form"
 import styles from '../../Common/form.css'
-import { fetchUser, updateUser } from "../../../modules/users/users.actions"
+import { fetchUser, updateUser, resetUpdateState } from "../../../modules/users/users.actions"
 import { getCurrentUserState, getUpdateUserState } from "../../../modules/users"
 
 class UsersEdit extends React.Component {
@@ -30,14 +30,14 @@ class UsersEdit extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.updateUserState.data && 
-            nextProps.updateUserState.data._id === this.userId) {
+        if (nextProps.updateUserState.data) {
             this.cancel.bind(this)();
         }
     }
 
     cancel() {
         const rootUrl = "/admin/users";
+        this.props.dispatch(resetUpdateState());
         this.setState({
             active: false
         });

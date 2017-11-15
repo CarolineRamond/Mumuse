@@ -8,7 +8,7 @@ import Dialog from "react-toolbox/lib/dialog"
 const TooltipButton = Tooltip(Button);
 
 import UsersDelete from "./UsersDelete"
-import { fetchUsersList } from "../../../modules/users/users.actions"
+import { fetchUsersList, resetDeleteState } from "../../../modules/users/users.actions"
 import { getUsersListState } from "../../../modules/users"
 import styles from "../admin.css"
 
@@ -37,6 +37,7 @@ class UsersTable extends React.Component {
 
 	toggleDeleteConfirmation(user) {
 		const confirmDeleteUsers = (user && user._id) ? [user._id] : this.state.selected;
+		this.props.dispatch(resetDeleteState());
 		this.setState({
 			confirmDelete: !this.state.confirmDelete,
 			confirmDeleteUsers: confirmDeleteUsers

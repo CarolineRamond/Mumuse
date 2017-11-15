@@ -7,7 +7,7 @@ import Dialog from "react-toolbox/lib/dialog"
 
 import Form from "../../Common/Form"
 import styles from '../../Common/form.css'
-import { createUser } from "../../../modules/users/users.actions"
+import { resetCreateState, createUser } from "../../../modules/users/users.actions"
 import { getCreateUserState } from "../../../modules/users"
 
 class UsersCreate extends React.Component {
@@ -22,6 +22,7 @@ class UsersCreate extends React.Component {
     }
 
     cancel() {
+        this.props.dispatch(resetCreateState());
         const rootUrl = "/admin/users";
         this.setState({
             active: false
