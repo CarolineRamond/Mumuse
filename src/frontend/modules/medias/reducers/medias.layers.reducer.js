@@ -77,6 +77,7 @@ const mediasLayerReducer = (state = {}, action) => {
 			break;
 		}
 		case "MEDIAS_GRID_UPDATE_FEATURES": {
+			console.log("MEDIAS GRID UPDATE FEATURES ");
 			const mediaCount = action.payload.features.reduce((count, feature)=> {
 				return count + feature.properties.allMediaCount
 			}, 0);

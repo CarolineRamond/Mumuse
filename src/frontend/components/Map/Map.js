@@ -245,14 +245,13 @@ class Map extends React.Component {
 				this.props.dispatch(item.action(renderedFeatures, this.map.getZoom()));
 			}
 			const renderHandler = (data)=> {
-				if (this.map.isStyleLoaded() && this.map.isSourceLoaded(item.source)) {
+				if (this.map.isSourceLoaded(item.source)) {
 					getRenderedFeatures();
 					this.map.off('render', renderHandler);
 				}
 			}
 			this.renderHandlers[item.layerIds.toString()] = renderHandler;
 		}
-		
 
 		// wait for a map rendering
 		// that displays item's source and layer
