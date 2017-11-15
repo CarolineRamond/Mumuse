@@ -29,6 +29,12 @@ function getUniqueFeatures(array, comparatorProperty) {
 
 class Map extends React.Component {
 
+	componentDidMount() {
+		if (!this.props.layersState.pending) {
+			this._initMap();
+		}
+	}
+
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.world.shouldMapResize) {
 			this._resizeMap();
@@ -60,6 +66,10 @@ class Map extends React.Component {
 				</div>
 			}
 		</div>
+	}
+
+	componentWillUnmount() {
+		this.map.remove();
 	}
 
 	_initMap() {

@@ -37,7 +37,7 @@ class Admin extends React.Component {
 					index = 1;
 				} else {
 					index = 0;
-					this.props.history.push("/admin/users");
+					this.props.history.replace("/admin/users");
 				}
 				this.setState({
 					authorized: true,
