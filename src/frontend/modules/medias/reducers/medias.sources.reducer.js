@@ -62,8 +62,9 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 			});
 		}
 		case "MEDIAS_CLICK": {
+			const multiSelect = action.payload.isAdmin && action.payload.ctrlKey;
 			var newFeatures = [];
-			if (action.payload.ctrlKey) {
+			if (multiSelect) {
 				// keep previously selected medias (remove features)
 				newFeatures = newFeatures.concat(state.data.features);
 			}

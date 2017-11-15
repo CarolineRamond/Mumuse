@@ -1,35 +1,38 @@
 import axios from "axios";
 import EXIF from 'exif-parser';
 
-export const clickMedias = ({ features, ctrlKey })=> {
+export const clickMedias = ({ features, ctrlKey, isAdmin })=> {
 	return { 
 		type: 'MEDIAS_CLICK', 
 		payload: { 
 			features: features,
-			ctrlKey: ctrlKey
+			ctrlKey: ctrlKey,
+			isAdmin: isAdmin
 		}
 	};
 };
 
-export const startDragMapMedias = (mapEvent)=> {
+export const startDragMapMedias = ({ event, isAdmin })=> {
 	return {
 		type: 'MEDIAS_MAP_START_DRAG',
 		payload: {
-			features: mapEvent.features
+			features: event.features,
+			isAdmin: isAdmin
 		}
 	};
 }
 
-export const dragMapMedias = (mapEvent)=> {
+export const dragMapMedias = ({ event, isAdmin })=> {
 	return {
 		type: 'MEDIAS_MAP_DRAG',
 		payload: {
-			coords: mapEvent.lngLat
+			coords: event.lngLat,
+			isAdmin: isAdmin
 		}
 	};
 }
 
-export const endDragMapMedias = (mapEvent)=> {
+export const endDragMapMedias = ({ event, isAdmin })=> {
 	return {
 		type: 'MEDIAS_MAP_END_DRAG',
 		// payload: _updateMedia

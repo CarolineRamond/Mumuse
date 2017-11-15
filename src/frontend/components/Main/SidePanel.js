@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import {Tab, Tabs} from 'react-toolbox';
 
-import { getAuthUser } from "../../modules/auth"
+import { isAuthUserAdmin } from "../../modules/auth"
 import Layers from "../Map/Layers"
 import Carousel from "../Medias/Carousel"
 import MediasActions from "../Medias/MediasActions"
@@ -29,7 +29,7 @@ class SidePanel extends React.Component {
 				onChange={this.handleTabChange}>
 	          	<Tab label='Medias'>
           			<Carousel/>
-          			{this.props.user && this.props.user.roles.indexOf('admin') > -1 &&
+          			{this.props.isAdmin && 
           				<MediasActions/>
           			}
 	          	</Tab>
@@ -43,7 +43,7 @@ class SidePanel extends React.Component {
 
 const ConnectedSidePanel = connect((store)=> {
 	return {
-		user: getAuthUser(store.auth)
+		isAdmin: isAuthUserAdmin(store.auth)
 	}
 })(SidePanel);
 

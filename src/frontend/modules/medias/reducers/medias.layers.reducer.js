@@ -24,8 +24,9 @@ const mediasLayerReducer = (state = {}, action) => {
 		}
 		case "MEDIAS_CLICK": {
 			const currentFilter  = state.filter || ['all'];
+			const multiSelect = action.payload.isAdmin && action.payload.ctrlKey;
 			var newFilter = currentFilter;
-			if (!action.payload.ctrlKey) {
+			if (!multiSelect) {
 				// deselect previously selected medias (remove filters)
 				newFilter = newFilter.filter((item)=> {
 					return (item.indexOf('_id') === -1);

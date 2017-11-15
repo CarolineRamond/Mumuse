@@ -9,6 +9,7 @@ import PropTypes from "prop-types"
 import ProgressBar from "react-toolbox/lib/progress_bar"
 
 import { mapConfig, getLayersState, getSourcesState } from '../../modules'
+import { isAuthUserAdmin } from "../../modules/auth"
 import styles from "./map.css"
 
 function getUniqueFeatures(array, comparatorProperty) {
@@ -122,11 +123,17 @@ class Map extends React.Component {
 		mapConfig.events.map((event)=> {
 			if (event.layerId) {
 				this.map.on(event.type, event.layerId, (evt)=> {
-					this.props.dispatch(event.action(evt));
+					this.props.dispatch(event.action({
+						event: evt,
+						isAdmin: this.props.isAdmin
+					}));
 				});
 			} else {
 				this.map.on(event.type, (evt)=> {
-					this.props.dispatch(event.action(evt));
+					this.props.dispatch(event.action({
+						event: evt,
+						isAdmin: this.props.isAdmin
+					}));
 				});
 			}
 		});
@@ -141,7 +148,11 @@ class Map extends React.Component {
 						{ layers: item.layerIds }
 					);
 					const ctrlKey = evt.originalEvent.ctrlKey;
-					this.props.dispatch(item.action({ features, ctrlKey }));
+					this.props.dispatch(item.action({ 
+						features, 
+						ctrlKey, 
+						isAdmin: this.props.isAdmin 
+					}));
 				});
 			});
 		}
@@ -161,11 +172,17 @@ class Map extends React.Component {
 			// detect mousedown on layer, setup mouseup event (once)
 			// and dispatch corresponding action
 			this.map.on('mousedown', item.layerId, (evt)=> {
-				this.props.dispatch(item.mousedown(evt));
+				this.props.dispatch(item.mousedown({
+					event: evt, 
+					isAdmin: this.props.isAdmin
+				}));
 				this.draggingLayerId = item.layerId;
 
 				this.map.once('mouseup', (evt)=> {
-					this.props.dispatch(item.mouseup(evt));
+					this.props.dispatch(item.mouseup({
+						event: evt, 
+						isAdmin: this.props.isAdmin
+					}));
 					this.draggingLayerId = null;
 				});
 			});
@@ -178,7 +195,10 @@ class Map extends React.Component {
 				if (this.draggingLayerId) {
 					mapConfig.dragndrop.map((item)=> {
 						if (item.layerId === this.draggingLayerId) {
-							this.props.dispatch(item.mousemove(evt));
+							this.props.dispatch(item.mousemove({
+								event: evt,
+								isAdmin: this.props.isAdmin
+							}));
 						}
 					});
 				}
@@ -321,7 +341,8 @@ const ConnectedMap = connect((store)=> {
 	return {
 		world: store.world,
 		layersState: getLayersState(store),
-		sourcesState: getSourcesState(store)
+		sourcesState: getSourcesState(store),
+		isAdmin: isAuthUserAdmin(store.auth)
 	}
 })(Map);
 

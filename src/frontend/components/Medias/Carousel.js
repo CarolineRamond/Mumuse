@@ -3,6 +3,7 @@ import { connect } from "react-redux"
 import InfiniteScroll from 'react-infinite-scroller'
 import PropTypes from "prop-types"
 
+import { isAuthUserAdmin } from "../../modules/auth"
 import { clickMedias } from '../../modules/medias/medias.actions'
 import { getVisibleMedias, getSelectFilterPending, areMediasLocked } from '../../modules/medias'
 import styles from "./carousel.css"
@@ -55,7 +56,11 @@ class Carousel extends React.Component {
 
     selectMedia(media, ctrlKey) {
         const features = [media];
-    	this.props.dispatch(clickMedias({ features, ctrlKey }));
+    	this.props.dispatch(clickMedias({ 
+            features: features,
+            ctrlKey: ctrlKey,
+            isAdmin: this.props.isAdmin
+        }));
     }
 
 	render() {
@@ -117,7 +122,8 @@ const ConnectedCarousel = connect((store)=> {
     return  {
         medias: getVisibleMedias(store.medias),
         selectFilterPending: getSelectFilterPending(store.medias),
-        areMediasLocked: areMediasLocked(store.medias)
+        areMediasLocked: areMediasLocked(store.medias),
+        isAdmin: isAuthUserAdmin(store.auth)
     }
 })(Carousel);
 
