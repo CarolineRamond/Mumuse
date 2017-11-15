@@ -56,9 +56,13 @@ class Layers extends React.Component {
 		return <div>
       <h3>Medias</h3>
       <div>{mappedMediaLayers}</div>
-      <hr/>
-      <h3>Orthophotos</h3>
-      <div>{mappedRasterLayers}</div>
+      {mappedRasterLayers.length > 0 && 
+        <div>
+          <hr/>
+          <h3>Orthophotos</h3>
+          <div>{mappedRasterLayers}</div>
+        </div>
+      }
     </div>
 	}
 }

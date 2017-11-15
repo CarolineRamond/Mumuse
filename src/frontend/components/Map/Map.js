@@ -6,9 +6,10 @@ import mapboxgl from "mapbox-gl"
 import 'mapbox-gl/dist/mapbox-gl.css'
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1NXZxa2sifQ.hgPcQvgkzpfYkHgfMRqcpw';
 import PropTypes from "prop-types"
+import ProgressBar from "react-toolbox/lib/progress_bar"
 
 import { mapConfig, getLayersState, getSourcesState } from '../../modules'
-
+import styles from "./map.css"
 
 function getUniqueFeatures(array, comparatorProperty) {
     var existingFeatureKeys = {};
@@ -28,14 +29,40 @@ function getUniqueFeatures(array, comparatorProperty) {
 
 class Map extends React.Component {
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			loaded: false
-		};
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.world.shouldMapResize) {
+			this._resizeMap();
+		}
+		if (!nextProps.layersState.pending && this.props.layersState.pending) {
+			// layers did just load : init map
+			this._initMap();
+		} else if (!nextProps.layersState.pending) {
+			this._reloadSourcesData(nextProps);
+			this._updateLayersStyle(nextProps);
+		}
 	}
 
-	componentDidMount() {
+	shouldComponentUpdate(nextProps) {
+		// rerender component only if loader should be hidden
+		// ie if layers are just loaded
+		// mapbox will rerender the map independently from react
+		// otherwise
+		return (!nextProps.layersState.pending && this.props.layersState.pending);
+	}
+
+	render() {
+		return <div>
+			<div style={{position:'absolute', width: '100%', height: '100%'}} ref={el => this.mapContainer = el}></div>
+			{this.props.layersState.pending &&
+				<div className={styles.mapLoader}>
+					{/*<ProgressBar type="circular" mode="indeterminate" />*/}
+					Loading...
+				</div>
+			}
+		</div>
+	}
+
+	_initMap() {
 		const world = this.props.location.pathname.split('/')[1].split(',');
 		const lngLat = world.slice(0,2);
 		const zoom = world[2];
@@ -59,63 +86,24 @@ class Map extends React.Component {
 		this.draggingLayerId = null;
 
 		this.map.on('load', ()=> {
-			this.setState({
-				loaded: true
-			});
+			this._loadSources();
+			this._loadLayers();
+			this._addSimpleEventsHandling();
+			this._addClickHandling();
+			this._addDragndropHandling();
+			this._addViewportChangeHandling();
+			this._resizeMap();
 		});
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.world.shouldMapResize) {
-			this._resizeMap();
-		}
-		if (!nextProps.layersState.pending && this.props.layersState.pending) {
-			// layers are completely loaded => add sources, layers & events
-			if (this.state.loaded) {
-				this._loadSources(nextProps);
-				this._loadLayers(nextProps);
-				this._addSimpleEventsHandling();
-				this._addClickHandling();
-				this._addDragndropHandling();
-				this._addViewportChangeHandling();
-				this._resizeMap();
-			} else {
-				this.map.on('load', ()=> {
-					this._loadSources(nextProps);
-					this._loadLayers(nextProps);
-					this._addSimpleEventsHandling();
-					this._addClickHandling();
-					this._addDragndropHandling();
-					this._addViewportChangeHandling();
-					this._resizeMap();
-				});
-			}
-		} else if (!nextProps.layersState.pending) {
-			this._reloadSourcesData(nextProps);
-			this._updateLayersStyle(nextProps);
-		}
-	}
-
-	shouldComponentUpdate() {
-		// React does not need to re-render map component
-		// (mapbox will still re-render this.map)
-		return false;
-	}
-
-	render() {
-		return <div>
-			<div style={{position:'absolute', width: '100%', height: '100%'}} ref={el => this.mapContainer = el}></div>
-		</div>
-	}
-
-	_loadSources(nextProps) {
-		_.forIn(nextProps.sourcesState.data, (source, sourceId)=>{
+	_loadSources() {
+		_.forIn(this.props.sourcesState.data, (source, sourceId)=>{
 			this.map.addSource(sourceId, _.omit(source, ['metadata']));
 		});
 	}
 
-	_loadLayers(nextProps) {
-		_.forIn(nextProps.layersState.data, (layer, layerId)=> {
+	_loadLayers() {
+		_.forIn(this.props.layersState.data, (layer, layerId)=> {
 			this.map.addLayer(layer);
 		});
 	}
