@@ -57,8 +57,10 @@ To launch : ``npm run dev``
 	/!\	shouldMapResize: Bool // whether map should resize on next react render
 	},
 	medias: {
-		sources: {Source}, // medias-related map sources => better in array form ? should create Source class ?
-		layers: {Layer}, // medias-related map layers => idem
+		sources: {Source}, // medias-related map sources 
+			=> better in array form (can use combine reducers) ? should create Source class ?
+		layers: {Layer}, // medias-related map layers 
+			=> idem
 		timeline: Number, // timeline value => to put into map state (not only relative to medias)
 		selectFilterPending: Bool // whether a select filter is begin applied (useful to count medias)
 	},
@@ -110,6 +112,10 @@ Layer : {
 }
 ```
 
+* Shall we keep only metadata in store and layer definition in config ?
+* => better store legibility & facilitates updates
+* => drawback : access to current layer properties ? (needed ?)
+
 ### Sources
 
 ```
@@ -123,6 +129,10 @@ Source : {
 	}
 }
 ```
+* idem layers : shall we keep only metadata in store and source definition in config ?
+* => better store legibility & facilitates updates
+* => drawback : access to current layer properties ? (needed ?)
+
 
 ### ServerResource
 
@@ -143,8 +153,9 @@ authUser: {
 }
 ```
 
-### Special fields (/!\) 
+### Special fields (/!\\) 
 
 When set to true or non-undefined, the fields marked with /!\ will induce a map change.
+
 When an action should not trigger such a map change, the fields must be **explicitely** set to false or undefined 
 (else, they are identical to previous state's fields, which might trigger the map change)
