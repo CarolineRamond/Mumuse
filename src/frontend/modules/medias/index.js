@@ -4,6 +4,8 @@ import layersReducer from './reducers/medias.layers.reducer';
 import sourcesReducer from './reducers/medias.sources.reducer';
 import timelineReducer from './reducers/medias.timeline.reducer';
 import uploadMediasReducer from './reducers/medias.uploadMedias.reducer';
+import deleteMediasReducer from './reducers/medias.deleteMedias.reducer';
+
 import mediasInitialState from './medias.initialState';
 import mediasMapConfig from './medias.map.config';
 
@@ -24,7 +26,8 @@ const mediasReducer = combineReducers({
 				break;
 		}
 	},
-	uploadMedias: uploadMediasReducer
+	uploadMedias: uploadMediasReducer,
+	deleteMedias: deleteMediasReducer
 });
 
 // default export : reducer function
@@ -70,6 +73,9 @@ export const getVisibleMedias = (state) => {
 			}
 			return item;
 		}).sort((a,b)=> {
+			if (a.properties.date === b.properties.date) {
+				return a.properties.name.localeCompare(b.properties.name);
+			}
 			return (a.properties.date - b.properties.date);
 		});
 
@@ -124,4 +130,8 @@ export const areMediasLocked = (state) => {
 
 export const getUploadMediasState = (state)=> {
 	return state.uploadMedias;
+}
+
+export const getDeleteMediasState = (state)=> {
+	return state.deleteMedias;
 }

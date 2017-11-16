@@ -73,18 +73,26 @@ export const initSelectedMedia = (mediaId) => {
 }
 
 export const deleteMedias = (medias)=> {
-	const payload = new Promise((resolve, reject)=> {
-		var promise = medias.reduce((promise, media)=> {
-			return promise.then(() => { 
+	return (dispatch) => {
+		var promise = medias.reduce((promise, media, index)=> {
+			return promise.then(() => {
+				dispatch({ 
+					type: "MEDIAS_DELETE_PENDING", 
+					payload: { index: index, length: medias.length } 
+				});
 				return _deleteMedia(media);
 			})
 		}, Promise.resolve());
-		promise.then(()=> resolve())
-	});
-	
-    return { 
-		type: "MEDIAS_DELETE",
-		payload: payload
+		
+		promise.then(()=> {
+			dispatch({ 
+				type: "MEDIAS_DELETE_FULFILLED", 
+				payload: { length: medias.length }
+			});
+			dispatch({ 
+				type: "RESET_MEDIAS_DELETE", 
+			});
+		});
 	}
 }
 
@@ -147,7 +155,6 @@ function _uploadMedia(file, currentPosition) {
             form.append("file", file);
             return axios.post('/userdrive/media', form)
             	.then((response)=> { 
-            		console.log('uploaded file ', file);
             		return resolve(response) 
             	})
             	.catch((error)=> { return reject(error) });
