@@ -1,44 +1,83 @@
-var debug = process.env.NODE_ENV !== "production";
-var webpack = require('webpack');
-var path = require('path');
+const debug = process.env.NODE_ENV !== "production";
+const path = require('path');
+const webpack = require('webpack');
 
-module.exports = {
-  context: path.join(__dirname, "src"),
-  devtool: debug ? "inline-sourcemap" : null,
-  entry: "./js/client.js",
+const settings = {
+  entry: {
+    bundle: [
+      "react-hot-loader/patch",
+      "./src/frontend/index.js"
+    ]
+  },
+  output: {
+    filename: "[name].js",
+    publicPath: "/",
+    path: path.resolve("build")
+  },
+  resolve: {
+    extensions: [".js", ".json", ".css"]
+  },
+  devtool: "eval-source-map",
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
-        exclude: /(node_modules|bower_components)/,
+        exclude: /node_modules/,
         loader: 'babel-loader',
-        query: {
-          presets: ['react', 'es2015', 'stage-0'],
+        options: {
+          presets: ['react', 'es2015'],
           plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy'],
+          env: {
+            development: {
+              plugins: ["react-hot-loader/babel"]
+            }
+          }
         }
       },
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader'
-      }
+        exclude: /mapbox-gl\.css/,
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: {
+              modules: true,
+              sourceMap: true,
+              importLoaders: 1,
+              localIdentName: "[name]--[local]--[hash:base64:8]"
+            }
+          },
+          "postcss-loader" // has separate config, see postcss.config.js nearby
+        ]
+      },
+      {
+        test: /mapbox-gl\.css$/,
+        use: [
+          "style-loader",
+          "css-loader"
+        ]
+      },
     ]
   },
-  output: {
-    path: __dirname + "/src/",
-    filename: "client.min.js"
+  devServer: {
+    contentBase: path.resolve("src/www"),
+    historyApiFallback: true,
+    port: 8081,
+    proxy: {
+      '/userdrive': {
+        target: 'http://localhost:9000'
+      },
+      '/map': {
+        target: 'http://localhost:9000'
+      }
+    }
   },
   plugins: debug ? [] : [
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
   ],
-  devServer: {
-    historyApiFallback: true,
-    port: 8081,
-    proxy: {
-      '/userdrive': {
-        target: 'http://localhost:9000'
-      }
-    }
-  }
 };
+
+module.exports = settings;

@@ -1,0 +1,24 @@
+.pannel {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	margin-left: -11px;
+}
+
+.pannelTabs {
+	height: 100%;
+}
+
+.pannelTab {
+	display: flex;
+	flex-grow:1;
+	min-height: 0;
+}
+
+.pannelTab:focus {
+	outline: none;
+}
+
+.pannelNavigationContainer {
+	flex-shrink: 0;
+}

@@ -1,0 +1,30 @@
+.timelineContainer {
+	margin-bottom: 70px;
+	display:flex;
+	flex-direction: row;
+	flex-grow: 1;
+	justify-content: center;
+	align-items: flex-end;
+}
+
+.timeline {
+	height: 70px;
+	min-width: 400px;
+	width: 30%;
+	background-color: rgba(255,255,255,0.5);
+	padding: 20px 25px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.timelineInfos {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	font-size: 18px;
+}
+
+.timelineDate {
+	font-weight: bold;
+}

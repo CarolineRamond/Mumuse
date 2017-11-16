@@ -1,0 +1,64 @@
+.infiniteScrollContainer {
+	min-height: 0;
+	flex-grow: 1;
+	overflow: auto;
+}
+
+.infiniteScroll {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.thumbnailContainer {
+	position:relative;
+	height: 100px;
+	width: 100px;
+	margin: 8px;
+}
+
+.thumbnail {
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+}
+
+.thumbnailSelected {
+	border: 2px solid blue;
+}
+
+.mediasLockedMessage {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	min-height: 0;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 20px;
+	text-align: center;
+}
+
+.mediasActions {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	flex-shrink: 0;
+	margin: 16px 0;
+}
+
+.mediasUploader {
+	position:relative;
+}
+
+.mediasUploader input {
+	position:absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	z-index: 0;
+}
