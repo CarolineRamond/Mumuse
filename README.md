@@ -100,7 +100,9 @@ Layer : {
 		isShown: Bool, // whether layer is displayed on map
 		wasShownBeforeLock: Bool // used on unlock to know if layer should be displayed again
 		renderedFeatures: [Features] // optional, currently rendered features (used for medias)
+			=> useless (cf renderedFeatures action)
 		featureKey: String // optional, unique feature key (used to compute rendered features),
+			=> useless (cf renderedFeatures action)
 		isInBounds: Bool // optional, whether layer is in map bounds (used for rastertilesets)
 	/!\ didChange: { // used to update map layer on next react render
 			paint: {paintProperties->paintValue} // paint properties (cf mapbox) that will change on next react render,
@@ -159,3 +161,48 @@ When set to true or non-undefined, the fields marked with /!\ will induce a map 
 
 When an action should not trigger such a map change, the fields must be **explicitely** set to false or undefined 
 (else, they are identical to previous state's fields, which might trigger the map change)
+
+
+## Map configuration
+
+Apart from layers and sources, map shall be given configuration to execute redux actions on user interactions.
+
+As redux actions are functions, they are not serializable. Thus, they **should not** be put into the store.
+
+### Clicks
+
+```
+click: [{
+	layerIds: [String] // the layers to detect click on,
+	action: Function // the action to be fired on click
+}]
+```
+
+### Dragndrop
+
+```
+dragndrop: [{
+    layerId: String // the layer containing draggable features
+    mousedown: Function, // the action to be fired on mousedown
+    mousemove: Function, // the action to be fired on mousemove (if a feature is dragged)
+    mouseup: Function 	// the action to be fired on mousedown (if a feature was dragged)
+}]
+```
+
+### Moveend
+
+```
+moveend: [Function] // array of actions to be fired on moveend
+```
+
+### Update currently rendered features
+
+```
+    renderedFeatures: [{
+        layerIds: [String], // layers containing the features to count
+        source: String, // associated source id
+        				// (map will wait until source is loaded to count features)
+        uniqueKey: String, // features unique key (to avoid duplicates)
+        action: Function // action to be fired when rendered features are retrieved
+    }]
+```
