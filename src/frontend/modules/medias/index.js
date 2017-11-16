@@ -70,7 +70,7 @@ export const getVisibleMedias = (state) => {
 			}
 			return item;
 		}).sort((a,b)=> {
-			return (a.properties._id > b.properties._id);
+			return (a.properties.date - b.properties.date);
 		});
 
 	return result;
