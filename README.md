@@ -198,11 +198,11 @@ moveend: [Function] // array of actions to be fired on moveend
 ### Update currently rendered features
 
 ```
-    renderedFeatures: [{
-        layerIds: [String], // layers containing the features to count
-        source: String, // associated source id
-        				// (map will wait until source is loaded to count features)
-        uniqueKey: String, // features unique key (to avoid duplicates)
-        action: Function // action to be fired when rendered features are retrieved
-    }]
+renderedFeatures: [{
+    layerIds: [String], // layers containing the features to count
+    source: String, // associated source id
+    				// (map will wait until source is loaded to count features)
+    uniqueKey: String, // features unique key (to avoid duplicates)
+    action: Function // action to be fired when rendered features are retrieved
+}]
 ```
