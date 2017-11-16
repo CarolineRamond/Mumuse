@@ -96,20 +96,27 @@ function _deleteMedia(media) {
 }
 
 export const uploadMedias = (files, position)=> {
-	const iter = new Array(files.length).fill(1);
-	const payload = new Promise((resolve, reject)=> {
+	return (dispatch) => {
+		const iter = new Array(files.length).fill(1);
 		var promise = iter.reduce((promise, item, index)=> {
-			return promise.then(() => { 
+			return promise.then(() => {
+				dispatch({ 
+					type: "MEDIAS_UPLOAD_PENDING", 
+					payload: { index: index, length: files.length } 
+				});
 				return _uploadMedia(files[index], position);
 			})
-		}, Promise.resolve())
+		}, Promise.resolve());
 		
-		promise.then(()=> resolve())
-	});
-	
-    return { 
-		type: "MEDIAS_UPLOAD",
-		payload: payload
+		promise.then(()=> {
+			dispatch({ 
+				type: "MEDIAS_UPLOAD_FULFILLED", 
+				payload: { length: files.length }
+			});
+			dispatch({ 
+				type: "RESET_MEDIAS_UPLOAD", 
+			});
+		});
 	}
 }
 

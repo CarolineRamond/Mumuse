@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import layersReducer from './reducers/medias.layers.reducer';
 import sourcesReducer from './reducers/medias.sources.reducer';
 import timelineReducer from './reducers/medias.timeline.reducer';
+import uploadMediasReducer from './reducers/medias.uploadMedias.reducer';
 import mediasInitialState from './medias.initialState';
 import mediasMapConfig from './medias.map.config';
 
@@ -22,7 +23,8 @@ const mediasReducer = combineReducers({
 				return state;
 				break;
 		}
-	}
+	},
+	uploadMedias: uploadMediasReducer
 });
 
 // default export : reducer function
@@ -118,4 +120,8 @@ export const getSelectFilterPending = (state) => {
 
 export const areMediasLocked = (state) => {
 	return state.layers["medias-layer"].metadata.isLocked;
+}
+
+export const getUploadMediasState = (state)=> {
+	return state.uploadMedias;
 }
