@@ -12,6 +12,7 @@ const gridMediasSourceReducer = (state = {}, action) => {
 			// store rendered features in source's metadata
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
+					loaded: true,
 					renderedFeatures: action.payload.features,
 					didChange: false
 				}),
@@ -42,6 +43,7 @@ const mediasSourceReducer = (state = {}, action) => {
 			// store rendered features in source's metadata
 			return Object.assign({}, state, {
 				metadata: Object.assign({}, state.metadata, {
+					loaded: true,
 					renderedFeatures: action.payload.features,
 					didChange: false
 				}),

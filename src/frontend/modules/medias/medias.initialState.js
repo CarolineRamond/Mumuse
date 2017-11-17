@@ -4,6 +4,7 @@ export default {
             type: "vector",
             tiles: ['http://localhost:8081/userdrive/tile/{z}/{x}/{y}.pbf'],
             metadata: {
+                loaded: false,
                 renderedFeatures: []
             }
         },
@@ -11,6 +12,7 @@ export default {
             type: "vector",
             tiles: ['http://localhost:8081/userdrive/tile/grid/{z}/{x}/{y}.pbf'],
             metadata: {
+                loaded: false,
                 renderedFeatures: []
             }
         },
