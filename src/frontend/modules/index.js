@@ -1,37 +1,5 @@
 import { combineReducers } from "redux";
-
-import mediasReducer, { mediasInitialState, mediasMapConfig } from './medias';
-import worldReducer, { worldInitialState, worldMapConfig } from './world';
-import usersReducer from './users';
-import authReducer from './auth';
-import rastertilesReducer from './rastertiles';
-
-const reducer = combineReducers({
-	world: worldReducer,
-	medias: mediasReducer,
-	auth: authReducer,
-	users: usersReducer,
-	rastertiles: rastertilesReducer
-});
-export default reducer;
-
-const defaultInitialState = {
-	world: worldInitialState,
-	medias: mediasInitialState
-};
-
-const mapEvents = mediasMapConfig.events.concat(worldMapConfig.events);
-const mapClicks = mediasMapConfig.click;
-const mapDragndrop = mediasMapConfig.dragndrop.concat(worldMapConfig.dragndrop);
-const mapRenderedFeatures = mediasMapConfig.renderedFeatures.concat(worldMapConfig.renderedFeatures);
-const mapConfig = {
-	events: mapEvents,
-	click: mapClicks,
-	dragndrop: mapDragndrop,
-	renderedFeatures: mapRenderedFeatures
-};
-
-export { defaultInitialState, mapConfig };
+import { forIn } from "lodash";
 
 export const getLayersState = (state)=> {
 	if (state.rastertiles.pending) {
@@ -76,3 +44,48 @@ export const getSourcesState = (state)=> {
 		}
 	}
 }
+
+import auth from "./auth";
+import medias from "./medias";
+import rastertiles from "./rasterTiles";
+import users from "./users";
+import world from "./world";
+
+const modules = [auth, medias, rastertiles, users, world];
+
+const reducer = combineReducers({
+	world: world.reducer,
+	medias: medias.reducer,
+	auth: auth.reducer,
+	users: users.reducer,
+	rastertiles: rastertiles.reducer
+});
+
+const selectors = modules.reduce((result, module)=> {
+	forIn(module.selectors, (selector)=> {
+		result[selector.name] = (store)=> {
+			return selector(store[module.name]);
+		};
+	});
+	return result;
+}, {});
+
+const actions = modules.reduce((result, module)=> {
+	forIn(module.actions, (action)=> {
+		result[action.name] = action;
+	});
+	return result;
+}, {});
+
+const mapConfig = modules.reduce((result, module)=> {
+	if (module.mapConfig) {
+		result.events = module.mapConfig.events.concat(result.events);
+		result.click = module.mapConfig.click.concat(result.click);
+		result.dragndrop = module.mapConfig.dragndrop.concat(result.dragndrop);
+		result.renderedFeatures = module.mapConfig.renderedFeatures.concat(result.renderedFeatures);
+	}
+	return result;
+}, { events: [], click: [], dragndrop: [], renderedFeatures: [] });
+
+export default reducer;
+export { selectors, actions, mapConfig }

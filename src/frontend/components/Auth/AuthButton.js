@@ -6,10 +6,12 @@ import Tooltip from "react-toolbox/lib/tooltip"
 const TooltipButton = Tooltip(Button);
 import PropTypes from "prop-types"
 
+import { actions } from '../../modules'
+const { logout } = actions;
+import { selectors } from "../../modules"
+const { getAuthUser, getRootUrl } = selectors;
+
 import { authButton } from './auth.css'
-import { getRootUrl } from "../../modules/world"
-import { getAuthUser } from "../../modules/auth"
-import { logout } from '../../modules/auth/auth.actions'
 
 class AuthButton extends React.Component {
 
@@ -65,8 +67,8 @@ AuthButton.propTypes = {
 // Store connection
 const ConnectedAuthButton = connect((store)=> {
 	return {
-		user: getAuthUser(store.auth),
-		rootUrl: getRootUrl(store.world)
+		user: getAuthUser(store),
+		rootUrl: getRootUrl(store)
 	}
 })(AuthButton);
 

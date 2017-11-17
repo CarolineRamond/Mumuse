@@ -3,11 +3,12 @@ import { connect } from "react-redux"
 import InfiniteScroll from 'react-infinite-scroller'
 import PropTypes from "prop-types"
 
-import { isAuthUserAdmin } from "../../modules/auth"
-import { clickMedias } from '../../modules/medias/medias.actions'
-import { getVisibleMedias, getSelectFilterPending, areMediasLocked } from '../../modules/medias'
-import styles from "./carousel.css"
+import { selectors } from "../../modules"
+const { isAuthUserAdmin, getVisibleMedias, getSelectFilterPending, areMediasLocked } = selectors;
+import { actions } from "../../modules"
+const { clickMedias } = actions;
 
+import styles from "./carousel.css"
 
 class Carousel extends React.Component {
 	constructor(props) {
@@ -114,10 +115,10 @@ Carousel.propTypes = {
 // Store connection
 const ConnectedCarousel = connect((store)=> {
     return  {
-        medias: getVisibleMedias(store.medias),
-        selectFilterPending: getSelectFilterPending(store.medias),
-        areMediasLocked: areMediasLocked(store.medias),
-        isAdmin: isAuthUserAdmin(store.auth)
+        medias: getVisibleMedias(store),
+        selectFilterPending: getSelectFilterPending(store),
+        areMediasLocked: areMediasLocked(store),
+        isAdmin: isAuthUserAdmin(store)
     }
 })(Carousel);
 

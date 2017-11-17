@@ -4,8 +4,11 @@ import { Button } from "react-toolbox/lib/button"
 import { Dialog } from "react-toolbox/lib/dialog"
 import { ProgressBar } from 'react-toolbox/lib/progress_bar';
 
-import { deleteMedias, resetDeleteMediasState } from "../../modules/medias/medias.actions"
-import { getSelectedMedias, getDeleteMediasState } from "../../modules/medias"
+import { selectors } from "../../modules"
+const { getSelectedMedias, getDeleteMediasState } = selectors;
+import { actions } from "../../modules"
+const { deleteMedias, resetDeleteMediasState } = actions;
+
 import styles from './carousel.css'
 
 class MediasDeleter extends React.Component {
@@ -49,8 +52,8 @@ class MediasDeleter extends React.Component {
 
 const ConnectedMediasDeleter = connect((store)=> {
 	return {
-		selectedMedias: getSelectedMedias(store.medias),
-		deleteMediasState: getDeleteMediasState(store.medias)
+		selectedMedias: getSelectedMedias(store),
+		deleteMediasState: getDeleteMediasState(store)
 	}
 })(MediasDeleter);
 

@@ -3,10 +3,12 @@ import { connect } from "react-redux"
 import Slider from "react-toolbox/lib/slider"
 import PropTypes from "prop-types"
 
-import styles from './timeline.css'
-import { getViewportMediaCount, getMediasMinDate, getTimelineValue } from '../../modules/medias'
-import { updateTimelineMedias } from "../../modules/medias/medias.actions"
+import { selectors } from "../../modules"
+const { getViewportMediaCount, getMediasMinDate, getTimelineValue } = selectors;
+import { actions } from "../../modules"
+const { updateTimelineMedias } = actions;
 
+import styles from './timeline.css'
 
 class Timeline extends React.Component {
 
@@ -66,9 +68,9 @@ Timeline.propTypes = {
 // Store connection
 const ConnectedTimeline = connect((store)=> {
 	return  {
-		viewportMediaCount: getViewportMediaCount(store.medias),
-		value: getTimelineValue(store.medias),
-		minDate: getMediasMinDate(store.medias)
+		viewportMediaCount: getViewportMediaCount(store),
+		value: getTimelineValue(store),
+		minDate: getMediasMinDate(store)
 	}
 })(Timeline);
 

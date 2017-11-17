@@ -6,38 +6,16 @@ const defaultSourceReducer = (state) => {
 	});
 }
 
-const gridMediasSourceReducer = (state = {}, action) => {
-	switch (action.type) {
-		case "MEDIAS_GRID_UPDATE_FEATURES": {
-			// store rendered features in source's metadata
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, {
-					loaded: true,
-					renderedFeatures: action.payload.features,
-					didChange: false
-				}),
-			});
-	 		break;
-		}
-		case 'LOGOUT_FULFILLED':
-		case 'FETCH_USER_FULFILLED':
-		case 'LOGIN_FULFILLED':
-		case 'MEDIAS_UPLOAD_FULFILLED':
-		case 'MEDIAS_DELETE_FULFILLED':
-		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, {
-					didChange: true
-				})
-			});
-			break;
-		}
-		default:
-			return defaultSourceReducer(state);
+const mediasSourceInitialState = {
+	type: "vector",
+	tiles: ['http://localhost:8081/userdrive/tile/{z}/{x}/{y}.pbf'],
+	metadata: {
+	    loaded: false,
+	    renderedFeatures: []
 	}
-}
+};
 
-const mediasSourceReducer = (state = {}, action) => {
+const mediasSourceReducer = (state = mediasSourceInitialState, action) => {
 	switch (action.type) {
 		case "MEDIAS_UPDATE_FEATURES": {
 			// store rendered features in source's metadata
@@ -68,12 +46,62 @@ const mediasSourceReducer = (state = {}, action) => {
 	}
 }
 
+const gridMediasSourceInitialState = {
+	type: "vector",
+	tiles: ['http://localhost:8081/userdrive/tile/grid/{z}/{x}/{y}.pbf'],
+	metadata: {
+	    loaded: false,
+	    renderedFeatures: []
+	}
+};
 
+const gridMediasSourceReducer = (state = gridMediasSourceInitialState, action) => {
+	switch (action.type) {
+		case "MEDIAS_GRID_UPDATE_FEATURES": {
+			// store rendered features in source's metadata
+			return Object.assign({}, state, {
+				metadata: Object.assign({}, state.metadata, {
+					loaded: true,
+					renderedFeatures: action.payload.features,
+					didChange: false
+				}),
+			});
+	 		break;
+		}
+		case 'LOGOUT_FULFILLED':
+		case 'FETCH_USER_FULFILLED':
+		case 'LOGIN_FULFILLED':
+		case 'MEDIAS_UPLOAD_FULFILLED':
+		case 'MEDIAS_DELETE_FULFILLED':
+		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
+			return Object.assign({}, state, {
+				metadata: Object.assign({}, state.metadata, {
+					didChange: true
+				})
+			});
+			break;
+		}
+		default:
+			return defaultSourceReducer(state);
+	}
+}
 
+const selectedMediasSourceInitialState = {
+	type: "geojson",
+	data: { 
+	    type: "FeatureCollection",
+	    features: []
+	},
+	metadata: {
+	    didChange: false,
+	    selectFilterPending: false,
+	    stillFiltered: []
+	}
+};
 
 // Reducer for selected medias source
 // (geojson source representing selected medias)
-const selectedMediasSourceReducer = (state = {}, action) => {
+const selectedMediasSourceReducer = (state = selectedMediasSourceInitialState, action) => {
 	switch (action.type) {
 		case "MEDIAS_INIT_SELECTED_FULFILLED": {
 			const feature = action.payload.data;
@@ -194,7 +222,13 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 	}	
 }
 
-export default (state = {}, action)=> {
+const sourcesInitialState = {
+	"medias-source": mediasSourceInitialState,
+	"selected-medias-source": selectedMediasSourceInitialState,
+	"grid-medias-source": gridMediasSourceInitialState
+};
+
+export default (state=sourcesInitialState, action)=> {
 	switch (action.type) {
 		case 'MEDIAS_SELECT_BY_ID': {
 			const selectedFeature = state["medias-source"].metadata.renderedFeatures.find((item)=> {

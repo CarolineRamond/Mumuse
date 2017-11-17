@@ -1,7 +1,6 @@
 import React from "react";
 import ProgressBar from 'react-toolbox/lib/progress_bar';
 
-import { getSelectedMedias } from '../../modules/medias'
 import styles from './preview.css'
 
 class ImagePreviewer extends React.Component {

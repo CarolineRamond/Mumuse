@@ -5,10 +5,13 @@ import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
 import Dialog from "react-toolbox/lib/dialog"
 
+import { actions } from '../../../modules'
+const { resetCreateState, createUser } = actions;
+import { selectors } from '../../../modules'
+const { getCreateUserState } = selectors;
+
 import Form from "../../Common/Form"
 import styles from '../../Common/form.css'
-import { resetCreateState, createUser } from "../../../modules/users/users.actions"
-import { getCreateUserState } from "../../../modules/users"
 
 class UsersCreate extends React.Component {
 
@@ -188,7 +191,7 @@ UsersCreate.propTypes = {
 // Store connection
 const ConnectedUsersCreate = connect((store)=> {
 	return {
-        serverState: getCreateUserState(store.users)
+        serverState: getCreateUserState(store)
     }
 })(UsersCreate);
 

@@ -3,11 +3,13 @@ import { connect } from "react-redux"
 import { Switch, Route, Redirect } from 'react-router-dom'
 import {Tab, Tabs} from 'react-toolbox';
 
+import { actions } from '../../modules'
+const { fetchAuthUser } = actions;
+import { selectors } from '../../modules'
+const { getAuthUserState } = selectors;
+
 import Users from "./Users"
 import styles from "./admin.css"
-import { fetchAuthUser } from "../../modules/auth/auth.actions"
-import { getAuthUserState } from "../../modules/auth"
-
 
 class Admin extends React.Component {
 
@@ -92,7 +94,7 @@ class Admin extends React.Component {
 
 const ConnectedAdmin = connect((store)=> {
 	return  {
-		authUserState: getAuthUserState(store.auth)
+		authUserState: getAuthUserState(store)
 	}
 })(Admin);
 

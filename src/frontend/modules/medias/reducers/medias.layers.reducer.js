@@ -8,9 +8,32 @@ const defaultLayerReducer = (state) => {
 	});
 }
 
+const mediasLayerInitialState = {
+	id: "medias-layer",
+	type: "circle",
+	source: "medias-source",
+	"source-layer": "user-space-tile-media-source",
+	layout: {
+	   visibility: "visible"
+	},
+	paint: {
+	   "circle-radius": 7,
+	   "circle-color": "red"
+	},
+	filter: [ 'all', ['has', 'loc'] ],
+	minzoom: 13,
+	maxzoom: 24,
+	metadata: {
+	    name: "Medias",
+	    isLocked: true,
+	    isShown: false,
+	    wasShownBeforeLock: true
+	}
+};
+
 // Reducer for medias layer
 // (pointwise media representation, originated from vector tiles)
-const mediasLayerReducer = (state = {}, action) => {
+const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 	switch (action.type) {
 		case "MEDIAS_INIT_SELECTED_FULFILLED": {
 			const currentFilter  = state.filter || ['all'];
@@ -144,9 +167,40 @@ const mediasLayerReducer = (state = {}, action) => {
 	}
 }
 
+const gridLayerInitialState = {
+	id: "grid-medias-layer",
+	type: "fill",
+	source: "grid-medias-source",
+	"source-layer": "user-space-grid-tile-media-source",
+	layout: {
+	   visibility: "visible"
+	},
+	paint: {
+	    "fill-color": '#c53a4f',
+	    "fill-outline-color": 'rgba(0, 0, 0, 0.3)',
+	    "fill-opacity": {
+	        "property": "allMediaOpacity",
+	        "type": "exponential",
+	        "stops" : [
+	            [0, 0],
+	            [1, 0.2],
+	            [100, 0.8]
+	        ]
+	    }
+	},
+	minzoom: 0,
+	maxzoom: 24,
+	metadata: {
+	    name: "Medias Grid",
+	    isLocked: false,
+	    isShown: true,
+	    wasShownBeforeLock: true
+	}
+};
+
 // Reducer for medias grid layer
 // (density media representation, originated from vector tiles)
-const gridLayerReducer = (state = {}, action) => {
+const gridLayerReducer = (state = gridLayerInitialState, action) => {
 	switch (action.type) {
 		case "TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {
@@ -192,9 +246,28 @@ const gridLayerReducer = (state = {}, action) => {
 	}
 }
 
+const selectedMediasLayerInitialState = {
+	id: "selected-medias-layer",
+	type: "circle",
+	source: "selected-medias-source",
+	layout: {
+	   visibility: "visible"
+	},
+	paint: {
+	   "circle-radius": 8,
+	   "circle-color": "blue"
+	},
+	metadata: {
+	    name: "Selected Medias",
+	    isLocked: false,
+	    isShown: true,
+	    wasShownBeforeLock: true
+	}
+}
+
 // Reducer for selected medias layer
 // (geojson source, containing only selected medias)
-const selectedMediasLayerReducer = (state = {}, action) => {
+const selectedMediasLayerReducer = (state = selectedMediasLayerInitialState, action) => {
 	switch (action.type) {
 		case "TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {

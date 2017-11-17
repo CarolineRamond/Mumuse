@@ -6,10 +6,12 @@ import isLength from 'validator/lib/isLength'
 import PropTypes from "prop-types"
 import Dialog from "react-toolbox/lib/dialog"
 
+import { actions } from '../../modules'
+const { resetPassword } = actions;
+import { selectors } from "../../modules"
+const { getRootUrl, getResetPasswordState } = selectors;
+
 import Form from '../Common/Form'
-import { resetPassword } from '../../modules/auth/auth.actions'
-import { getRootUrl } from '../../modules/world'
-import { getResetPasswordState } from "../../modules/auth"
 import styles from "../Common/form.css"
 
 class ResetPassword extends React.Component {
@@ -144,8 +146,8 @@ ResetPassword.propTypes = {
 // Store connection
 const ConnectedResetPassword = connect((store)=> {
 	return {
-		serverState: getResetPasswordState(store.auth),
-		rootUrl: getRootUrl(store.world)
+		serverState: getResetPasswordState(store),
+		rootUrl: getRootUrl(store)
 	}
 })(ResetPassword);
 

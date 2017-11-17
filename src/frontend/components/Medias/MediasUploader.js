@@ -4,8 +4,11 @@ import { Button } from "react-toolbox/lib/button"
 import { Dialog } from "react-toolbox/lib/dialog"
 import { ProgressBar } from 'react-toolbox/lib/progress_bar';
 
-import { uploadMedias, resetUploadMediasState } from "../../modules/medias/medias.actions"
-import { getUploadMediasState } from "../../modules/medias"
+import { selectors } from "../../modules";
+const { getUploadMediasState } = selectors;
+import { actions } from "../../modules"
+const { uploadMedias, resetUploadMediasState } = actions;
+
 import styles from './carousel.css'
 
 class MediasUploader extends React.Component {
@@ -71,7 +74,7 @@ const ConnectedMediasUploader = connect((store)=> {
 			lng: store.world.lng,
 			lat: store.world.lat
 		},
-		uploadMediasState: getUploadMediasState(store.medias)
+		uploadMediasState: getUploadMediasState(store)
 	}
 })(MediasUploader);
 

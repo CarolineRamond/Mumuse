@@ -8,8 +8,10 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1N
 import PropTypes from "prop-types"
 import ProgressBar from "react-toolbox/lib/progress_bar"
 
+import { selectors } from "../../modules"
+const { isAuthUserAdmin } = selectors;
 import { mapConfig, getLayersState, getSourcesState } from '../../modules'
-import { isAuthUserAdmin } from "../../modules/auth"
+
 import styles from "./map.css"
 
 function getUniqueFeatures(array, comparatorProperty) {
@@ -346,7 +348,7 @@ const ConnectedMap = connect((store)=> {
 		world: store.world,
 		layersState: getLayersState(store),
 		sourcesState: getSourcesState(store),
-		isAdmin: isAuthUserAdmin(store.auth)
+		isAdmin: isAuthUserAdmin(store)
 	}
 })(Map);
 

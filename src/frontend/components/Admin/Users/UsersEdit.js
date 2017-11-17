@@ -5,10 +5,13 @@ import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
 import Dialog from "react-toolbox/lib/dialog"
 
+import { actions } from '../../../modules'
+const { fetchUser, updateUser, resetUpdateState } = actions;
+import { selectors } from '../../../modules'
+const { getCurrentUserState, getUpdateUserState } = selectors;
+
 import Form from "../../Common/Form"
 import styles from '../../Common/form.css'
-import { fetchUser, updateUser, resetUpdateState } from "../../../modules/users/users.actions"
-import { getCurrentUserState, getUpdateUserState } from "../../../modules/users"
 
 class UsersEdit extends React.Component {
     
@@ -143,8 +146,8 @@ UsersEdit.propTypes = {
 // Store connection
 const ConnectedUsersEdit = connect((store)=> {
     return {
-        currentUserState: getCurrentUserState(store.users),
-        updateUserState: getUpdateUserState(store.users)
+        currentUserState: getCurrentUserState(store),
+        updateUserState: getUpdateUserState(store)
     }
 })(UsersEdit);
 

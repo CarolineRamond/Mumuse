@@ -6,10 +6,12 @@ import isLength from 'validator/lib/isLength'
 import PropTypes from "prop-types"
 import Dialog from "react-toolbox/lib/dialog"
 
+import { actions } from '../../modules'
+const { login } = actions;
+import { selectors } from '../../modules'
+const { getLoginState, getRootUrl } = selectors;
+
 import Form from '../Common/Form'
-import { getLoginState } from '../../modules/auth'
-import { login } from '../../modules/auth/auth.actions'
-import { getRootUrl } from '../../modules/world'
 import styles from '../Common/form.css'
 
 class Login extends React.Component {
@@ -120,8 +122,8 @@ Login.propTypes = {
 // Store connection
 const ConnectedLogin = connect((store)=> {
 	return {
-		rootUrl: getRootUrl(store.world),
-		serverState: getLoginState(store.auth)
+		rootUrl: getRootUrl(store),
+		serverState: getLoginState(store)
 	}
 })(Login);
 

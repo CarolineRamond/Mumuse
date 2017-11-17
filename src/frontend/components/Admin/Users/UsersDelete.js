@@ -3,8 +3,11 @@ import { connect } from "react-redux"
 import Dialog from "react-toolbox/lib/dialog"
 import { isEqual } from "lodash"
 
-import { deleteUsers } from "../../../modules/users/users.actions"
-import { getDeleteUsersState } from "../../../modules/users"
+import { actions } from '../../../modules'
+const { deleteUsers } = actions;
+import { selectors } from '../../../modules'
+const { getDeleteUsersState } = selectors;
+
 import styles from "../admin.css"
 
 class UsersDelete extends React.Component {
@@ -48,7 +51,7 @@ class UsersDelete extends React.Component {
 
 const ConnectedUsersDelete = connect((store)=> {
     return {
-        serverState: getDeleteUsersState(store.users)
+        serverState: getDeleteUsersState(store)
     }
 })(UsersDelete);
 

@@ -6,6 +6,7 @@ export default {
         layer: null,
         action: updateWorldState
     }],
+    click: [],
     dragndrop: [],
     renderedFeatures: []
 }

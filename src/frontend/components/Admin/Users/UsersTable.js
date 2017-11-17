@@ -7,9 +7,12 @@ import Tooltip from "react-toolbox/lib/tooltip"
 import Dialog from "react-toolbox/lib/dialog"
 const TooltipButton = Tooltip(Button);
 
+import { actions } from '../../../modules'
+const { fetchUsersList, resetDeleteState } = actions;
+import { selectors } from '../../../modules'
+const { getUsersListState } = selectors;
+
 import UsersDelete from "./UsersDelete"
-import { fetchUsersList, resetDeleteState } from "../../../modules/users/users.actions"
-import { getUsersListState } from "../../../modules/users"
 import styles from "../admin.css"
 
 class UsersTable extends React.Component {
@@ -111,7 +114,7 @@ class UsersTable extends React.Component {
 
 const ConnectedUsersTable = connect((store)=> {
 	return {
-		usersListState: getUsersListState(store.users)
+		usersListState: getUsersListState(store)
 	}
 })(UsersTable)
 

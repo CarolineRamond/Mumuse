@@ -2,12 +2,14 @@ import React from "react";
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 
+import { selectors } from "../../modules"
+const { getSelectedMedias } = selectors;
 import Map from '../Map'
 import PreviewSwitch from '../Medias/PreviewSwitch'
 import Previewer from '../Medias/Previewer'
 import Timeline from '../Medias/Timeline'
 import styles from './main.css'
-import { getSelectedMedias } from '../../modules/medias'
+
 
 class MainPanel extends React.Component {
 
@@ -51,7 +53,7 @@ MainPanel.propTypes = {
 
 // Store connection
 const MainPanelConnected = connect((store)=> {
-    const selectedMedias = getSelectedMedias(store.medias);
+    const selectedMedias = getSelectedMedias(store);
     return  {
         previewMode: store.world.previewMode,
         showPreviewer: (selectedMedias.length === 1),
