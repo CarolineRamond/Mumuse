@@ -8,6 +8,7 @@ import Map from '../Map'
 import PreviewSwitch from '../Medias/PreviewSwitch'
 import Previewer from '../Medias/Previewer'
 import Timeline from '../Medias/Timeline'
+import Potree from '../Potree/Potree'
 import styles from './main.css'
 
 
@@ -29,12 +30,18 @@ class MainPanel extends React.Component {
                     <Timeline/>
                 </div> 
             }
-            {/*Previewer*/} 
+            {/*Previewer*/}
             { this.props.showPreviewer &&
                 <div className={previewerClass}>
                     { !this.props.previewMode && <PreviewSwitch/> }
                     <Previewer media={this.props.selectedMedias[0]}
                         previewMode={!this.props.previewMode}/>
+                </div>
+            }
+            {/*Potree*/}
+            {   <div className={previewerClass}>
+                    { !this.props.previewMode && <PreviewSwitch/> }
+                    <Potree previewMode={!this.props.previewMode}/>
                 </div>
             }
         </div>

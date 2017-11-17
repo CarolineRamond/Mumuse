@@ -6,6 +6,7 @@ import medias from "./medias";
 import rastertiles from "./rastertiles";
 import users from "./users";
 import world from "./world";
+import potreeReducer from './potree';
 
 const modules = [auth, medias, rastertiles, users, world];
 
@@ -16,7 +17,8 @@ const reducer = combineReducers({
 	medias: medias.reducer,
 	auth: auth.reducer,
 	users: users.reducer,
-	rastertiles: rastertiles.reducer
+	rastertiles: rastertiles.reducer,
+	potree: potreeReducer
 });
 
 // selectors
