@@ -1,5 +1,5 @@
 import React from "react";
-import _ from "lodash";
+import { forIn, omit } from "lodash"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import mapboxgl from "mapbox-gl"
@@ -9,8 +9,8 @@ import PropTypes from "prop-types"
 import ProgressBar from "react-toolbox/lib/progress_bar"
 
 import { selectors } from "../../modules"
-const { isAuthUserAdmin } = selectors;
-import { mapConfig, getLayersState, getSourcesState } from '../../modules'
+const { isAuthUserAdmin, getLayersState, getSourcesState } = selectors;
+import { mapConfig } from '../../modules'
 
 import styles from "./map.css"
 
@@ -110,13 +110,13 @@ class Map extends React.Component {
 	}
 
 	_loadSources() {
-		_.forIn(this.props.sourcesState.data, (source, sourceId)=>{
-			this.map.addSource(sourceId, _.omit(source, ['metadata']));
+		forIn(this.props.sourcesState.data, (source, sourceId)=>{
+			this.map.addSource(sourceId, omit(source, ['metadata']));
 		});
 	}
 
 	_loadLayers() {
-		_.forIn(this.props.layersState.data, (layer, layerId)=> {
+		forIn(this.props.layersState.data, (layer, layerId)=> {
 			this.map.addLayer(layer);
 		});
 	}
@@ -275,7 +275,7 @@ class Map extends React.Component {
 	}
 
 	_reloadSourcesData(nextProps) {
-		_.forIn(nextProps.sourcesState.data, (source, sourceId)=> {
+		forIn(nextProps.sourcesState.data, (source, sourceId)=> {
 			if (source.metadata && source.metadata.didChange && this.map.getSource(sourceId)) {
 				if (source.type === "geojson") {
 					this.map.getSource(sourceId).setData(source.data);
@@ -294,7 +294,7 @@ class Map extends React.Component {
 	}
 
 	_updateLayersStyle(nextProps) {
-		_.forIn(nextProps.layersState.data, (layer)=> {
+		forIn(nextProps.layersState.data, (layer)=> {
 			var didChange = layer.metadata && layer.metadata.didChange || {};
 			if (this.map.getLayer(layer.id) && didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
@@ -308,12 +308,12 @@ class Map extends React.Component {
 				this.map.setLayerZoomRange(layer.id, layer.minzoom, layer.maxzoom);
 			}
 			if (this.map.getLayer(layer.id) && didChange.layout) {
-				_.forIn(didChange.layout, (value, key)=> {
+				forIn(didChange.layout, (value, key)=> {
 					this.map.setLayoutProperty(layer.id, key, value);
 				});
 			}
 			if (this.map.getLayer(layer.id) && didChange.paint) {
-				_.forIn(didChange.paint, (value, key)=> {
+				forIn(didChange.paint, (value, key)=> {
 					this.map.setPaintProperty(layer.id, key, value);
 				});
 			}
