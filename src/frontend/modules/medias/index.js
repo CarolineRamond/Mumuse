@@ -15,10 +15,11 @@ const mediasReducer = combineReducers({
 	timeline: timelineReducer,
 	selectFilterPending: (state= false , action) => {
 		switch(action.type) {
-			case 'MEDIAS_CLICK':
+			case "MEDIAS_CLICK":
+			case "MEDIAS_SELECT_BY_ID":
 				return true;
 				break;
-			case 'MEDIAS_UPDATE_FEATURES':
+			case "MEDIAS_UPDATE_FEATURES":
 				return false;
 				break;
 			default:
