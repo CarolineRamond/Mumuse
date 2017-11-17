@@ -12,6 +12,17 @@ export const clickMedias = ({ features, ctrlKey, isAdmin })=> {
 	};
 };
 
+export const selectMediaById = ({ mediaId, ctrlKey, isAdmin })=> {
+	return { 
+		type: 'MEDIAS_SELECT_BY_ID', 
+		payload: { 
+			mediaId: mediaId,
+			ctrlKey: ctrlKey,
+			isAdmin: isAdmin
+		}
+	};
+};
+
 export const startDragMapMedias = ({ event, isAdmin })=> {
 	return {
 		type: 'MEDIAS_MAP_START_DRAG',
@@ -89,18 +100,19 @@ export const deleteMedias = (medias)=> {
 				type: "MEDIAS_DELETE_FULFILLED", 
 				payload: { length: medias.length }
 			});
-			dispatch({ 
-				type: "RESET_MEDIAS_DELETE", 
-			});
 		});
 	}
 }
 
-
-
 function _deleteMedia(media) {
     const mediaId = media.properties._id;
     return axios.delete('/userdrive/media/' + mediaId);
+}
+
+export const resetDeleteMediasState = ()=> {
+	return {
+		type: "RESET_MEDIAS_DELETE"
+	}
 }
 
 export const uploadMedias = (files, position)=> {
@@ -120,9 +132,6 @@ export const uploadMedias = (files, position)=> {
 			dispatch({ 
 				type: "MEDIAS_UPLOAD_FULFILLED", 
 				payload: { length: files.length }
-			});
-			dispatch({ 
-				type: "RESET_MEDIAS_UPLOAD", 
 			});
 		});
 	}
@@ -170,6 +179,12 @@ function _uploadMedia(file, currentPosition) {
 	        file.slice(0, 90000, file.type)
 	    );
 	});
+}
+
+export const resetUploadMediasState = ()=> {
+	return {
+		type: "RESET_MEDIAS_UPLOAD"
+	}
 }
 
 /**

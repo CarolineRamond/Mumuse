@@ -4,7 +4,7 @@ import { Button } from "react-toolbox/lib/button"
 import { Dialog } from "react-toolbox/lib/dialog"
 import { ProgressBar } from 'react-toolbox/lib/progress_bar';
 
-import { uploadMedias } from "../../modules/medias/medias.actions"
+import { uploadMedias, resetUploadMediasState } from "../../modules/medias/medias.actions"
 import { getUploadMediasState } from "../../modules/medias"
 import styles from './carousel.css'
 
@@ -20,6 +20,7 @@ class MediasUploader extends React.Component {
 		if (nextProps.uploadMediasState.data && !this.props.uploadMediasState.data) {
 			// medias have just been uploaded : reset input value
 			this.input.value = "";
+			this.props.dispatch(resetUploadMediasState());
 		} 
 	}
 
@@ -57,9 +58,7 @@ class MediasUploader extends React.Component {
 				<div className={styles.mediasUploaderProgress}>
 					<ProgressBar type="linear" mode="determinate" 
 						value={parseInt(pending.index / pending.length * 100)}/>
-					{pending !== false && 
-						<div>{`${pending.index}/${pending.length}`}</div>
-					}
+					<div>{`${pending.index}/${pending.length}`}</div>
 				</div>
 			</Dialog>
 		</div>

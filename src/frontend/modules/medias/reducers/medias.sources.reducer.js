@@ -1,5 +1,3 @@
-import { combineReducers } from "redux";
-
 const defaultSourceReducer = (state) => {
 	return Object.assign({}, state, { 
 		metadata: Object.assign({}, state.metadata, {
@@ -8,8 +6,18 @@ const defaultSourceReducer = (state) => {
 	});
 }
 
-const mediasSourceReducer = (state = {}, action) => {
+const gridMediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
+		case "MEDIAS_GRID_UPDATE_FEATURES": {
+			// store rendered features in source's metadata
+			return Object.assign({}, state, {
+				metadata: Object.assign({}, state.metadata, {
+					renderedFeatures: action.payload.features,
+					didChange: false
+				}),
+			});
+	 		break;
+		}
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
 		case 'LOGIN_FULFILLED':
@@ -28,8 +36,18 @@ const mediasSourceReducer = (state = {}, action) => {
 	}
 }
 
-const gridMediasSourceReducer = (state = {}, action) => {
+const mediasSourceReducer = (state = {}, action) => {
 	switch (action.type) {
+		case "MEDIAS_UPDATE_FEATURES": {
+			// store rendered features in source's metadata
+			return Object.assign({}, state, {
+				metadata: Object.assign({}, state.metadata, {
+					renderedFeatures: action.payload.features,
+					didChange: false
+				}),
+			});
+			break;
+		}
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
 		case 'LOGIN_FULFILLED':
@@ -47,6 +65,8 @@ const gridMediasSourceReducer = (state = {}, action) => {
 			return defaultSourceReducer(state);
 	}
 }
+
+
 
 
 // Reducer for selected medias source
@@ -64,7 +84,8 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 				})
 			});
 		}
-		case "MEDIAS_CLICK": {
+		case "MEDIAS_CLICK":
+		case "MEDIAS_SELECT_BY_ID": {
 			const multiSelect = action.payload.isAdmin && action.payload.ctrlKey;
 			var newFeatures = [];
 			if (multiSelect) {
@@ -171,8 +192,20 @@ const selectedMediasSourceReducer = (state = {}, action) => {
 	}	
 }
 
-export default combineReducers({
-	'medias-source': mediasSourceReducer,
-	'grid-medias-source': gridMediasSourceReducer,
-	'selected-medias-source': selectedMediasSourceReducer
-});
+export default (state = {}, action)=> {
+	switch (action.type) {
+		case 'MEDIAS_SELECT_BY_ID': {
+			const selectedFeature = state["medias-source"].metadata.renderedFeatures.find((item)=> {
+				return item.properties._id === action.payload.mediaId;
+			});
+			action.payload.features = [selectedFeature];
+		}
+		default: {
+			return {
+				"medias-source": mediasSourceReducer(state["medias-source"], action),
+				"selected-medias-source": selectedMediasSourceReducer(state["selected-medias-source"], action),
+				"grid-medias-source": gridMediasSourceReducer(state["grid-medias-source"], action)
+			}
+		}
+	}
+}

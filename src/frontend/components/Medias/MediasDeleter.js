@@ -4,7 +4,7 @@ import { Button } from "react-toolbox/lib/button"
 import { Dialog } from "react-toolbox/lib/dialog"
 import { ProgressBar } from 'react-toolbox/lib/progress_bar';
 
-import { deleteMedias } from "../../modules/medias/medias.actions"
+import { deleteMedias, resetDeleteMediasState } from "../../modules/medias/medias.actions"
 import { getSelectedMedias, getDeleteMediasState } from "../../modules/medias"
 import styles from './carousel.css'
 
@@ -13,6 +13,13 @@ class MediasDeleter extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleDeleteMedias = this.handleDeleteMedias.bind(this);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.deleteMediasState.data && !this.props.deleteMediasState.data) {
+			// medias have just been deleted : reset request state
+			this.props.dispatch(resetDeleteMediasState());
+		} 
 	}
 
 	handleDeleteMedias() {
@@ -33,9 +40,7 @@ class MediasDeleter extends React.Component {
 				<div className={styles.mediasUploaderProgress}>
 					<ProgressBar type="linear" mode="determinate" 
 						value={parseInt(pending.index / pending.length * 100)}/>
-					{pending !== false && 
-						<div>{`${pending.index}/${pending.length}`}</div>
-					}
+					<div>{`${pending.index}/${pending.length}`}</div>
 				</div>
 			</Dialog>
 		</div>
