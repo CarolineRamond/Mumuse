@@ -8,7 +8,7 @@ const defaultSourceReducer = (state) => {
 
 const mediasSourceInitialState = {
 	type: "vector",
-	tiles: ['http://localhost:8081/userdrive/tile/{z}/{x}/{y}.pbf'],
+	tiles: ['http://localhost:8080/userdrive/tile/{z}/{x}/{y}.pbf'],
 	metadata: {
 	    loaded: false,
 	    renderedFeatures: []
@@ -48,7 +48,7 @@ const mediasSourceReducer = (state = mediasSourceInitialState, action) => {
 
 const gridMediasSourceInitialState = {
 	type: "vector",
-	tiles: ['http://localhost:8081/userdrive/tile/grid/{z}/{x}/{y}.pbf'],
+	tiles: ['http://localhost:8080/userdrive/tile/grid/{z}/{x}/{y}.pbf'],
 	metadata: {
 	    loaded: false,
 	    renderedFeatures: []
