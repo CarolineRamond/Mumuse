@@ -93,6 +93,7 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 					metadata: {
 						...state.metadata,
 						isShown: !state.metadata.isShown,
+						wasShownBeforeLock: !state.metadata.isShown,
 						didChange: { layout: layoutChange }
 					}
 				}
@@ -107,10 +108,12 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 			const previousLocked = state.metadata.isLocked;
 			const wasShownBeforeLock = state.metadata.wasShownBeforeLock;
 			const newLocked = action.payload.zoom <= 14 &&
-				( mediaCount > 2000 || mediaCount / action.payload.features.length > 10);
+				( mediaCount > 2000);
+				// ( mediaCount > 2000 || mediaCount / action.payload.features.length > 10);
+
 
 			// UNLOCK medias
-			if (!newLocked && previousLocked && wasShownBeforeLock) {
+			if (!newLocked && previousLocked) {
 				const currentFilter = state.filter || ['all'];
 				const newFilter = currentFilter.filter((item)=> {
 					return (item.indexOf('loc') === -1);
@@ -121,7 +124,7 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 					...state,
 					metadata: {
 						...state.metadata,
-						isShown: true,
+						isShown: wasShownBeforeLock,
 						isLocked: false,
 						didChange: { filter: true, zoom: true, paint: paintChange }
 					},
