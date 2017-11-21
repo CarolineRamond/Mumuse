@@ -1,14 +1,16 @@
 import { combineReducers } from 'redux';
 
-const defaultLayerReducer = (state) => {
-	return Object.assign({}, state, { 
-		metadata: Object.assign({}, state.metadata, {
-			didChange: undefined 
-		})
-	});
+export const defaultLayerReducer = (state) => {
+	return {
+		...state,
+		metadata: {
+			...state.metadata,
+			didChange: undefined
+		}
+	}
 }
 
-const mediasLayerInitialState = {
+export const mediasLayerInitialState = {
 	id: "medias-layer",
 	type: "circle",
 	source: "medias-source",
@@ -33,17 +35,19 @@ const mediasLayerInitialState = {
 
 // Reducer for medias layer
 // (pointwise media representation, originated from vector tiles)
-const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
+export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 	switch (action.type) {
 		case "MEDIAS_INIT_SELECTED_FULFILLED": {
 			const currentFilter  = state.filter || ['all'];
 			const feature = action.payload.data;
-			return Object.assign({}, state, {
+			return {
+				...state,
 				filter: currentFilter.concat([['!in', '_id', feature.properties._id]]),
-				metadata: Object.assign({}, state.metadata, {
+				metadata: {
+					...state.metadata,
 					didChange: { filter: true }
-				})
-	 		});
+				}
+			};
 		}
 		case "MEDIAS_CLICK":
 		case "MEDIAS_SELECT_BY_ID": {
@@ -68,29 +72,30 @@ const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 			const filterToAdd = ['!in', '_id'].concat(selectedIds);
 			newFilter = newFilter.concat([filterToAdd]);
 
-			return Object.assign({}, state, {
+			return {
+				...state,
 				filter: newFilter,
-				metadata: Object.assign({}, state.metadata, {
+				metadata: {
+					...state.metadata,
 					didChange: { filter: true }
-				})
-	 		});
+				}
+			}
 			break;
 		}
 		case "TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {
-				return Object.assign({}, state, {
-					layout: { 
-						visibility: state.metadata.isShown ? 'none':'visible'
-					},
-					metadata: Object.assign({}, state.metadata, {
+				const layoutChange = {
+					visibility: state.metadata.isShown ? 'none':'visible'
+				};
+				return {
+					...state,
+					layout: layoutChange,
+					metadata: {
+						...state.metadata,
 						isShown: !state.metadata.isShown,
-						didChange: {
-							layout: { 
-								visibility: state.metadata.isShown ? 'none':'visible'
-							}
-						}
-					})
-				});
+						didChange: { layout: layoutChange }
+					}
+				}
 			}
 			return defaultLayerReducer(state);
 			break;
@@ -111,36 +116,44 @@ const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 					return (item.indexOf('loc') === -1);
 				});
 
-				return Object.assign({}, state, {
-					metadata: Object.assign({}, state.metadata, {
+				const paintChange = { "circle-opacity": 1 };
+				return {
+					...state,
+					metadata: {
+						...state.metadata,
 						isShown: true,
 						isLocked: false,
-						didChange: { filter: true, zoom: true, paint: { "circle-opacity": 1 }},
-					}),
+						didChange: { filter: true, zoom: true, paint: paintChange }
+					},
 					filter: newFilter,
 					minzoom: 0,
-					paint: Object.assign({}, state.paint, {
-						"circle-opacity": 1
-					})
-				});
+					paint: {
+						...state.paint,
+						...paintChange
+					}
+				};
 			// LOCK medias
 			} else if (newLocked && !previousLocked) {
 				const filterToAdd = ['has', 'loc'];
 				const currentFilter = state.filter || ['all'];
 
-				return Object.assign({}, state, {
-					metadata: Object.assign({}, state.metadata, {
+				const paintChange = { "circle-opacity": 0 };
+				return {
+					...state, 
+					metadata: {
+						...state.metadata,
 						isShown: false,
 						wasShownBeforeLock: state.metadata.isShown,
 						isLocked: true,
-						didChange: { filter: true, zoom: true, paint: { "circle-opacity": 0 } },
-					}),
+						didChange: { filter: true, zoom: true, paint: paintChange }
+					},
 					filter: currentFilter.concat([filterToAdd]),
 					minzoom: 13,
-					paint: Object.assign({}, state.paint, {
-						"circle-opacity": 0
-					})
-				});
+					paint: {
+						...state.paint,
+						...paintChange
+					}
+				}
 			} else {
 				return defaultLayerReducer(state);
 			}
@@ -154,12 +167,14 @@ const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 	 		});
 	 		const filterToAdd = ["<=", "date", action.payload.value];
 
-	 		return Object.assign({}, state, {
-				filter: noDateFilter.concat([filterToAdd]),
-				metadata: Object.assign({}, state.metadata, {
-					didChange: { filter: true }
-				})
-			});
+	 		return {
+	 			...state,
+	 			filter: noDateFilter.concat([filterToAdd]),
+	 			metadata: {
+	 				...state.metadata,
+	 				didChange: { filter: true }
+	 			}
+	 		};
 			break;
 		}
 		default:
@@ -167,7 +182,7 @@ const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 	}
 }
 
-const gridLayerInitialState = {
+export const gridLayerInitialState = {
 	id: "grid-medias-layer",
 	type: "fill",
 	source: "grid-medias-source",
@@ -200,27 +215,29 @@ const gridLayerInitialState = {
 
 // Reducer for medias grid layer
 // (density media representation, originated from vector tiles)
-const gridLayerReducer = (state = gridLayerInitialState, action) => {
+export const gridLayerReducer = (state = gridLayerInitialState, action) => {
 	switch (action.type) {
 		case "TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {
-				return Object.assign({}, state, {
-					paint: Object.assign({},state.paint, {
-						"fill-opacity": Object.assign({}, state.paint["fill-opacity"], {
-		                    property: state.metadata.isShown ? "zeroMediaOpacity": "allMediaOpacity"
-		                })
-					}),
-					metadata: Object.assign({}, state.metadata, {
+
+				const paintChange = {
+					"fill-opacity": {
+						...state.paint["fill-opacity"],
+		                property: state.metadata.isShown ? "zeroMediaOpacity": "allMediaOpacity"
+					}
+				};
+				return {
+					...state,
+					paint: {
+						...state.paint,
+						...paintChange
+					},
+					metadata: {
+						...state.metadata,
 						isShown: !state.metadata.isShown,
-						didChange: {
-							paint: { 
-								"fill-opacity": Object.assign({}, state.paint["fill-opacity"], {
-				                    property: state.metadata.isShown ? "zeroMediaOpacity": "allMediaOpacity"
-				                })
-							}
-						}
-					})
-				});
+						didChange: { paint: paintChange }
+					}
+				};
 			}
 			return defaultLayerReducer(state);
 			break;
@@ -233,12 +250,14 @@ const gridLayerReducer = (state = gridLayerInitialState, action) => {
 	 		});
 	 		const filterToAdd = ["<=", "minDate", action.payload.value];
 
-	 		return Object.assign({}, state, {
-				filter: noDateFilter.concat([filterToAdd]),
-				metadata: Object.assign({}, state.metadata, {
-					didChange: { filter: true }
-				})
-			});
+	 		return {
+	 			...state,
+	 			filter: noDateFilter.concat([filterToAdd]),
+	 			metadata: {
+	 				...state.metadata,
+	 				didChange: { filter: true }
+	 			}
+	 		};
 			break;
 		}
 		default:
@@ -246,7 +265,7 @@ const gridLayerReducer = (state = gridLayerInitialState, action) => {
 	}
 }
 
-const selectedMediasLayerInitialState = {
+export const selectedMediasLayerInitialState = {
 	id: "selected-medias-layer",
 	type: "circle",
 	source: "selected-medias-source",
@@ -267,23 +286,22 @@ const selectedMediasLayerInitialState = {
 
 // Reducer for selected medias layer
 // (geojson source, containing only selected medias)
-const selectedMediasLayerReducer = (state = selectedMediasLayerInitialState, action) => {
+export const selectedMediasLayerReducer = (state = selectedMediasLayerInitialState, action) => {
 	switch (action.type) {
 		case "TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {
-				return Object.assign({}, state, {
-					layout: { 
-						visibility: state.metadata.isShown ? 'none':'visible'
-					},
-					metadata: Object.assign({}, state.metadata, {
+				const layoutChange = { 
+					visibility: state.metadata.isShown ? 'none':'visible'
+				};
+				return {
+					...state,
+					layout: layoutChange,
+					metadata: {
+						...state.metadata,
 						isShown: !state.metadata.isShown,
-						didChange: {
-							layout: { 
-								visibility: state.metadata.isShown ? 'none':'visible'
-							}
-						}
-					})
-				});
+						didChange: { layout: layoutChange }
+					}
+				};
 			}
 			return defaultLayerReducer(state);
 			break;
