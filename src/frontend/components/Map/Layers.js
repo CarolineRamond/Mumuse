@@ -21,7 +21,7 @@ class Layers extends React.Component {
   }
 
   toggleLayer(layerId) {
-    this.props.dispatch(toggleLayer(layerId));
+    this.props.dispatch(toggleLayer({ layerId }));
   }
 
 	render() {

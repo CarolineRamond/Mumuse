@@ -27,7 +27,7 @@ export function switchPreviewMode() {
 	}
 }
 
-export const toggleLayer = (layerId)=> {
+export const toggleLayer = ({ layerId })=> {
 	return {
 		type: 'TOGGLE_LAYER',
 		payload: {

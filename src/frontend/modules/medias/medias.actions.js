@@ -55,28 +55,28 @@ export const endDragMapMedias = ({ event, feature, isAdmin })=> {
 	};
 }
 
-export const updateFeaturesMedias = (features, zoom)=> {
+export const updateFeaturesMedias = ({ features, zoom })=> {
 	return {
 		type: 'MEDIAS_UPDATE_FEATURES',
 		payload: { features, zoom }
 	};
 }
 
-export const updateFeaturesGridMedias = (features, zoom)=> {
+export const updateFeaturesGridMedias = ({ features, zoom })=> {
 	return {
 		type: 'MEDIAS_GRID_UPDATE_FEATURES',
 		payload: { features, zoom }
 	};
 }
 
-export const updateTimelineMedias = (value)=> {
+export const updateTimelineMedias = ({ value })=> {
 	return {
 		type: 'MEDIAS_TIMELINE_UPDATE',
 		payload: { value }
 	};
 }
 
-export const initSelectedMedia = (mediaId) => {
+export const initSelectedMedia = ({ mediaId }) => {
 	return {
 		type: "MEDIAS_INIT_SELECTED",
 		payload: axios.get('/userdrive/media/' + mediaId + '/?geojson=true')

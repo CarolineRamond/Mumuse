@@ -14,7 +14,7 @@ class MediasRouter extends React.Component {
 		var mediaId;
 		if (splitLocation.length > 3 && splitLocation[2] === "medias" && splitLocation[3]) {
 			mediaId = splitLocation[3];
-			this.props.dispatch(initSelectedMedia(mediaId));
+			this.props.dispatch(initSelectedMedia({ mediaId }));
 		}
 		this.state = {
 			init: mediaId

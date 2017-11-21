@@ -26,7 +26,7 @@ class Timeline extends React.Component {
 		this.setState({
 			value: value
 		});
-		this.props.dispatch(updateTimelineMedias(parseInt(value)));
+		this.props.dispatch(updateTimelineMedias({ value: parseInt(value) }));
 	}
 
 	componentWillReceiveProps(nextProps) {

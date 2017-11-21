@@ -236,7 +236,7 @@ describe('medias layer reducer', () => {
   describe('on MEDIAS_TIMELINE_UPDATE', ()=> {
     it('should add date filter when no date was previously chosen', () => {
       const now = Date.now();
-      const action = actions.updateTimelineMedias(now);
+      const action = actions.updateTimelineMedias({ value: now });
 
       // layer's filter should change : a date filter should be added
       expect(reducer(mediasLayerInitialState, action)).toEqual({
@@ -252,8 +252,8 @@ describe('medias layer reducer', () => {
     it('should replace date filter when a date was previously chosen', () => {
       const date1 = Date.now();
       const date2 = Date.now();
-      const action1 = actions.updateTimelineMedias(date1);
-      const action2 = actions.updateTimelineMedias(date2);
+      const action1 = actions.updateTimelineMedias({ value: date1 });
+      const action2 = actions.updateTimelineMedias({ value: date2 });
       const initialState = reducer(mediasLayerInitialState, action1)
 
       // layer's filter should change : a date filter should be added
@@ -270,9 +270,9 @@ describe('medias layer reducer', () => {
     it('should not erase id filters', () => {
       const date1 = Date.now();
       const date2 = Date.now();
-      const action1 = actions.updateTimelineMedias(date1);
+      const action1 = actions.updateTimelineMedias({ value: date1 });
       const action2 = actions.selectMediaById({ mediaId: "5a0e9dab75b85544253e4fb2" });
-      const action3 = actions.updateTimelineMedias(date2);
+      const action3 = actions.updateTimelineMedias({ value: date2 });
       const initialState = reducer(
         reducer(mediasLayerInitialState, action1),
         action2
@@ -298,7 +298,7 @@ describe('medias layer reducer', () => {
         properties: { allMediaCount: 2003 }
       }];
       const zoom = 7;
-      const action = actions.updateFeaturesGridMedias(features, zoom);
+      const action = actions.updateFeaturesGridMedias({ features, zoom });
 
       // there are too much medias on screen => nothing should change
       expect(reducer(mediasLayerInitialState, action)).toEqual(mediasLayerInitialState);
@@ -310,7 +310,7 @@ describe('medias layer reducer', () => {
         properties: { allMediaCount: 2003 }
       }];
       const zoom = 15;
-      const action = actions.updateFeaturesGridMedias(features, zoom);
+      const action = actions.updateFeaturesGridMedias({ features, zoom });
 
       // min zoom was reached : medias should be unlocked and shown
       expect(reducer(mediasLayerInitialState, action)).toEqual({
@@ -336,7 +336,7 @@ describe('medias layer reducer', () => {
         properties: { allMediaCount: 1998 }
       }];
       const zoom = 7;
-      const action = actions.updateFeaturesGridMedias(features, zoom);
+      const action = actions.updateFeaturesGridMedias({ features, zoom });
 
       // min count was reached : medias should be unlocked and shown
       expect(reducer(mediasLayerInitialState, action)).toEqual({
@@ -367,8 +367,8 @@ describe('medias layer reducer', () => {
         properties: { allMediaCount: 2009 }
       }];
       const zoom2 = 6;
-      const action1 = actions.updateFeaturesGridMedias(features1, zoom1);
-      const action2 = actions.updateFeaturesGridMedias(features2, zoom2);
+      const action1 = actions.updateFeaturesGridMedias({ features: features1, zoom: zoom1 });
+      const action2 = actions.updateFeaturesGridMedias({ features: features2, zoom: zoom2 });
       const initialState = reducer(mediasLayerInitialState, action1)
 
       // min zoom was reached : medias should be unlocked and shown
@@ -388,7 +388,7 @@ describe('medias layer reducer', () => {
 
   describe('on TOGGLE_LAYER', ()=> {
     it('should do nothing when action\'s layerId is different from "medias-layer"', () => {
-      const action = actions.toggleLayer("anything");
+      const action = actions.toggleLayer({ layerId: "anything" });
       expect(reducer(mediasLayerInitialState, action)).toEqual(mediasLayerInitialState);
     });
 
@@ -397,8 +397,8 @@ describe('medias layer reducer', () => {
         type: "Feature",
         properties: { allMediaCount: 1998 }
       }];
-      const action1 = actions.updateFeaturesGridMedias(features);
-      const action2 = actions.toggleLayer("medias-layer");
+      const action1 = actions.updateFeaturesGridMedias({ features });
+      const action2 = actions.toggleLayer({ layerId: "medias-layer" });
       const initialState = reducer(mediasLayerInitialState, action1);
 
       expect(reducer(initialState, action2)).toEqual({
@@ -427,12 +427,12 @@ describe('medias grid layer reducer', () => {
 
   describe('on TOGGLE_LAYER', ()=> {
     it('should do nothing when action\'s layerId is different from "grid-medias-layer"', () => {
-      const action = actions.toggleLayer("anything");
+      const action = actions.toggleLayer({ layerId: "anything" });
       expect(reducer(gridLayerInitialState, action)).toEqual(gridLayerInitialState);
     });
 
     it('should toggle layer when action\'s layerId is "grid-medias-layer"', () => {
-      const action = actions.toggleLayer("grid-medias-layer");
+      const action = actions.toggleLayer({ layerId: "grid-medias-layer" });
 
       expect(reducer(gridLayerInitialState, action)).toEqual({
         ...gridLayerInitialState,
@@ -472,7 +472,7 @@ describe('medias grid layer reducer', () => {
   describe('on MEDIAS_TIMELINE_UPDATE', ()=> {
     it('should add a minDate filter when no date was previously chosen', ()=> {
       const date = Date.now();
-      const action = actions.updateTimelineMedias(date);
+      const action = actions.updateTimelineMedias({ value: date });
 
       expect(reducer(gridLayerInitialState, action)).toEqual({
         ...gridLayerInitialState,
@@ -487,8 +487,8 @@ describe('medias grid layer reducer', () => {
     it('should replace previous minDate filter when a date was previously chosen', ()=> {
       const date1 = Date.now();
       const date2 = Date.now() + 1000;
-      const action1 = actions.updateTimelineMedias(date1);
-      const action2 = actions.updateTimelineMedias(date2);
+      const action1 = actions.updateTimelineMedias({ value: date1 });
+      const action2 = actions.updateTimelineMedias({ value: date2 });
 
       const initialState = reducer(gridLayerInitialState, action1);
       expect(reducer(initialState, action2)).toEqual({
@@ -512,12 +512,12 @@ describe('selected medias layer reducer', () => {
 
   describe('on TOGGLE_LAYER', ()=> {
     it('should do nothing when action\'s layerId is different from "selected-medias-layer"', () => {
-      const action = actions.toggleLayer("anything");
+      const action = actions.toggleLayer({ layerId: "anything" });
       expect(reducer(selectedMediasLayerInitialState, action)).toEqual(selectedMediasLayerInitialState);
     });
 
     it('should toggle layer when action\'s layerId is "selected-medias-layer"', () => {
-      const action = actions.toggleLayer("selected-medias-layer");
+      const action = actions.toggleLayer({ layerId: "selected-medias-layer" });
       expect(reducer(selectedMediasLayerInitialState, action)).toEqual({
         ...selectedMediasLayerInitialState,
         layout: {
@@ -532,5 +532,4 @@ describe('selected medias layer reducer', () => {
       });
     });
   });
-
 });

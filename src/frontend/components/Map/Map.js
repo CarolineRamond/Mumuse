@@ -244,7 +244,10 @@ class Map extends React.Component {
 					this.map.queryRenderedFeatures({ layers: item.layerIds }),
 					item.uniqueKey
 				);
-				this.props.dispatch(item.action(renderedFeatures, this.map.getZoom()));
+				this.props.dispatch(item.action({
+					features: renderedFeatures, 
+					zoom: this.map.getZoom()
+				}));
 			}
 			const renderHandler = (data)=> {
 				if (this.map.isSourceLoaded(item.source)) {
