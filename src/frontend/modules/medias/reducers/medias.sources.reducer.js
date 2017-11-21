@@ -1,4 +1,4 @@
-const defaultSourceReducer = (state) => {
+export const defaultSourceReducer = (state) => {
 	return Object.assign({}, state, { 
 		metadata: Object.assign({}, state.metadata, {
 			didChange: undefined 
@@ -6,7 +6,7 @@ const defaultSourceReducer = (state) => {
 	});
 }
 
-const mediasSourceInitialState = {
+export const mediasSourceInitialState = {
 	type: "vector",
 	tiles: ['http://localhost:8080/userdrive/tile/{z}/{x}/{y}.pbf'],
 	metadata: {
@@ -15,7 +15,7 @@ const mediasSourceInitialState = {
 	}
 };
 
-const mediasSourceReducer = (state = mediasSourceInitialState, action) => {
+export const mediasSourceReducer = (state = mediasSourceInitialState, action) => {
 	switch (action.type) {
 		case "MEDIAS_UPDATE_FEATURES": {
 			// store rendered features in source's metadata
@@ -46,7 +46,7 @@ const mediasSourceReducer = (state = mediasSourceInitialState, action) => {
 	}
 }
 
-const gridMediasSourceInitialState = {
+export const gridMediasSourceInitialState = {
 	type: "vector",
 	tiles: ['http://localhost:8080/userdrive/tile/grid/{z}/{x}/{y}.pbf'],
 	metadata: {
@@ -55,7 +55,7 @@ const gridMediasSourceInitialState = {
 	}
 };
 
-const gridMediasSourceReducer = (state = gridMediasSourceInitialState, action) => {
+export const gridMediasSourceReducer = (state = gridMediasSourceInitialState, action) => {
 	switch (action.type) {
 		case "MEDIAS_GRID_UPDATE_FEATURES": {
 			// store rendered features in source's metadata
@@ -86,7 +86,7 @@ const gridMediasSourceReducer = (state = gridMediasSourceInitialState, action) =
 	}
 }
 
-const selectedMediasSourceInitialState = {
+export const selectedMediasSourceInitialState = {
 	type: "geojson",
 	data: { 
 	    type: "FeatureCollection",
@@ -101,7 +101,7 @@ const selectedMediasSourceInitialState = {
 
 // Reducer for selected medias source
 // (geojson source representing selected medias)
-const selectedMediasSourceReducer = (state = selectedMediasSourceInitialState, action) => {
+export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialState, action) => {
 	switch (action.type) {
 		case "MEDIAS_INIT_SELECTED_FULFILLED": {
 			const feature = action.payload.data;
@@ -222,7 +222,7 @@ const selectedMediasSourceReducer = (state = selectedMediasSourceInitialState, a
 	}	
 }
 
-const sourcesInitialState = {
+export const sourcesInitialState = {
 	"medias-source": mediasSourceInitialState,
 	"selected-medias-source": selectedMediasSourceInitialState,
 	"grid-medias-source": gridMediasSourceInitialState
