@@ -1,5 +1,5 @@
-import { mediasLayerInitialState, gridLayerInitalState, selectedMediasLayerInitialState,
-  mediasLayerReducer, gridLayeReducer, selectedMediasLayerReducer, defaultLayerReducer } 
+import { mediasLayerInitialState, gridLayerInitialState, selectedMediasLayerInitialState,
+  mediasLayerReducer, gridLayerReducer, selectedMediasLayerReducer, defaultLayerReducer } 
   from "../../src/frontend/modules/medias/reducers/medias.layers.reducer"
 import { actions } from "../../src/frontend/modules"
 
@@ -412,6 +412,122 @@ describe('medias layer reducer', () => {
           isShown: false,
           wasShownBeforeLock: false,
           didChange: { layout: { visibility: "none" } }
+        }
+      });
+    });
+  });
+});
+
+describe('medias grid layer reducer', () => {
+  const reducer = gridLayerReducer;
+
+  it('should return the initial state', () => {
+    expect(reducer(undefined, {})).toEqual(gridLayerInitialState);
+  });
+
+  describe('on TOGGLE_LAYER', ()=> {
+    it('should do nothing when action\'s layerId is different from "grid-medias-layer"', () => {
+      const action = actions.toggleLayer("anything");
+      expect(reducer(gridLayerInitialState, action)).toEqual(gridLayerInitialState);
+    });
+
+    it('should toggle layer when action\'s layerId is "grid-medias-layer"', () => {
+      const action = actions.toggleLayer("grid-medias-layer");
+
+      expect(reducer(gridLayerInitialState, action)).toEqual({
+        ...gridLayerInitialState,
+        paint: {
+          ...gridLayerInitialState.paint,
+          "fill-opacity": {
+            "property": "zeroMediaOpacity",
+            "type": "exponential",
+            "stops" : [
+                [0, 0],
+                [1, 0.2],
+                [100, 0.8]
+            ]
+          }
+        },
+        metadata: {
+          ...gridLayerInitialState.metadata,
+          isShown: false,
+          didChange: { 
+            paint: { 
+              "fill-opacity": {
+                "property": "zeroMediaOpacity",
+                "type": "exponential",
+                "stops" : [
+                    [0, 0],
+                    [1, 0.2],
+                    [100, 0.8]
+                ]
+              } 
+            } 
+          }
+        }
+      });
+    });
+  });
+
+  describe('on MEDIAS_TIMELINE_UPDATE', ()=> {
+    it('should add a minDate filter when no date was previously chosen', ()=> {
+      const date = Date.now();
+      const action = actions.updateTimelineMedias(date);
+
+      expect(reducer(gridLayerInitialState, action)).toEqual({
+        ...gridLayerInitialState,
+        filter: ['all', ['<=', "minDate", date]],
+        metadata: {
+          ...gridLayerInitialState.metadata,
+          didChange: { filter: true }
+        }
+      });
+    });
+
+    it('should replace previous minDate filter when a date was previously chosen', ()=> {
+      const date1 = Date.now();
+      const date2 = Date.now() + 1000;
+      const action1 = actions.updateTimelineMedias(date1);
+      const action2 = actions.updateTimelineMedias(date2);
+
+      const initialState = reducer(gridLayerInitialState, action1);
+      expect(reducer(initialState, action2)).toEqual({
+        ...initialState,
+        filter: ['all', ['<=', "minDate", date2]],
+        metadata: {
+          ...initialState.metadata,
+          didChange: { filter: true }
+        }
+      });
+    });
+  });
+});
+
+describe('selected medias layer reducer', () => {
+  const reducer = selectedMediasLayerReducer;
+
+  it('should return the initial state', () => {
+    expect(reducer(undefined, {})).toEqual(selectedMediasLayerInitialState);
+  });
+
+  describe('on TOGGLE_LAYER', ()=> {
+    it('should do nothing when action\'s layerId is different from "selected-medias-layer"', () => {
+      const action = actions.toggleLayer("anything");
+      expect(reducer(selectedMediasLayerInitialState, action)).toEqual(selectedMediasLayerInitialState);
+    });
+
+    it('should toggle layer when action\'s layerId is "selected-medias-layer"', () => {
+      const action = actions.toggleLayer("selected-medias-layer");
+      expect(reducer(selectedMediasLayerInitialState, action)).toEqual({
+        ...selectedMediasLayerInitialState,
+        layout: {
+          ...selectedMediasLayerInitialState.layout,
+          visibility: "none"
+        },
+        metadata: {
+          ...selectedMediasLayerInitialState.metadata,
+          isShown: false,
+          didChange: { layout: { visibility: "none" }}
         }
       });
     });
