@@ -104,9 +104,25 @@ describe('medias source reducer', () => {
     });
 
     describe('on MEDIAS_UPLOAD_FULFILLED', ()=> {
-        it('should ask for source reload (by setting metadata\'s didChange)', () => {
+        it('shouldnt do anything if no medias were uploaded', () => {
             const action = {
-                type: "MEDIAS_UPLOAD_FULFILLED"
+                type: "MEDIAS_UPLOAD_FULFILLED",
+                payload: {
+                    data: []
+                }
+            };
+            expect(reducer(mediasSourceInitialState, action)).toEqual(mediasSourceInitialState);
+        });
+
+        it('should ask for source reload (by setting metadata\'s didChange) if medias were uploaded', () => {
+            const action = {
+                type: "MEDIAS_UPLOAD_FULFILLED",
+                 payload: {
+                    data: [{
+                        type: "Feature",
+                        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+                    }]
+                }
             };
 
             expect(reducer(mediasSourceInitialState, action)).toEqual({
@@ -120,9 +136,25 @@ describe('medias source reducer', () => {
     });
 
     describe('on MEDIAS_DELETE_FULFILLED', ()=> {
-        it('should ask for source reload (by setting metadata\'s didChange)', () => {
+        it('shouldnt do anything if no medias were deleted', () => {
             const action = {
-                type: "MEDIAS_DELETE_FULFILLED"
+                type: "MEDIAS_DELETE_FULFILLED",
+                payload: {
+                    data: []
+                }
+            };
+            expect(reducer(mediasSourceInitialState, action)).toEqual(mediasSourceInitialState);
+        });
+
+        it('should ask for source reload (by setting metadata\'s didChange) if medias were deleted', () => {
+            const action = {
+                type: "MEDIAS_DELETE_FULFILLED",
+                 payload: {
+                    data: [{
+                        type: "Feature",
+                        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+                    }]
+                }
             };
 
             expect(reducer(mediasSourceInitialState, action)).toEqual({
@@ -231,9 +263,25 @@ describe('medias grid source reducer', () => {
     });
 
     describe('on MEDIAS_UPLOAD_FULFILLED', ()=> {
-        it('should ask for source reload (by setting metadata\'s didChange)', () => {
+        it('shouldnt do anything if no medias were uploaded', () => {
             const action = {
-                type: "MEDIAS_UPLOAD_FULFILLED"
+                type: "MEDIAS_UPLOAD_FULFILLED",
+                payload: {
+                    data: []
+                }
+            };
+            expect(reducer(gridMediasSourceInitialState, action)).toEqual(gridMediasSourceInitialState);
+        });
+
+        it('should ask for source reload (by setting metadata\'s didChange) if medias were uploaded', () => {
+            const action = {
+                type: "MEDIAS_UPLOAD_FULFILLED",
+                 payload: {
+                    data: [{
+                        type: "Feature",
+                        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+                    }]
+                }
             };
 
             expect(reducer(gridMediasSourceInitialState, action)).toEqual({
@@ -247,9 +295,25 @@ describe('medias grid source reducer', () => {
     });
 
     describe('on MEDIAS_DELETE_FULFILLED', ()=> {
-        it('should ask for source reload (by setting metadata\'s didChange)', () => {
+        it('shouldnt do anything if no medias were deleted', () => {
             const action = {
-                type: "MEDIAS_DELETE_FULFILLED"
+                type: "MEDIAS_DELETE_FULFILLED",
+                payload: {
+                    data: []
+                }
+            };
+            expect(reducer(gridMediasSourceInitialState, action)).toEqual(gridMediasSourceInitialState);
+        });
+
+        it('should ask for source reload (by setting metadata\'s didChange) if medias were deleted', () => {
+            const action = {
+                type: "MEDIAS_DELETE_FULFILLED",
+                 payload: {
+                    data: [{
+                        type: "Feature",
+                        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+                    }]
+                }
             };
 
             expect(reducer(gridMediasSourceInitialState, action)).toEqual({
@@ -613,23 +677,49 @@ describe('selected medias source reducer', () => {
     });
 
      describe('on MEDIAS_DELETE_FULFILLED', ()=> {
-        it('should remove source\'s features', () => {
+        it('shouldnt do anything if no medias were deleted', ()=> {
+            const action = {
+                type: "MEDIAS_DELETE_FULFILLED",
+                payload: {
+                    data: []
+                }
+            };
+            expect(reducer(selectedMediasSourceInitialState, action))
+                .toEqual(selectedMediasSourceInitialState);
+        });
+
+        it('should remove source\'s features that match deleted medias', () => {
             const features = [{
                 type: "Feature",
                 geometry: { type: "Point", coordinates: [0,2] },
                 properties: { _id: "5a0e9dab75b85544253e4fb2" }
+            }, {
+                type: "Feature",
+                geometry: { type: "Point", coordinates: [0,2] },
+                properties: { _id: "5a0e9dab75b85544253e4fb3" }
             }] 
             const action1 = actions.clickMedias({ features });
             const initialState = reducer(selectedMediasSourceInitialState, action1);
 
             const action2 = {
-                type: "MEDIAS_DELETE_FULFILLED"
+                type: "MEDIAS_DELETE_FULFILLED",
+                payload: {
+                    data: [{
+                        type: "Feature",
+                        geometry: { type: "Point", coordinates: [0,2] },
+                        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+                    }]
+                }
             };
             expect(reducer(initialState, action2)).toEqual({
                 ...initialState,
                 data: {
                     ...initialState.data,
-                    features: []
+                    features: [{
+                        type: "Feature",
+                        geometry: { type: "Point", coordinates: [0,2] },
+                        properties: { _id: "5a0e9dab75b85544253e4fb3" }
+                    }]
                 },
                 metadata: {
                     ...initialState.metadata,
