@@ -18,7 +18,7 @@ describe('default reducer', () => {
       type: "vector",
       metadata: {
         loaded: true,
-        didChange: undefined
+        didChange: false
       }
     })
   })
@@ -276,4 +276,253 @@ describe('medias grid source reducer', () => {
       });
     });
   });
+});
+
+describe('selected medias source reducer', () => {
+  const reducer = selectedMediasSourceReducer;
+
+  it('should return the initial state', () => {
+    expect(reducer(undefined, {})).toEqual(selectedMediasSourceInitialState);
+  });
+
+  describe('on MEDIAS_INIT_SELECTED_FULFILLED', ()=> {
+    it('should add feature to source\'s data', () => {
+      const feature = {
+        type: "Feature",
+        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+      }
+      const action = {
+        type: "MEDIAS_INIT_SELECTED_FULFILLED",
+        payload: { data: feature }
+      };
+
+      expect(reducer(selectedMediasSourceInitialState, action)).toEqual({
+        ...selectedMediasSourceInitialState,
+        data: {
+          ...selectedMediasSourceInitialState.data,
+          features: [feature]
+        },
+        metadata: {
+          ...selectedMediasSourceInitialState.metadata,
+          didChange: true,
+        }
+      });
+    });
+  });
+
+  describe('on MEDIAS_CLICK', ()=> {
+    it('should add clickedMedias to data when no media was previously selected', () => {
+      const features = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+      }, {
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb3" }
+      }];
+
+      const action = actions.clickMedias({ features });
+
+      expect(reducer(selectedMediasSourceInitialState, action)).toEqual({
+        ...selectedMediasSourceInitialState,
+        data: {
+          ...selectedMediasSourceInitialState.data,
+          features: features
+        },
+        metadata: {
+          ...selectedMediasSourceInitialState.metadata,
+          didChange: true,
+          selectFilterPending: true, 
+          stillFiltered: []
+        }
+      });
+    });
+
+    it('should replace clickedMedia in data when a media was previously selected (no multiselection)', () => {
+      const features1 = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+      }]
+      const features2 = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb3" }
+      }];
+
+      const action1 = actions.clickMedias({ features: features1 });
+      const action2 = actions.clickMedias({ features: features2 });
+
+      const initialState = reducer(selectedMediasSourceInitialState, action1);
+
+      expect(reducer(initialState, action2)).toEqual({
+         ...selectedMediasSourceInitialState,
+        data: {
+          ...selectedMediasSourceInitialState.data,
+          features: features2
+        },
+        metadata: {
+          ...selectedMediasSourceInitialState.metadata,
+          didChange: true,
+          selectFilterPending: true, 
+          stillFiltered: []
+        }
+      });
+    });
+
+    it('should not allow multiselection for non admin user', () => {
+      const features1 = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+      }]
+      const features2 = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb3" }
+      }];
+
+      const action1 = actions.clickMedias({ features: features1 });
+      const action2 = actions.clickMedias({ features: features2, ctrlKey: true });
+
+      const initialState = reducer(selectedMediasSourceInitialState, action1);
+      expect(reducer(initialState, action2)).toEqual({
+         ...selectedMediasSourceInitialState,
+        data: {
+          ...selectedMediasSourceInitialState.data,
+          features: features2
+        },
+        metadata: {
+          ...selectedMediasSourceInitialState.metadata,
+          didChange: true,
+          selectFilterPending: true, 
+          stillFiltered: []
+        }
+      });
+    });
+
+    it('should allow multiselection for admin user => features are kept and not replaced', () => {
+      const features1 = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+      }]
+      const features2 = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb3" }
+      }];
+
+      const action1 = actions.clickMedias({ features: features1 });
+      const action2 = actions.clickMedias({ features: features2, ctrlKey: true, isAdmin: true });
+      const initialState = reducer(selectedMediasSourceInitialState, action1);
+
+      expect(reducer(initialState, action2)).toEqual({
+         ...selectedMediasSourceInitialState,
+        data: {
+          ...selectedMediasSourceInitialState.data,
+          features: features1.concat(features2)
+        },
+        metadata: {
+          ...selectedMediasSourceInitialState.metadata,
+          didChange: true,
+          selectFilterPending: true, 
+          stillFiltered: []
+        }
+      });
+    });
+
+    it('should keep previously selected medias in metadata.stillFiltered when a selectfilter is not being applied', ()=> {
+      const features1 = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+      }]
+      const features2 = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb3" }
+      }];
+
+      const action1 = actions.clickMedias({ features: features1 });
+      const action2 = actions.clickMedias({ features: features2, ctrlKey: true, isAdmin: true });
+      const initialState = reducer(selectedMediasSourceInitialState, action1);
+      initialState.metadata.selectFilterPending = false;
+
+      expect(reducer(initialState, action2)).toEqual({
+         ...selectedMediasSourceInitialState,
+        data: {
+          ...selectedMediasSourceInitialState.data,
+          features: features1.concat(features2)
+        },
+        metadata: {
+          ...selectedMediasSourceInitialState.metadata,
+          didChange: true,
+          selectFilterPending: true, 
+          stillFiltered: features1
+        }
+      });
+    });
+  });
+
+  describe('on MEDIAS_UPDATE_FEATURES', ()=> {
+    it('should reset filter pending data (metadata.selectFilterPending & metadata.stillFiltered)', () => {
+      const features = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+      }]
+
+      const action1 = actions.clickMedias({ features });
+      const action2 = actions.updateFeaturesMedias({ features });
+      const initialState = reducer(selectedMediasSourceInitialState, action1);
+
+      expect(reducer(initialState, action2)).toEqual({
+        ...initialState,
+        metadata: {
+          ...initialState.metadata,
+          didChange: false,
+          selectFilterPending: false, 
+          stillFiltered: []
+        }
+      });
+    })
+  });
+
+  describe('on MEDIAS_MAP_START_DRAG', ()=> {
+    it('should do nothing if user is not admin', () => {
+      const features = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+      }]
+      const action = actions.startDragMapMedias({ event: { features }, isAdmin: false });
+      expect(reducer(selectedMediasSourceInitialState, action)).toEqual(selectedMediasSourceInitialState);
+    })
+
+    it('should set metadata\'s draggingFeatureId if user is admin', () => {
+      const features = [{
+        type: "Feature",
+        geometry: { type: "Point" },
+        properties: { _id: "5a0e9dab75b85544253e4fb2" }
+      }]
+      const action = actions.startDragMapMedias({ event: { features }, isAdmin: true });
+      expect(reducer(selectedMediasSourceInitialState, action)).toEqual({
+        ...selectedMediasSourceInitialState,
+        metadata: {
+          ...selectedMediasSourceInitialState.metadata,
+          draggingFeatureId: "5a0e9dab75b85544253e4fb2"
+        }
+      });
+    })
+  });
+
+  describe('on MEDIAS_MAP_DRAG', ()=> {
+    it('should do nothing if there is no draggingFeatureId', () => {
+      const action = actions.dragMapMedias({ event: { lngLat: "test" }, isAdmin: true });
+      expect(reducer(selectedMediasSourceInitialState, action)).toEqual(selectedMediasSourceInitialState);
+    });
+  });
+
 });

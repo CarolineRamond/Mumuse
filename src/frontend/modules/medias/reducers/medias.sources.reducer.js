@@ -1,9 +1,11 @@
 export const defaultSourceReducer = (state) => {
-	return Object.assign({}, state, { 
-		metadata: Object.assign({}, state.metadata, {
-			didChange: undefined 
-		})
-	});
+	return {
+		...state,
+		metadata: {
+			...state.metadata,
+			didChange: false
+		}
+	};
 }
 
 export const mediasSourceInitialState = {
@@ -11,7 +13,8 @@ export const mediasSourceInitialState = {
 	tiles: ['http://localhost:8080/userdrive/tile/{z}/{x}/{y}.pbf'],
 	metadata: {
 	    loaded: false,
-	    renderedFeatures: []
+	    renderedFeatures: [],
+	    didChange: false
 	}
 };
 
@@ -19,13 +22,15 @@ export const mediasSourceReducer = (state = mediasSourceInitialState, action) =>
 	switch (action.type) {
 		case "MEDIAS_UPDATE_FEATURES": {
 			// store rendered features in source's metadata
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, {
+			return {
+				...state,
+				metadata: {
+					...state.metadata,
 					loaded: true,
 					renderedFeatures: action.payload.features,
 					didChange: false
-				}),
-			});
+				}
+			};
 			break;
 		}
 		case 'LOGOUT_FULFILLED':
@@ -34,11 +39,13 @@ export const mediasSourceReducer = (state = mediasSourceInitialState, action) =>
 		case 'MEDIAS_UPLOAD_FULFILLED':
 		case 'MEDIAS_DELETE_FULFILLED':
 		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, {
+			return {
+				...state,
+				metadata: {
+					...state.metadata,
 					didChange: true
-				})
-			});
+				}
+			}
 			break;
 		}
 		default:
@@ -51,7 +58,8 @@ export const gridMediasSourceInitialState = {
 	tiles: ['http://localhost:8080/userdrive/tile/grid/{z}/{x}/{y}.pbf'],
 	metadata: {
 	    loaded: false,
-	    renderedFeatures: []
+	    renderedFeatures: [],
+	    didChange: false
 	}
 };
 
@@ -59,13 +67,15 @@ export const gridMediasSourceReducer = (state = gridMediasSourceInitialState, ac
 	switch (action.type) {
 		case "MEDIAS_GRID_UPDATE_FEATURES": {
 			// store rendered features in source's metadata
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, {
+			return {
+				...state,
+				metadata: {
+					...state.metadata,
 					loaded: true,
 					renderedFeatures: action.payload.features,
 					didChange: false
-				}),
-			});
+				}
+			}
 	 		break;
 		}
 		case 'LOGOUT_FULFILLED':
@@ -74,11 +84,13 @@ export const gridMediasSourceReducer = (state = gridMediasSourceInitialState, ac
 		case 'MEDIAS_UPLOAD_FULFILLED':
 		case 'MEDIAS_DELETE_FULFILLED':
 		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, {
+			return  {
+				...state,
+				metadata: {
+					...state.metadata,
 					didChange: true
-				})
-			});
+				}
+			}
 			break;
 		}
 		default:
@@ -105,14 +117,17 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 	switch (action.type) {
 		case "MEDIAS_INIT_SELECTED_FULFILLED": {
 			const feature = action.payload.data;
-			return Object.assign({}, state, {
-				data: Object.assign({}, state.data, {
+			return  {
+				...state,
+				data: {
+					...state.data,
 					features: [feature]
-				}),
-				metadata: Object.assign({}, state.metadata, {
-					didChange: true,
-				})
-			});
+				},
+				metadata: {
+					...state.metadata,
+					didChange: true
+				}
+			}
 		}
 		case "MEDIAS_CLICK":
 		case "MEDIAS_SELECT_BY_ID": {
@@ -132,61 +147,72 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 				stillFiltered = state.data.features;
 			}
 
-	 		return Object.assign({}, state, {
-				data: Object.assign({}, state.data, {
+			return {
+				...state,
+				data: {
+					...state.data,
 					features: newFeatures
-				}),
-				metadata: Object.assign({}, state.metadata, {
+				},
+				metadata: {
+					...state.metadata,
 					didChange: true,
 					selectFilterPending: true,
 					stillFiltered: stillFiltered
-				})
-			});
+				}
+			};
 			break;
 		}
 		case 'MEDIAS_UPDATE_FEATURES':
 			if (state.metadata.selectFilterPending) {
-		 		return Object.assign({}, state, {
-					metadata: Object.assign({}, state.metadata, {
+				return {
+					...state,
+					metadata: {
+						...state.metadata,
 						didChange: false,
 						selectFilterPending: false,
 						stillFiltered: []
-					})
-				});
+					}
+				};
 			}
 			return defaultSourceReducer(state);
 			break;
 		case "MEDIAS_MAP_START_DRAG": {
 			if (action.payload.isAdmin) {
-				return Object.assign({}, state, {
-					metadata: Object.assign({}, state.metadata, { 
-						draggingFeatureId: action.payload.features[0].properties._id 
-					})
-				});
+				return {
+					...state,
+					metadata: {
+						...state.metadata,
+						draggingFeatureId: action.payload.features[0].properties._id
+					}
+				}
 			}
 			return defaultSourceReducer(state);
 			break;
 		}
 		case "MEDIAS_MAP_DRAG": {
-			const coords = action.payload.coords;
-			const newFeatures = state.data.features.map((feature)=> {
-				if (feature.properties._id === state.metadata.draggingFeatureId) {
-					return Object.assign({}, feature, {
-						geometry: Object.assign({}, feature.geometry, {
-							coordinates: [coords.lng, coords.lat]
-						})
-					});
-				}
-				return feature;
-			});
-	 		return Object.assign({}, state, {
-	 			data: Object.assign({}, state.data, {
-	 				features: newFeatures
-	 			}),
-	 			metadata: Object.assign({}, state.metadata, {
-					didChange: true
-				})
-	 		});
+			if (state.metadata.draggingFeatureId) {
+				const coords = action.payload.coords;
+				const newFeatures = state.data.features.map((feature)=> {
+					if (feature.properties._id === state.metadata.draggingFeatureId) {
+						return Object.assign({}, feature, {
+							geometry: Object.assign({}, feature.geometry, {
+								coordinates: [coords.lng, coords.lat]
+							})
+						});
+					}
+					return feature;
+				});
+		 		return Object.assign({}, state, {
+		 			data: Object.assign({}, state.data, {
+		 				features: newFeatures
+		 			}),
+		 			metadata: Object.assign({}, state.metadata, {
+						didChange: true
+					})
+		 		});
+		 	} else  {
+		 		return defaultSourceReducer(state);
+		 	}
 			break;
 		}
 		case "MEDIAS_MAP_END_DRAG_PENDING": {
