@@ -6,6 +6,7 @@ import medias from "./medias";
 import rastertiles from "./rastertiles";
 import users from "./users";
 import world from "./world";
+import { pointCloudsInitialState, pointCloudsMapConfig } from './potree';
 import potreeReducer from './potree';
 
 const modules = [auth, medias, rastertiles, users, world];

@@ -12,7 +12,7 @@ const isArrayOfFeatures = (x)=> {
 }
 
 export const clickMedias = ({ features, ctrlKey, isAdmin })=> {
-	return { 
+  return { 
 		type: 'MEDIAS_CLICK', 
 		payload: { 
 			features: features,

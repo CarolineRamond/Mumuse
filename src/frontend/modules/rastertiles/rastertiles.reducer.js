@@ -14,7 +14,7 @@ const _formatTilesData = (tilesets)=> {
 	tilesets.map((item)=> {
 		const sourceName = item._id + "-source";
 		const layerName = item._id + "-layer";
-		const tilesUrl = 'http://localhost:8081/map/rastertile/' + item._id +
+		const tilesUrl = 'http://localhost:8080/map/rastertile/' + item._id +
 			'/{z}/{x}/{y}.pbf';
 
 		sources[sourceName] = {

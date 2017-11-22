@@ -2,30 +2,60 @@ import React from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
 import potree from "@iconem/iconem-potree";
+
+import { clickMedias } from '../../modules/medias/medias.actions'
+import { getSelectedMedias } from "../../modules/medias";
+
 // import styles from "./potree.css";
-import { fetchCamerasParameters } from "../../modules/potree/potree.actions";
 
 // this is to set up component's props
 // component's props will be an excerpt
 // of the store
 // + some functions like dispatch (to fire actions)
 @connect(store => {
+  const selectedMedias = getSelectedMedias(store.medias);
   return {
-    potree: store.potree
+    potree: store.potree,
+    selectedMedias: selectedMedias
   };
 })
 export default class Potree extends React.Component {
   componentDidMount() {
     this.initViewer();
-    this.props.dispatch(fetchCamerasParameters());
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log(this.props);
+    if (!this.props.potree.pointCloud.metaData && nextProps.potree.pointCloud.metaData) {
+      console.log('LOADING POTREE');
+      potree.loadPointCloud(
+        `potreeviewer/potreedataset/${nextProps.potree.pointCloud.metaData
+          ._id}/cloud.js`,
+        nextProps.potree.pointCloud.metaData.name,
+        function(e) {
+          viewer.scene.addPointCloud(e.pointcloud);
+          viewer.fitToScreen();
+        }
+      );
+
+      let pointCloudMedias = JSON.parse(
+        nextProps.potree.pointCloud.metaData.visus
+      );
+      this.addCamerasToPotree(pointCloudMedias);
+    }
+
     if (
-      !nextProps.potree.camerasParameters.isFetching &&
-      !nextProps.potree.camerasParameters.isFetching.didInvalidate
+      this.props.potree.pointCloud.metaData &&
+      nextProps.selectedMedias.length === 1
     ) {
-      this.addCamerasToPotree(nextProps.potree.camerasParameters.data);
+      let mediaMesh = this.potree.scene.scene.children.find(
+        mesh => mesh.mediaId === nextProps.selectedMedias[0].properties._id
+      );
+
+      if(mediaMesh){
+        this.goToMediaMesh(mediaMesh);
+        this.addMediaToCamera(mediaMesh);
+      } 
     }
   }
 
@@ -35,11 +65,14 @@ export default class Potree extends React.Component {
 
   render() {
     return (
-      <div style={{position:'absolute', width: '100%', height: '100%'}} ref={el => (this.potreeContainer = el)} />
+      <div
+        style={{ position: "absolute", width: "100%", height: "100%" }}
+        ref={el => (this.potreeContainer = el)}
+      />
     );
   }
 
-  initViewer() {
+  initViewer(pointCloudId, pointCloudName) {
     window.viewer = this.potree = new potree.Viewer(this.potreeContainer);
     viewer.setEDLEnabled(false);
     viewer.setPointSize(3);
@@ -48,14 +81,6 @@ export default class Potree extends React.Component {
     // viewer.setPointSizing("Fixed");
     viewer.setQuality("Squares");
     viewer.setPointBudget(10 * 1000 * 1000);
-    potree.loadPointCloud(
-      `potreeviewer/potreedataset/5a0ea47de9d113244104d212/cloud.js`,
-      "cliff2_5M",
-      function(e) {
-        viewer.scene.addPointCloud(e.pointcloud);
-        viewer.fitToScreen();
-      }
-    );
   }
 
   addCamerasToPotree(camerasParameters) {
@@ -131,14 +156,14 @@ export default class Potree extends React.Component {
       opacity: 1,
       transparent: true
     });
-    var plane_mesh = new THREE.Mesh(plane_geometry, plane_material);
-    viewer.scene.scene.add(plane_mesh);
+    this.plane_mesh = new THREE.Mesh(plane_geometry, plane_material);
+    viewer.scene.scene.add(this.plane_mesh);
 
     // Set from bundler data : https://github.com/snavely/bundler_sfm#output-format
     var invert_yz_mat4 = new THREE.Matrix4();
     invert_yz_mat4.set(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1);
 
-    camerasParameters.features[0].properties.visus.map(function(camera) {
+    camerasParameters.map(function(camera) {
       if (camera.camera3d && camera.camera3d.filename) {
         var bundler_rot_0 = camera.camera3d.rotationMatrix[0],
           bundler_rot_1 = camera.camera3d.rotationMatrix[1],
@@ -215,8 +240,9 @@ export default class Potree extends React.Component {
     function onMouseMove(e) {
       // calculate mouse position in normalized device coordinates (-1 to +1) for both components
       var rect = that.potree.renderer.domElement.getBoundingClientRect();
-      mouse.x = ( ( event.clientX - rect.left ) / ( rect.right - rect.left ) ) * 2 - 1;
-      mouse.y = - ( ( event.clientY - rect.top ) / ( rect.bottom - rect.top) ) * 2 + 1;
+      mouse.x = (event.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
+      mouse.y =
+        -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
 
       // Pick camera
       // Raycaster for picking selected camera mesh, see github source
@@ -236,7 +262,7 @@ export default class Potree extends React.Component {
           mesh_intersected = intersects[0].object;
           mesh_intersected.material = camSelectedMaterial;
           //add media texture to plane
-          addMediaToCamera(mesh_intersected);
+          that.addMediaToCamera(mesh_intersected);
         }
       } else {
         if (mesh_intersected) {
@@ -295,8 +321,6 @@ export default class Potree extends React.Component {
       }
     }
 
-    function colorPickedCamera(e) {}
-
     function isRightMB(e) {
       e = e || window.event;
       if (
@@ -316,7 +340,7 @@ export default class Potree extends React.Component {
         // Useful issue from bugdanov, working on doxel viewer: https://github.com/potree/potree/issues/300
         // Set camera position (mesh pos), then lookAt as cam position + a small vector towards camera direction (third column of rotation matrix, cam z in world coordinates)
         hovered_cam_matrix.copy(mesh_intersected.matrix);
-        
+
         // var viewDir = new THREE.Vector3(
         //   mesh_intersected.matrix.elements[8],
         //   mesh_intersected.matrix.elements[9],
@@ -391,25 +415,101 @@ export default class Potree extends React.Component {
           })
           .start();
 
+          // SHOULD USE SELECTED MEDIA BY ID
+          // that.props.dispatch(clickMedias({ features, ctrlKey }));
+
         // Roll is still missing, rotatino around camera view axis to correctly have all info
         // Non working tests, potree reinitializes camera position in its render or animate loop probably
         // Useful issue from bugdanov, working on doxel viewer: https://github.com/potree/potree/issues/300
       }
     }
+  }
 
-    function addMediaToCamera(mesh_intersected) {
-      var textureLoader = new THREE.TextureLoader();
-      textureLoader.crossOrigin = "";
-      textureLoader.load(
-        "http://localhost:9000\\userdrive\\media\\image\\" +
-          mesh_intersected.mediaId,
-        function(plane_texture) {
-          plane_mesh.material.map = plane_texture;
-          plane_mesh.material.needsUpdate = true;
-          plane_mesh.matrix.set(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-          plane_mesh.applyMatrix(mesh_intersected.matrix);
-        }
-      );
-    }
+  addMediaToCamera(mesh_intersected) {
+    var that = this;
+    var textureLoader = new THREE.TextureLoader();
+    textureLoader.crossOrigin = "";
+    textureLoader.load(
+      "http://localhost:9000\\userdrive\\media\\image\\" +
+        mesh_intersected.mediaId,
+      function(plane_texture) {
+        that.plane_mesh.material.map = plane_texture;
+        that.plane_mesh.material.needsUpdate = true;
+        that.plane_mesh.matrix.set(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+        that.plane_mesh.applyMatrix(mesh_intersected.matrix);
+      }
+    );
+  }
+
+  goToMediaMesh(mediaMesh) {
+    var hovered_cam_matrix = new THREE.Matrix4();
+    var viewer_cam_matrix = new THREE.Matrix4();
+
+    var viewDir = new THREE.Vector3(
+      mediaMesh.matrix.elements[8],
+      mediaMesh.matrix.elements[9],
+      mediaMesh.matrix.elements[10]
+    );
+    var camLookAt = mediaMesh.position.clone().sub(viewDir);
+
+    var camPositionTween = new TWEEN.Tween(viewer.scene.view.position)
+      .to(
+        {
+          x: mediaMesh.position.x,
+          y: mediaMesh.position.y,
+          z: mediaMesh.position.z
+        },
+        1000
+      )
+      .start();
+
+    var fromLookAt = viewer.scene.view.position.clone();
+    var dir = viewer.scene.view.direction.clone();
+    fromLookAt.add(dir.multiplyScalar(1));
+
+    var camLookAtTween = new TWEEN.Tween(fromLookAt)
+      .to({ x: camLookAt.x, y: camLookAt.y, z: camLookAt.z }, 1000)
+      .onUpdate(function(obj) {
+        viewer.scene.view.lookAt(obj);
+      })
+      .start();
+
+    var localToViewer = new THREE.Matrix4();
+
+    var camFovTween = new TWEEN.Tween(mediaMesh)
+      .to(mediaMesh, 1000)
+      .onUpdate(function(obj) {
+        // Get transformation matrix from local camera coordinates to viewer coordinates - by passing by world coordinates using
+        // localToViewer = viewerMatrixT * obj_cam.matrix = localToWorld * worldToViewer
+        var viewerMatrixT = viewer.scene.camera.matrix.clone();
+        viewerMatrixT.transpose();
+        // localToViewer = viewerMatrixT * obj.matrix = localToWorld * worldToViewer
+
+        localToViewer.multiplyMatrices(viewerMatrixT, obj.matrix);
+        // Set viewer dimensions arbitrarily using aspect ratio, and compute a scale factor to fit bounding box of dimensions boxWidth, boxHeight
+        var viewerHeight = 1,
+          viewerWidth = viewer.scene.camera.aspect;
+        var boxWidth =
+            Math.abs(localToViewer.elements[0]) +
+            Math.abs(localToViewer.elements[4]),
+          boxHeight =
+            Math.abs(localToViewer.elements[1]) +
+            Math.abs(localToViewer.elements[5]);
+        // Compute scale factor, deduce, real viewer height that adapt to fit bounding box of camera + a 10% margin, and compute vertical fov from it
+        var scaleFactor = Math.max(
+            boxWidth / viewerWidth,
+            boxHeight / viewerHeight
+          ),
+          newHeight = viewerHeight * scaleFactor,
+          viewerMargin = 1.1,
+          viewerFov =
+            2 * Math.atan(newHeight * 1.1 / (2 * obj.cam_scale.z));
+        viewerFov = viewerFov * 180 / Math.PI;
+
+        // Store camera with rotated axes
+        viewer_cam_matrix = viewer.scene.camera.matrix.clone();
+        viewer.setFOV(viewerFov);
+      })
+      .start();
   }
 }

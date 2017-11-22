@@ -2,20 +2,17 @@ import { combineReducers } from 'redux'
 
 const potreeReducer = (state = {}, action) => {
   switch (action.type) {
-    case "POTREE_REQUEST_CAMERAS_PARAMETERS": {
-      return Object.assign({}, state, {
-        isFetching: true,
-        didInvalidate: false
-      })
-      break;
-    }
-    case "POTREE_RECEIVE_CAMERAS_PARAMETERS": {
-      return Object.assign({}, state, {
-        isFetching: false,
-        didInvalidate: false,
-        data: action.data,
-        lastUpdated: action.receivedAt
-      })
+    case "POINTCLOUD_CLICK": {
+      let pointCloud;
+      if(action.payload.features.length){
+        pointCloud = Object.assign({}, state, {
+          metaData : action.payload.features.length ? action.payload.features[0].properties : null
+        });
+      }
+      else{
+        pointCloud = Object.assign({});
+      }
+      return pointCloud;
       break;
     }
     default:
