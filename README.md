@@ -100,10 +100,6 @@ Layer : {
 						// (ex: medias-layer is locked where there are too much medias)
 		isShown: Bool, // whether layer is displayed on map
 		wasShownBeforeLock: Bool // used on unlock to know if layer should be displayed again
-		renderedFeatures: [Features] // optional, currently rendered features (used for medias)
-			=> useless (cf renderedFeatures action)
-		featureKey: String // optional, unique feature key (used to compute rendered features),
-			=> useless (cf renderedFeatures action)
 		isInBounds: Bool // optional, whether layer is in map bounds (used for rastertilesets)
 	/!\ didChange: { // used to update map layer on next react render
 			paint: {paintProperties->paintValue} // paint properties (cf mapbox) that will change on next react render,
@@ -126,16 +122,14 @@ Source : {
 	// cf mapbox source definition : same attributes +
 	metadata: {
 	/!\ didChange: Bool // true if source shall be reloaded on next react render
+		loaded: Bool // true when source is added to map
+		renderedFeatures: [Features] // optional, currently rendered features (used for medias)
 		selectFilterPending: Bool // used only for selected-medias source, true if a select filter is being applied,
 		stillFiltered: [Features] // used only for selected-medias source, features that are still filtered on medias-source
 								  // (empty when no select filter is being applied)
 	}
 }
 ```
-* idem layers : shall we keep only metadata in store and source definition in config ?
-* => better store legibility & facilitates updates
-* => drawback : access to current layer properties ? (needed ?)
-
 
 ### ServerResource
 

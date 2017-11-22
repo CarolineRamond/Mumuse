@@ -64,12 +64,6 @@ class Carousel extends React.Component {
     }
 
 	render() {
-        // console.log("RENDER CAROUSEL ");
-        // const toto = this.state.mediasSlice.map((media)=> {
-        //     return { name: media.properties.name, selected: media.properties.selected };
-        // })
-        // console.log("carousel ", toto);
-
 		var mappedThumbnails = [];
         this.state.mediasSlice.map((media, i) => {
             var classes = [styles.thumbnail];

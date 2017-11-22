@@ -12,6 +12,17 @@ export const clickMedias = ({ features, ctrlKey, isAdmin })=> {
 	};
 };
 
+export const selectMediaById = ({ mediaId, ctrlKey, isAdmin })=> {
+	return { 
+		type: 'MEDIAS_SELECT_BY_ID', 
+		payload: { 
+			mediaId: mediaId,
+			ctrlKey: ctrlKey,
+			isAdmin: isAdmin
+		}
+	};
+};
+
 export const startDragMapMedias = ({ event, isAdmin })=> {
 	return {
 		type: 'MEDIAS_MAP_START_DRAG',
@@ -73,43 +84,56 @@ export const initSelectedMedia = (mediaId) => {
 }
 
 export const deleteMedias = (medias)=> {
-	const payload = new Promise((resolve, reject)=> {
-		var promise = medias.reduce((promise, media)=> {
-			return promise.then(() => { 
+	return (dispatch) => {
+		var promise = medias.reduce((promise, media, index)=> {
+			return promise.then(() => {
+				dispatch({ 
+					type: "MEDIAS_DELETE_PENDING", 
+					payload: { index: index, length: medias.length } 
+				});
 				return _deleteMedia(media);
 			})
 		}, Promise.resolve());
-		promise.then(()=> resolve())
-	});
-	
-    return { 
-		type: "MEDIAS_DELETE",
-		payload: payload
+		
+		promise.then(()=> {
+			dispatch({ 
+				type: "MEDIAS_DELETE_FULFILLED", 
+				payload: { length: medias.length }
+			});
+		});
 	}
 }
-
-
 
 function _deleteMedia(media) {
     const mediaId = media.properties._id;
     return axios.delete('/userdrive/media/' + mediaId);
 }
 
+export const resetDeleteMediasState = ()=> {
+	return {
+		type: "RESET_MEDIAS_DELETE"
+	}
+}
+
 export const uploadMedias = (files, position)=> {
-	const iter = new Array(files.length).fill(1);
-	const payload = new Promise((resolve, reject)=> {
+	return (dispatch) => {
+		const iter = new Array(files.length).fill(1);
 		var promise = iter.reduce((promise, item, index)=> {
-			return promise.then(() => { 
+			return promise.then(() => {
+				dispatch({ 
+					type: "MEDIAS_UPLOAD_PENDING", 
+					payload: { index: index, length: files.length } 
+				});
 				return _uploadMedia(files[index], position);
 			})
-		}, Promise.resolve())
+		}, Promise.resolve());
 		
-		promise.then(()=> resolve())
-	});
-	
-    return { 
-		type: "MEDIAS_UPLOAD",
-		payload: payload
+		promise.then(()=> {
+			dispatch({ 
+				type: "MEDIAS_UPLOAD_FULFILLED", 
+				payload: { length: files.length }
+			});
+		});
 	}
 }
 
@@ -140,7 +164,6 @@ function _uploadMedia(file, currentPosition) {
             form.append("file", file);
             return axios.post('/userdrive/media', form)
             	.then((response)=> { 
-            		console.log('uploaded file ', file);
             		return resolve(response) 
             	})
             	.catch((error)=> { return reject(error) });
@@ -156,6 +179,12 @@ function _uploadMedia(file, currentPosition) {
 	        file.slice(0, 90000, file.type)
 	    );
 	});
+}
+
+export const resetUploadMediasState = ()=> {
+	return {
+		type: "RESET_MEDIAS_UPLOAD"
+	}
 }
 
 /**

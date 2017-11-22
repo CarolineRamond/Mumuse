@@ -22,7 +22,8 @@ const mediasLayerReducer = (state = {}, action) => {
 				})
 	 		});
 		}
-		case "MEDIAS_CLICK": {
+		case "MEDIAS_CLICK":
+		case "MEDIAS_SELECT_BY_ID": {
 			const currentFilter  = state.filter || ['all'];
 			const multiSelect = action.payload.isAdmin && action.payload.ctrlKey;
 			var newFilter = currentFilter;
@@ -33,9 +34,14 @@ const mediasLayerReducer = (state = {}, action) => {
 				});
 			}
 			// select newly selected medias (add filters)
-			const selectedIds = action.payload.features.map((feature)=> {
-	 			return feature.properties._id;
-	 		});
+			var selectedIds;
+			if (action.payload.features) {
+				selectedIds = action.payload.features.map((feature)=> {
+		 			return feature.properties._id;
+		 		});
+		 	} else {
+		 		selectedIds = [action.payload.mediaId];
+		 	}
 			const filterToAdd = ['!in', '_id'].concat(selectedIds);
 			newFilter = newFilter.concat([filterToAdd]);
 
@@ -64,16 +70,6 @@ const mediasLayerReducer = (state = {}, action) => {
 				});
 			}
 			return defaultLayerReducer(state);
-			break;
-		}
-		case "MEDIAS_UPDATE_FEATURES": {
-			// store rendered features in layer's metadata
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, {
-					renderedFeatures: action.payload.features,
-					didChange: undefined
-				}),
-			});
 			break;
 		}
 		case "MEDIAS_GRID_UPDATE_FEATURES": {
@@ -174,15 +170,6 @@ const gridLayerReducer = (state = {}, action) => {
 			}
 			return defaultLayerReducer(state);
 			break;
-		}
-		case "MEDIAS_GRID_UPDATE_FEATURES": {
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, {
-					renderedFeatures: action.payload.features,
-					didChange: undefined
-				}),
-			});
-	 		break;
 		}
 		case 'MEDIAS_TIMELINE_UPDATE': {
 	 		// filter grid cells according to date 

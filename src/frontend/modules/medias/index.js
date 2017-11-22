@@ -3,6 +3,9 @@ import { combineReducers } from 'redux';
 import layersReducer from './reducers/medias.layers.reducer';
 import sourcesReducer from './reducers/medias.sources.reducer';
 import timelineReducer from './reducers/medias.timeline.reducer';
+import uploadMediasReducer from './reducers/medias.uploadMedias.reducer';
+import deleteMediasReducer from './reducers/medias.deleteMedias.reducer';
+
 import mediasInitialState from './medias.initialState';
 import mediasMapConfig from './medias.map.config';
 
@@ -12,17 +15,20 @@ const mediasReducer = combineReducers({
 	timeline: timelineReducer,
 	selectFilterPending: (state= false , action) => {
 		switch(action.type) {
-			case 'MEDIAS_CLICK':
+			case "MEDIAS_CLICK":
+			case "MEDIAS_SELECT_BY_ID":
 				return true;
 				break;
-			case 'MEDIAS_UPDATE_FEATURES':
+			case "MEDIAS_UPDATE_FEATURES":
 				return false;
 				break;
 			default:
 				return state;
 				break;
 		}
-	}
+	},
+	uploadMedias: uploadMediasReducer,
+	deleteMedias: deleteMediasReducer
 });
 
 // default export : reducer function
@@ -34,7 +40,7 @@ export { mediasInitialState, mediasMapConfig };
 // export selectors
 // (to expose data to components)
 export const getVisibleMedias = (state) => {
-	const vectorMedias = state.layers["medias-layer"].metadata.renderedFeatures
+	const vectorMedias = state.sources["medias-source"].metadata.renderedFeatures
 		.map((feature)=> {
 			var featureClone = Object.assign( Object.create( Object.getPrototypeOf(feature)), feature)
 			featureClone.properties.selected = false;
@@ -68,7 +74,10 @@ export const getVisibleMedias = (state) => {
 			}
 			return item;
 		}).sort((a,b)=> {
-			return (a.properties._id > b.properties._id);
+			if (a.properties.date === b.properties.date) {
+				return a.properties.name.localeCompare(b.properties.name);
+			}
+			return (a.properties.date - b.properties.date);
 		});
 
 	return result;
@@ -80,13 +89,13 @@ export const getSelectedMedias = (state) => {
 
 export const getViewportMediaCount = (state) => {
 	if (!state.layers["medias-layer"].metadata.isLocked && 
-		state.layers["medias-layer"].metadata.renderedFeatures.length > 0) {
+		state.sources["medias-source"].metadata.renderedFeatures.length > 0) {
 		// point layer is visible : return exact media count
-		return state.layers["medias-layer"].metadata.renderedFeatures.length +
+		return state.sources["medias-source"].metadata.renderedFeatures.length +
 			state.sources["selected-medias-source"].data.features.length;
 	} else {
 		// point layer is locked : return grid count (approximative)
-		var count = state.layers["grid-medias-layer"].metadata.renderedFeatures.reduce((c, feature)=> {
+		var count = state.sources["grid-medias-source"].metadata.renderedFeatures.reduce((c, feature)=> {
 			return c + feature.properties.allMediaCount;
 		}, 0);
 		return '~' + count.toString();
@@ -95,14 +104,14 @@ export const getViewportMediaCount = (state) => {
 
 export const getMediasMinDate = (state) => {
 	if (!state.layers["medias-layer"].metadata.isLocked && 
-		state.layers["medias-layer"].metadata.renderedFeatures.length > 0) {
+		state.sources["medias-source"].metadata.renderedFeatures.length > 0) {
 		// point layer is visible : return medias min date
-		return state.layers["medias-layer"].metadata.renderedFeatures.reduce((min, feature)=> {
+		return state.sources["medias-source"].metadata.renderedFeatures.reduce((min, feature)=> {
 			return Math.min(min, new Date(feature.properties.date).getTime());
 		}, Date.now());
 	} else {
 		// point layer is locked : return grid cells min date
-		return state.layers["grid-medias-layer"].metadata.renderedFeatures.reduce((min, feature)=> {
+		return state.sources["grid-medias-source"].metadata.renderedFeatures.reduce((min, feature)=> {
 			return Math.min(min, new Date(feature.properties.minDate).getTime());
 		}, Date.now());
 	}
@@ -118,4 +127,12 @@ export const getSelectFilterPending = (state) => {
 
 export const areMediasLocked = (state) => {
 	return state.layers["medias-layer"].metadata.isLocked;
+}
+
+export const getUploadMediasState = (state)=> {
+	return state.uploadMedias;
+}
+
+export const getDeleteMediasState = (state)=> {
+	return state.deleteMedias;
 }
