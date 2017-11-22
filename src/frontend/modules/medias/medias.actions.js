@@ -85,20 +85,38 @@ export const initSelectedMedia = ({ mediaId }) => {
 
 export const deleteMedias = (medias)=> {
 	return (dispatch) => {
+		var errorMessages = [];
+		var errorMedias = [];
+		var data = [];
 		var promise = medias.reduce((promise, media, index)=> {
 			return promise.then(() => {
 				dispatch({ 
 					type: "MEDIAS_DELETE_PENDING", 
-					payload: { index: index, length: medias.length } 
+					payload: { index: index } 
 				});
 				return _deleteMedia(media);
+			})
+			.then(()=> {
+				data.push(media);
+			})
+			.catch((error)=> {
+				var errorMessage = "Error deleting media [" + media.properties.name + "]";
+				if (error !== '') {
+					errorMessage += " : " + error;
+				}
+				errorMedias.push(media);
+				errorMessages.push(errorMessage);
 			})
 		}, Promise.resolve());
 		
 		promise.then(()=> {
+			const error = errorMedias.length > 0 ? { medias: errorMedias, messages: errorMessages } : null;
 			dispatch({ 
 				type: "MEDIAS_DELETE_FULFILLED", 
-				payload: { length: medias.length }
+				payload: { 
+					data: data, 
+					error: error
+				}
 			});
 		});
 	}

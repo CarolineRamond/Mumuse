@@ -8,10 +8,7 @@ const deleteMediasReducer = (state = initialState, action) => {
 	switch(action.type) {
 		case "MEDIAS_DELETE_PENDING": {
 			return Object.assign({}, state, {
-				pending: {
-					index: action.payload.index,
-					length: action.payload.length
-				},
+				pending: action.payload.index,
 				error: null,
 				data: null
 			});
@@ -19,12 +16,9 @@ const deleteMediasReducer = (state = initialState, action) => {
 		}
 		case "MEDIAS_DELETE_FULFILLED": {
 			return Object.assign({}, state, {
-				pending: {
-					index: action.payload.length,
-					length: action.payload.length
-				},
-				error: null,
-				data: true
+				pending: false,
+				error: action.payload.error,
+				data: action.payload.data
 			});
 			break;
 		}

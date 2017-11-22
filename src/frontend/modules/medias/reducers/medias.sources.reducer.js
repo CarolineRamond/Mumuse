@@ -36,8 +36,6 @@ export const mediasSourceReducer = (state = mediasSourceInitialState, action) =>
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
 		case 'LOGIN_FULFILLED':
-		case 'MEDIAS_UPLOAD_FULFILLED':
-		case 'MEDIAS_DELETE_FULFILLED':
 		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
 			return {
 				...state,
@@ -45,6 +43,21 @@ export const mediasSourceReducer = (state = mediasSourceInitialState, action) =>
 					...state.metadata,
 					didChange: true
 				}
+			}
+			break;
+		}
+		case 'MEDIAS_UPLOAD_FULFILLED':
+		case 'MEDIAS_DELETE_FULFILLED': {
+			if (action.payload.data.length > 0) {
+				return {
+					...state,
+					metadata: {
+						...state.metadata,
+						didChange: true
+					}
+				}
+			} else {
+				return defaultSourceReducer(state);
 			}
 			break;
 		}
@@ -81,8 +94,6 @@ export const gridMediasSourceReducer = (state = gridMediasSourceInitialState, ac
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
 		case 'LOGIN_FULFILLED':
-		case 'MEDIAS_UPLOAD_FULFILLED':
-		case 'MEDIAS_DELETE_FULFILLED':
 		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
 			return  {
 				...state,
@@ -90,6 +101,21 @@ export const gridMediasSourceReducer = (state = gridMediasSourceInitialState, ac
 					...state.metadata,
 					didChange: true
 				}
+			}
+			break;
+		}
+		case 'MEDIAS_UPLOAD_FULFILLED':
+		case 'MEDIAS_DELETE_FULFILLED': {
+			if (action.payload.data.length > 0) {
+				return {
+					...state,
+					metadata: {
+						...state.metadata,
+						didChange: true
+					}
+				}
+			} else {
+				return defaultSourceReducer(state);
 			}
 			break;
 		}
@@ -244,16 +270,26 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 			break;
 		}
 		case 'MEDIAS_DELETE_FULFILLED': {
-			return {
-				...state,
-				data: {
-					...state.data,
-					features: []
-				},
-				metadata: {
-					...state.metadata,
-					didChange: true
+			if (action.payload.data.length > 0) {
+				const deletedIds = action.payload.data.map((media)=> {
+					return media.properties._id;
+				});
+				const newFeatures = state.data.features.filter((media)=> {
+					return deletedIds.indexOf(media.properties._id) === -1;
+				});
+				return {
+					...state,
+					data: {
+						...state.data,
+						features: newFeatures
+					},
+					metadata: {
+						...state.metadata,
+						didChange: true
+					}
 				}
+			} else {
+				return defaultSourceReducer(state);				
 			}
 			break;
 		}
