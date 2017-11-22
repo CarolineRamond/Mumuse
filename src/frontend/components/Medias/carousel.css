@@ -68,3 +68,26 @@
 	flex-direction: row;
 	align-items: center;
 }
+
+.mediasUploaderProgress div {
+	margin-right: 8px;
+}
+
+.mediasUploaderErrors {
+	color: red;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.mediasUploaderSuccess {
+	color: green;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.mediasUploaderErrorActions {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+}

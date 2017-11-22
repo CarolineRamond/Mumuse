@@ -7,11 +7,9 @@ const initialState = {
 const uploadMediasReducer = (state = initialState, action) => {
 	switch(action.type) {
 		case "MEDIAS_UPLOAD_PENDING": {
+			const errors = action.payload.errors;
 			return Object.assign({}, state, {
-				pending: {
-					index: action.payload.index,
-					length: action.payload.length
-				},
+				pending: action.payload.index,
 				error: null,
 				data: null
 			});
@@ -19,12 +17,9 @@ const uploadMediasReducer = (state = initialState, action) => {
 		}
 		case "MEDIAS_UPLOAD_FULFILLED": {
 			return Object.assign({}, state, {
-				pending: {
-					index: action.payload.length,
-					length: action.payload.length
-				},
-				error: null,
-				data: true
+				pending: false,
+				error: action.payload.error,
+				data: action.payload.data
 			});
 			break;
 		}

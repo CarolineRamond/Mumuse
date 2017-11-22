@@ -118,20 +118,38 @@ export const resetDeleteMediasState = ()=> {
 export const uploadMedias = (files, position)=> {
 	return (dispatch) => {
 		const iter = new Array(files.length).fill(1);
-		var promise = iter.reduce((promise, item, index)=> {
+		var errorMessages = [];
+		var errorFiles = [];
+		var data = [];
+		const promise = iter.reduce((promise, item, index)=> {
 			return promise.then(() => {
 				dispatch({ 
 					type: "MEDIAS_UPLOAD_PENDING", 
-					payload: { index: index, length: files.length } 
+					payload: { index: index } 
 				});
 				return _uploadMedia(files[index], position);
 			})
+			.then(()=> {
+				data.push(files[index]);
+			})
+			.catch((error)=> {
+				var errorMessage = "Error uploading file [" + files[index].name + "]";
+				if (error !== '') {
+					errorMessage += " : " + error;
+				}
+				errorFiles.push(files[index]);
+				errorMessages.push(errorMessage);
+			})
 		}, Promise.resolve());
-		
+
 		promise.then(()=> {
+			const error = errorFiles.length > 0 ? { files: errorFiles, messages: errorMessages } : null;
 			dispatch({ 
 				type: "MEDIAS_UPLOAD_FULFILLED", 
-				payload: { length: files.length }
+				payload: { 
+					data: data, 
+					error: error
+				}
 			});
 		});
 	}
@@ -166,7 +184,13 @@ function _uploadMedia(file, currentPosition) {
             	.then((response)=> { 
             		return resolve(response) 
             	})
-            	.catch((error)=> { return reject(error) });
+            	.catch((error)=> { 
+            		if (error.response && error.response.data && error.response.data.message) {
+            			return reject(error.response.data.message) 
+            		} else {
+            			return reject('');
+            		}
+            	});
 	    };
 
 	    reader.onerror = error => {

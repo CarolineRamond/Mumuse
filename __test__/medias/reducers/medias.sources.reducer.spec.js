@@ -1,8 +1,8 @@
 import sourcesReducer, { mediasSourceInitialState, gridMediasSourceInitialState, 
     selectedMediasSourceInitialState, sourcesInitialState, mediasSourceReducer, 
     gridMediasSourceReducer, selectedMediasSourceReducer, defaultSourceReducer } 
-    from "../../src/frontend/modules/medias/reducers/medias.sources.reducer"
-import { actions } from "../../src/frontend/modules"
+    from "../../../src/frontend/modules/medias/reducers/medias.sources.reducer"
+import { actions } from "../../../src/frontend/modules"
 
 describe('default reducer', () => {
     const reducer = defaultSourceReducer;
@@ -606,6 +606,33 @@ describe('selected medias source reducer', () => {
                 ...selectedMediasSourceInitialState,
                 metadata: {
                     ...selectedMediasSourceInitialState.metadata,
+                    didChange: true
+                }
+            });
+        });
+    });
+
+     describe('on MEDIAS_DELETE_FULFILLED', ()=> {
+        it('should remove source\'s features', () => {
+            const features = [{
+                type: "Feature",
+                geometry: { type: "Point", coordinates: [0,2] },
+                properties: { _id: "5a0e9dab75b85544253e4fb2" }
+            }] 
+            const action1 = actions.clickMedias({ features });
+            const initialState = reducer(selectedMediasSourceInitialState, action1);
+
+            const action2 = {
+                type: "MEDIAS_DELETE_FULFILLED"
+            };
+            expect(reducer(initialState, action2)).toEqual({
+                ...initialState,
+                data: {
+                    ...initialState.data,
+                    features: []
+                },
+                metadata: {
+                    ...initialState.metadata,
                     didChange: true
                 }
             });

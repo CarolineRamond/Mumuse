@@ -1,7 +1,7 @@
 import { mediasLayerInitialState, gridLayerInitialState, selectedMediasLayerInitialState,
   mediasLayerReducer, gridLayerReducer, selectedMediasLayerReducer, defaultLayerReducer } 
-  from "../../src/frontend/modules/medias/reducers/medias.layers.reducer"
-import { actions } from "../../src/frontend/modules"
+  from "../../../src/frontend/modules/medias/reducers/medias.layers.reducer"
+import { actions } from "../../../src/frontend/modules"
 
 describe('default reducer', () => {
   const reducer = defaultLayerReducer;

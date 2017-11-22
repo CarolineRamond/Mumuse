@@ -10,7 +10,7 @@ export const getVisibleMedias = (state) => {
 	});
 
 	var result;
-	if (state.selectFilterPending) {
+	if (state.sources["selected-medias-source"].metadata.selectFilterPending) {
 		const stillFiltered = state.sources["selected-medias-source"].metadata.stillFiltered
 			.map((feature)=> {
 				var featureClone = Object.assign( Object.create( Object.getPrototypeOf(feature)), feature)
@@ -81,7 +81,7 @@ export const getTimelineValue = (state) => {
 }
 
 export const getSelectFilterPending = (state) => {
-	return state.selectFilterPending;
+	return state.sources["selected-medias-source"].metadata.selectFilterPending;
 }
 
 export const areMediasLocked = (state) => {
