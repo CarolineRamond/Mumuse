@@ -31,7 +31,6 @@ export const mediasSourceReducer = (state = mediasSourceInitialState, action) =>
 					didChange: false
 				}
 			};
-			break;
 		}
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
@@ -44,7 +43,6 @@ export const mediasSourceReducer = (state = mediasSourceInitialState, action) =>
 					didChange: true
 				}
 			}
-			break;
 		}
 		case 'MEDIAS_UPLOAD_FULFILLED':
 		case 'MEDIAS_DELETE_FULFILLED': {
@@ -59,7 +57,6 @@ export const mediasSourceReducer = (state = mediasSourceInitialState, action) =>
 			} else {
 				return defaultSourceReducer(state);
 			}
-			break;
 		}
 		default:
 			return defaultSourceReducer(state);
@@ -89,7 +86,6 @@ export const gridMediasSourceReducer = (state = gridMediasSourceInitialState, ac
 					didChange: false
 				}
 			}
-	 		break;
 		}
 		case 'LOGOUT_FULFILLED':
 		case 'FETCH_USER_FULFILLED':
@@ -102,7 +98,6 @@ export const gridMediasSourceReducer = (state = gridMediasSourceInitialState, ac
 					didChange: true
 				}
 			}
-			break;
 		}
 		case 'MEDIAS_UPLOAD_FULFILLED':
 		case 'MEDIAS_DELETE_FULFILLED': {
@@ -117,7 +112,6 @@ export const gridMediasSourceReducer = (state = gridMediasSourceInitialState, ac
 			} else {
 				return defaultSourceReducer(state);
 			}
-			break;
 		}
 		default:
 			return defaultSourceReducer(state);
@@ -186,7 +180,6 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 					stillFiltered: stillFiltered
 				}
 			};
-			break;
 		}
 		case 'MEDIAS_UPDATE_FEATURES':
 			if (state.metadata.selectFilterPending) {
@@ -201,7 +194,6 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 				};
 			}
 			return defaultSourceReducer(state);
-			break;
 		case "MEDIAS_MAP_START_DRAG": {
 			if (action.payload.isAdmin) {
 				return {
@@ -213,7 +205,6 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 				}
 			}
 			return defaultSourceReducer(state);
-			break;
 		}
 		case "MEDIAS_MAP_DRAG": {
 			if (state.metadata.draggingFeatureId && action.payload.isAdmin) {
@@ -246,7 +237,6 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 		 		// (map does not dispatch MEDIAS_MAP_DRAG action unless an admin is dragging a media)
 		 		return defaultSourceReducer(state);
 		 	}
-			break;
 		}
 		case "MEDIAS_MAP_END_DRAG_PENDING": {
 			return {
@@ -257,7 +247,6 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 					didChange: false
 				}
 			}
-			break;
 		}
 		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
 			return {
@@ -267,7 +256,6 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 					didChange: true
 				}
 			}
-			break;
 		}
 		case 'MEDIAS_DELETE_FULFILLED': {
 			if (action.payload.data.length > 0) {
@@ -291,7 +279,6 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 			} else {
 				return defaultSourceReducer(state);				
 			}
-			break;
 		}
 		default:
 			return defaultSourceReducer(state);

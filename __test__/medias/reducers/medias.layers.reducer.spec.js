@@ -415,6 +415,34 @@ describe('medias layer reducer', () => {
         }
       });
     });
+
+    it('should handle 2 consecutive toggles', () => {
+      const features = [{
+        type: "Feature",
+        properties: { allMediaCount: 1998 }
+      }];
+      const action1 = actions.updateFeaturesGridMedias({ features });
+      const action2 = actions.toggleLayer({ layerId: "medias-layer" });
+      const action3 = actions.toggleLayer({ layerId: "medias-layer" });
+      const initialState = reducer(
+          reducer(mediasLayerInitialState, action1),
+          action2
+      );
+
+      expect(reducer(initialState, action3)).toEqual({
+        ...initialState,
+        layout: {
+          ...initialState.layout,
+          visibility: "visible"
+        },
+        metadata: {
+          ...initialState.metadata,
+          isShown: true,
+          wasShownBeforeLock: true,
+          didChange: { layout: { visibility: "visible" } }
+        }
+      });
+    });
   });
 });
 
@@ -467,6 +495,46 @@ describe('medias grid layer reducer', () => {
         }
       });
     });
+
+    it('should handle two consecutive toggle', () => {
+      const action1 = actions.toggleLayer({ layerId: "grid-medias-layer" });
+      const action2 = actions.toggleLayer({ layerId: "grid-medias-layer" });
+      const initialState = reducer(gridLayerInitialState, action1);
+
+      expect(reducer(initialState, action2)).toEqual({
+        ...gridLayerInitialState,
+        paint: {
+          ...gridLayerInitialState.paint,
+          "fill-opacity": {
+            "property": "allMediaOpacity",
+            "type": "exponential",
+            "stops" : [
+                [0, 0],
+                [1, 0.2],
+                [100, 0.8]
+            ]
+          }
+        },
+        metadata: {
+          ...gridLayerInitialState.metadata,
+          isShown: true,
+          didChange: { 
+            paint: { 
+              "fill-opacity": {
+                "property": "allMediaOpacity",
+                "type": "exponential",
+                "stops" : [
+                    [0, 0],
+                    [1, 0.2],
+                    [100, 0.8]
+                ]
+              } 
+            } 
+          }
+        }
+      });
+    });
+
   });
 
   describe('on MEDIAS_TIMELINE_UPDATE', ()=> {
@@ -528,6 +596,25 @@ describe('selected medias layer reducer', () => {
           ...selectedMediasLayerInitialState.metadata,
           isShown: false,
           didChange: { layout: { visibility: "none" }}
+        }
+      });
+    });
+
+    it('should handle two consecutive toggles', () => {
+      const action1 = actions.toggleLayer({ layerId: "selected-medias-layer" });
+      const action2 = actions.toggleLayer({ layerId: "selected-medias-layer" });
+      const initialState = reducer(selectedMediasLayerInitialState, action1);
+
+      expect(reducer(initialState, action2)).toEqual({
+        ...selectedMediasLayerInitialState,
+        layout: {
+          ...selectedMediasLayerInitialState.layout,
+          visibility: "visible"
+        },
+        metadata: {
+          ...selectedMediasLayerInitialState.metadata,
+          isShown: true,
+          didChange: { layout: { visibility: "visible" }}
         }
       });
     });

@@ -605,9 +605,13 @@ describe('selected medias source reducer', () => {
                 type: "Feature",
                 geometry: { type: "Point", coordinates: [1,1] },
                 properties: { _id: "5a0e9dab75b85544253e4fb2" }
+            }, {
+                type: "Feature",
+                geometry: { type: "Point", coordinates: [1,1] },
+                properties: { _id: "5a0e9dab75b85544253e4fb3" }
             }]
             const action1 = actions.clickMedias({ features });
-            const action2 = actions.startDragMapMedias({ event: { features }, isAdmin: true });
+            const action2 = actions.startDragMapMedias({ event: { features: [features[0]] }, isAdmin: true });
             const initialState = reducer(
             reducer(selectedMediasSourceInitialState, action1),
             action2
@@ -623,6 +627,10 @@ describe('selected medias source reducer', () => {
                         type: "Feature",
                         geometry: { type: "Point", coordinates: [0,2] },
                         properties: { _id: "5a0e9dab75b85544253e4fb2" }
+                    }, {
+                        type: "Feature",
+                        geometry: { type: "Point", coordinates: [1,1] },
+                        properties: { _id: "5a0e9dab75b85544253e4fb3" }
                     }]
                 },
                 metadata: {

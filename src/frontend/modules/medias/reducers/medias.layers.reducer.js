@@ -80,7 +80,6 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 					didChange: { filter: true }
 				}
 			}
-			break;
 		}
 		case "TOGGLE_LAYER": {
 			if (action.payload.layerId === state.id) {
@@ -99,7 +98,6 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 				}
 			}
 			return defaultLayerReducer(state);
-			break;
 		}
 		case "MEDIAS_GRID_UPDATE_FEATURES": {
 			const mediaCount = action.payload.features.reduce((count, feature)=> {
@@ -160,7 +158,6 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 			} else {
 				return defaultLayerReducer(state);
 			}
-	 		break;
 		}
 		case 'MEDIAS_TIMELINE_UPDATE': {
 	 		// filter medias according to date:
@@ -178,7 +175,6 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 	 				didChange: { filter: true }
 	 			}
 	 		};
-			break;
 		}
 		default:
 			return defaultLayerReducer(state);
@@ -243,7 +239,6 @@ export const gridLayerReducer = (state = gridLayerInitialState, action) => {
 				};
 			}
 			return defaultLayerReducer(state);
-			break;
 		}
 		case 'MEDIAS_TIMELINE_UPDATE': {
 	 		// filter grid cells according to date 
@@ -261,7 +256,6 @@ export const gridLayerReducer = (state = gridLayerInitialState, action) => {
 	 				didChange: { filter: true }
 	 			}
 	 		};
-			break;
 		}
 		default:
 			return defaultLayerReducer(state);
@@ -307,7 +301,6 @@ export const selectedMediasLayerReducer = (state = selectedMediasLayerInitialSta
 				};
 			}
 			return defaultLayerReducer(state);
-			break;
 		}
 		default:
 			return defaultLayerReducer(state);
