@@ -190,57 +190,71 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 			break;
 		}
 		case "MEDIAS_MAP_DRAG": {
-			if (state.metadata.draggingFeatureId) {
+			if (state.metadata.draggingFeatureId && action.payload.isAdmin) {
 				const coords = action.payload.coords;
 				const newFeatures = state.data.features.map((feature)=> {
 					if (feature.properties._id === state.metadata.draggingFeatureId) {
-						return Object.assign({}, feature, {
-							geometry: Object.assign({}, feature.geometry, {
+						return {
+							...feature,
+							geometry: {
+								...feature.geometry,
 								coordinates: [coords.lng, coords.lat]
-							})
-						});
+							}
+						};
 					}
 					return feature;
 				});
-		 		return Object.assign({}, state, {
-		 			data: Object.assign({}, state.data, {
-		 				features: newFeatures
-		 			}),
-		 			metadata: Object.assign({}, state.metadata, {
+				return {
+					...state,
+					data: {
+						...state.data,
+						features: newFeatures
+					},
+					metadata: {
+						...state.metadata,
 						didChange: true
-					})
-		 		});
+					}
+				}
 		 	} else  {
+		 		//this case is a priori never reached
+		 		// (map does not dispatch MEDIAS_MAP_DRAG action unless an admin is dragging a media)
 		 		return defaultSourceReducer(state);
 		 	}
 			break;
 		}
 		case "MEDIAS_MAP_END_DRAG_PENDING": {
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, {
+			return {
+				...state,
+				metadata: {
+					...state.metadata,
 					draggingFeatureId: null,
 					didChange: false
-				})
-			});
+				}
+			}
 			break;
 		}
 		case "MEDIAS_MAP_END_DRAG_FULFILLED": {
-			return Object.assign({}, state, {
-				metadata: Object.assign({}, state.metadata, { 
+			return {
+				...state,
+				metadata: {
+					...state.metadata,
 					didChange: true
-				})
-			});
+				}
+			}
 			break;
 		}
 		case 'MEDIAS_DELETE_FULFILLED': {
-			return Object.assign({}, state, {
-	 			data: Object.assign({}, state.data, {
-	 				features: []
-	 			}),
-	 			metadata: Object.assign({}, state.metadata, {
+			return {
+				...state,
+				data: {
+					...state.data,
+					features: []
+				},
+				metadata: {
+					...state.metadata,
 					didChange: true
-				})
-	 		});
+				}
+			}
 			break;
 		}
 		default:
