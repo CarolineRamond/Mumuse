@@ -1,4 +1,4 @@
-const initialState = { 
+export const initialState = { 
 	pending: false, 
 	data: null, 
 	error: null
@@ -7,33 +7,36 @@ const initialState = {
 const currentUserReducer = (state = initialState, action) => {
 	switch(action.type) {
 		case "FETCH_USER_PENDING": {
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: true,
 				error: null,
 				data: null
-			});
-			break;
+			};
 		}
 		case "FETCH_USER_FULFILLED": {
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: false,
 				error: null,
 				data: action.payload.data
-			});
-			break;
+			};
 		}
 		case "FETCH_USER_REJECTED": {
-			return Object.assign({}, state, {
+			const response = action.payload.response;
+			var error = `Error ${response.status} (${response.statusText})`;
+			if (response.data && response.data.message) {
+				error += ` : ${response.data.message}`;
+			}
+			return {
+				...state,
 				pending: false,
-				error: action.payload.response.data.message || 
-					"Error : Could not fetch user.",
-				data: null
-			});
-			break;
+				data: null,
+				error: error
+			};
 		}
 		default:
 			return state;
-			break;
 	}
 }
 
