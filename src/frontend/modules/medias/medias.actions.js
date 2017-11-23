@@ -1,6 +1,16 @@
 import axios from "axios";
 import EXIF from 'exif-parser';
 
+const isArrayOfFeatures = (x)=> {
+	if (Array.isArray(x)) {
+		const typeCheck = x.reduce((bool, item)=> {
+			return bool && item.constructor.name === "Feature";
+		}, true);
+		return typeCheck;
+	}
+	return false;
+}
+
 export const clickMedias = ({ features, ctrlKey, isAdmin })=> {
 	return { 
 		type: 'MEDIAS_CLICK', 
@@ -8,6 +18,14 @@ export const clickMedias = ({ features, ctrlKey, isAdmin })=> {
 			features: features,
 			ctrlKey: ctrlKey,
 			isAdmin: isAdmin
+		},
+		meta: {
+			validator: {
+				features: {
+	                func: (features, state, payload) => (isArrayOfFeatures(features)),
+	                msg: 'features must be an array of mapbox features'
+	            }
+			}
 		}
 	};
 };
@@ -19,6 +37,14 @@ export const selectMediaById = ({ mediaId, ctrlKey, isAdmin })=> {
 			mediaId: mediaId,
 			ctrlKey: ctrlKey,
 			isAdmin: isAdmin
+		},
+		meta: {
+			validator: {
+				mediaId: {
+	                func: (mediaId, state, payload) => (typeof(mediaId) === "string"),
+	                msg: 'mediaId should be a string'
+	            }
+			}
 		}
 	};
 };
@@ -29,24 +55,45 @@ export const startDragMapMedias = ({ features, isAdmin })=> {
 		payload: {
 			features: features,
 			isAdmin: isAdmin
+		},
+		meta: {
+			validator: {
+				features: {
+	                func: (features, state, payload) => (isArrayOfFeatures(features)),
+	                msg: 'features must be an array of mapbox features'
+	            }
+			}
 		}
 	};
 }
 
-export const dragMapMedias = ({ coords, isAdmin })=> {
+export const dragMapMedias = ({ lat, lng, isAdmin })=> {
 	return {
 		type: 'MEDIAS_MAP_DRAG',
 		payload: {
-			coords: coords,
-			isAdmin: isAdmin
+			lat,
+			lng,
+			isAdmin
+		},
+		meta: {
+			validator: {
+				lat: {
+	                func: (lat, state, payload) => (typeof(lat) === "number"),
+	                msg: 'lat must be a number'
+	            },
+	            lng: {
+	                func: (lng, state, payload) => (typeof(lng) === "number"),
+	                msg: 'lng must be a number'
+	            }
+			}
 		}
 	};
 }
 
-export const endDragMapMedias = ({ coords, feature, isAdmin })=> {
+export const endDragMapMedias = ({ lat, lng, feature, isAdmin })=> {
 	const mediaId = feature.properties._id;
 	const form = {
-		loc: [coords.lng, coords.lat]
+		loc: [lng, lat]
 	}
 	return {
 		type: 'MEDIAS_MAP_END_DRAG',
@@ -57,21 +104,53 @@ export const endDragMapMedias = ({ coords, feature, isAdmin })=> {
 export const updateFeaturesMedias = ({ features, zoom })=> {
 	return {
 		type: 'MEDIAS_UPDATE_FEATURES',
-		payload: { features, zoom }
+		payload: { features, zoom },
+		meta: {
+			validator: {
+				features: {
+	                func: (features, state, payload) => (isArrayOfFeatures(features)),
+	                msg: 'features must be an array of mapbox features'
+	            },
+	            zoom: {
+	            	func: (zoom, state, payload) => (typeof(zoom) === "number"),
+	                msg: 'zoom must be a number'
+	            }
+			}
+		}
 	};
 }
 
 export const updateFeaturesGridMedias = ({ features, zoom })=> {
 	return {
 		type: 'MEDIAS_GRID_UPDATE_FEATURES',
-		payload: { features, zoom }
+		payload: { features, zoom },
+		meta: {
+			validator: {
+				features: {
+	                func: (features, state, payload) => (isArrayOfFeatures(features)),
+	                msg: 'features must be an array of mapbox features'
+	            },
+	            zoom: {
+	            	func: (zoom, state, payload) => (typeof(zoom) === "number"),
+	                msg: 'zoom must be a number'
+	            }
+			}
+		}
 	};
 }
 
 export const updateTimelineMedias = ({ value })=> {
 	return {
 		type: 'MEDIAS_TIMELINE_UPDATE',
-		payload: { value }
+		payload: { value },
+		meta: {
+			validator: {
+				value: {
+	                func: (value, state, payload) => (typeof(value) === "number"),
+	                msg: 'value must be a number'
+	            }
+			}
+		}
 	};
 }
 

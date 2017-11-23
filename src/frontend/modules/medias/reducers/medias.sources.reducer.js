@@ -208,14 +208,15 @@ export const selectedMediasSourceReducer = (state = selectedMediasSourceInitialS
 		}
 		case "MEDIAS_MAP_DRAG": {
 			if (state.metadata.draggingFeatureId && action.payload.isAdmin) {
-				const coords = action.payload.coords;
+				const lat = action.payload.lat;
+				const lng = action.payload.lng;
 				const newFeatures = state.data.features.map((feature)=> {
 					if (feature.properties._id === state.metadata.draggingFeatureId) {
 						return {
 							...feature,
 							geometry: {
 								...feature.geometry,
-								coordinates: [coords.lng, coords.lat]
+								coordinates: [lng, lat]
 							}
 						};
 					}

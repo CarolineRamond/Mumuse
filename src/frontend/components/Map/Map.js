@@ -193,7 +193,8 @@ class Map extends React.Component {
 					);
 					this.props.dispatch(item.mouseup({
 						feature: features[0],
-						coords: evt.lngLat, 
+						lat: evt.lngLat.lat,
+						lng: evt.lngLat.lng, 
 						isAdmin: this.props.isAdmin
 					}));
 					this.draggingLayerId = null;
@@ -209,7 +210,8 @@ class Map extends React.Component {
 					mapConfig.dragndrop.map((item)=> {
 						if (item.layerId === this.draggingLayerId) {
 							this.props.dispatch(item.mousemove({
-								coords: evt.lngLat,
+								lat: evt.lngLat.lat,
+								lng: evt.lngLat.lng,
 								isAdmin: this.props.isAdmin
 							}));
 						}

@@ -22,7 +22,15 @@ export function updateWorldState({ lng, lat, zoom, bounds }) {
 	                msg: 'zoom must be a number'
 	            },
 	            bounds: {
-	            	func: (bounds, state, payload) => (Array.isArray(bounds) && bounds.length === 4),
+	            	func: (bounds, state, payload) => {
+	            		if (Array.isArray(bounds) && bounds.length === 4) {
+	            			const isArrayOfNumbers = bounds.reduce((bool, item)=> {
+	            				return bool && typeof(item) === "number"
+	            			}, true);
+	            			return isArrayOfNumbers;
+	            		}
+	            		return false;
+	            	},
 	                msg: 'bounds must be an array of four numbers'
 	            }
 	        }
