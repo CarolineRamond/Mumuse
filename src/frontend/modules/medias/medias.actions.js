@@ -31,7 +31,7 @@ export const clickMedias = ({ features, ctrlKey, isAdmin })=> {
 };
 
 export const selectMediaById = ({ mediaId, ctrlKey, isAdmin })=> {
-	return { 
+  return { 
 		type: 'MEDIAS_SELECT_BY_ID', 
 		payload: { 
 			mediaId: mediaId,
