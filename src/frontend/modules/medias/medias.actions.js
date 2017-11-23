@@ -23,31 +23,30 @@ export const selectMediaById = ({ mediaId, ctrlKey, isAdmin })=> {
 	};
 };
 
-export const startDragMapMedias = ({ event, isAdmin })=> {
+export const startDragMapMedias = ({ features, isAdmin })=> {
 	return {
 		type: 'MEDIAS_MAP_START_DRAG',
 		payload: {
-			features: event.features,
+			features: features,
 			isAdmin: isAdmin
 		}
 	};
 }
 
-export const dragMapMedias = ({ event, isAdmin })=> {
+export const dragMapMedias = ({ coords, isAdmin })=> {
 	return {
 		type: 'MEDIAS_MAP_DRAG',
 		payload: {
-			coords: event.lngLat,
+			coords: coords,
 			isAdmin: isAdmin
 		}
 	};
 }
 
-export const endDragMapMedias = ({ event, feature, isAdmin })=> {
+export const endDragMapMedias = ({ coords, feature, isAdmin })=> {
 	const mediaId = feature.properties._id;
-	const newPosition = event.lngLat;
 	const form = {
-		loc: [newPosition.lng, newPosition.lat]
+		loc: [coords.lng, coords.lat]
 	}
 	return {
 		type: 'MEDIAS_MAP_END_DRAG',

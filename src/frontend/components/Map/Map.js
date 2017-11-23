@@ -123,20 +123,26 @@ class Map extends React.Component {
 
 	_addSimpleEventsHandling() {
 		mapConfig.events.map((event)=> {
+			const eventHandler = (evt)=> {
+				const { lng, lat } = this.map.getCenter();
+				const zoom = this.map.getZoom();
+				const bounds = this.map.getBounds()
+					.toArray()
+					.reduce((tab, item)=> {
+						return tab.concat(item);
+					}, []);;
+				this.props.dispatch(event.action({
+					lng,
+					lat,
+					zoom,
+					bounds,
+					isAdmin: this.props.isAdmin
+				}));
+			}
 			if (event.layerId) {
-				this.map.on(event.type, event.layerId, (evt)=> {
-					this.props.dispatch(event.action({
-						event: evt,
-						isAdmin: this.props.isAdmin
-					}));
-				});
+				this.map.on(event.type, event.layerId, eventHandler);
 			} else {
-				this.map.on(event.type, (evt)=> {
-					this.props.dispatch(event.action({
-						event: evt,
-						isAdmin: this.props.isAdmin
-					}));
-				});
+				this.map.on(event.type, eventHandler);
 			}
 		});
 	}
@@ -175,7 +181,7 @@ class Map extends React.Component {
 			// and dispatch corresponding action
 			this.map.on('mousedown', item.layerId, (evt)=> {
 				this.props.dispatch(item.mousedown({
-					event: evt, 
+					features: evt.features, 
 					isAdmin: this.props.isAdmin
 				}));
 				this.draggingLayerId = item.layerId;
@@ -187,7 +193,7 @@ class Map extends React.Component {
 					);
 					this.props.dispatch(item.mouseup({
 						feature: features[0],
-						event: evt, 
+						coords: evt.lngLat, 
 						isAdmin: this.props.isAdmin
 					}));
 					this.draggingLayerId = null;
@@ -203,7 +209,7 @@ class Map extends React.Component {
 					mapConfig.dragndrop.map((item)=> {
 						if (item.layerId === this.draggingLayerId) {
 							this.props.dispatch(item.mousemove({
-								event: evt,
+								coords: evt.lngLat,
 								isAdmin: this.props.isAdmin
 							}));
 						}

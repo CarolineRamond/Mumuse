@@ -8,8 +8,8 @@ import reducer, { actions } from "./modules"
 const { fetchAuthUser, fetchRastertilesets } = actions;
 
 // const middleware = applyMiddleware(thunk, throttle(), promise(), createLogger());
-// const middleware = applyMiddleware(thunk, promise(), createLogger());
-const middleware = applyMiddleware(thunk, promise());
+const middleware = applyMiddleware(thunk, promise(), createLogger());
+// const middleware = applyMiddleware(thunk, promise());
 
 const store = createStore(reducer, middleware);
 store.dispatch(fetchAuthUser());
