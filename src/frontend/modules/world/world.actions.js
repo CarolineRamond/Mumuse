@@ -11,19 +11,19 @@ export function updateWorldState({ lng, lat, zoom, bounds }) {
 			validator: {
 				lat: {
 	                func: (lat, state, payload) => (typeof(lat) === "number"),
-	                msg: 'Lat must be a number'
+	                msg: 'lat must be a number'
 	            },
 	            lng: {
 	                func: (lng, state, payload) => (typeof(lng) === "number"),
-	                msg: 'Lng must be a number'
+	                msg: 'lng must be a number'
 	            },
 	            zoom: {
 	                func: (zoom, state, payload) => (typeof(zoom) === "number"),
-	                msg: 'Zoom must be a number'
+	                msg: 'zoom must be a number'
 	            },
 	            bounds: {
 	            	func: (bounds, state, payload) => (Array.isArray(bounds) && bounds.length === 4),
-	                msg: 'Bounds must be an array of four numbers'
+	                msg: 'bounds must be an array of four numbers'
 	            }
 	        }
 		}
