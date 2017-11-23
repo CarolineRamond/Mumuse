@@ -3,7 +3,6 @@ import _ from "lodash";
 import { connect } from "react-redux";
 import potree from "@iconem/iconem-potree";
 
-import Camera from "./camera";
 import {
   clickMedias,
   selectMediaById
