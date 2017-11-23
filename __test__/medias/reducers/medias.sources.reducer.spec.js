@@ -587,7 +587,7 @@ describe('selected medias source reducer', () => {
         it('should do nothing if there is no draggingFeatureId', () => {
             // this case is not reached a priori 
             // (action is not dispatched unless an admin is dragging a media)
-            const action = actions.dragMapMedias({ coords: { lng: 0, lat: 2 }, isAdmin: true });
+            const action = actions.dragMapMedias({ lng: 0, lat: 2, isAdmin: true });
             expect(reducer(selectedMediasSourceInitialState, action))
                 .toEqual(selectedMediasSourceInitialState);
         });
@@ -595,7 +595,7 @@ describe('selected medias source reducer', () => {
         it('should do nothing if user is not admin', () => {
             // this case is not reached a priori 
             // (action is not dispatched unless an admin is dragging a media)
-            const action = actions.dragMapMedias({ coords: { lng: 0, lat: 2 }, isAdmin: false });
+            const action = actions.dragMapMedias({ lng: 0, lat: 2, isAdmin: false });
             expect(reducer(selectedMediasSourceInitialState, action))
                 .toEqual(selectedMediasSourceInitialState);
         });
@@ -617,7 +617,7 @@ describe('selected medias source reducer', () => {
             action2
             );
 
-            const action3 = actions.dragMapMedias({ coords: { lng: 0, lat: 2 }, isAdmin: true });
+            const action3 = actions.dragMapMedias({ lng: 0, lat: 2, isAdmin: true });
 
             expect(reducer(initialState, action3)).toEqual({
                 ...initialState,
