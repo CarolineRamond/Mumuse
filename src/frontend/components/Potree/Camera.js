@@ -59,6 +59,9 @@ var mediaMaterial = new THREE.MeshBasicMaterial({
   transparent: true
 });
 
+var textureLoader = new THREE.TextureLoader();
+textureLoader.crossOrigin = "";
+
 export default class Camera extends THREE.Mesh {
   static mediaPlane = new THREE.Mesh(mediaGeometry, mediaMaterial);
   constructor(media) {
@@ -128,36 +131,42 @@ export default class Camera extends THREE.Mesh {
   }
 
   loadMedia() {
-    var that = this;
-    var textureLoader = new THREE.TextureLoader();
-    textureLoader.crossOrigin = "";
+    if(!this.texture){
     textureLoader.load(
       "http://localhost:9000\\userdrive\\media\\image\\" +
         this.userData.mediaId,
-      function(mediaTexture) {
-        Camera.mediaPlane.material.map = mediaTexture;
-        Camera.mediaPlane.material.needsUpdate = true;
-        Camera.mediaPlane.matrix.set(
-          1,
-          0,
-          0,
-          0,
-          0,
-          1,
-          0,
-          0,
-          0,
-          0,
-          1,
-          0,
-          0,
-          0,
-          0,
-          1
-        );
-        Camera.mediaPlane.applyMatrix(that.matrix);
+      (mediaTexture) => {
+        this.texture = mediaTexture;
+        this.setMediaPlanePositionAndTextureForThisCamera(mediaTexture);
       }
+    )}
+    else{
+      this.setMediaPlanePositionAndTextureForThisCamera(this.texture);
+    };
+  }
+
+  setMediaPlanePositionAndTextureForThisCamera(mediaTexture){
+    Camera.mediaPlane.material.map = mediaTexture;
+    Camera.mediaPlane.material.needsUpdate = true;
+    Camera.mediaPlane.matrix.set(
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
     );
+    Camera.mediaPlane.applyMatrix(this.matrix);
   }
 
   toggleSelection() {

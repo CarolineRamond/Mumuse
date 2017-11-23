@@ -105,8 +105,6 @@ export default class Potree extends React.Component {
   }
 
   goToMediaCamera(mediaCamera) {
-    var that = this;
-
     var fromLookAt = viewer.scene.view.position.clone();
     var dir = viewer.scene.view.direction.clone();
     fromLookAt.add(dir.multiplyScalar(1));
@@ -139,7 +137,7 @@ export default class Potree extends React.Component {
     // Set camera fov equal to the mediaCamera fov
     var camFovTween = new TWEEN.Tween(mediaCamera)
       .to(mediaCamera, 1000)
-      .onUpdate(function(obj) {
+      .onUpdate((obj) => {
         // Get transformation matrix from local camera coordinates to viewer coordinates - by passing by world coordinates using
         // localToViewer = viewerMatrixT * obj_cam.matrix = localToWorld * worldToViewer
         var viewerMatrixT = viewer.scene.camera.matrix.clone();
@@ -167,7 +165,7 @@ export default class Potree extends React.Component {
         viewerFov = viewerFov * 180 / Math.PI;
 
         // Store camera with rotated axes
-        that.viewer_cam_matrix = viewer.scene.camera.matrix.clone();
+        this.viewer_cam_matrix = viewer.scene.camera.matrix.clone();
         viewer.setFOV(viewerFov);
       })
       .start();
