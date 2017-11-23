@@ -572,7 +572,7 @@ describe('selected medias source reducer', () => {
                 geometry: { type: "Point" },
                 properties: { _id: "5a0e9dab75b85544253e4fb2" }
             }]
-            const action = actions.startDragMapMedias({ event: { features }, isAdmin: true });
+            const action = actions.startDragMapMedias({ features, isAdmin: true });
             expect(reducer(selectedMediasSourceInitialState, action)).toEqual({
                 ...selectedMediasSourceInitialState,
                 metadata: {
@@ -587,7 +587,7 @@ describe('selected medias source reducer', () => {
         it('should do nothing if there is no draggingFeatureId', () => {
             // this case is not reached a priori 
             // (action is not dispatched unless an admin is dragging a media)
-            const action = actions.dragMapMedias({ event: { lng: 0, lat: 2 }, isAdmin: true });
+            const action = actions.dragMapMedias({ coords: { lng: 0, lat: 2 }, isAdmin: true });
             expect(reducer(selectedMediasSourceInitialState, action))
                 .toEqual(selectedMediasSourceInitialState);
         });
@@ -595,7 +595,7 @@ describe('selected medias source reducer', () => {
         it('should do nothing if user is not admin', () => {
             // this case is not reached a priori 
             // (action is not dispatched unless an admin is dragging a media)
-            const action = actions.dragMapMedias({ event: { lng: 0, lat: 2 }, isAdmin: false });
+            const action = actions.dragMapMedias({ coords: { lng: 0, lat: 2 }, isAdmin: false });
             expect(reducer(selectedMediasSourceInitialState, action))
                 .toEqual(selectedMediasSourceInitialState);
         });
@@ -611,13 +611,13 @@ describe('selected medias source reducer', () => {
                 properties: { _id: "5a0e9dab75b85544253e4fb3" }
             }]
             const action1 = actions.clickMedias({ features });
-            const action2 = actions.startDragMapMedias({ event: { features: [features[0]] }, isAdmin: true });
+            const action2 = actions.startDragMapMedias({ features: [features[0]], isAdmin: true });
             const initialState = reducer(
             reducer(selectedMediasSourceInitialState, action1),
             action2
             );
 
-            const action3 = actions.dragMapMedias({ event: { lngLat: { lng: 0, lat: 2 } }, isAdmin: true });
+            const action3 = actions.dragMapMedias({ coords: { lng: 0, lat: 2 }, isAdmin: true });
 
             expect(reducer(initialState, action3)).toEqual({
                 ...initialState,
@@ -650,7 +650,7 @@ describe('selected medias source reducer', () => {
                 properties: { _id: "5a0e9dab75b85544253e4fb2" }
             }] 
             const action1 = actions.startDragMapMedias({
-                event: { features },
+                features,
                 isAdmin: true
             });
             const initialState = reducer(selectedMediasSourceInitialState, action1);
