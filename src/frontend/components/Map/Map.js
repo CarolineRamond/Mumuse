@@ -131,7 +131,7 @@ class Map extends React.Component {
 					.reduce((tab, item)=> {
 						return tab.concat(item);
 					}, []);;
-				this.props.dispatch(event.action({
+				const test = this.props.dispatch(event.action({
 					lng,
 					lat,
 					zoom,
