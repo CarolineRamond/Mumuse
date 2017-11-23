@@ -1,6 +1,6 @@
 import { forIn } from "lodash";
 
-const initialState = {
+export const initialState = {
 	pending: false,
 	error: null,
 	layers: null,
@@ -55,30 +55,36 @@ const _boundsIntersect = (boundsA, boundsB)=> {
 const rastertilesReducer = (state = initialState, action)=> {
 	switch(action.type) {
 		case "FETCH_RASTERTILESETS_PENDING": {
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: true,
 				error: null,
 				layers: null,
 				sources: null
-			});
-			break;
+			};
 		}
 		case "FETCH_RASTERTILESETS_FULFILLED": {
 			const { sources, layers } = _formatTilesData(action.payload.data);
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: false,
 				sources: sources,
 				layers: layers
-			});
-			break;
+			};
 		}
 		case "FETCH_RASTERTILESETS_REJECTED": {
-			return Object.assign({}, state, {
+			const response = action.payload.response;
+			var error = `Error ${response.status} (${response.statusText})`;
+			if (response.data && response.data.message) {
+				error += ` : ${response.data.message}`;
+			}
+			return {
+				...state,
 				pending: false,
-				error: action.payload.data.message ||
-					"Error : Could not retrieve layers"
-			});
-			break;
+				sources: null,
+				layers: null,
+				error: error
+			};
 		}
 		case "TOGGLE_LAYER": {
 			if (state.layers[action.payload.layerId]) {
@@ -86,44 +92,45 @@ const rastertilesReducer = (state = initialState, action)=> {
 				const isCurrentlyShown = layer.metadata.isShown;
 				const layoutChange = { visibility: isCurrentlyShown ? "none" : "visible" }
 
-				const toggledLayer = Object.assign({}, layer, {
+				const toggledLayer = {
+					...layer,
 					layout: layoutChange,
-					metadata: Object.assign({}, layer.metadata, {
+					metadata: {
+						...layer.metadata,
 						isShown: !isCurrentlyShown,
 						didChange: {
 							layout: layoutChange
 						}
-					})
-				});
+					}
+				};
 
-				return Object.assign({}, state, {
-					layers: Object.assign({}, state.layers, {
+				return {
+					...state,
+					layers: {
+						...state.layers,
 						[action.payload.layerId]: toggledLayer
-					})
-				});
+					}
+				};
 			} else {
 				return state;
 			}
-			break;
 		}
 		case "UPDATE_WORLD_STATE": {
 			const mapBounds = action.payload.bounds
-				.toArray()
-				.reduce((tab, item)=> {
-					return tab.concat(item);
-				}, []);
 			var newLayers = {};
 			forIn(state.layers, (layer, layerId)=> {
-				newLayers[layerId] = Object.assign({}, layer, {
-					metadata: Object.assign({}, layer.metadata, {
+				newLayers[layerId] = {
+					...layer,
+					metadata: {
+						...layer.metadata,
 						isInBounds: _boundsIntersect(layer.metadata.bounds, mapBounds)
-					})
-				});
+					}
+				};
 			});
-			return Object.assign({}, state, {
+			return {
+				...state,
 				layers: newLayers
-			});
-			break;
+			};
 		}
 		default: {
 			return state;

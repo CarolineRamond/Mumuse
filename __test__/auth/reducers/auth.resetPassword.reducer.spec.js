@@ -2,7 +2,7 @@ import reducer, { initialState }
 	from "../../../src/frontend/modules/auth/reducers/auth.resetPassword.reducer"
 import { actions } from "../../../src/frontend/modules"
 
-describe('auth login reducer', () => {
+describe('auth reset password reducer', () => {
 
 	it('should return the initial state', () => {
 		expect(reducer(undefined, {})).toEqual(initialState);

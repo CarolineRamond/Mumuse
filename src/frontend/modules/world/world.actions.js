@@ -1,7 +1,11 @@
 export function updateWorldState({ event }) {
 	const { lng, lat } = event.target.getCenter();
 	const zoom = event.target.getZoom();
-	const bounds = event.target.getBounds();
+	const bounds = event.target.getBounds()
+		.toArray()
+		.reduce((tab, item)=> {
+			return tab.concat(item);
+		}, []);;
 	return { 
 		type: "UPDATE_WORLD_STATE", 
 		payload: {
