@@ -1,3 +1,6 @@
+const baseUrl = window.location.origin || "http://localhost:8080";
+// default value is for tests
+
 export const defaultSourceReducer = (state) => {
 	return {
 		...state,
@@ -10,7 +13,7 @@ export const defaultSourceReducer = (state) => {
 
 export const mediasSourceInitialState = {
 	type: "vector",
-	tiles: ['http://localhost:8080/userdrive/tile/{z}/{x}/{y}.pbf'],
+	tiles: [`${baseUrl}/userdrive/tile/{z}/{x}/{y}.pbf`],
 	metadata: {
 	    loaded: false,
 	    renderedFeatures: [],
@@ -65,7 +68,7 @@ export const mediasSourceReducer = (state = mediasSourceInitialState, action) =>
 
 export const gridMediasSourceInitialState = {
 	type: "vector",
-	tiles: ['http://localhost:8080/userdrive/tile/grid/{z}/{x}/{y}.pbf'],
+	tiles: [`${baseUrl}/userdrive/tile/grid/{z}/{x}/{y}.pbf`],
 	metadata: {
 	    loaded: false,
 	    renderedFeatures: [],
