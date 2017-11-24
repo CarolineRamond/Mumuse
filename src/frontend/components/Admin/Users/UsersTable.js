@@ -121,7 +121,7 @@ class UsersTable extends React.Component {
 UsersTable.propTypes = {
     usersListState : PropTypes.shape({
         pending: PropTypes.bool,
-        data: PropTypes.object,
+        data: PropTypes.arrayOf(PropTypes.object),
         error: PropTypes.string
     }).isRequired
 }
