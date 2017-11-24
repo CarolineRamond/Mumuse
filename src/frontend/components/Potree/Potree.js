@@ -8,16 +8,20 @@ import {
   clickMedias,
   selectMediaById
 } from "../../modules/medias/medias.actions";
-import { getSelectedMedias } from "../../modules/medias";
+import {
+  getSelectedMedias,
+  getSelectFilterPending,
+  getVisibleMedias
+} from "../../modules/medias";
 
 @connect(store => {
-  const selectedMedias = getSelectedMedias(store.medias);
   return {
     potree: store.potree,
-    selectedMedias: selectedMedias
+    selectedMedias: getSelectedMedias(store.medias),
+    visibleMedias: getVisibleMedias(store.medias),
+    selectFilterPending: getSelectFilterPending(store.medias)
   };
 })
-
 export default class Potree extends React.Component {
   hovered_cam_matrix = new THREE.Matrix4();
   viewer_cam_matrix = new THREE.Matrix4();
@@ -30,6 +34,7 @@ export default class Potree extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    // Load pointcloud and add cameraMedia to potree
     if (
       !this.props.potree.pointCloud.metaData &&
       nextProps.potree.pointCloud.metaData
@@ -49,19 +54,37 @@ export default class Potree extends React.Component {
       );
       this.addCamerasToPotree(pointCloudMedias);
     }
+
+    // Select media on 3D viewer when a media is selected
+    var currentMedia = this.props.selectedMedias[0];
+    var nextMedia = nextProps.selectedMedias[0];
     if (
       this.props.potree.pointCloud.metaData &&
-      nextProps.selectedMedias.length === 1
+      nextMedia &&
+      currentMedia.properties._id !== nextMedia.properties._id
     ) {
       let mediaCamera = this.potree.scene.scene.children.find(
-        mesh =>
-          mesh.userData.mediaId === nextProps.selectedMedias[0].properties._id
+        mesh => mesh.userData.mediaId === nextMedia.properties._id
       );
 
       if (mediaCamera) {
         this.goToMediaCamera(mediaCamera);
         mediaCamera.loadMedia();
       }
+    }
+
+    //Hide or show camera based on timeline filtering
+    if (
+      nextProps.visibleMedias &&
+      nextProps.visibleMedias.length !== this.props.visibleMedias.length
+    ) {
+      this.potree.scene.scene.children.map(function(camera) {
+        var isCameraVisible = nextProps.visibleMedias.some(function(f) {
+          return f.properties._id === camera.userData.mediaId;
+        });
+        if (isCameraVisible) camera.visible = true;
+        else camera.visible = false;
+      });
     }
   }
 
@@ -89,10 +112,22 @@ export default class Potree extends React.Component {
     viewer.setQuality("Squares");
     viewer.setPointBudget(10 * 1000 * 1000);
 
-    this.potreeContainer.addEventListener("mousemove", (e) => { this.onMouseMove(e); }, false);
-    this.potreeContainer.addEventListener("mousedown", (e) => { this.onMouseClick(e); }, false);
+    this.potreeContainer.addEventListener(
+      "mousemove",
+      e => {
+        this.onMouseMove(e);
+      },
+      false
+    );
+    this.potreeContainer.addEventListener(
+      "mousedown",
+      e => {
+        this.onMouseClick(e);
+      },
+      false
+    );
 
-    viewer.scene.scene.add(Camera.mediaPlane);    
+    viewer.scene.scene.add(Camera.mediaPlane);
   }
 
   addCamerasToPotree(pointCloudMedias) {
@@ -137,7 +172,7 @@ export default class Potree extends React.Component {
     // Set camera fov equal to the mediaCamera fov
     var camFovTween = new TWEEN.Tween(mediaCamera)
       .to(mediaCamera, 1000)
-      .onUpdate((obj) => {
+      .onUpdate(obj => {
         // Get transformation matrix from local camera coordinates to viewer coordinates - by passing by world coordinates using
         // localToViewer = viewerMatrixT * obj_cam.matrix = localToWorld * worldToViewer
         var viewerMatrixT = viewer.scene.camera.matrix.clone();
@@ -176,96 +211,102 @@ export default class Potree extends React.Component {
   }
 
   onMouseMove(e) {
-      // Calculate mouse position in normalized device coordinates (-1 to +1) for both components
-      var rect = this.potree.renderer.domElement.getBoundingClientRect();
-      this.mouse.x = (event.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
-      this.mouse.y =
-        -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
+    // Calculate mouse position in normalized device coordinates (-1 to +1) for both components
+    var rect = this.potree.renderer.domElement.getBoundingClientRect();
+    this.mouse.x =
+      (event.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
+    this.mouse.y =
+      -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
 
-      // Pick camera
-      // Raycaster for picking selected camera mesh, see github source
-      // https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes.html
-      // update the picking ray with the camera and mouse position
-      this.raycaster.setFromCamera(this.mouse, viewer.scene.camera);
+    // Pick camera
+    // Raycaster for picking selected camera mesh, see github source
+    // https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes.html
+    // update the picking ray with the camera and mouse position
+    this.raycaster.setFromCamera(this.mouse, viewer.scene.camera);
 
-      // find objects intersecting the picking ray
-      var intersects = this.raycaster.intersectObjects(viewer.scene.scene.children);
+    // find objects intersecting the picking ray
+    var intersects = this.raycaster.intersectObjects(
+      viewer.scene.scene.children
+    );
 
-      if (intersects.length > 0 && intersects[0].object.userData.mediaId) {
-        if (
-          !this.mediaCamera_intersected ||
-          this.mediaCamera_intersected.uuid !== intersects[0].object.uuid
-        ) {
-          if (this.mediaCamera_intersected) this.mediaCamera_intersected.toggleSelection();
-          this.mediaCamera_intersected = intersects[0].object;
-          this.mediaCamera_intersected.toggleSelection();
-          this.mediaCamera_intersected.loadMedia();
-        }
-      } else {
-        if (this.mediaCamera_intersected) {
-          this.mediaCamera_intersected.toggleSelection();
-          this.mediaCamera_intersected = null;
-        }
-      }
-
-      // mousemove with middle click
-      if (event.buttons == 4) {
-        // Set pitch yaw using middle button
-        if (this.mediaCamera_intersected) {
-          // viewer.setFOV(this.mediaCamera_intersected.viewerFOV / 2);
-
-          // Compute pitch and yaw from mouse position on screen
-          var yaw = 0.25 * this.mouse.x * Math.PI,
-            pitch = -0.5 * this.mouse.y * Math.PI / 2,
-            roll = 0;
-          // Define rotation matrix from euler angles to apply to view direction
-          var rotLookAt = new THREE.Matrix4(),
-            rotPitchX = new THREE.Matrix4(), // rotate around local X, to get lookAt in Y direction of camera
-            rotYawY = new THREE.Matrix4(), // rotate around local Y, to get lookAt in X direction of camera
-            camToWorld = new THREE.Matrix4();
-          // yaw (Y) first, pitch (X) second // rotation.order = "YXZ"; // three.js r.65
-          rotPitchX.makeRotationX(pitch);
-          rotYawY.makeRotationY(yaw);
-          rotLookAt.multiplyMatrices(rotPitchX, rotYawY);
-          this.hovered_cam_matrix = this.mediaCamera_intersected.matrix.clone();
-          camToWorld.copy(this.viewer_cam_matrix);
-          rotLookAt.multiplyMatrices(camToWorld, rotLookAt);
-
-          // Compute rotated view direction
-          var rotatedViewDir = new THREE.Vector3(
-            rotLookAt.elements[8],
-            rotLookAt.elements[9],
-            rotLookAt.elements[10]
-          );
-          var rotatedCamLookat = new THREE.Vector3(
-            this.hovered_cam_matrix.elements[12],
-            this.hovered_cam_matrix.elements[13],
-            this.hovered_cam_matrix.elements[14]
-          );
-          rotatedCamLookat.sub(rotatedViewDir);
-          viewer.scene.view.lookAt(rotatedCamLookat);
-
-          // Hint using transformDirection
-          // rotLookAt.makeRotationFromEuler(new THREE.Euler( pitch, yaw, roll, 'YXZ' )); // or try pitch, roll, yaw, 'ZXY' // ZYX
-          //var rayOrigin = new THREE.Vector3(),
-          //  rayDirection = new THREE.Vector3();
-          //rayOrigin.setFromMatrixPosition( camera.matrixWorld );
-          //rayDirection.set( coords.x, coords.y, 0.5 ).unproject( camera ).sub( this.ray.origin ).normalize();
-        }
-      }
-    }
-
-    onMouseClick(e) {
-      e = e || window.event;
-      //right button click
+    if (intersects.length > 0 && intersects[0].object.userData.mediaId) {
       if (
-        ("which" in e && e.which == 3) || // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-        ("button" in e && e.button == 2) // IE, Opera
+        !this.mediaCamera_intersected ||
+        this.mediaCamera_intersected.uuid !== intersects[0].object.uuid
       ) {
-        this.goToMediaCamera(this.mediaCamera_intersected);
-        this.props.dispatch(
-          selectMediaById({ mediaId: this.mediaCamera_intersected.userData.mediaId })
-        );
+        if (this.mediaCamera_intersected)
+          this.mediaCamera_intersected.toggleSelection();
+        this.mediaCamera_intersected = intersects[0].object;
+        this.mediaCamera_intersected.toggleSelection();
+        this.mediaCamera_intersected.loadMedia();
+      }
+    } else {
+      if (this.mediaCamera_intersected) {
+        this.mediaCamera_intersected.toggleSelection();
+        this.mediaCamera_intersected = null;
       }
     }
+
+    // mousemove with middle click
+    if (event.buttons == 4) {
+      // Set pitch yaw using middle button
+      if (this.mediaCamera_intersected) {
+        // viewer.setFOV(this.mediaCamera_intersected.viewerFOV / 2);
+
+        // Compute pitch and yaw from mouse position on screen
+        var yaw = 0.25 * this.mouse.x * Math.PI,
+          pitch = -0.5 * this.mouse.y * Math.PI / 2,
+          roll = 0;
+        // Define rotation matrix from euler angles to apply to view direction
+        var rotLookAt = new THREE.Matrix4(),
+          rotPitchX = new THREE.Matrix4(), // rotate around local X, to get lookAt in Y direction of camera
+          rotYawY = new THREE.Matrix4(), // rotate around local Y, to get lookAt in X direction of camera
+          camToWorld = new THREE.Matrix4();
+        // yaw (Y) first, pitch (X) second // rotation.order = "YXZ"; // three.js r.65
+        rotPitchX.makeRotationX(pitch);
+        rotYawY.makeRotationY(yaw);
+        rotLookAt.multiplyMatrices(rotPitchX, rotYawY);
+        this.hovered_cam_matrix = this.mediaCamera_intersected.matrix.clone();
+        camToWorld.copy(this.viewer_cam_matrix);
+        rotLookAt.multiplyMatrices(camToWorld, rotLookAt);
+
+        // Compute rotated view direction
+        var rotatedViewDir = new THREE.Vector3(
+          rotLookAt.elements[8],
+          rotLookAt.elements[9],
+          rotLookAt.elements[10]
+        );
+        var rotatedCamLookat = new THREE.Vector3(
+          this.hovered_cam_matrix.elements[12],
+          this.hovered_cam_matrix.elements[13],
+          this.hovered_cam_matrix.elements[14]
+        );
+        rotatedCamLookat.sub(rotatedViewDir);
+        viewer.scene.view.lookAt(rotatedCamLookat);
+
+        // Hint using transformDirection
+        // rotLookAt.makeRotationFromEuler(new THREE.Euler( pitch, yaw, roll, 'YXZ' )); // or try pitch, roll, yaw, 'ZXY' // ZYX
+        //var rayOrigin = new THREE.Vector3(),
+        //  rayDirection = new THREE.Vector3();
+        //rayOrigin.setFromMatrixPosition( camera.matrixWorld );
+        //rayDirection.set( coords.x, coords.y, 0.5 ).unproject( camera ).sub( this.ray.origin ).normalize();
+      }
+    }
+  }
+
+  onMouseClick(e) {
+    e = e || window.event;
+    //right button click
+    if (
+      ("which" in e && e.which == 3) || // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+      ("button" in e && e.button == 2) // IE, Opera
+    ) {
+      this.goToMediaCamera(this.mediaCamera_intersected);
+      this.props.dispatch(
+        selectMediaById({
+          mediaId: this.mediaCamera_intersected.userData.mediaId
+        })
+      );
+    }
+  }
 }
