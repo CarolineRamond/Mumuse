@@ -89,12 +89,23 @@ class ForgotPassword extends React.Component {
 }
 
 // Props :
-// * location : current route location, provided by function withRouter 
-// * match : current route match, provided by function withRouter (required)
+// * rootUrl: current map url (with position & zoom), provided by @connect (required)
+// * serverState : state of the request FORGOT_PASSWORD, provided by connect (required)
+// *    pending: boolean, true if a request is on going
+// *    data: contains success message once the request is finished
+// *    error: contains an error string if user account could not be retrieved
+// * location : current route location, provided by function withRouter (required)
+// * match : current route match, provided by function withRouter 
 // * history : current router history, provided by function withRouter (required)
 ForgotPassword.propTypes = {
-    location: PropTypes.object, 
-    match: PropTypes.object.isRequired, 
+	rootUrl: PropTypes.string.isRequired,
+	 serverState : PropTypes.shape({
+        pending: PropTypes.bool,
+        data: PropTypes.string,
+        error: PropTypes.string
+    }).isRequired,
+    location: PropTypes.object.isRequired, 
+    match: PropTypes.object, 
     history: PropTypes.object.isRequired
 }
 

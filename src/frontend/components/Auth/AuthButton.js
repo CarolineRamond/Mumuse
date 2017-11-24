@@ -57,11 +57,16 @@ class AuthButton extends React.Component {
 
 // Props :
 // * user : currently logged in user (if any), provided by @connect
+// * rootUrl: current map url (with position & zoom), provided by @connect (required)
 // * location : current route location, provided by function withRouter (required)
 // * match : current route match, provided by function withRouter
 // * history : current router history, provided by function withRouter (required)
 AuthButton.propTypes = {
-	user: PropTypes.object
+	user: PropTypes.object,
+	rootUrl: PropTypes.string.isRequired,
+	location: PropTypes.object.isRequired, 
+    match: PropTypes.object, 
+    history: PropTypes.object 
 }
 
 // Store connection
