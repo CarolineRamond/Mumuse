@@ -1,4 +1,4 @@
-const initialState = { 
+export const initialState = { 
 	pending: false, 
 	data: null, 
 	error: null
@@ -7,28 +7,33 @@ const initialState = {
 const logoutReducer = (state = initialState, action)=> {
 	switch (action.type) {
 		case "LOGOUT_PENDING": {
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: true,
 				error: null,
 				data: null
-			});
-			break;
+			};
 		}
 		case "LOGOUT_FULFILLED": {
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: false,
 				error: null,
 				data: action.payload.data
-			});
-			break;
+			};
 		}
 		case "LOGOUT_REJECTED": {
-			return Object.assign({}, state, {
+			const response = action.payload.response;
+			var error = `Error ${response.status} (${response.statusText})`;
+			if (response.data && response.data.message) {
+				error += ` : ${response.data.message}`;
+			}
+			return {
+				...state,
 				pending: false,
-				error: action.payload.error,
-				data: null
-			});
-			break;
+				data: null,
+				error: error
+			};
 		}
 		default:
 			return state;

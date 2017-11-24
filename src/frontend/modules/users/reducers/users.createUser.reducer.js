@@ -1,4 +1,4 @@
-const initialState = { 
+export const initialState = { 
 	pending: false, 
 	data: null, 
 	error: null
@@ -7,40 +7,39 @@ const initialState = {
 const createUserReducer = (state = initialState, action) => {
 	switch(action.type) {
 		case "CREATE_USER_PENDING": {
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: true,
 				error: null,
 				data: null
-			});
-			break;
+			};
 		}
 		case "CREATE_USER_FULFILLED": {
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: false,
 				error: null,
 				data: action.payload.data
-			});
-			break;
+			};
 		}
 		case "CREATE_USER_REJECTED": {
-			return Object.assign({}, state, {
+			const response = action.payload.response;
+			var error = `Error ${response.status} (${response.statusText})`;
+			if (response.data && response.data.message) {
+				error += ` : ${response.data.message}`;
+			}
+			return {
+				...state,
 				pending: false,
-				error: action.payload.response.data.message || 
-					"Error : Could not create user.",
-				data: null
-			});
-			break;
+				data: null,
+				error: error
+			};
 		}
 		case "RESET_CREATE_STATE": {
-			return Object.assign({}, state, {
-				pending: false,
-				error: null,
-				data: null
-			});
+			return initialState;
 		}
 		default:
 			return state;
-			break;
 	}
 }
 

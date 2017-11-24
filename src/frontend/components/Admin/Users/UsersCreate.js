@@ -5,10 +5,13 @@ import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
 import Dialog from "react-toolbox/lib/dialog"
 
+import { actions } from '../../../modules'
+const { resetCreateState, createUser } = actions;
+import { selectors } from '../../../modules'
+const { getCreateUserState } = selectors;
+
 import Form from "../../Common/Form"
 import styles from '../../Common/form.css'
-import { resetCreateState, createUser } from "../../../modules/users/users.actions"
-import { getCreateUserState } from "../../../modules/users"
 
 class UsersCreate extends React.Component {
 
@@ -176,19 +179,28 @@ class UsersCreate extends React.Component {
 }
 
 // Props :
-// * location : current route location, provided by function withRouter (required)
-// * match : current route match, provided by function withRouter
-// * history : current router history, provided by function withRouter
+// * location : current route location, inherited from Route component (required)
+// * match : current route match, inherited from Route component
+// * history : current router history, inherited from Route component
+// * serverState : state of the request CREATE_USER, provided by connect, required
+// *    pending: boolean, true if a request is on going
+// *    data: contains newly created user (if any) once the request is finished
+// *    error: contains an error string if user could not be created
 UsersCreate.propTypes = {
-    // location: PropTypes.object.isRequired, 
-    // match: PropTypes.object, 
-    // history: PropTypes.object 
+    location: PropTypes.object.isRequired, 
+    match: PropTypes.object, 
+    history: PropTypes.object,
+    serverState : PropTypes.shape({
+        pending: PropTypes.bool,
+        data: PropTypes.object,
+        error: PropTypes.string
+    }).isRequired
 }
 
 // Store connection
 const ConnectedUsersCreate = connect((store)=> {
 	return {
-        serverState: getCreateUserState(store.users)
+        serverState: getCreateUserState(store)
     }
 })(UsersCreate);
 

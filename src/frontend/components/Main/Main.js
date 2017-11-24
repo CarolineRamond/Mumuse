@@ -3,7 +3,10 @@ import { connect } from "react-redux"
 import SplitPane from "react-split-pane"
 
 import styles from './main.css'
-import { resizeMap } from '../../modules/world/world.actions'
+
+import { actions } from '../../modules'
+const { resizeMap } = actions;
+
 import AuthButton from '../Auth/AuthButton'
 import MainPanel from './MainPanel'
 import SidePanel from './SidePanel'

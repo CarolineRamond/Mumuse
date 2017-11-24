@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux"
+import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
 import { Table, TableHead, TableRow, TableCell } from 'react-toolbox/lib/table';
 import { Button } from "react-toolbox/lib/button"
@@ -7,9 +8,12 @@ import Tooltip from "react-toolbox/lib/tooltip"
 import Dialog from "react-toolbox/lib/dialog"
 const TooltipButton = Tooltip(Button);
 
+import { actions } from '../../../modules'
+const { fetchUsersList, resetDeleteState } = actions;
+import { selectors } from '../../../modules'
+const { getUsersListState } = selectors;
+
 import UsersDelete from "./UsersDelete"
-import { fetchUsersList, resetDeleteState } from "../../../modules/users/users.actions"
-import { getUsersListState } from "../../../modules/users"
 import styles from "../admin.css"
 
 class UsersTable extends React.Component {
@@ -109,9 +113,22 @@ class UsersTable extends React.Component {
 	}
 }
 
+// Props :
+// * usersListState : state of the request FETCH_USERS_LIST, provided by connect, required
+// *    pending: boolean, true if a request is on going
+// *    data: contains the full list of users once the request is finished
+// *    error: contains an error string if users could not be retrieved
+UsersTable.propTypes = {
+    usersListState : PropTypes.shape({
+        pending: PropTypes.bool,
+        data: PropTypes.object,
+        error: PropTypes.string
+    }).isRequired
+}
+
 const ConnectedUsersTable = connect((store)=> {
 	return {
-		usersListState: getUsersListState(store.users)
+		usersListState: getUsersListState(store)
 	}
 })(UsersTable)
 

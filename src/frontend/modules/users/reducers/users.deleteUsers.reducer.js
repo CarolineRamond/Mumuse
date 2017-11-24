@@ -1,4 +1,4 @@
-const initialState = { 
+export const initialState = { 
 	pending: false, 
 	data: null, 
 	error: null
@@ -7,45 +7,39 @@ const initialState = {
 const deleteUsersReducer = (state = initialState, action) => {
 	switch(action.type) {
 		case "DELETE_USERS_PENDING": {
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: true,
 				error: null,
 				data: null
-			});
-			break;
+			};
 		}
 		case "DELETE_USERS_FULFILLED": {
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: false,
 				error: null,
-				data: action.payload
-			});
-			break;
+				data: action.payload.data
+			};
 		}
 		case "DELETE_USERS_REJECTED": {
-			var error;
-			try {
-				error = action.payload.response.data.message
-			} catch(e) {
-				error = "Error : Could not delete user(s).";
+			const response = action.payload.response;
+			var error = `Error ${response.status} (${response.statusText})`;
+			if (response.data && response.data.message) {
+				error += ` : ${response.data.message}`;
 			}
-			return Object.assign({}, state, {
+			return {
+				...state,
 				pending: false,
-				error: error,
-				data: null
-			});
-			break;
+				data: null,
+				error: error
+			};
 		}
 		case "RESET_DELETE_STATE": {
-			return Object.assign({}, state, {
-				pending: false,
-				error: null,
-				data: null
-			});
+			return initialState;
 		}
 		default:
 			return state;
-			break;
 	}
 }
 

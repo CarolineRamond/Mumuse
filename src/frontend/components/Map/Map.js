@@ -1,5 +1,5 @@
 import React from "react";
-import _ from "lodash";
+import { forIn, omit } from "lodash"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import mapboxgl from "mapbox-gl"
@@ -8,8 +8,10 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1N
 import PropTypes from "prop-types"
 import ProgressBar from "react-toolbox/lib/progress_bar"
 
-import { mapConfig, getLayersState, getSourcesState } from '../../modules'
-import { isAuthUserAdmin } from "../../modules/auth"
+import { selectors } from "../../modules"
+const { isAuthUserAdmin, getLayersState, getSourcesState } = selectors;
+import { mapConfig } from '../../modules'
+
 import styles from "./map.css"
 
 function getUniqueFeatures(array, comparatorProperty) {
@@ -108,33 +110,39 @@ class Map extends React.Component {
 	}
 
 	_loadSources() {
-		_.forIn(this.props.sourcesState.data, (source, sourceId)=>{
-			this.map.addSource(sourceId, _.omit(source, ['metadata']));
+		forIn(this.props.sourcesState.data, (source, sourceId)=>{
+			this.map.addSource(sourceId, omit(source, ['metadata']));
 		});
 	}
 
 	_loadLayers() {
-		_.forIn(this.props.layersState.data, (layer, layerId)=> {
+		forIn(this.props.layersState.data, (layer, layerId)=> {
 			this.map.addLayer(layer);
 		});
 	}
 
 	_addSimpleEventsHandling() {
 		mapConfig.events.map((event)=> {
+			const eventHandler = (evt)=> {
+				const { lng, lat } = this.map.getCenter();
+				const zoom = this.map.getZoom();
+				const bounds = this.map.getBounds()
+					.toArray()
+					.reduce((tab, item)=> {
+						return tab.concat(item);
+					}, []);;
+				this.props.dispatch(event.action({
+					lng,
+					lat,
+					zoom,
+					bounds,
+					isAdmin: this.props.isAdmin
+				}));
+			}
 			if (event.layerId) {
-				this.map.on(event.type, event.layerId, (evt)=> {
-					this.props.dispatch(event.action({
-						event: evt,
-						isAdmin: this.props.isAdmin
-					}));
-				});
+				this.map.on(event.type, event.layerId, eventHandler);
 			} else {
-				this.map.on(event.type, (evt)=> {
-					this.props.dispatch(event.action({
-						event: evt,
-						isAdmin: this.props.isAdmin
-					}));
-				});
+				this.map.on(event.type, eventHandler);
 			}
 		});
 	}
@@ -173,7 +181,7 @@ class Map extends React.Component {
 			// and dispatch corresponding action
 			this.map.on('mousedown', item.layerId, (evt)=> {
 				this.props.dispatch(item.mousedown({
-					event: evt, 
+					features: evt.features, 
 					isAdmin: this.props.isAdmin
 				}));
 				this.draggingLayerId = item.layerId;
@@ -185,7 +193,8 @@ class Map extends React.Component {
 					);
 					this.props.dispatch(item.mouseup({
 						feature: features[0],
-						event: evt, 
+						lat: evt.lngLat.lat,
+						lng: evt.lngLat.lng, 
 						isAdmin: this.props.isAdmin
 					}));
 					this.draggingLayerId = null;
@@ -201,7 +210,8 @@ class Map extends React.Component {
 					mapConfig.dragndrop.map((item)=> {
 						if (item.layerId === this.draggingLayerId) {
 							this.props.dispatch(item.mousemove({
-								event: evt,
+								lat: evt.lngLat.lat,
+								lng: evt.lngLat.lng,
 								isAdmin: this.props.isAdmin
 							}));
 						}
@@ -242,7 +252,10 @@ class Map extends React.Component {
 					this.map.queryRenderedFeatures({ layers: item.layerIds }),
 					item.uniqueKey
 				);
-				this.props.dispatch(item.action(renderedFeatures, this.map.getZoom()));
+				this.props.dispatch(item.action({
+					features: renderedFeatures, 
+					zoom: this.map.getZoom()
+				}));
 			}
 			const renderHandler = (data)=> {
 				if (this.map.isSourceLoaded(item.source)) {
@@ -273,7 +286,7 @@ class Map extends React.Component {
 	}
 
 	_reloadSourcesData(nextProps) {
-		_.forIn(nextProps.sourcesState.data, (source, sourceId)=> {
+		forIn(nextProps.sourcesState.data, (source, sourceId)=> {
 			if (source.metadata && source.metadata.didChange && this.map.getSource(sourceId)) {
 				if (source.type === "geojson") {
 					this.map.getSource(sourceId).setData(source.data);
@@ -292,7 +305,7 @@ class Map extends React.Component {
 	}
 
 	_updateLayersStyle(nextProps) {
-		_.forIn(nextProps.layersState.data, (layer)=> {
+		forIn(nextProps.layersState.data, (layer)=> {
 			var didChange = layer.metadata && layer.metadata.didChange || {};
 			if (this.map.getLayer(layer.id) && didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
@@ -306,12 +319,12 @@ class Map extends React.Component {
 				this.map.setLayerZoomRange(layer.id, layer.minzoom, layer.maxzoom);
 			}
 			if (this.map.getLayer(layer.id) && didChange.layout) {
-				_.forIn(didChange.layout, (value, key)=> {
+				forIn(didChange.layout, (value, key)=> {
 					this.map.setLayoutProperty(layer.id, key, value);
 				});
 			}
 			if (this.map.getLayer(layer.id) && didChange.paint) {
-				_.forIn(didChange.paint, (value, key)=> {
+				forIn(didChange.paint, (value, key)=> {
 					this.map.setPaintProperty(layer.id, key, value);
 				});
 			}
@@ -346,7 +359,7 @@ const ConnectedMap = connect((store)=> {
 		world: store.world,
 		layersState: getLayersState(store),
 		sourcesState: getSourcesState(store),
-		isAdmin: isAuthUserAdmin(store.auth)
+		isAdmin: isAuthUserAdmin(store)
 	}
 })(Map);
 

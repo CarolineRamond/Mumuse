@@ -4,10 +4,12 @@ import isEmail from 'validator/lib/isEmail'
 import PropTypes from "prop-types"
 import Dialog from "react-toolbox/lib/dialog"
 
+import { actions } from '../../modules'
+const { forgotPassword } = actions;
+import { selectors } from '../../modules'
+const { getRootUrl, getForgotPasswordState } = selectors;
+
 import Form from '../Common/Form'
-import { forgotPassword } from '../../modules/auth/auth.actions'
-import { getRootUrl } from '../../modules/world'
-import { getForgotPasswordState } from "../../modules/auth"
 import styles from '../Common/form.css'
 
 class ForgotPassword extends React.Component {
@@ -99,8 +101,8 @@ ForgotPassword.propTypes = {
 // Store connection
 const ConnectedForgotPassword = connect((store)=> {
 	return {
-		rootUrl: getRootUrl(store.world),
-		serverState: getForgotPasswordState(store.auth)
+		rootUrl: getRootUrl(store),
+		serverState: getForgotPasswordState(store)
 	}
 })(ForgotPassword);
 

@@ -1,40 +1,51 @@
-const debug = process.env.NODE_ENV !== "production";
-const path = require('path');
-const webpack = require('webpack');
+'use strict';
 
-const settings = {
-  entry: {
-    bundle: [
-      "react-hot-loader/patch",
-      "./src/frontend/index.js"
-    ]
-  },
-  output: {
-    filename: "[name].js",
-    publicPath: "/",
-    path: path.resolve("build")
-  },
-  resolve: {
-    extensions: [".js", ".json", ".css"]
-  },
-  devtool: "eval-source-map",
-  module: {
-    rules: [
-      {
+// Modules
+var webpack = require('webpack');
+var autoprefixer = require('autoprefixer');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+var ENV = process.env.npm_lifecycle_event;
+var isTest = ENV === 'test' || ENV === 'test-watch';
+var isProd = ENV === 'build';
+
+module.exports = function makeWebpackConfig() {
+  var config = {};
+
+  config.entry = isTest ? void 0 : {
+    app: './src/frontend/index.js'
+  };
+
+  config.output = isTest ? {} : {
+    path: __dirname + '/dist',
+    publicPath: isProd ? '/' : 'http://localhost:8080/',
+    filename: isProd ? '[name].[hash].js' : '[name].bundle.js',
+    chunkFilename: isProd ? '[name].[hash].js' : '[name].bundle.js'
+  };
+
+  if (isTest) {
+    config.devtool = 'inline-source-map';
+  }
+  else if (isProd) {
+    config.devtool = 'source-map';
+  }
+  else {
+    config.devtool = 'eval-source-map';
+  }
+
+  config.module = {
+    rules: [{
         test: /\.jsx?$/,
-        exclude: /node_modules/,
+        exclude: /(node_modules|IconemPotree)/,
         loader: 'babel-loader',
-        options: {
-          presets: ['react', 'es2015'],
-          plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy'],
-          env: {
-            development: {
-              plugins: ["react-hot-loader/babel"]
-            }
-          }
+        query: {
+          presets: ['react', 'es2015', 'stage-0'],
+          plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy', 'transform-object-rest-spread'],
         }
-      },
-      {
+      }, {
         test: /\.css$/,
         exclude: /mapbox-gl\.css/,
         use: [
@@ -57,27 +68,94 @@ const settings = {
           "style-loader",
           "css-loader"
         ]
-      },
-    ]
-  },
-  devServer: {
-    contentBase: path.resolve("src/www"),
-    historyApiFallback: true,
-    port: 8081,
-    proxy: {
-      '/userdrive': {
-        target: 'http://localhost:9000'
-      },
-      '/map': {
-        target: 'http://localhost:9000'
+      }, 
+    {
+      // /!\ /!\ /!\ There is a lot of custom process here in order to make potree works since it is currently not a npm module /!\ /!\ /!\ 
+      test: /(\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$)|(BinaryDecoderWorker|GreyhoundBinaryDecoderWorker|lasdecoder-worker|laslaz-worker)/,
+      loader: 'file-loader',
+      options: {
+        name: '[path][name].[ext]?[hash]',
+        outputPath: function(url) {
+          var destFolder;
+          if(url.indexOf('IconemPotree') >= 0){
+            if(url.indexOf('resources') >= 0) destFolder = 'public/iconem-potree' + url.match(/potree(.*)/)[1];
+            if(url.indexOf('workers') >= 0) destFolder = url.match(/potree(.*)/)[1];
+          }
+          else destFolder = 'assets' + url.match(/build(.*)/)[1];
+          return destFolder;
+        }
+      }
+    }, 
+    {
+      test: /\.html$/,
+      loader: 'raw-loader'
+    }]
+  };
+
+  if (isTest) {
+    config.module.rules.push({
+      enforce: 'pre',
+      test: /\.js$/,
+      exclude: [
+        /node_modules/,
+        /\.spec\.js$/
+      ],
+      loader: 'istanbul-instrumenter-loader',
+      query: {
+        esModules: true
+      }
+    })
+  }
+
+  config.plugins = [];
+
+  config.plugins.push(
+    new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendors',
+        filename: isProd ? '[name].[hash].js' : '[name].bundle.js',
+        minChunks(module, count) {
+            var context = module.context;
+            return context && ((context.indexOf('node_modules') >= 0 && (context.indexOf('@iconem') === -1) || context.indexOf('IconemPotree') >= 0));
+        },
+    })
+  );
+
+  // Skip rendering index.html in test mode
+  if (!isTest) {
+    config.plugins.push(
+      new HtmlWebpackPlugin({
+        template: './src/www/index.html',
+        inject: 'body',
+        filename: 'index.html'
+      }),
+
+      new ExtractTextPlugin({filename: isProd ? 'styles/[name].[hash].css' : 'style/[name].bundle.css', allChunks: true})
+    )
+  }
+
+  if (isProd) {
+    config.plugins.push(
+      new webpack.NoEmitOnErrorsPlugin(),
+      new webpack.optimize.UglifyJsPlugin({
+        sourceMap: true,
+        exclude: /(vendors|worker).*\.js$/,
+        compress: {
+            comparisons: false,  // don't optimize comparisons because it was buggy with mapbox
+        },
+      }),
+      new BundleAnalyzerPlugin({analyzerMode: 'static'}) 
+    )
+  }
+
+  config.devServer = {
+    contentBase: './src',
+    stats: 'minimal',
+    proxy : {
+      "*": {
+        target: "http://localhost:9000"
       }
     }
-  },
-  plugins: debug ? [] : [
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
-  ],
-};
+  };
 
-module.exports = settings;
+  return config;
+}();

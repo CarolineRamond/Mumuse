@@ -45,7 +45,19 @@ To launch : ``npm run dev``
 
 ## Store
 
-### General aspect
+### Modules
+Each module handles an independant data chunk of the application (ex: medias, users, rastertiles, etc).
+
+A module exports :
+* a reducer*
+* a set of actions*
+* a set of selectors*
+* a map configuration object (optional)
+
+Reducers, actions, selectors & mapConfigs are all merged and exposed in modules/index.js.
+
+
+### Store organization
 
 ```
 {
@@ -110,10 +122,6 @@ Layer : {
 	}
 }
 ```
-
-* Shall we keep only metadata in store and layer definition in config ?
-* => better store legibility & facilitates updates
-* => drawback : access to current layer properties ? (needed ?)
 
 ### Sources
 

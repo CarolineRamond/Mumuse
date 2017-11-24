@@ -1,60 +1,48 @@
-const initialState = { 
+export const initialState = { 
 	pending: false, 
 	data: null, 
 	error: null
 };
 
-const currentUserReducer = (state = initialState, action) => {
+const authUserReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case "FETCH_AUTH_USER_PENDING": {
-			return Object.assign({}, state, {
+			return  {
+				...state,
 				pending: true,
 				data: null,
 				error: null
-			});
-			break;
+			};
 		}
-		case "FETCH_AUTH_USER_FULFILLED": {
-			return Object.assign({}, state, {
-				pending: false,
-				data: action.payload.data,
-				error: null
-			});
-			break;
-		}
-		case "FETCH_AUTH_USER_REJECTED": {
-			return Object.assign({}, state, {
-				pending: false,
-				data: null,
-				error: action.payload.error
-			});
-			break;
-		}
+		case "FETCH_AUTH_USER_FULFILLED":
 		case "LOGIN_FULFILLED": {
-			return Object.assign({}, state, {
+			return {
+				...state,				
 				pending: false,
 				data: action.payload.data,
 				error: null
-			});
+			};
 		}
+		case "FETCH_AUTH_USER_REJECTED":
 		case "LOGIN_REJECTED": {
-			return Object.assign({}, state, {
+			const response = action.payload.response;
+			var error = `Error ${response.status} (${response.statusText})`;
+			if (response.data && response.data.message) {
+				error += ` : ${response.data.message}`;
+			}
+			return {
+				...state,
 				pending: false,
 				data: null,
-				error: null
-			});
+				error: error
+			};
 		}
 		case "LOGOUT_FULFILLED": {
-			return Object.assign({}, state, {
-				pending: false,
-				data: null,
-				error: null
-			});
+			return initialState;
 		}
 		default:
 			return state;
-			break;
 	}
 }
 
-export default currentUserReducer;
+export default authUserReducer;

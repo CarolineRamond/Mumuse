@@ -5,10 +5,13 @@ import isEmail from 'validator/lib/isEmail'
 import isLength from 'validator/lib/isLength'
 import Dialog from "react-toolbox/lib/dialog"
 
+import { actions } from '../../../modules'
+const { fetchUser, updateUser, resetUpdateState } = actions;
+import { selectors } from '../../../modules'
+const { getCurrentUserState, getUpdateUserState } = selectors;
+
 import Form from "../../Common/Form"
 import styles from '../../Common/form.css'
-import { fetchUser, updateUser, resetUpdateState } from "../../../modules/users/users.actions"
-import { getCurrentUserState, getUpdateUserState } from "../../../modules/users"
 
 class UsersEdit extends React.Component {
     
@@ -131,20 +134,38 @@ class UsersEdit extends React.Component {
 }
 
 // Props :
-// * location : current route location, provided by function withRouter
-// * match : current route match, provided by function withRouter
-// * history : current router history, provided by function withRouter (required)
+// * location : current route location, inherited from Route component
+// * match : current route match, inherited from Route component
+// * history : current router history, inherited from Route component (required)
+// * currentUserState : state of the request FETCH_USER, provided by connect, required
+// *    pending: boolean, true if a request is on going
+// *    data: contains the currently edited user once the request is finished
+// *    error: contains an error string if currently edited user could not be retrieved
+// * updateUserState : state of the request UPDATE_USER, provided by connect, required
+// *    pending: boolean, true if a request is on going
+// *    data: contains the newly edited user once the request is finished
+// *    error: contains an error string if user could not be edited
 UsersEdit.propTypes = {
     location: PropTypes.object, 
     match: PropTypes.object.isRequired, 
-    history: PropTypes.object 
+    history: PropTypes.object.isRequired,
+    currentUserState : PropTypes.shape({
+        pending: PropTypes.bool,
+        data: PropTypes.object,
+        error: PropTypes.string
+    }).isRequired,
+    updateUserState : PropTypes.shape({
+        pending: PropTypes.bool,
+        data: PropTypes.object,
+        error: PropTypes.string
+    }).isRequired,
 }
 
 // Store connection
 const ConnectedUsersEdit = connect((store)=> {
     return {
-        currentUserState: getCurrentUserState(store.users),
-        updateUserState: getUpdateUserState(store.users)
+        currentUserState: getCurrentUserState(store),
+        updateUserState: getUpdateUserState(store)
     }
 })(UsersEdit);
 

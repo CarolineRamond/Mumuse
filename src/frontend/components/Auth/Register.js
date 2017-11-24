@@ -6,10 +6,12 @@ import isLength from 'validator/lib/isLength'
 import PropTypes from "prop-types"
 import Dialog from "react-toolbox/lib/dialog"
 
+import { actions } from '../../modules'
+const { register } = actions;
+import { selectors } from '../../modules'
+const { getRegisterState, getRootUrl } = selectors;
+
 import Form from '../Common/Form'
-import { register } from '../../modules/auth/auth.actions'
-import { getRootUrl } from '../../modules/world'
-import { getRegisterState } from "../../modules/auth"
 import styles from "../Common/form.css"
 
 class Register extends React.Component {
@@ -175,8 +177,8 @@ Register.propTypes = {
 // Store connection
 const ConnectedRegister = connect((store)=> {
 	return {
-		serverState: getRegisterState(store.auth),
-		rootUrl: getRootUrl(store.world)
+		serverState: getRegisterState(store),
+		rootUrl: getRootUrl(store)
 	}
 })(Register);
 

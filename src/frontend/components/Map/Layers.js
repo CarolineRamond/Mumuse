@@ -4,8 +4,11 @@ import { forIn } from "lodash"
 import { IconButton } from "react-toolbox/lib/button"
 import PropTypes from "prop-types"
 
-import { toggleLayer } from '../../modules/world/world.actions'
-import { getRasterLayersInBounds } from "../../modules/rastertiles"
+import { actions } from "../../modules"
+const { toggleLayer } = actions;
+import { selectors } from "../../modules"
+const { getRasterLayersInBounds } = selectors;
+
 import styles from './layers.css'
 
 class Layers extends React.Component {
@@ -18,7 +21,7 @@ class Layers extends React.Component {
   }
 
   toggleLayer(layerId) {
-    this.props.dispatch(toggleLayer(layerId));
+    this.props.dispatch(toggleLayer({ layerId }));
   }
 
 	render() {
@@ -77,7 +80,7 @@ Layers.propTypes = {
 const ConnectedLayers = connect((store)=> {
   return  {
     mediaLayers: store.medias.layers,
-    rasterLayers: getRasterLayersInBounds(store.rastertiles)
+    rasterLayers: getRasterLayersInBounds(store)
   }
 })(Layers);
 

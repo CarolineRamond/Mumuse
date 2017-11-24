@@ -2,8 +2,10 @@ import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
 
-import { getSelectedMedias } from "../../modules/medias"
-import { initSelectedMedia } from "../../modules/medias/medias.actions"
+import { selectors } from "../../modules"
+const { getSelectedMedias } = selectors;
+import { actions } from "../../modules"
+const { initSelectedMedia } = actions;
 
 class MediasRouter extends React.Component {
 
@@ -12,7 +14,7 @@ class MediasRouter extends React.Component {
 		var mediaId;
 		if (splitLocation.length > 3 && splitLocation[2] === "medias" && splitLocation[3]) {
 			mediaId = splitLocation[3];
-			this.props.dispatch(initSelectedMedia(mediaId));
+			this.props.dispatch(initSelectedMedia({ mediaId }));
 		}
 		this.state = {
 			init: mediaId
@@ -57,7 +59,7 @@ class MediasRouter extends React.Component {
 
 const ConnectedMediasRouter = connect((store)=> {
 	return {
-		selectedMedias: getSelectedMedias(store.medias)
+		selectedMedias: getSelectedMedias(store)
 	}
 })(MediasRouter);
 

@@ -1,7 +1,9 @@
 import React from "react";
 import { connect } from "react-redux"
 
-import { switchPreviewMode } from '../../modules/world/world.actions'
+import { actions } from "../../modules"
+const { switchPreviewMode }= actions;
+
 import styles from './preview.css'
 
 @connect((store)=> {
