@@ -21,7 +21,7 @@ export default {
             paint: {
                 'fill-outline-color': '#22a37a ',
                 'fill-color': '#22a37a ',
-                'fill-opacity': 0.3
+                'fill-opacity': 0.6
             },
             metadata: {
                 name: "Pointcloud",

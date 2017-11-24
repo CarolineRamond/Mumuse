@@ -28,31 +28,42 @@ export default class Potree extends React.Component {
   raycaster = new THREE.Raycaster();
   mouse = new THREE.Vector2();
   mediaCamera_intersected = null;
+  potreeIsLoading = false;
 
   componentDidMount() {
     this.initViewer();
   }
 
+  componentWillUnmount(){
+    //remove pointcloud from potree (for now potree is always running event when)
+    this.potree.scene.pointclouds = [];
+    viewer.stopRendering();
+  }
+
   componentWillReceiveProps(nextProps) {
     // Load pointcloud and add cameraMedia to potree
     if (
-      !this.props.potree.pointCloud.metaData &&
-      nextProps.potree.pointCloud.metaData
+      !this.potreeIsLoading &&
+      (this.potree.scene.pointclouds.length === 0 ||
+      (nextProps.potree.pointCloud.metaData && (nextProps.potree.pointCloud.metaData._id !== this.props.potree.pointCloud.metaData._id)))
     ) {
-      potree.loadPointCloud(
-        `potreeviewer/potreedataset/${nextProps.potree.pointCloud.metaData
-          ._id}/cloud.js`,
-        nextProps.potree.pointCloud.metaData.name,
-        function(e) {
-          viewer.scene.addPointCloud(e.pointcloud);
-          viewer.fitToScreen();
-        }
-      );
+        if(nextProps.potree.pointCloud.metaData._id !== this.props.potree.pointCloud.metaData._id) this.potree.scene.pointclouds = [];
+        this.potreeIsLoading = true;
+        potree.loadPointCloud(
+          `potreeviewer/potreedataset/${nextProps.potree.pointCloud.metaData
+            ._id}/cloud.js`,
+          nextProps.potree.pointCloud.metaData.name,
+          (e) => {
+            this.potreeIsLoading = false;
+            viewer.scene.addPointCloud(e.pointcloud);
+            viewer.fitToScreen();
+          }
+        );
 
-      let pointCloudMedias = JSON.parse(
-        nextProps.potree.pointCloud.metaData.visus
-      );
-      this.addCamerasToPotree(pointCloudMedias);
+        let pointCloudMedias = JSON.parse(
+          nextProps.potree.pointCloud.metaData.visus
+        );
+        this.addCamerasToPotree(pointCloudMedias);
     }
 
     // Select media on 3D viewer when a media is selected, else reset viewer view
@@ -114,6 +125,7 @@ export default class Potree extends React.Component {
     // viewer.setPointSizing("Fixed");
     viewer.setQuality("Squares");
     viewer.setPointBudget(10 * 1000 * 1000);
+    viewer.startRendering();
 
     this.potreeContainer.addEventListener(
       "mousemove",
