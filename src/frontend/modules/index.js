@@ -6,10 +6,9 @@ import medias from "./medias";
 import rastertiles from "./rastertiles";
 import users from "./users";
 import world from "./world";
-import { pointCloudsInitialState, pointCloudsMapConfig } from './potree';
-import potreeReducer from './potree';
+import potree from './potree';
 
-const modules = [auth, medias, rastertiles, users, world];
+const modules = [auth, medias, rastertiles, users, world, potree];
 
 // reducer 
 // (combination of all modules' reducers)
@@ -19,7 +18,7 @@ const reducer = combineReducers({
 	auth: auth.reducer,
 	users: users.reducer,
 	rastertiles: rastertiles.reducer,
-	potree: potreeReducer
+	potree: potree.reducer
 });
 
 // selectors

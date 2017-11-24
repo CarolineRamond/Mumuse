@@ -4,22 +4,17 @@ import { connect } from "react-redux";
 import potree from "@iconem/iconem-potree";
 import Camera from "./camera";
 
-import {
-  clickMedias,
-  selectMediaById
-} from "../../modules/medias/medias.actions";
-import {
-  getSelectedMedias,
-  getSelectFilterPending,
-  getVisibleMedias
-} from "../../modules/medias";
+import { selectors } from "../../modules"
+const { getSelectedMedias, getSelectFilterPending, getVisibleMedias } = selectors;
+import { actions } from "../../modules"
+const { clickMedias, selectMediaById } = actions;
 
 @connect(store => {
   return {
     potree: store.potree,
-    selectedMedias: getSelectedMedias(store.medias),
-    visibleMedias: getVisibleMedias(store.medias),
-    selectFilterPending: getSelectFilterPending(store.medias)
+    selectedMedias: getSelectedMedias(store),
+    visibleMedias: getVisibleMedias(store),
+    selectFilterPending: getSelectFilterPending(store)
   };
 })
 export default class Potree extends React.Component {

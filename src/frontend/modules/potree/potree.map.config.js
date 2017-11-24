@@ -5,5 +5,7 @@ export default {
         layerIds: ["pointClouds-layer"],
         action: clickPointCloud
     }],
+    dragndrop: [], 
+    renderedFeatures: [],
     events: []
 }

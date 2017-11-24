@@ -1,14 +1,26 @@
 import { combineReducers } from "redux";
 
-const defaultSourceReducer = (state) => {
-  return Object.assign({}, state, { 
-    metadata: Object.assign({}, state.metadata, {
-      didChange: undefined 
-    })
-  });
+export const defaultSourceReducer = (state) => {
+  return {
+    ...state,
+    metadata: {
+      ...state.metadata,
+      didChange: false
+    }
+  };
 }
 
-const pointCloudsSourceReducer = (state = {}, action) => {
+export const pointCloudsSourceInitialState = {
+  type: "geojson",
+  data: 'http://localhost:8080/potreeviewer/potreedataset',
+  metadata: {
+      didChange: false,
+      selectFilterPending: false,
+      stillFiltered: []
+  }
+};
+
+const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, action) => {
   switch (action.type) {
     case 'LOGOUT_FULFILLED':
     case 'FETCH_USER_FULFILLED':
