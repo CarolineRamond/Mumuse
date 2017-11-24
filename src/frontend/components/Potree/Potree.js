@@ -55,13 +55,13 @@ export default class Potree extends React.Component {
       this.addCamerasToPotree(pointCloudMedias);
     }
 
-    // Select media on 3D viewer when a media is selected
+    // Select media on 3D viewer when a media is selected, else reset viewer view
     var currentMedia = this.props.selectedMedias[0];
     var nextMedia = nextProps.selectedMedias[0];
     if (
       this.props.potree.pointCloud.metaData &&
       nextMedia &&
-      currentMedia.properties._id !== nextMedia.properties._id
+      (!currentMedia || currentMedia.properties._id !== nextMedia.properties._id)
     ) {
       let mediaCamera = this.potree.scene.scene.children.find(
         mesh => mesh.userData.mediaId === nextMedia.properties._id
@@ -71,6 +71,9 @@ export default class Potree extends React.Component {
         this.goToMediaCamera(mediaCamera);
         mediaCamera.loadMedia();
       }
+    }
+    else if(!nextMedia){
+      viewer.fitToScreen();
     }
 
     //Hide or show camera based on timeline filtering
