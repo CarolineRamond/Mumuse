@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux"
+import PropTypes from "prop-types"
 import Dialog from "react-toolbox/lib/dialog"
 import { isEqual } from "lodash"
 
@@ -47,6 +48,25 @@ class UsersDelete extends React.Component {
             {dialogContent}
         </Dialog>
 	}
+}
+
+// Props :
+// * serverState : state of the request DELETE_USERS, provided by connect, required
+// *    pending: boolean, true if a request is on going
+// *    data: contains a success message once the request is finished
+// *    error: contains an error string if users could not be deleted
+// * active : whether dialog should be active, inherited from UsersTable, required
+// * users : array of userIds to delete, inherited from UsersTable, required
+// * cancel : function called to hide dialog, inherited from UsersTable, required
+UsersDelete.propTypes = {
+    serverState : PropTypes.shape({
+        pending: PropTypes.bool,
+        data: PropTypes.object,
+        error: PropTypes.string
+    }).isRequired,
+    active: PropTypes.bool.isRequired,
+    users: PropTypes.arrayOf(PropTypes.string).isRequired,
+    cancel: PropTypes.func.isRequired
 }
 
 const ConnectedUsersDelete = connect((store)=> {

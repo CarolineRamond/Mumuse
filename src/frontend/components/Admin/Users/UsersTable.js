@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux"
+import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
 import { Table, TableHead, TableRow, TableCell } from 'react-toolbox/lib/table';
 import { Button } from "react-toolbox/lib/button"
@@ -110,6 +111,19 @@ class UsersTable extends React.Component {
 	      	</div>
 	    }
 	}
+}
+
+// Props :
+// * usersListState : state of the request FETCH_USERS_LIST, provided by connect, required
+// *    pending: boolean, true if a request is on going
+// *    data: contains the full list of users once the request is finished
+// *    error: contains an error string if users could not be retrieved
+UsersTable.propTypes = {
+    usersListState : PropTypes.shape({
+        pending: PropTypes.bool,
+        data: PropTypes.object,
+        error: PropTypes.string
+    }).isRequired
 }
 
 const ConnectedUsersTable = connect((store)=> {

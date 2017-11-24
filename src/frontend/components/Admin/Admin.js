@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux"
 import { Switch, Route, Redirect } from 'react-router-dom'
 import {Tab, Tabs} from 'react-toolbox';
+import PropTypes from "prop-types"
 
 import { actions } from '../../modules'
 const { fetchAuthUser } = actions;
@@ -17,11 +18,12 @@ class Admin extends React.Component {
 		super(props)
         this.handleTabChange = this.handleTabChange.bind(this);
         this.state = ({
-        	authorized: false
+        	authorized: false // true if user is authorized to access this state
         });
 	}
 
 	componentDidMount() {
+		// fetch currently authenticated user to know if access is authorized
 		this.props.dispatch(fetchAuthUser());
 	}
 	
@@ -32,6 +34,7 @@ class Admin extends React.Component {
 			if (nextProps.authUserState.data &&
   			nextProps.authUserState.data.roles.indexOf("admin") > -1) {
 				// an admin user is connected : setup tabs & location
+				// => will render the admin panel
 				var index;
 				if (this.props.location.pathname.indexOf('/admin/users') > -1) {
 					index = 0;
@@ -46,6 +49,8 @@ class Admin extends React.Component {
 					index: index
 				});
 			} else {
+				// no admin user is connected : access is unauthorized
+				// => will render "Forbidden"
 				this.setState({
 					authorized: false
 				});
@@ -54,6 +59,7 @@ class Admin extends React.Component {
 	}
 
 	handleTabChange(index) {
+		// switch window location on tab change
 		this.setState({index});
 		switch (index) {
 			case 0:
@@ -67,8 +73,10 @@ class Admin extends React.Component {
 
   	render() {
   		if (this.props.authUserState.pending) {
+  			// authenticated user is being fetched
   			return <div>Loading...</div>
   		} else if (this.state.authorized) {
+  			// authenticated user is authorized
   			return <div className={styles.adminPanel}>
 		  		<h1 className={styles.adminTitle}>Admin</h1>
 			  	<Tabs className={styles.adminTabs}
@@ -87,9 +95,23 @@ class Admin extends React.Component {
 				</Tabs>
 			</div>
   		} else {
+  			// authenticated user is not authorized
 			return <div>Forbidden</div>  			
   		}
 	}
+}
+
+// Props :
+// * authUserState : state of the request FETCH_AUTH_USER, provided by connect, required
+// *	pending: boolean, true if a request is on going
+// *	data: contains currently authenticated user (if any) once the request is finished
+// *	error: contains an error string if no authenticated user was retrieved
+Admin.propTypes = {
+    authUserState: PropTypes.shape({
+    	pending: PropTypes.bool,
+    	data: PropTypes.object,
+    	error: PropTypes.string
+    }).isRequired
 }
 
 const ConnectedAdmin = connect((store)=> {
