@@ -55,7 +55,7 @@ const usersListReducer = (state = initialState, action) => {
 			};
 		}
 		case "DELETE_USERS_FULFILLED": {
-			const deletedIds = action.payload;
+			const deletedIds = action.payload.data;
 			const newData = state.data.filter((user)=> {
 				return deletedIds.indexOf(user._id) === -1;
 			});

@@ -53,7 +53,7 @@ class UsersDelete extends React.Component {
 // Props :
 // * serverState : state of the request DELETE_USERS, provided by connect, required
 // *    pending: boolean, true if a request is on going
-// *    data: contains a success message once the request is finished
+// *    data: contains successfully deleted ids once the request is finished
 // *    error: contains an error string if users could not be deleted
 // * active : whether dialog should be active, inherited from UsersTable, required
 // * users : array of userIds to delete, inherited from UsersTable, required
@@ -61,7 +61,7 @@ class UsersDelete extends React.Component {
 UsersDelete.propTypes = {
     serverState : PropTypes.shape({
         pending: PropTypes.bool,
-        data: PropTypes.object,
+        data: PropTypes.arrayOf(PropTypes.string),
         error: PropTypes.string
     }).isRequired,
     active: PropTypes.bool.isRequired,

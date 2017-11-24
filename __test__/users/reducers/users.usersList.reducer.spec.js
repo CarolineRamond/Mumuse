@@ -138,7 +138,7 @@ describe('admin users list reducer', () => {
 		  	const state = reducer(initialState, action1);
 		  	const action2 = {
 		  		type: "DELETE_USERS_FULFILLED",
-		  		payload: [1]
+		  		payload: { data: [1] }
 		  	};
 		  	expect(reducer(state, action2)).toEqual({
 		  		pending: false,

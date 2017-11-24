@@ -47,7 +47,7 @@ export function deleteUsers(userIds) {
 				return _deleteUser(userId);
 			})
 		}, Promise.resolve());
-		promise.then(()=> resolve(userIds))
+		promise.then(()=> resolve({ data: userIds }))
 	});
 	
     return { 
