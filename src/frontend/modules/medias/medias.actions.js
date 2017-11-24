@@ -178,16 +178,17 @@ export const deleteMedias = (medias)=> {
 				data.push(media);
 			})
 			.catch((error)=> {
+				const response = error.response;
 				var errorMessage = "Error deleting media [" + media.properties.name + "]";
-				if (error !== '') {
-					errorMessage += " : " + error;
+				if (response && response.data && response.data.message) {
+					errorMessage += " : " + error.response.data.message;
 				}
 				errorMedias.push(media);
 				errorMessages.push(errorMessage);
 			})
 		}, Promise.resolve());
 		
-		promise.then(()=> {
+		return promise.then(()=> {
 			const error = errorMedias.length > 0 ? { medias: errorMedias, messages: errorMessages } : null;
 			dispatch({ 
 				type: "MEDIAS_DELETE_FULFILLED", 
