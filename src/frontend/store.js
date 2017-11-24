@@ -8,8 +8,8 @@ import reducer, { actions } from "./modules"
 const { fetchAuthUser, fetchRastertilesets } = actions;
 
 const validator = new Validator();
-const middleware = applyMiddleware(validator, thunk, promise(), createLogger());
-// const middleware = applyMiddleware(validator, thunk, promise());
+// const middleware = applyMiddleware(validator, thunk, promise(), createLogger());
+const middleware = applyMiddleware(validator, thunk, promise());
 
 const store = createStore(reducer, middleware);
 store.dispatch(fetchAuthUser());

@@ -230,16 +230,17 @@ export const uploadMedias = (files, position)=> {
 				data.push(files[index]);
 			})
 			.catch((error)=> {
+				const response = error.response;
 				var errorMessage = "Error uploading file [" + files[index].name + "]";
-				if (error !== '') {
-					errorMessage += " : " + error;
+				if (response && response.data && response.data.message) {
+					errorMessage += " : " + error.response.data.message;
 				}
 				errorFiles.push(files[index]);
 				errorMessages.push(errorMessage);
 			})
 		}, Promise.resolve());
 
-		promise.then(()=> {
+		return promise.then(()=> {
 			const error = errorFiles.length > 0 ? { files: errorFiles, messages: errorMessages } : null;
 			dispatch({ 
 				type: "MEDIAS_UPLOAD_FULFILLED", 
@@ -278,16 +279,8 @@ function _uploadMedia(file, currentPosition) {
             form.append("size", file.size);
             form.append("file", file);
             return axios.post('/userdrive/media', form)
-            	.then((response)=> { 
-            		return resolve(response) 
-            	})
-            	.catch((error)=> { 
-            		if (error.response && error.response.data && error.response.data.message) {
-            			return reject(error.response.data.message) 
-            		} else {
-            			return reject('');
-            		}
-            	});
+            	.then(()=> resolve())
+            	.catch((error)=> reject(error));
 	    };
 
 	    reader.onerror = error => {

@@ -10,52 +10,6 @@ const mockAxios = new MockAdapter(axios);
 const mockStore = configureMockStore([thunk]);
 
 describe('medias async actions', ()=> {
-	afterEach(()=> {
-		mockAxios.reset();
-		mockAxios.restore();
-	});
-
-	// it('should handle a single successful file deletion', ()=> {
-	// 	mockAxios.onDelete('/userdrive/media/1').reply(200, {
-	// 		message: 'success deleting media'
-	// 	});
-
-	// 	const media = { type: "Feature", properties: { _id: 1, name: "media1.jpeg" } };
-	// 	const expectedActions = [
-	// 		{ type: "MEDIAS_DELETE_PENDING", payload: { index: 0 } },
-	// 		{ type: "MEDIAS_DELETE_FULFILLED", payload: { data: [media], error: null } }
-	// 	];
-	// 	const store = mockStore({});
-	// 	return store.dispatch(actions.deleteMedias([media])).then(()=> {
-	// 		expect(store.getActions()).toEqual(expectedActions);
-	// 	}).catch((err)=> {
-	// 		expect(err).toBeUndefined();
-	// 	});
-	// });
-
-	// it('should handle a single failed file deletion', ()=> {
-	// 	mockAxios.onDelete('/userdrive/media/1').reply(400, {
-	// 		message: 'Unknown id'
-	// 	});
-
-	// 	const media = { type: "Feature", properties: { _id: 1, name: "media1.jpeg" } };
-	// 	const expectedActions = [
-	// 		{ type: "MEDIAS_DELETE_PENDING", payload: { index: 0 } },
-	// 		{ 
-	// 			type: "MEDIAS_DELETE_FULFILLED", 
-	// 			payload: { 
-	// 				data: [], 
-	// 				error: { medias: [media], messages: ["Error deleting media [media1.jpeg]"] }
-	// 			}
-	// 		}
-	// 	];
-	// 	const store = mockStore({});
-	// 	return store.dispatch(actions.deleteMedias([media])).then(()=> {
-	// 		expect(store.getActions()).toEqual(expectedActions);
-	// 	}).catch((err)=> {
-	// 		expect(err).toBeUndefined();
-	// 	});
-	// });
 
 	it('should handle multiple file deletions', ()=> {
 		mockAxios.onDelete('/userdrive/media/1').reply(200, {
@@ -95,6 +49,63 @@ describe('medias async actions', ()=> {
 		];
 		const store = mockStore({});
 		return store.dispatch(actions.deleteMedias(medias)).then(()=> {
+			expect(store.getActions()).toEqual(expectedActions);
+		}).catch((err)=> {
+			expect(err).toBeUndefined();
+		});
+	});
+
+	it('should handle multiple file upload', ()=> {
+		const files = [
+			new File([""], "test1.txt", {type : 'text/plain'}),
+			new File([""], "test2.txt", {type : 'text/plain'}),
+			new File([""], "test3.txt", {type : 'text/plain'}),
+			new File([""], "test4.txt", {type : 'text/plain'})
+		];
+		const position = { lat: 0, lng: 0 };
+		const forms = files.map((file)=> {
+			var form = new FormData();
+			form.append("latitude", 0);
+			form.append("longitude", 0);
+			form.append("size", file.size);
+			form.append("file", file);
+			return form;
+		});
+
+		mockAxios.onPost('/userdrive/media').replyOnce(200, {
+			message: 'success uploading file'
+		});
+		mockAxios.onPost('/userdrive/media').replyOnce(400, {
+			message: 'file already exists in db'
+		});
+		mockAxios.onPost('/userdrive/media').replyOnce(200, {
+			message: 'success uploading file'
+		});
+		mockAxios.onPost('/userdrive/media').replyOnce(400, {
+			message: 'file size exceeded'
+		});
+
+		const expectedActions = [
+			{ type: "MEDIAS_UPLOAD_PENDING", payload: { index: 0 } },
+			{ type: "MEDIAS_UPLOAD_PENDING", payload: { index: 1 } },
+			{ type: "MEDIAS_UPLOAD_PENDING", payload: { index: 2 } },
+			{ type: "MEDIAS_UPLOAD_PENDING", payload: { index: 3 } },
+			{ 
+				type: "MEDIAS_UPLOAD_FULFILLED", 
+				payload: { 
+					data: [files[0], files[2]], 
+					error: {
+						files: [files[1], files[3]], 
+						messages: [
+							"Error uploading file [test2.txt] : file already exists in db",
+							"Error uploading file [test4.txt] : file size exceeded"
+						]
+					}
+				}
+			}
+		];
+		const store = mockStore({});
+		return store.dispatch(actions.uploadMedias(files, position)).then(()=> {
 			expect(store.getActions()).toEqual(expectedActions);
 		}).catch((err)=> {
 			expect(err).toBeUndefined();
