@@ -20,7 +20,7 @@ export const pointCloudsSourceInitialState = {
   }
 };
 
-const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, action) => {
+export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, action) => {
   switch (action.type) {
     case 'LOGOUT_FULFILLED':
     case 'FETCH_USER_FULFILLED':
@@ -28,12 +28,7 @@ const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, action)
     case 'POINTCLOUDS_UPLOAD_FULFILLED':
     case 'POINTCLOUDS_DELETE_FULFILLED':
     case "POINTCLOUDS_MAP_END_DRAG_FULFILLED": {
-      // return Object.assign({}, state, {
-      //   metadata: Object.assign({}, state.metadata, {
-      //     didChange: true
-      //   })
-      // });
-      // break;
+      break;
     }
     default:
       return defaultSourceReducer(state);
