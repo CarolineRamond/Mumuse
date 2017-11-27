@@ -7,6 +7,7 @@ const rastertilesets = [{
 	date: new Date(),
 	maxzoom: 24,
 	minzoom: 9,
+	priority: 1000,
 	name: "Damascus historical center",
 	precision: 0.1,
 	tileSize: 128,
@@ -33,7 +34,8 @@ const rasterLayers = {
 			name: "Damascus historical center",
 			bounds: [36.30007802124635, 33.50492356207882, 36.30869103984678, 33.51256955798446],
 			isShown: true,
-			isInBounds: false
+			isInBounds: false,
+			priority: 1000
 		}
 	},
 	"57fc94951af5a68c45e68120-layer": {
@@ -49,7 +51,8 @@ const rasterLayers = {
 			name: "Dur-Sharrukin",
 			bounds: [43.22349441788488, 36.503782031163446, 43.233221640104894, 36.51518534690497],
 			isShown: true,
-			isInBounds: false
+			isInBounds: false,
+			priority: 0
 		}
 	}
 }
