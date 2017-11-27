@@ -111,6 +111,23 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 			const newLocked = action.payload.zoom <= 14 && mediaCount > 2000;
 				// ( mediaCount > 2000 || (gridCells.length > 1 && density > 20));
 
+				console.log('\nUPDATE GRID ', action.payload.zoom);
+				console.log('previous lock : ', previousLocked);
+				console.log('new locked : ', newLocked);
+
+			// UPDATE MIN ZOOM
+			if (!newLocked && !previousLocked) {
+				const currentMinZoom = state.minzoom;
+				return {
+					...state,
+					metadata: {
+						...state.metadata,
+						didChange: { zoom: true }
+					},
+					minzoom: Math.min(currentMinZoom, parseInt(action.payload.zoom))
+				}
+			}
+
 			// UNLOCK medias
 			if (!newLocked && previousLocked) {
 				const currentFilter = state.filter || ['all'];
@@ -128,7 +145,7 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 						didChange: { filter: true, zoom: true, paint: paintChange }
 					},
 					filter: newFilter,
-					minzoom: Math.min(action.payload.zoom, 14),
+					minzoom: Math.min(parseInt(action.payload.zoom), 14),
 					// minzoom: 0,
 					paint: {
 						...state.paint,
