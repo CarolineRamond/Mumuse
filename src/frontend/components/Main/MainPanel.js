@@ -14,9 +14,9 @@ import styles from './main.css'
 class MainPanel extends React.Component {
 
     render() {
-        const mapClass = this.props.previewMode ? styles.preview : styles.mainContainer;
-        const previewerClass = this.props.previewMode ? styles.mainContainer : styles.preview;
-        return <div>
+        const mapClass = this.props.previewMode ? styles.preview : styles.main;
+        const previewerClass = this.props.previewMode ? styles.main : styles.preview;
+        return <div class={styles.mainContainer}>
             {/*Map*/} 
             <div className={mapClass}>
                 <Map/>
