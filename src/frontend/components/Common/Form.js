@@ -153,28 +153,26 @@ class Form extends React.Component {
 }
 
 // Props :
-// * title: form title (required) 
-// * fields: form fields (required) 
-// * submit: submit function (required)
-// * cancel: cancel function (required)
-// * links: other links,
-// * helper: helper text
-// Form.propTypes = {
-//     title: PropTypes.string.isRequired, 
-//     fields: PropTypes.objectOf(PropTypes.shape({
-//     	label: PropTypes.string.isRequired,
-//     	type: PropTypes.string.isRequired,
-//     	required: PropTypes.boolean,
-//     	refValue: PropTypes.string,
-//     	validate: PropTypes.func.isRequired
-//     })).isRequired, 
-//     submit: PropTypes.func.isRequired,
-//     cancel: PropTypes.func.isRequired,
-//     links: PropTypes.arrayOf(PropTypes.shape({
-//     	to: PropTypes.string,
-//     	text: PropTypes.string
-//     })),
-//     helper: PropTypes.string
-// }
+// * fields: form fields, inherited (required) 
+// * submit: submit function, inherited (required)
+// * cancel: cancel function, inherited (required)
+// * links: other links, inherited
+// * helper: helper text, inherited
+Form.propTypes = {
+    fields: PropTypes.objectOf(PropTypes.shape({
+    	label: PropTypes.string.isRequired,
+    	type: PropTypes.string.isRequired,
+    	required: PropTypes.boolean,
+    	refValue: PropTypes.string,
+    	validate: PropTypes.func.isRequired
+    })).isRequired, 
+    submit: PropTypes.func.isRequired,
+    cancel: PropTypes.func.isRequired,
+    links: PropTypes.arrayOf(PropTypes.shape({
+    	to: PropTypes.string,
+    	text: PropTypes.string
+    })),
+    helper: PropTypes.string
+}
 
 export default Form;

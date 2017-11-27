@@ -2,6 +2,8 @@
 
 
 To launch : ``npm run dev``
+To launch tests : ``npm run test``
+To get tests coverage : ``npm run test:coverage``
 
 ## Components
 
@@ -55,6 +57,9 @@ A module exports :
 * a map configuration object (optional)
 
 Reducers, actions, selectors & mapConfigs are all merged and exposed in modules/index.js.
+
+/!\ A module that has layers & sources as parts of its state must implement the methods getLayers() & getSources() in its selectors.
+(this way, layers & sources will be exposed and added by map)
 
 
 ### Store organization

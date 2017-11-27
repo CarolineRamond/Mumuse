@@ -116,9 +116,18 @@ class Map extends React.Component {
 	}
 
 	_loadLayers() {
-		forIn(this.props.layersState.data, (layer, layerId)=> {
-			this.map.addLayer(layer);
+		// sort layers by priority
+		const layers = [];
+		forIn(this.props.layersState.data, (layer)=> {
+			layers.push(layer);
 		});
+		layers.sort((a, b)=> {
+			return a.metadata.priority > b.metadata.priority;
+		});
+		// add layers to map
+		layers.map((layer)=> {
+			this.map.addLayer(layer);
+		})
 	}
 
 	_addSimpleEventsHandling() {

@@ -39,7 +39,8 @@ const _formatTilesData = (tilesets)=> {
             	name: item.name,
             	bounds: item.bounds,
                 isShown: true,
-                isInBounds: false
+                isInBounds: false,
+                priority: item.priority || 0
             }
 		};
 	});

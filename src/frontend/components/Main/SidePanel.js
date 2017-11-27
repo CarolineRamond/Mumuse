@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import {Tab, Tabs} from 'react-toolbox';
+import PropTypes from "prop-types"
 
 import { selectors } from "../../modules"
 const { isAuthUserAdmin } = selectors;
@@ -41,6 +42,12 @@ class SidePanel extends React.Component {
 	        </Tabs>
 	    </div>
 	}
+}
+
+// Props :
+// * isAdmin: whether authenticated user has admin rights, provided by connect
+SidePanel.propTypes = {
+    isAdmin: PropTypes.bool,
 }
 
 const ConnectedSidePanel = connect((store)=> {
