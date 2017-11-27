@@ -38,20 +38,35 @@ export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, ac
     case "POINTCLOUDS_INIT_SELECTED_FULFILLED": {
     }
     case "POINTCLOUDS_CLICK": {
-      break;
+      return {
+        ...state,
+        metadata: {
+          ...state.metadata,
+          didChange: {}
+        }
+      }
     }
     case "TOGGLE_LAYER": {
-      break;
+      if (action.payload.layerId === state.id) {
+        const layoutChange = {
+          visibility: state.metadata.isShown ? 'none':'visible'
+        };
+        return {
+          ...state,
+          layout: layoutChange,
+          metadata: {
+            ...state.metadata,
+            isShown: !state.metadata.isShown,
+            wasShownBeforeLock: !state.metadata.isShown,
+            didChange: { layout: layoutChange }
+          }
+        }
+      }
+      return defaultLayerReducer(state);
     }
-    case "POINTCLOUDS_UPDATE_FEATURES": {
-      break;
-    }
-    case "POINTCLOUDS_GRID_UPDATE_FEATURES": {
-      break;
-    }
-    case 'POINTCLOUDS_TIMELINE_UPDATE': {
-      break;
-    }
+    case "POINTCLOUDS_UPDATE_FEATURES":
+    case "POINTCLOUDS_GRID_UPDATE_FEATURES":
+    case 'POINTCLOUDS_TIMELINE_UPDATE':
     default:
       return defaultLayerReducer(state);
   }
