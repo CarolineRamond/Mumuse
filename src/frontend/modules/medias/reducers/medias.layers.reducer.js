@@ -111,10 +111,6 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 			const newLocked = action.payload.zoom <= 14 && mediaCount > 2000;
 				// ( mediaCount > 2000 || (gridCells.length > 1 && density > 20));
 
-				console.log('\nUPDATE GRID ', action.payload.zoom);
-				console.log('previous lock : ', previousLocked);
-				console.log('new locked : ', newLocked);
-
 			// UPDATE MIN ZOOM
 			if (!newLocked && !previousLocked) {
 				const currentMinZoom = state.minzoom;

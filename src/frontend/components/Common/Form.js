@@ -31,10 +31,13 @@ class Form extends React.Component {
 			}
 		});
 		this.state = state;
+		this.handleKeyPress = this.handleKeyPress.bind(this);
+		this.submit = this.submit.bind(this);
 	}
 
 	componentDidMount() {
 		this.validateForm();
+		document.addEventListener("keypress", this.handleKeyPress);
 	}
 
 	handleUserInput(name, value) {
@@ -44,6 +47,17 @@ class Form extends React.Component {
 		this.setState({
 			fieldValues: newFieldValues
 		}, this.validateField(name, value));
+	}
+
+	handleKeyPress(event) {
+		const ENTER_KEY = 13;
+		if (event.keyCode === ENTER_KEY && this.state.formValid) {
+			this.submit();
+		}
+	}
+
+	submit() {
+		this.props.submit(this.state.fieldValues);
 	}
 
 	validateField(name, value) {
@@ -81,6 +95,10 @@ class Form extends React.Component {
 		});
 	}
 
+	componentWillUnmount() {
+		document.removeEventListener("keypress", this.handleKeyPress);
+	}
+
 	render() {
 		var inputs = [];
 		forIn(this.props.fields, (field, name)=> {
@@ -115,7 +133,7 @@ class Form extends React.Component {
 				</Link>
 			});
 		};
-		return <div className={styles.formDialog}>
+		return <div className={styles.formDialog} >
 			<div className={styles.formDialogContent}>
 				{this.props.error &&
 					<div className={styles.formDialogError}>
@@ -140,8 +158,10 @@ class Form extends React.Component {
 				</div>
 			</div>
 			<div className={styles.formDialogActions}>
-				<Button primary disabled={!this.state.formValid}
-					onClick={()=>{this.props.submit(this.state.fieldValues)}}>
+				<Button primary 
+					id="submit-button"
+					disabled={!this.state.formValid}
+					onClick={this.submit}>
 					Submit
 				</Button>
 				<Button onClick={this.props.cancel}>
