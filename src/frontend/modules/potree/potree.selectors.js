@@ -13,3 +13,7 @@ export const getSourcesState = (state) => {
     data: state.sources
   }
 }
+
+export const getSelectedPointCloud = (state) => {
+  return state.pointCloud;
+}

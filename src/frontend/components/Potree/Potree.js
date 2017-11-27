@@ -5,13 +5,13 @@ import potree from "@iconem/iconem-potree";
 import Camera from "./camera";
 
 import { selectors } from "../../modules"
-const { getSelectedMedias, getSelectFilterPending, getVisibleMedias } = selectors;
+const { getSelectedMedias, getSelectFilterPending, getVisibleMedias, getSelectedPointCloud } = selectors;
 import { actions } from "../../modules"
 const { clickMedias, selectMediaById } = actions;
 
 @connect(store => {
   return {
-    potree: store.potree,
+    pointCloud: getSelectedPointCloud(store),
     selectedMedias: getSelectedMedias(store),
     visibleMedias: getVisibleMedias(store),
     selectFilterPending: getSelectFilterPending(store)
@@ -40,14 +40,14 @@ export default class Potree extends React.Component {
     if (
       !this.potreeIsLoading &&
       (this.potree.scene.pointclouds.length === 0 ||
-      (nextProps.potree.pointCloud.metaData && (nextProps.potree.pointCloud.metaData._id !== this.props.potree.pointCloud.metaData._id)))
+      (nextProps.pointCloud.metaData && (nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id)))
     ) {
-        if(nextProps.potree.pointCloud.metaData._id !== this.props.potree.pointCloud.metaData._id) this.potree.scene.pointclouds = [];
+        if(nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id) this.potree.scene.pointclouds = [];
         this.potreeIsLoading = true;
         potree.loadPointCloud(
-          `potreeviewer/potreedataset/${nextProps.potree.pointCloud.metaData
+          `potreeviewer/potreedataset/${nextProps.pointCloud.metaData
             ._id}/cloud.js`,
-          nextProps.potree.pointCloud.metaData.name,
+          nextProps.pointCloud.metaData.name,
           (e) => {
             this.potreeIsLoading = false;
             viewer.scene.addPointCloud(e.pointcloud);
@@ -56,7 +56,7 @@ export default class Potree extends React.Component {
         );
 
         let pointCloudMedias = JSON.parse(
-          nextProps.potree.pointCloud.metaData.visus
+          nextProps.pointCloud.metaData.visus
         );
         this.addCamerasToPotree(pointCloudMedias);
     }
@@ -65,7 +65,7 @@ export default class Potree extends React.Component {
     var currentMedia = this.props.selectedMedias[0];
     var nextMedia = nextProps.selectedMedias[0];
     if (
-      this.props.potree.pointCloud.metaData &&
+      this.props.pointCloud.metaData &&
       nextMedia &&
       (!currentMedia || currentMedia.properties._id !== nextMedia.properties._id)
     ) {
