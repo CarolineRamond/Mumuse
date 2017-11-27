@@ -29,11 +29,11 @@ class MainPanel extends React.Component {
                     <Timeline/>
                 </div> 
             }
-            {/*Previewer*/} 
+            {/*Previewer*/}
             { this.props.showPreviewer &&
                 <div className={previewerClass}>
                     { !this.props.previewMode && <PreviewSwitch/> }
-                    <Previewer media={this.props.selectedMedias[0]}
+                    <Previewer media={this.props.selectedMedias[0]} pointCloud={this.props.selectedPointCloud}
                         previewMode={!this.props.previewMode}/>
                 </div>
             }
@@ -48,16 +48,19 @@ MainPanel.propTypes = {
     previewMode: PropTypes.bool.isRequired,
     showPreviewer: PropTypes.bool.isRequired,
     // selectedMedias: PropTypes.arrayOf(PropTypes.instanceOf(Feature)).isRequired
-    selectedMedias: PropTypes.arrayOf(PropTypes.object).isRequired
+    selectedMedias: PropTypes.arrayOf(PropTypes.object).isRequired,
+    selectedPointCloud: PropTypes.object.isRequired
 }
 
 // Store connection
 const MainPanelConnected = connect((store)=> {
     const selectedMedias = getSelectedMedias(store);
+    const isPointCloudSelected = Object.keys(store.potree.pointCloud).length !== 0 && store.potree.pointCloud.constructor === Object;
     return  {
         previewMode: store.world.previewMode,
-        showPreviewer: (selectedMedias.length === 1),
-        selectedMedias: selectedMedias 
+        showPreviewer: (selectedMedias.length === 1 || isPointCloudSelected),
+        selectedMedias: selectedMedias,
+        selectedPointCloud : store.potree.pointCloud
     }
 })(MainPanel);
 
