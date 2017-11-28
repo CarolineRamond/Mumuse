@@ -1,23 +1,19 @@
-import { combineReducers } from 'redux'
-
 const potreeReducer = (state = {}, action) => {
   switch (action.type) {
-    case "POINTCLOUD_CLICK": {
+    case 'POINTCLOUD_CLICK': {
       let pointCloud;
-      if(action.payload.features.length){
+      if (action.payload.features.length) {
         pointCloud = Object.assign({}, state, {
-          metaData : action.payload.features.length ? action.payload.features[0].properties : null
+          metaData: action.payload.features.length ? action.payload.features[0].properties : null
         });
-      }
-      else{
+      } else {
         pointCloud = Object.assign({});
       }
       return pointCloud;
-      break;
     }
     default:
       return state;
   }
-}
+};
 
 export default potreeReducer;

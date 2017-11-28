@@ -1,12 +1,12 @@
-export const initialState = { 
-	pending: false, 
-	data: null, 
+export const initialState = {
+	pending: false,
+	data: null,
 	error: null
 };
 
 const createUserReducer = (state = initialState, action) => {
-	switch(action.type) {
-		case "CREATE_USER_PENDING": {
+	switch (action.type) {
+		case 'CREATE_USER_PENDING': {
 			return {
 				...state,
 				pending: true,
@@ -14,7 +14,7 @@ const createUserReducer = (state = initialState, action) => {
 				data: null
 			};
 		}
-		case "CREATE_USER_FULFILLED": {
+		case 'CREATE_USER_FULFILLED': {
 			return {
 				...state,
 				pending: false,
@@ -22,9 +22,9 @@ const createUserReducer = (state = initialState, action) => {
 				data: action.payload.data
 			};
 		}
-		case "CREATE_USER_REJECTED": {
+		case 'CREATE_USER_REJECTED': {
 			const response = action.payload.response;
-			var error = `Error ${response.status} (${response.statusText})`;
+			let error = `Error ${response.status} (${response.statusText})`;
 			if (response.data && response.data.message) {
 				error += ` : ${response.data.message}`;
 			}
@@ -35,12 +35,12 @@ const createUserReducer = (state = initialState, action) => {
 				error: error
 			};
 		}
-		case "RESET_CREATE_STATE": {
+		case 'RESET_CREATE_STATE': {
 			return initialState;
 		}
 		default:
 			return state;
 	}
-}
+};
 
 export default createUserReducer;

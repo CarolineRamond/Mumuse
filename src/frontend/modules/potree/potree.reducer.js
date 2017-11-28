@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-
 import layersReducer from './reducers/pointclouds.layers.reducer';
 import sourcesReducer from './reducers/pointclouds.sources.reducer';
 import pointCloudReducer from './reducers/potree.reducer';

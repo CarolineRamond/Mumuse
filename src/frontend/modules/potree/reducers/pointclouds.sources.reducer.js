@@ -1,5 +1,5 @@
-import { combineReducers } from "redux";
-const baseUrl = (window.location.origin !== "null") ? window.location.origin : "http://localhost:8080";
+import { combineReducers } from 'redux';
+const baseUrl = (window.location.origin !== 'null') ? window.location.origin : 'http://localhost:8080';
 
 export const defaultSourceReducer = (state) => {
   return {
@@ -9,10 +9,10 @@ export const defaultSourceReducer = (state) => {
       didChange: false
     }
   };
-}
+};
 
 export const pointCloudsSourceInitialState = {
-  type: "geojson",
+  type: 'geojson',
   data: `${baseUrl}/potreeviewer/potreedataset`,
   metadata: {
       didChange: false,
@@ -28,13 +28,13 @@ export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, 
     case 'LOGIN_FULFILLED':
     case 'POINTCLOUDS_UPLOAD_FULFILLED':
     case 'POINTCLOUDS_DELETE_FULFILLED':
-    case "POINTCLOUDS_MAP_END_DRAG_FULFILLED": {
+    case 'POINTCLOUDS_MAP_END_DRAG_FULFILLED': {
       return defaultSourceReducer(state);
     }
     default:
       return defaultSourceReducer(state);
   }
-}
+};
 
 export default combineReducers({
   'pointClouds-source': pointCloudsSourceReducer

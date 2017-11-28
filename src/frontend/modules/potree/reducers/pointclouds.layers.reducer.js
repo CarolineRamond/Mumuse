@@ -7,26 +7,26 @@ export const defaultLayerReducer = (state) => {
       ...state.metadata,
       didChange: undefined
     }
-  }
-}
+  };
+};
 
 export const pointCloudsLayerInitialState = {
-  id: "pointClouds-layer",
-  type: "fill",
-  source: "pointClouds-source",
+  id: 'pointClouds-layer',
+  type: 'fill',
+  source: 'pointClouds-source',
   layout: {
-      visibility: "visible"
+    visibility: 'visible'
   },
   paint: {
-      'fill-outline-color': '#22a37a ',
-      'fill-color': '#22a37a ',
-      'fill-opacity': 0.6
+    'fill-outline-color': '#22a37a ',
+    'fill-color': '#22a37a ',
+    'fill-opacity': 0.6
   },
   metadata: {
-      name: "Pointcloud",
-      isLocked: false,
-      isShown: true,
-      wasShownBeforeLock: true
+    name: 'Pointcloud',
+    isLocked: false,
+    isShown: true,
+    wasShownBeforeLock: true
   }
 };
 
@@ -35,21 +35,22 @@ export const pointCloudsLayerInitialState = {
 // (pointwise pointclouds representation, originated from geojson source)
 export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, action) => {
   switch (action.type) {
-    case "POINTCLOUDS_INIT_SELECTED_FULFILLED": {
+    case 'POINTCLOUDS_INIT_SELECTED_FULFILLED': {
+      return defaultLayerReducer(state);
     }
-    case "POINTCLOUDS_CLICK": {
+    case 'POINTCLOUDS_CLICK': {
       return {
         ...state,
         metadata: {
           ...state.metadata,
           didChange: {}
         }
-      }
+      };
     }
-    case "TOGGLE_LAYER": {
+    case 'TOGGLE_LAYER': {
       if (action.payload.layerId === state.id) {
         const layoutChange = {
-          visibility: state.metadata.isShown ? 'none':'visible'
+          visibility: state.metadata.isShown ? 'none' : 'visible'
         };
         return {
           ...state,
@@ -60,17 +61,17 @@ export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, ac
             wasShownBeforeLock: !state.metadata.isShown,
             didChange: { layout: layoutChange }
           }
-        }
+        };
       }
       return defaultLayerReducer(state);
     }
-    case "POINTCLOUDS_UPDATE_FEATURES":
-    case "POINTCLOUDS_GRID_UPDATE_FEATURES":
+    case 'POINTCLOUDS_UPDATE_FEATURES':
+    case 'POINTCLOUDS_GRID_UPDATE_FEATURES':
     case 'POINTCLOUDS_TIMELINE_UPDATE':
     default:
       return defaultLayerReducer(state);
   }
-}
+};
 
 export default combineReducers({
   'pointClouds-layer': pointCloudsLayerReducer

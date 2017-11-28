@@ -1,12 +1,12 @@
-export const initialState = { 
-	pending: false, 
-	data: null, 
+export const initialState = {
+	pending: false,
+	data: null,
 	error: null
 };
 
 const uploadMediasReducer = (state = initialState, action) => {
-	switch(action.type) {
-		case "MEDIAS_UPLOAD_PENDING": {
+	switch (action.type) {
+		case 'MEDIAS_UPLOAD_PENDING': {
 			return {
 				...state,
 				pending: action.payload.index,
@@ -14,7 +14,7 @@ const uploadMediasReducer = (state = initialState, action) => {
 				data: null
 			};
 		}
-		case "MEDIAS_UPLOAD_FULFILLED": {
+		case 'MEDIAS_UPLOAD_FULFILLED': {
 			return {
 				...state,
 				pending: false,
@@ -22,12 +22,13 @@ const uploadMediasReducer = (state = initialState, action) => {
 				data: action.payload.data
 			};
 		}
-		case "RESET_MEDIAS_UPLOAD": {
+		case 'RESET_MEDIAS_UPLOAD': {
 			return initialState;
 		}
 		default:
 			return state;
 	}
-}
+};
 
 export default uploadMediasReducer;
+

@@ -1,14 +1,8 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const fetchRastertilesets = ()=> {
-	return { 
-		type: 'FETCH_RASTERTILESETS', 
-		payload: axios.get('/map/rastertile'),
+	return {
+		type: 'FETCH_RASTERTILESETS',
+		payload: axios.get('/map/rastertile')
 	};
 };
-
-
-
-
-
-

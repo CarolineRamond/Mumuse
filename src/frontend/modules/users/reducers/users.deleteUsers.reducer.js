@@ -1,12 +1,12 @@
-export const initialState = { 
-	pending: false, 
-	data: null, 
+export const initialState = {
+	pending: false,
+	data: null,
 	error: null
 };
 
 const deleteUsersReducer = (state = initialState, action) => {
-	switch(action.type) {
-		case "DELETE_USERS_PENDING": {
+	switch (action.type) {
+		case 'DELETE_USERS_PENDING': {
 			return {
 				...state,
 				pending: true,
@@ -14,7 +14,7 @@ const deleteUsersReducer = (state = initialState, action) => {
 				data: null
 			};
 		}
-		case "DELETE_USERS_FULFILLED": {
+		case 'DELETE_USERS_FULFILLED': {
 			return {
 				...state,
 				pending: false,
@@ -22,9 +22,9 @@ const deleteUsersReducer = (state = initialState, action) => {
 				data: action.payload.data
 			};
 		}
-		case "DELETE_USERS_REJECTED": {
+		case 'DELETE_USERS_REJECTED': {
 			const response = action.payload.response;
-			var error = `Error ${response.status} (${response.statusText})`;
+			let error = `Error ${response.status} (${response.statusText})`;
 			if (response.data && response.data.message) {
 				error += ` : ${response.data.message}`;
 			}
@@ -35,12 +35,12 @@ const deleteUsersReducer = (state = initialState, action) => {
 				error: error
 			};
 		}
-		case "RESET_DELETE_STATE": {
+		case 'RESET_DELETE_STATE': {
 			return initialState;
 		}
 		default:
 			return state;
 	}
-}
+};
 
 export default deleteUsersReducer;

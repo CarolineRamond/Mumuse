@@ -1,12 +1,12 @@
-export const initialState = { 
-	pending: false, 
-	data: null, 
+export const initialState = {
+	pending: false,
+	data: null,
 	error: null
 };
 
 const currentUserReducer = (state = initialState, action) => {
-	switch(action.type) {
-		case "FETCH_USER_PENDING": {
+	switch (action.type) {
+		case 'FETCH_USER_PENDING': {
 			return {
 				...state,
 				pending: true,
@@ -14,7 +14,7 @@ const currentUserReducer = (state = initialState, action) => {
 				data: null
 			};
 		}
-		case "FETCH_USER_FULFILLED": {
+		case 'FETCH_USER_FULFILLED': {
 			return {
 				...state,
 				pending: false,
@@ -22,9 +22,9 @@ const currentUserReducer = (state = initialState, action) => {
 				data: action.payload.data
 			};
 		}
-		case "FETCH_USER_REJECTED": {
+		case 'FETCH_USER_REJECTED': {
 			const response = action.payload.response;
-			var error = `Error ${response.status} (${response.statusText})`;
+			let error = `Error ${response.status} (${response.statusText})`;
 			if (response.data && response.data.message) {
 				error += ` : ${response.data.message}`;
 			}
@@ -38,6 +38,6 @@ const currentUserReducer = (state = initialState, action) => {
 		default:
 			return state;
 	}
-}
+};
 
 export default currentUserReducer;

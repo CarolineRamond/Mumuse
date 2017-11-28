@@ -1,16 +1,16 @@
-import { combineReducers } from "redux";
-import { forIn } from "lodash";
+import { combineReducers } from 'redux';
+import { forIn } from 'lodash';
 
-import auth from "./auth";
-import medias from "./medias";
-import rastertiles from "./rastertiles";
-import users from "./users";
-import world from "./world";
+import auth from './auth';
+import medias from './medias';
+import rastertiles from './rastertiles';
+import users from './users';
+import world from './world';
 import potree from './potree';
 
 const modules = [auth, medias, rastertiles, users, world, potree];
 
-// reducer 
+// reducer
 // (combination of all modules' reducers)
 const reducer = combineReducers({
 	world: world.reducer,
@@ -23,12 +23,12 @@ const reducer = combineReducers({
 
 // selectors
 // all exposed selectors take full store as argument
-// => if "medias" module has selector "getSelectedMedias",
+// => if 'medias' module has selector 'getSelectedMedias',
 // the exposed selector will be :
 // (store)=> { return getSelectedMedias(store.medias) }
-var selectors = modules.reduce((result, module)=> {
+const selectors = modules.reduce((result, module)=> {
 	forIn(module.selectors, (selector)=> {
-		if (selector.name !== "getLayersState" && selector.name !== "getSourcesState") {
+		if (selector.name !== 'getLayersState' && selector.name !== 'getSourcesState') {
 			result[selector.name] = (store)=> {
 				return selector(store[module.name]);
 			};
@@ -39,17 +39,17 @@ var selectors = modules.reduce((result, module)=> {
 
 // getLayersState : a selector that gather and return
 // all the layersState from all modules, ie :
-// getLayersState = (store) => { 
+// getLayersState = (store) => {
 // 		return merge(medias.getLayersState(store.medias), raster.getLayersState(store.raster))
 // }
 const getLayersState = (state)=> {
 	const layersState = modules.reduce((result, module)=> {
-		if (module.selectors["getLayersState"]) {
-			const moduleResult = module.selectors["getLayersState"](state[module.name]);
+		if (module.selectors.getLayersState) {
+			const moduleResult = module.selectors.getLayersState(state[module.name]);
 			result.pending = result.pending || moduleResult.pending;
 			// result.error = TODO
 			if (result.data && moduleResult.data) {
-				result.data = Object.assign({}, result.data, moduleResult.data)
+				result.data = Object.assign({}, result.data, moduleResult.data);
 			} else if (!result.data && moduleResult.data) {
 				result.data = moduleResult.data;
 			}
@@ -57,21 +57,21 @@ const getLayersState = (state)=> {
 		return result;
 	}, { pending: false, error: null, data: null });
 	return layersState;
-}
+};
 
 // getSourcesState : a selector that gather and return
 // all the sourcesState from all modules, ie :
-// getSourcesState = (store) => { 
+// getSourcesState = (store) => {
 // 		return merge(medias.getLayersState(store.medias), raster.getLayersState(store.raster))
 // }
 const getSourcesState = (state)=> {
 	const sourcesState = modules.reduce((result, module)=> {
-		if (module.selectors["getSourcesState"]) {
-			const moduleResult = module.selectors["getSourcesState"](state[module.name]);
+		if (module.selectors.getSourcesState) {
+			const moduleResult = module.selectors.getSourcesState(state[module.name]);
 			result.pending = result.pending || moduleResult.pending;
 			// result.error = TODO
 			if (result.data && moduleResult.data) {
-				result.data = Object.assign({}, result.data, moduleResult.data)
+				result.data = Object.assign({}, result.data, moduleResult.data);
 			} else if (!result.data && moduleResult.data) {
 				result.data = moduleResult.data;
 			}
@@ -79,11 +79,11 @@ const getSourcesState = (state)=> {
 		return result;
 	}, { pending: false, error: null, data: null });
 	return sourcesState;
-}
+};
 
 // expose getLayersState & getSourcesState as selectors
-selectors["getSourcesState"] = getSourcesState;
-selectors["getLayersState"] = getLayersState;
+selectors.getSourcesState = getSourcesState;
+selectors.getLayersState = getLayersState;
 
 // actions
 const actions = modules.reduce((result, module)=> {
@@ -107,4 +107,4 @@ const mapConfig = modules.reduce((result, module)=> {
 
 
 export default reducer;
-export { selectors, actions, mapConfig }
+export { selectors, actions, mapConfig };

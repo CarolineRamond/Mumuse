@@ -1,12 +1,12 @@
-export const initialState = { 
-	pending: false, 
-	data: null, 
+export const initialState = {
+	pending: false,
+	data: null,
 	error: null
 };
 
 const usersListReducer = (state = initialState, action) => {
-	switch(action.type) {
-		case "FETCH_USERS_LIST_PENDING": {
+	switch (action.type) {
+		case 'FETCH_USERS_LIST_PENDING': {
 			return {
 				...state,
 				pending: true,
@@ -14,7 +14,7 @@ const usersListReducer = (state = initialState, action) => {
 				data: null
 			};
 		}
-		case "FETCH_USERS_LIST_FULFILLED": {
+		case 'FETCH_USERS_LIST_FULFILLED': {
 			return {
 				...state,
 				pending: false,
@@ -22,9 +22,9 @@ const usersListReducer = (state = initialState, action) => {
 				data: action.payload.data
 			};
 		}
-		case "FETCH_USERS_LIST_REJECTED": {
+		case 'FETCH_USERS_LIST_REJECTED': {
 			const response = action.payload.response;
-			var error = `Error ${response.status} (${response.statusText})`;
+			let error = `Error ${response.status} (${response.statusText})`;
 			if (response.data && response.data.message) {
 				error += ` : ${response.data.message}`;
 			}
@@ -35,13 +35,13 @@ const usersListReducer = (state = initialState, action) => {
 				error: error
 			};
 		}
-		case "CREATE_USER_FULFILLED": {
+		case 'CREATE_USER_FULFILLED': {
 			return {
 				...state,
 				data: state.data.concat(action.payload.data)
 			};
 		}
-		case "UPDATE_USER_FULFILLED": {
+		case 'UPDATE_USER_FULFILLED': {
 			const updatedUser = action.payload.data;
 			const newData = state.data.map((user)=> {
 				if (user._id === updatedUser._id) {
@@ -54,7 +54,7 @@ const usersListReducer = (state = initialState, action) => {
 				data: newData
 			};
 		}
-		case "DELETE_USERS_FULFILLED": {
+		case 'DELETE_USERS_FULFILLED': {
 			const deletedIds = action.payload.data;
 			const newData = state.data.filter((user)=> {
 				return deletedIds.indexOf(user._id) === -1;
@@ -67,6 +67,6 @@ const usersListReducer = (state = initialState, action) => {
 		default:
 			return state;
 	}
-}
+};
 
 export default usersListReducer;

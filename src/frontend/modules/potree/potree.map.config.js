@@ -2,10 +2,10 @@ import { clickPointCloud } from './potree.actions';
 
 export default {
     click: [{
-        layerIds: ["pointClouds-layer"],
+        layerIds: ['pointClouds-layer'],
         action: clickPointCloud
     }],
-    dragndrop: [], 
+    dragndrop: [],
     renderedFeatures: [],
     events: []
-}
+};
