@@ -48,7 +48,7 @@ class MainPanel extends React.Component {
 MainPanel.propTypes = {
     previewMode: PropTypes.bool.isRequired,
     showPreviewer: PropTypes.bool.isRequired,
-    selectedPointCloud: PropTypes.object.isRequired
+    selectedPointCloud: PropTypes.object.isRequired,
     selectedMedias: PropTypes.arrayOf(PropTypes.shape({
         properties: PropTypes.object,
         geometry: PropTypes.object

@@ -1,4 +1,5 @@
 import { forIn } from "lodash";
+const baseUrl = window.location.origin || "http://localhost:8080";
 
 export const initialState = {
 	pending: false,
@@ -14,8 +15,7 @@ const _formatTilesData = (tilesets)=> {
 	tilesets.map((item)=> {
 		const sourceName = item._id + "-source";
 		const layerName = item._id + "-layer";
-		const tilesUrl = 'http://localhost:8080/map/rastertile/' + item._id +
-			'/{z}/{x}/{y}.pbf';
+		const tilesUrl = `${baseUrl}/map/rastertile/${item._id}/{z}/{x}/{y}.pbf`;
 
 		sources[sourceName] = {
 			type: "raster",
