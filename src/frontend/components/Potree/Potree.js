@@ -42,23 +42,26 @@ export default class Potree extends React.Component {
       (this.potree.scene.pointclouds.length === 0 ||
       (nextProps.pointCloud.metaData && (nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id)))
     ) {
-        if(nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id) this.potree.scene.pointclouds = [];
-        this.potreeIsLoading = true;
-        potree.loadPointCloud(
-          `potreeviewer/potreedataset/${nextProps.pointCloud.metaData
-            ._id}/cloud.js`,
-          nextProps.pointCloud.metaData.name,
-          (e) => {
-            this.potreeIsLoading = false;
-            viewer.scene.addPointCloud(e.pointcloud);
-            viewer.fitToScreen();
-          }
-        );
+        // Empty point cloud if necessary
+        if(nextProps.pointCloud.metaData && nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id) this.potree.scene.pointclouds = [];
+        if(nextProps.pointCloud.metaData && nextProps.pointCloud.metaData._id){
+          this.potreeIsLoading = true;
+          potree.loadPointCloud(
+            `potreeviewer/potreedataset/${nextProps.pointCloud.metaData
+              ._id}/cloud.js`,
+            nextProps.pointCloud.metaData.name,
+            (e) => {
+              this.potreeIsLoading = false;
+              viewer.scene.addPointCloud(e.pointcloud);
+              viewer.fitToScreen();
+            }
+          );
 
-        let pointCloudMedias = JSON.parse(
-          nextProps.pointCloud.metaData.visus
-        );
-        this.addCamerasToPotree(pointCloudMedias);
+          let pointCloudMedias = JSON.parse(
+            nextProps.pointCloud.metaData.visus
+          );
+          this.addCamerasToPotree(pointCloudMedias);
+        }
     }
 
     // Select media on 3D viewer when a media is selected, else reset viewer view
@@ -308,15 +311,19 @@ export default class Potree extends React.Component {
     e = e || window.event;
     //right button click
     if (
-      ("which" in e && e.which == 3) || // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-      ("button" in e && e.button == 2) // IE, Opera
+      (("which" in e && e.which == 3) || // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+      ("button" in e && e.button == 2)) && // IE, Opera
+      this.mediaCamera_intersected
     ) {
       this.goToMediaCamera(this.mediaCamera_intersected);
-      this.props.dispatch(
-        selectMediaById({
-          mediaId: this.mediaCamera_intersected.userData.mediaId
-        })
-      );
+      
+      if(!this.props.selectedMedias[0] || this.props.selectedMedias[0].properties._id !== this.mediaCamera_intersected.userData.mediaId){
+        this.props.dispatch(
+          selectMediaById({
+            mediaId: this.mediaCamera_intersected.userData.mediaId
+          })
+        );
+      }
     }
   }
 }
