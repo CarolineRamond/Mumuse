@@ -23,13 +23,13 @@ class Auth extends React.Component {
 }
 
 // Props :
-// * location : current route location, provided by function withRouter (required)
-// * match : current route match, provided by function withRouter
-// * history : current router history, provided by function withRouter
+// * location : current route location, inherited from Route component (required)
+// * match : current route match, inherited from Route component
+// * history : current router history, inherited from Route component
 Auth.propTypes = {
     location: PropTypes.object.isRequired, 
     match: PropTypes.object, 
     history: PropTypes.object 
 }
 
-export default withRouter(Auth);
+export default Auth;
