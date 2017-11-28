@@ -29,7 +29,8 @@ export const mediasLayerInitialState = {
 	    name: "Medias",
 	    isLocked: true,
 	    isShown: false,
-	    wasShownBeforeLock: true
+	    wasShownBeforeLock: true,
+	    priority: 5000,
 	}
 };
 
@@ -100,15 +101,28 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 			return defaultLayerReducer(state);
 		}
 		case "MEDIAS_GRID_UPDATE_FEATURES": {
-			const mediaCount = action.payload.features.reduce((count, feature)=> {
+			const gridCells = action.payload.features;
+			const mediaCount = gridCells.reduce((count, feature)=> {
 				return count + feature.properties.allMediaCount
 			}, 0);
 			const previousLocked = state.metadata.isLocked;
 			const wasShownBeforeLock = state.metadata.wasShownBeforeLock;
-			const newLocked = action.payload.zoom <= 14 &&
-				( mediaCount > 2000);
-				// ( mediaCount > 2000 || mediaCount / action.payload.features.length > 10);
+			const density = (mediaCount / gridCells.length);
+			const newLocked = action.payload.zoom <= 14 && mediaCount > 2000;
+				// ( mediaCount > 2000 || (gridCells.length > 1 && density > 20));
 
+			// UPDATE MIN ZOOM
+			if (!newLocked && !previousLocked) {
+				const currentMinZoom = state.minzoom;
+				return {
+					...state,
+					metadata: {
+						...state.metadata,
+						didChange: { zoom: true }
+					},
+					minzoom: Math.min(currentMinZoom, parseInt(action.payload.zoom))
+				}
+			}
 
 			// UNLOCK medias
 			if (!newLocked && previousLocked) {
@@ -127,7 +141,8 @@ export const mediasLayerReducer = (state = mediasLayerInitialState, action) => {
 						didChange: { filter: true, zoom: true, paint: paintChange }
 					},
 					filter: newFilter,
-					minzoom: 0,
+					minzoom: Math.min(parseInt(action.payload.zoom), 14),
+					// minzoom: 0,
 					paint: {
 						...state.paint,
 						...paintChange
@@ -208,7 +223,9 @@ export const gridLayerInitialState = {
 	    name: "Medias Grid",
 	    isLocked: false,
 	    isShown: true,
-	    wasShownBeforeLock: true
+	    wasShownBeforeLock: true,
+	    priority: 4000,
+	    before: "medias-layer"
 	}
 };
 
@@ -277,7 +294,8 @@ export const selectedMediasLayerInitialState = {
 	    name: "Selected Medias",
 	    isLocked: false,
 	    isShown: true,
-	    wasShownBeforeLock: true
+	    wasShownBeforeLock: true,
+	    priority: 6000
 	}
 }
 

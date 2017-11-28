@@ -39,6 +39,7 @@ export default class Potree extends React.Component {
     // Load pointcloud and add cameraMedia to potree
     if (
       !this.potreeIsLoading &&
+      nextProps.pointCloud.metaData &&
       (this.potree.scene.pointclouds.length === 0 ||
       (nextProps.pointCloud.metaData && (nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id)))
     ) {

@@ -2,6 +2,8 @@
 
 
 To launch : ``npm run dev``
+To launch tests : ``npm run test``
+To get tests coverage : ``npm run test:coverage``
 
 ## Components
 
@@ -56,6 +58,9 @@ A module exports :
 
 Reducers, actions, selectors & mapConfigs are all merged and exposed in modules/index.js.
 
+/!\ A module that has layers & sources as parts of its state must implement the methods getLayersState() & getSourcesState() in its selectors.
+(this way, layers & sources will be exposed and added by map)
+
 
 ### Store organization
 
@@ -108,6 +113,7 @@ Layer : {
 	// cf mapbox layer definition : same attributes +
 	metadata: {
 		name: String, // layer display name
+		priority: Number, // layer priority (equivalent to "z-index")
 		isLocked: Bool, // if locked, user can't interact with this layer 
 						// (ex: medias-layer is locked where there are too much medias)
 		isShown: Bool, // whether layer is displayed on map

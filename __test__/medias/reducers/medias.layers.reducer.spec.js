@@ -316,7 +316,7 @@ describe('medias layer reducer', () => {
       expect(reducer(mediasLayerInitialState, action)).toEqual({
         ...mediasLayerInitialState,
         filter: ['all'],
-        minzoom: 0,
+        minzoom: 14,
         paint: { 
           ...mediasLayerInitialState.paint,
           "circle-opacity": 1 
@@ -333,16 +333,16 @@ describe('medias layer reducer', () => {
     it('should unlock layer if mediaCount < 2000', () => {
       const features = [{
         type: "Feature",
-        properties: { allMediaCount: 1998 }
+        properties: { allMediaCount: 1999 }
       }];
       const zoom = 7;
       const action = actions.updateFeaturesGridMedias({ features, zoom });
 
-      // min count was reached : medias should be unlocked and shown
+      // medias should be unlocked and shown
       expect(reducer(mediasLayerInitialState, action)).toEqual({
         ...mediasLayerInitialState,
         filter: ['all'],
-        minzoom: 0,
+        minzoom: 7,
         paint: { 
           ...mediasLayerInitialState.paint,
           "circle-opacity": 1 
@@ -352,35 +352,6 @@ describe('medias layer reducer', () => {
           isShown: true,
           isLocked: false,
           didChange: { filter: true, zoom: true, paint: { "circle-opacity": 1 } }
-        }
-      });
-    });
-
-    it('should lock layer when mediaCount > 2000 & z<14', () => {
-      const features1 = [{
-        type: "Feature",
-        properties: { allMediaCount: 1998 }
-      }];
-      const zoom1 = 7;
-      const features2 = [{
-        type: "Feature",
-        properties: { allMediaCount: 2009 }
-      }];
-      const zoom2 = 6;
-      const action1 = actions.updateFeaturesGridMedias({ features: features1, zoom: zoom1 });
-      const action2 = actions.updateFeaturesGridMedias({ features: features2, zoom: zoom2 });
-      const initialState = reducer(mediasLayerInitialState, action1)
-
-      // min zoom was reached : medias should be unlocked and shown
-      expect(reducer(initialState, action2)).toEqual({
-        ...mediasLayerInitialState,
-        metadata: {
-          ...mediasLayerInitialState.metadata,
-          didChange: { filter: true, zoom: true, paint: { "circle-opacity": 0 }}
-        },
-        paint: {
-          ...mediasLayerInitialState.paint,
-          "circle-opacity": 0
         }
       });
     });

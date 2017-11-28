@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+const baseUrl = (window.location.origin !== "null") ? window.location.origin : "http://localhost:8080";
 
 export const defaultSourceReducer = (state) => {
   return {
@@ -12,7 +13,7 @@ export const defaultSourceReducer = (state) => {
 
 export const pointCloudsSourceInitialState = {
   type: "geojson",
-  data: 'http://localhost:8080/potreeviewer/potreedataset',
+  data: `${baseUrl}/potreeviewer/potreedataset`,
   metadata: {
       didChange: false,
       selectFilterPending: false,
@@ -28,7 +29,7 @@ export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, 
     case 'POINTCLOUDS_UPLOAD_FULFILLED':
     case 'POINTCLOUDS_DELETE_FULFILLED':
     case "POINTCLOUDS_MAP_END_DRAG_FULFILLED": {
-      break;
+      return defaultSourceReducer(state);
     }
     default:
       return defaultSourceReducer(state);

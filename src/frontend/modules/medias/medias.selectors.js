@@ -34,7 +34,11 @@ export const getVisibleMedias = (state) => {
 			return item;
 		}).sort((a,b)=> {
 			if (a.properties.date === b.properties.date) {
-				return a.properties.name.localeCompare(b.properties.name);
+				if (a.properties.name) {
+					return a.properties.name.localeCompare(b.properties.name);
+				} else {
+					return 1;
+				}
 			}
 			return (a.properties.date - b.properties.date);
 		});
