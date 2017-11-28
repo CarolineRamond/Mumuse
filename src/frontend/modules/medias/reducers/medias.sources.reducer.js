@@ -1,4 +1,4 @@
-const baseUrl = window.location.origin || "http://localhost:8080";
+const baseUrl = (window.location.origin !== "null") ? window.location.origin : "http://localhost:8080";
 // default value is for tests
 
 export const defaultSourceReducer = (state) => {

@@ -1,5 +1,5 @@
 import { forIn } from "lodash";
-const baseUrl = window.location.origin || "http://localhost:8080";
+const baseUrl = (window.location.origin !== "null") ? window.location.origin : "http://localhost:8080";
 
 export const initialState = {
 	pending: false,

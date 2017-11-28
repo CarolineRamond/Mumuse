@@ -59,7 +59,7 @@ const rasterLayers = {
 const rasterSources = {
 	"57fc94951af5a68c45e6811f-source": {
 		type: "raster",
-		tiles: ['http://localhost:8081/map/rastertile/57fc94951af5a68c45e6811f/{z}/{x}/{y}.pbf'],
+		tiles: ['http://localhost:8080/map/rastertile/57fc94951af5a68c45e6811f/{z}/{x}/{y}.pbf'],
 		tileSize: 128,
 		minzoom: 9,
 		maxzoom: 24,
@@ -67,7 +67,7 @@ const rasterSources = {
 	},
 	"57fc94951af5a68c45e68120-source": {
 		type: "raster",
-		tiles: ['http://localhost:8081/map/rastertile/57fc94951af5a68c45e68120/{z}/{x}/{y}.pbf'],
+		tiles: ['http://localhost:8080/map/rastertile/57fc94951af5a68c45e68120/{z}/{x}/{y}.pbf'],
 		tileSize: 256,
 		minzoom: 10,
 		maxzoom: 22,
