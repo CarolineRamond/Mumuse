@@ -26,6 +26,11 @@ module.exports = function makeWebpackConfig() {
     chunkFilename: isProd ? '[name].[hash].js' : '[name].bundle.js'
   };
 
+  // config.eslint = {
+  //   failOnWarning: false,
+  //   failOnError: true
+  // };
+
   if (isTest) {
     config.devtool = 'inline-source-map';
   }
@@ -37,7 +42,14 @@ module.exports = function makeWebpackConfig() {
   }
 
   config.module = {
-    rules: [{
+    rules: [
+      {
+        enforce: 'pre',
+        test: /\.jsx?$/,
+        exclude: /(node_modules|IconemPotree)/,
+        loader: 'eslint-loader'
+      },
+      {
         test: /\.jsx?$/,
         exclude: /(node_modules|IconemPotree)/,
         loader: 'babel-loader',
