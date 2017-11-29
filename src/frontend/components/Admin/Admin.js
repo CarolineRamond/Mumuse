@@ -108,6 +108,10 @@ class Admin extends React.Component {
 // *	pending: boolean, true if a request is on going
 // *	data: contains currently authenticated user (if any) once the request is finished
 // *	error: contains an error string if no authenticated user was retrieved
+// * dispatch: redux store dispatch function, provided by connect (required)
+// * history: current router history, inherited from Route component (required)
+// * location: current route location, inherited from Route component (required)
+// * match: current route match, inherited from Route component
 Admin.propTypes = {
     authUserState: PropTypes.shape({
 		pending: PropTypes.bool,
@@ -115,7 +119,7 @@ Admin.propTypes = {
 		error: PropTypes.string
     }).isRequired,
     dispatch: PropTypes.func.isRequired,
-    history: PropTypes.object,
+    history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object
 };

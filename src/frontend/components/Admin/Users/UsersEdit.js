@@ -133,14 +133,15 @@ class UsersEdit extends React.Component {
 }
 
 // Props :
-// * location : current route location, inherited from Route component
-// * match : current route match, inherited from Route component
-// * history : current router history, inherited from Route component (required)
-// * currentUserState : state of the request FETCH_USER, provided by connect, required
+// * currentUserState : state of the request FETCH_USER, provided by connect (required)
 // *    pending: boolean, true if a request is on going
 // *    data: contains the currently edited user once the request is finished
 // *    error: contains an error string if currently edited user could not be retrieved
-// * updateUserState : state of the request UPDATE_USER, provided by connect, required
+// * dispatch: redux store dispatch function, provided by connect (required)
+// * history : current router history, inherited from Route component (required)
+// * location : current route location, inherited from Route component
+// * match : current route match, inherited from Route component (required)
+// * updateUserState : state of the request UPDATE_USER, provided by connect (required)
 // *    pending: boolean, true if a request is on going
 // *    data: contains the newly edited user once the request is finished
 // *    error: contains an error string if user could not be edited

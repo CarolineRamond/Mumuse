@@ -176,6 +176,13 @@ class Previewer extends React.Component {
 	}
 }
 
+// Props :
+// * media: currently selected media (if any),
+//   inherited from MainPanel
+// * pointCloud : currently selected pointcloud (if any),
+//   inherited from MainPanel
+// * previewMode : whether the previewer should be in preview mode (ie small) or not,
+//   inherited from MainPanel
 Previewer.propTypes = {
 	media: PropTypes.shape({
 		properties: PropTypes.object,

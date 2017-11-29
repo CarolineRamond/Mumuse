@@ -319,6 +319,11 @@ class Potree extends React.Component {
   }
 }
 
+// Props :
+// * dispatch: redux store dispatch function, provided by connect (required)
+// * pointCloud : currently selected pointcloud (if any), provided by connect
+// * selectedMedias: currently selected medias, provided by connect
+// * visibleMedias: currently visible medias, provided by connect
 Potree.propTypes = {
   dispatch: PropTypes.func.isRequired,
   pointCloud: PropTypes.object,

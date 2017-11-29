@@ -114,6 +114,7 @@ class UsersTable extends React.Component {
 }
 
 // Props :
+// * dispatch: redux store dispatch function, provided by connect (required)
 // * usersListState : state of the request FETCH_USERS_LIST, provided by connect, required
 // *    pending: boolean, true if a request is on going
 // *    data: contains the full list of users once the request is finished

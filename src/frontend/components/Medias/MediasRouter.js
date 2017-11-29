@@ -59,9 +59,10 @@ class MediasRouter extends React.Component {
 }
 
 // Props :
+// * dispatch: redux store dispatch function, provided by connect (required)
+// * history : current router history, provided by withRouter (required)
 // * location : current route location, provided by withRouter
 // * match : current route match, provided by withRouter
-// * history : current router history, provided by withRouter (required)
 // * selectedMedias : currently selected medias, provided by connect
 MediasRouter.propTypes = {
 	dispatch: PropTypes.func.isRequired,

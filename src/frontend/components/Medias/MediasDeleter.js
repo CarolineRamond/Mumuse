@@ -135,8 +135,10 @@ class MediasDeleter extends React.Component {
 }
 
 // Props :
-// * deleteServerState : state of the request DELETE_MEDIAS, provided by connect, required
-// *    pending: boolean, true if a request is on going
+// * dispatch: redux store dispatch function, provided by connect (required)
+// * deleteServerState : state of the request DELETE_MEDIAS, provided by connect (required)
+// *    pending: boolean or number, assigned if a request is on going
+//      (index corresponds to the index of the on going request in case of several medias)
 // *    data: contains successfully deleted ids once the request is finished
 // *    error: contains an error string if users could not be deleted
 // * selectedMedias : currently selected medias, provided by connect

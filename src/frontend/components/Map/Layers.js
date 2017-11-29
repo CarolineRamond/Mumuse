@@ -93,12 +93,18 @@ class Layers extends React.Component {
 }
 
 // Props :
-// * layers: map layers, provided by @connect (required),
+// * dispatch: redux store dispatch function, provided by connect (required)
+// * mediaLayers: map {layerId -> layer} containing medias-related layers,
+//   provided by connect (required),
+// * pointCloudLayers: map {layerId -> layer} containing pointCloud-related layers,
+//   provided by connect (required),
+// * rasterLayers: map {layerId -> layer} containing rasterlayers,
+//   provided by connect (required),
 Layers.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  mediaLayers: PropTypes.object,
-  pointCloudLayers: PropTypes.object,
-  rasterLayers: PropTypes.object
+  mediaLayers: PropTypes.object.isRequired,
+  pointCloudLayers: PropTypes.object.isRequired,
+  rasterLayers: PropTypes.object.isRequired
 };
 
 // Store connection

@@ -19,9 +19,9 @@ class Users extends React.Component {
 }
 
 // Props :
+// * history : current router history, inherited from Route component
 // * location : current route location, inherited from Route component (required)
 // * match : current route match, inherited from Route component
-// * history : current router history, inherited from Route component
 Users.propTypes = {
     history: PropTypes.object,
     location: PropTypes.object.isRequired,

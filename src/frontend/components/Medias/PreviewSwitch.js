@@ -27,6 +27,8 @@ class PreviewSwitch extends React.Component {
 	}
 }
 
+// Props :
+// * dispatch: redux store dispatch function, provided by connect (required)
 PreviewSwitch.propTypes = {
 	dispatch: PropTypes.func.isRequired
 };

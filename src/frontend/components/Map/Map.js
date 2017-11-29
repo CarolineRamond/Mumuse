@@ -342,12 +342,24 @@ class Map extends React.Component {
 }
 
 // Props :
-// * world : current world state (lat, lng, zoom + resize), provided by @connect
-// * layers : map layers, provided by @connect
-// * sources : map sources, provided by @connect
+// * dispatch: redux store dispatch function, provided by connect (required)
+// * history : current router history, provided by function withRouter (required)
+// * isAdmin: whether currently authenticated user has admin rights
+// * layersState : map layers, provided by connect (required)
+// * 	pending: whether layers are being retrieved from server
+// *    error: contains an array of error strings if some layers could not be retrieved from server
+// * 	data: contains a map { layerId -> layer } once layers are retrieved from server
 // * location : current route location, provided by function withRouter
 // * match : current route match, provided by function withRouter (required)
-// * history : current router history, provided by function withRouter (required)
+// * sources : map sources, provided by connect (required)
+// * 	pending: whether sources are being retrieved from server
+// *    error: contains an array of error strings if some sources could not be retrieved from server
+// * 	data: contains a map { sourceId -> source } once sources are retrieved from server
+// * world : current world state, provided by connect (required)
+// * 	lat: current map center's latitude
+// *    lng: current map center's longitude
+// * 	zoom: current map zoom
+// *	shouldMapResize : true if map should resize on componentReceiveNextProps
 Map.propTypes = {
 	dispatch: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
@@ -356,20 +368,20 @@ Map.propTypes = {
 		pending: PropTypes.bool.isRequired,
 		error: PropTypes.object,
 		data: PropTypes.object
-	}),
+	}).isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object,
 	sourcesState: PropTypes.shape({
 		pending: PropTypes.bool.isRequired,
 		error: PropTypes.object,
 		data: PropTypes.object
-	}),
+	}).isRequired,
 	world: PropTypes.shape({
 		lat: PropTypes.number.isRequired,
 		lng: PropTypes.number.isRequired,
 		zoom: PropTypes.number.isRequired,
 		shouldMapResize: PropTypes.bool
-	})
+	}).isRequired
 };
 
 // Store connection

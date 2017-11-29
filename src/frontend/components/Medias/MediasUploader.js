@@ -155,6 +155,16 @@ class MediasUploader extends React.Component {
 	}
 }
 
+// Props :
+// * dispatch: redux store dispatch function, provided by connect (required)
+// * position: current map position, provided by connect (required)
+//   (by default, medias will be uploaded with this position)
+// * uploadMediasState : state of the request UPLOAD_MEDIAS, provided by connect (required)
+// *    pending: boolean or number, assigned if a request is on going
+//      (index corresponds to the index of the on going request in case of several medias)
+// *    data: contains successfully uploaded files once the request is finished
+// *    error: object { files, errors } containing the files that could not be uploaded
+//      and the associated error messages.
 MediasUploader.propTypes = {
 	dispatch: PropTypes.func.isRequired,
 	position: PropTypes.shape({

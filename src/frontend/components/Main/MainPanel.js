@@ -43,8 +43,10 @@ class MainPanel extends React.Component {
 
 // Props :
 // * previewMode: whether map is in preview mode or in full mode, provided by connect (required)
-// * showPreviewer : whether previewer should be shown (ie if there is exactly one selected media)
 // * selectedMedias: array of selected media features, provided by connect (required)
+// * selectedPointCloud: currently selected point cloud, provided by connect (required)
+// * showPreviewer : whether previewer should be shown
+//  (ie if there is exactly one selected media or a selected point cloud)
 MainPanel.propTypes = {
     previewMode: PropTypes.bool.isRequired,
     selectedMedias: PropTypes.arrayOf(PropTypes.shape({

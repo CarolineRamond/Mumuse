@@ -50,13 +50,14 @@ class UsersDelete extends React.Component {
 }
 
 // Props :
-// * serverState : state of the request DELETE_USERS, provided by connect, required
+// * active : whether dialog should be active, inherited from UsersTable (required)
+// * cancel : function called to hide dialog, inherited from UsersTable (required)
+// * dispatch: redux store dispatch function, provided by connect (required)
+// * serverState : state of the request DELETE_USERS, provided by connect (required)
 // *    pending: boolean, true if a request is on going
 // *    data: contains successfully deleted ids once the request is finished
 // *    error: contains an error string if users could not be deleted
-// * active : whether dialog should be active, inherited from UsersTable, required
-// * users : array of userIds to delete, inherited from UsersTable, required
-// * cancel : function called to hide dialog, inherited from UsersTable, required
+// * users : array of userIds to delete, inherited from UsersTable (required)
 UsersDelete.propTypes = {
     active: PropTypes.bool.isRequired,
     cancel: PropTypes.func.isRequired,

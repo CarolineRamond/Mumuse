@@ -175,11 +175,13 @@ class Form extends React.Component {
 }
 
 // Props :
-// * fields: form fields, inherited (required)
-// * submit: submit function, inherited (required)
 // * cancel: cancel function, inherited (required)
-// * links: other links, inherited
+// * error: error string, inherited
+// * fields: form fields, inherited (required)
 // * helper: helper text, inherited
+// * links: other links, inherited
+// * submit: submit function, inherited (required)
+// * success string, inherited
 Form.propTypes = {
 	cancel: PropTypes.func.isRequired,
 	error: PropTypes.string,

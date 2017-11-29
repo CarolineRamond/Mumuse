@@ -58,15 +58,16 @@ class AuthButton extends React.Component {
 }
 
 // Props :
-// * user : currently logged in user (if any), provided by @connect
-// * rootUrl: current map url (with position & zoom), provided by @connect (required)
-// * location : current route location, provided by function withRouter (required)
-// * match : current route match, provided by function withRouter
+// * dispatch: redux store dispatch function, provided by connect (required)
 // * history : current router history, provided by function withRouter (required)
+// * location : current route location, provided by function withRouter
+// * match : current route match, provided by function withRouter
+// * rootUrl: current map url (with position & zoom), provided by @connect (required)
+// * user : currently logged in user (if any), provided by @connect
 AuthButton.propTypes = {
 	dispatch: PropTypes.func.isRequired,
-    history: PropTypes.object,
-	location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+	location: PropTypes.object,
     match: PropTypes.object,
 	rootUrl: PropTypes.string.isRequired,
 	user: PropTypes.object
