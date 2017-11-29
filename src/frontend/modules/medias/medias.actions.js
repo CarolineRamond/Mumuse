@@ -90,15 +90,21 @@ export const dragMapMedias = ({ lat, lng, isAdmin })=> {
 	};
 };
 
-export const endDragMapMedias = ({ lat, lng, feature })=> {
-	const mediaId = feature.properties._id;
-	const form = {
-		loc: [lng, lat]
-	};
-	return {
-		type: 'MEDIAS_MAP_END_DRAG',
-		payload: axios.put('/userdrive/media/' + mediaId, form)
-	};
+export const endDragMapMedias = ({ lat, lng, feature, isAdmin })=> {
+	if (isAdmin && feature && feature.constructor.name === 'Feature') {
+		const mediaId = feature.properties._id;
+		const form = {
+			loc: [lng, lat]
+		};
+		return {
+			type: 'MEDIAS_MAP_END_DRAG',
+			payload: axios.put('/userdrive/media/' + mediaId, form)
+		};
+	} else {
+		return {
+			type: 'NULL_ACTION'
+		};
+	}
 };
 
 export const updateFeaturesMedias = ({ features, zoom })=> {
