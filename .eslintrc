@@ -17,6 +17,10 @@
     "babel",
     "react"
   ],
+  "globals": {
+    "THREE": true,
+    "TWEEN": true
+  },
   "rules": {
     "block-scoped-var": [0],
     "brace-style": [2, "1tbs", {

@@ -76,6 +76,14 @@ class ImagePreviewer extends React.Component {
 	}
 }
 
+ImagePreviewer.propTypes = {
+	media: PropTypes.shape({
+		properties: PropTypes.object,
+		geometry: PropTypes.object
+	}).isRequired,
+	previewMode: PropTypes.bool
+};
+
 class PointCloudPreviewer extends React.Component {
 	constructor (props) {
 		super(props);
@@ -89,6 +97,10 @@ class PointCloudPreviewer extends React.Component {
 		return <Potree className={styles.previewImageContainer} />;
 	}
 }
+
+PointCloudPreviewer.propTypes = {
+	pointCloud: PropTypes.object.isRequired
+};
 
 class Previewer extends React.Component {
 	constructor (props) {
@@ -108,9 +120,6 @@ class Previewer extends React.Component {
 	}
 
 	handleDragFinished () {
-		if (!this.props.mapPreviewMode) {
-			// this.props.dispatch(resizeMap());
-		}
 		this.setState({
 			isResizing: false
 		});
@@ -172,6 +181,7 @@ Previewer.propTypes = {
 		properties: PropTypes.object,
 		geometry: PropTypes.object
 	}).isRequired,
+	pointCloud: PropTypes.object,
 	previewMode: PropTypes.bool
 };
 

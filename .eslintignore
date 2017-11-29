@@ -1,5 +1,3 @@
 **/node_modules/
 **/build/
 lib
-src/frontend/components/Potree
-src/frontend/components/Medias/Previewer.js

@@ -1,5 +1,5 @@
 // Define camera geometry & material
-let camGeometry = new THREE.Geometry();
+const camGeometry = new THREE.Geometry();
 camGeometry.vertices = [
   new THREE.Vector3(0, 0, 0),
   new THREE.Vector3(-0.5, -0.5, -1),
@@ -18,24 +18,24 @@ camGeometry.faces = [
 ];
 
 // Set from bundler data : https://github.com/snavely/bundler_sfm#output-format
-let invert_yz_mat4 = new THREE.Matrix4();
+const invert_yz_mat4 = new THREE.Matrix4();
 invert_yz_mat4.set(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1);
 
-let camDefaultMaterial = new THREE.MeshBasicMaterial({
+const camDefaultMaterial = new THREE.MeshBasicMaterial({
   color: 0xffffff,
   wireframe: true,
-  name: "camDefaultMaterial"
+  name: 'camDefaultMaterial'
 });
 
-let camSelectedMaterial = new THREE.MeshBasicMaterial({
+const camSelectedMaterial = new THREE.MeshBasicMaterial({
   color: 0xff0000,
   wireframe: true,
-  name: "camSelectedMaterial"
+  name: 'camSelectedMaterial'
 });
 
 // Define media plane geometry & material
 // Init plane with correct UVs for displaying the image - same coords than base of camera pyramid cone, and uv as lower left, ... for the 2 faces (triangles)
-var mediaGeometry = new THREE.Geometry();
+const mediaGeometry = new THREE.Geometry();
 mediaGeometry.vertices = [
   new THREE.Vector3(-0.5, -0.5, -1),
   new THREE.Vector3(-0.5, +0.5, -1),
@@ -53,26 +53,26 @@ mediaGeometry.faceVertexUvs[0] = [
 mediaGeometry.faces[0].materialIndex = 0;
 mediaGeometry.faces[1].materialIndex = 0;
 
-var mediaMaterial = new THREE.MeshBasicMaterial({
+const mediaMaterial = new THREE.MeshBasicMaterial({
   side: THREE.DoubleSide,
   opacity: 1,
   transparent: true
 });
 
-var textureLoader = new THREE.TextureLoader();
-textureLoader.crossOrigin = "";
+const textureLoader = new THREE.TextureLoader();
+textureLoader.crossOrigin = '';
 
 export default class Camera extends THREE.Mesh {
   static mediaPlane = new THREE.Mesh(mediaGeometry, mediaMaterial);
-  constructor(media) {
+  constructor (media) {
     super(camGeometry, camDefaultMaterial);
-    let bundler_rot_0 = media.camera3d.rotationMatrix[0],
+    const bundler_rot_0 = media.camera3d.rotationMatrix[0],
       bundler_rot_1 = media.camera3d.rotationMatrix[1],
       bundler_rot_2 = media.camera3d.rotationMatrix[2],
       bundler_pos = media.camera3d.translationMatrix;
 
     // Define world coordinates to cam coordinates matrix as the one described in the bundler format
-    let world_cam_matrix = new THREE.Matrix4();
+    const world_cam_matrix = new THREE.Matrix4();
     world_cam_matrix.set(
       parseFloat(bundler_rot_0[0]),
       parseFloat(bundler_rot_1[0]),
@@ -94,7 +94,7 @@ export default class Camera extends THREE.Mesh {
     world_cam_matrix.transpose();
 
     // Invert it to get the cam to world transformation, and therefore get cam origin and rotation / Transpose and axes inversion between Y-Z
-    let world_cam_matrix_inv = new THREE.Matrix4();
+    const world_cam_matrix_inv = new THREE.Matrix4();
     world_cam_matrix_inv.getInverse(world_cam_matrix);
     world_cam_matrix_inv.multiplyMatrices(invert_yz_mat4, world_cam_matrix_inv);
 
@@ -105,7 +105,7 @@ export default class Camera extends THREE.Mesh {
     this.applyMatrix(world_cam_matrix_inv);
 
     // Cam scale
-    let intrinsic_f_k1_k2 = [
+    const intrinsic_f_k1_k2 = [
         media.camera3d.f,
         media.camera3d.k1,
         media.camera3d.k2
@@ -121,20 +121,20 @@ export default class Camera extends THREE.Mesh {
     // focal length in pixels = (image width in pixels) * (focal length in mm) / (CCD width in mm)
     // http://phototour.cs.washington.edu/focal.html
     // Scale is obtained through focal, image ratio, we can let the sensor size as equivalent 35mm
-    function get_pyramid_sensor_scale(intrinsic_f_k1_k2) {
-      var focal_pixel = intrinsic_f_k1_k2[0];
-      var scaleZ = 1 * scaleCam,
+    function get_pyramid_sensor_scale (_intrinsic_f_k1_k2) {
+      const focal_pixel = _intrinsic_f_k1_k2[0];
+      const scaleZ = 1 * scaleCam,
         scaleX = scaleZ / focal_pixel * pixel_Nx,
         scaleY = scaleZ / focal_pixel * pixel_Ny;
       return new THREE.Vector3(scaleX, scaleY, scaleZ);
     }
   }
 
-  loadMedia() {
+  loadMedia () {
     if (!this.texture) {
       textureLoader.load(
-        "http://localhost:9000\\userdrive\\media\\image\\" +
-          this.userData.mediaId,
+        'http://localhost:9000\\userdrive\\media\\image\\'
+          + this.userData.mediaId,
         mediaTexture => {
           this.texture = mediaTexture;
           this.setMediaPlanePositionAndTextureForThisCamera(mediaTexture);
@@ -145,7 +145,7 @@ export default class Camera extends THREE.Mesh {
     }
   }
 
-  setMediaPlanePositionAndTextureForThisCamera(mediaTexture) {
+  setMediaPlanePositionAndTextureForThisCamera (mediaTexture) {
     Camera.mediaPlane.material.map = mediaTexture;
     Camera.mediaPlane.material.needsUpdate = true;
     Camera.mediaPlane.matrix.set(
@@ -169,9 +169,11 @@ export default class Camera extends THREE.Mesh {
     Camera.mediaPlane.applyMatrix(this.matrix);
   }
 
-  toggleSelection() {
-    if (this.material.name === "camSelectedMaterial")
+  toggleSelection () {
+    if (this.material.name === 'camSelectedMaterial') {
       this.material = camDefaultMaterial;
-    else this.material = camSelectedMaterial;
+    } else {
+      this.material = camSelectedMaterial;
+    }
   }
 }
