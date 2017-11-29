@@ -1,5 +1,5 @@
 import { applyMiddleware, createStore } from 'redux';
-import { createLogger } from 'redux-logger';
+// import { createLogger } from 'redux-logger';
 import promise from 'redux-promise-middleware';
 import thunk from 'redux-thunk';
 import Validator from './validator';

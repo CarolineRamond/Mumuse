@@ -1,25 +1,24 @@
-import React from "react";
-import { forIn, omit } from "lodash"
-import { connect } from "react-redux"
-import { withRouter } from "react-router"
-import mapboxgl from "mapbox-gl"
-import 'mapbox-gl/dist/mapbox-gl.css'
+import React from 'react';
+import { forIn, omit } from 'lodash';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 mapboxgl.accessToken = 'pk.eyJ1IjoiaWNvbmVtIiwiYSI6ImNpbXJycDBqODAwNG12cW0ydGF1NXZxa2sifQ.hgPcQvgkzpfYkHgfMRqcpw';
-import PropTypes from "prop-types"
-import ProgressBar from "react-toolbox/lib/progress_bar"
+import PropTypes from 'prop-types';
 
-import { selectors } from "../../modules"
+import { selectors } from '../../modules';
 const { isAuthUserAdmin, getLayersState, getSourcesState } = selectors;
-import { mapConfig } from '../../modules'
+import { mapConfig } from '../../modules';
 
-import styles from "./map.css"
+import styles from './map.css';
 
-function getUniqueFeatures(array, comparatorProperty) {
-    var existingFeatureKeys = {};
+function getUniqueFeatures (array, comparatorProperty) {
+    const existingFeatureKeys = {};
     // Because features come from tiled vector data, feature geometries may be split
     // or duplicated across tile boundaries and, as a result, features may appear
     // multiple times in query results.
-    var uniqueFeatures = array.filter(function(el) {
+    const uniqueFeatures = array.filter(function (el) {
         if (existingFeatureKeys[el.properties[comparatorProperty]]) {
             return false;
         } else {
@@ -32,13 +31,13 @@ function getUniqueFeatures(array, comparatorProperty) {
 
 class Map extends React.Component {
 
-	componentDidMount() {
+	componentDidMount () {
 		if (!this.props.layersState.pending) {
 			this._initMap();
 		}
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps (nextProps) {
 		if (nextProps.world.shouldMapResize) {
 			this._resizeMap();
 		}
@@ -51,7 +50,7 @@ class Map extends React.Component {
 		}
 	}
 
-	shouldComponentUpdate(nextProps) {
+	shouldComponentUpdate (nextProps) {
 		// rerender component only if loader should be hidden
 		// ie if layers are just loaded
 		// mapbox will rerender the map independently from react
@@ -59,25 +58,13 @@ class Map extends React.Component {
 		return (!nextProps.layersState.pending && this.props.layersState.pending);
 	}
 
-	render() {
-		return <div>
-			<div style={{position:'absolute', width: '100%', height: '100%'}} ref={el => this.mapContainer = el}></div>
-			{this.props.layersState.pending &&
-				<div className={styles.mapLoader}>
-					{/*<ProgressBar type="circular" mode="indeterminate" />*/}
-					Loading...
-				</div>
-			}
-		</div>
-	}
-
-	componentWillUnmount() {
+	componentWillUnmount () {
 		this.map.remove();
 	}
 
-	_initMap() {
+	_initMap () {
 		const world = this.props.location.pathname.split('/')[1].split(',');
-		const lngLat = world.slice(0,2);
+		const lngLat = world.slice(0, 2);
 		const zoom = world[2];
 		this.renderHandlers = {};
 		this.map = new mapboxgl.Map({
@@ -87,9 +74,9 @@ class Map extends React.Component {
 			zoom: zoom,
 			renderWorldCopies: false,
 			maxBounds: [[-180, -85], [180, 85]],
-			transformRequest: (url, resourceType) => {
+			transformRequest: (url) => {
 				if (url.match(/\/userdrive\/tile\/grid\/\d+\/\d+\/\d+.pbf$/)) {
-                    var bounds = this.map.getBounds().toArray().toString();
+                    const bounds = this.map.getBounds().toArray().toString();
                     return {
                         url: url + '/?viewport=' + bounds
                     };
@@ -109,13 +96,13 @@ class Map extends React.Component {
 		});
 	}
 
-	_loadSources() {
+	_loadSources () {
 		forIn(this.props.sourcesState.data, (source, sourceId)=>{
 			this.map.addSource(sourceId, omit(source, ['metadata']));
 		});
 	}
 
-	_loadLayers() {
+	_loadLayers () {
 		// sort layers by priority
 		const layers = [];
 		forIn(this.props.layersState.data, (layer)=> {
@@ -127,19 +114,19 @@ class Map extends React.Component {
 		// add layers to map
 		layers.map((layer)=> {
 			this.map.addLayer(layer);
-		})
+		});
 	}
 
-	_addSimpleEventsHandling() {
+	_addSimpleEventsHandling () {
 		mapConfig.events.map((event)=> {
-			const eventHandler = (evt)=> {
+			const eventHandler = ()=> {
 				const { lng, lat } = this.map.getCenter();
 				const zoom = this.map.getZoom();
 				const bounds = this.map.getBounds()
 					.toArray()
 					.reduce((tab, item)=> {
 						return tab.concat(item);
-					}, []);;
+					}, []);
 				this.props.dispatch(event.action({
 					lng,
 					lat,
@@ -147,7 +134,7 @@ class Map extends React.Component {
 					bounds,
 					isAdmin: this.props.isAdmin
 				}));
-			}
+			};
 			if (event.layerId) {
 				this.map.on(event.type, event.layerId, eventHandler);
 			} else {
@@ -156,60 +143,60 @@ class Map extends React.Component {
 		});
 	}
 
-	_addClickHandling() {
+	_addClickHandling () {
 		if (mapConfig.click.length > 0) {
 			this.map.on('click', (evt)=> {
 				mapConfig.click.map((item)=> {
 					const features = this.map.queryRenderedFeatures(
-						evt.point, 
+						evt.point,
 						{ layers: item.layerIds }
 					);
 					const ctrlKey = evt.originalEvent.ctrlKey;
-					this.props.dispatch(item.action({ 
-						features, 
-						ctrlKey, 
-						isAdmin: this.props.isAdmin 
+					this.props.dispatch(item.action({
+						features,
+						ctrlKey,
+						isAdmin: this.props.isAdmin
 					}));
 				});
 			});
 		}
 	}
 
-	_addDragndropHandling() {
+	_addDragndropHandling () {
 		mapConfig.dragndrop.map((item)=> {
 			// disable/enable map panning
 			// on enter/leave layer
-			this.map.on('mouseenter', item.layerId, (evt)=> {
+			this.map.on('mouseenter', item.layerId, ()=> {
 				this.map.dragPan.disable();
 			});
-			this.map.on('mouseleave', item.layerId, (evt)=> {
+			this.map.on('mouseleave', item.layerId, ()=> {
 				this.map.dragPan.enable();
 			});
 
 			// detect mousedown on layer, setup mouseup event (once)
 			// and dispatch corresponding action
-			this.map.on('mousedown', item.layerId, (evt)=> {
+			this.map.on('mousedown', item.layerId, (event)=> {
 				this.props.dispatch(item.mousedown({
-					features: evt.features, 
+					features: event.features,
 					isAdmin: this.props.isAdmin
 				}));
 				this.draggingLayerId = item.layerId;
 
 				this.map.once('mouseup', (evt)=> {
 					const features = this.map.queryRenderedFeatures(
-						evt.point, 
+						evt.point,
 						{ layers: [item.layerId] }
 					);
 					this.props.dispatch(item.mouseup({
 						feature: features[0],
 						lat: evt.lngLat.lat,
-						lng: evt.lngLat.lng, 
+						lng: evt.lngLat.lng,
 						isAdmin: this.props.isAdmin
 					}));
 					this.draggingLayerId = null;
 				});
 			});
-		});	
+		});
 
 		// add mousemove listener only if one of the layers
 		// has dragndrop interaction
@@ -230,9 +217,9 @@ class Map extends React.Component {
 		}
 	}
 
-	_addViewportChangeHandling() {
+	_addViewportChangeHandling () {
 		// update window location on moveend
-		this.map.on('moveend', (e)=> {
+		this.map.on('moveend', ()=> {
 			const splitLocation = this.props.location.pathname.split('/');
 			const { lng, lat } = this.map.getCenter();
 			const zoom = this.map.getZoom();
@@ -249,7 +236,7 @@ class Map extends React.Component {
 		});
 	}
 
-	_setRenderedFeaturesHandler(item, init) {
+	_setRenderedFeaturesHandler (item, init) {
 		if (!this.renderHandlers[item.layerIds.toString()]) {
 			// register handler into this.renderHandlers
 			// this will allow render listeners to be deleted
@@ -262,16 +249,16 @@ class Map extends React.Component {
 					item.uniqueKey
 				);
 				this.props.dispatch(item.action({
-					features: renderedFeatures, 
+					features: renderedFeatures,
 					zoom: this.map.getZoom()
 				}));
-			}
-			const renderHandler = (data)=> {
+			};
+			const renderHandler = ()=> {
 				if (this.map.isSourceLoaded(item.source)) {
 					getRenderedFeatures();
 					this.map.off('render', renderHandler);
 				}
-			}
+			};
 			this.renderHandlers[item.layerIds.toString()] = renderHandler;
 		}
 
@@ -290,19 +277,19 @@ class Map extends React.Component {
 		}
 	}
 
-	_resizeMap() {
+	_resizeMap () {
 		this.map.resize();
 	}
 
-	_reloadSourcesData(nextProps) {
+	_reloadSourcesData (nextProps) {
 		forIn(nextProps.sourcesState.data, (source, sourceId)=> {
 			if (source.metadata && source.metadata.didChange && this.map.getSource(sourceId)) {
-				if (source.type === "geojson") {
+				if (source.type === 'geojson') {
 					this.map.getSource(sourceId).setData(source.data);
 				}
-				if (source.type === "vector") {
+				if (source.type === 'vector') {
 					this.map.removeSource(sourceId);
-					this.map.addSource(sourceId, _.omit(source, ['metadata']));
+					this.map.addSource(sourceId, omit(source, ['metadata']));
 					mapConfig.renderedFeatures.map((item)=> {
 						if (item.source === sourceId) {
 							this._setRenderedFeaturesHandler(item);
@@ -313,9 +300,9 @@ class Map extends React.Component {
 		});
 	}
 
-	_updateLayersStyle(nextProps) {
+	_updateLayersStyle (nextProps) {
 		forIn(nextProps.layersState.data, (layer)=> {
-			var didChange = layer.metadata && layer.metadata.didChange || {};
+			const didChange = layer.metadata && layer.metadata.didChange || {};
 			if (this.map.getLayer(layer.id) && didChange.filter) {
 				this.map.setFilter(layer.id, layer.filter);
 				mapConfig.renderedFeatures.map((item)=> {
@@ -339,28 +326,51 @@ class Map extends React.Component {
 			}
 		});
 	}
+
+	render () {
+		return <div>
+			<div style={{ position: 'absolute', width: '100%', height: '100%' }}
+				ref={(el)=> { this.mapContainer = el; }}
+			/>
+			{this.props.layersState.pending
+				&& <div className={styles.mapLoader}>
+					Loading...
+				</div>
+			}
+		</div>;
+	}
 }
 
 // Props :
 // * world : current world state (lat, lng, zoom + resize), provided by @connect
 // * layers : map layers, provided by @connect
 // * sources : map sources, provided by @connect
-// * location : current route location, provided by function withRouter 
+// * location : current route location, provided by function withRouter
 // * match : current route match, provided by function withRouter (required)
 // * history : current router history, provided by function withRouter (required)
 Map.propTypes = {
+	dispatch: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
+	isAdmin: PropTypes.bool,
+	layersState: PropTypes.shape({
+		pending: PropTypes.bool.isRequired,
+		error: PropTypes.object,
+		data: PropTypes.object
+	}),
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object,
+	sourcesState: PropTypes.shape({
+		pending: PropTypes.bool.isRequired,
+		error: PropTypes.object,
+		data: PropTypes.object
+	}),
 	world: PropTypes.shape({
 		lat: PropTypes.number.isRequired,
 		lng: PropTypes.number.isRequired,
 		zoom: PropTypes.number.isRequired,
 		shouldMapResize: PropTypes.bool
-	}),
-	layers: PropTypes.object,
-	sources: PropTypes.object,
-    location: PropTypes.object.isRequired, 
-    match: PropTypes.object, 
-    history: PropTypes.object.isRequired
-}
+	})
+};
 
 // Store connection
 const ConnectedMap = connect((store)=> {
@@ -369,7 +379,7 @@ const ConnectedMap = connect((store)=> {
 		layersState: getLayersState(store),
 		sourcesState: getSourcesState(store),
 		isAdmin: isAuthUserAdmin(store)
-	}
+	};
 })(Map);
 
 export default withRouter(ConnectedMap);

@@ -1,19 +1,20 @@
-import React from "react";
-import { connect } from "react-redux";
-import { Button } from "react-toolbox/lib/button"
-import { Dialog } from "react-toolbox/lib/dialog"
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Button } from 'react-toolbox/lib/button';
+import { Dialog } from 'react-toolbox/lib/dialog';
 import { ProgressBar } from 'react-toolbox/lib/progress_bar';
 
-import { selectors } from "../../modules"
+import { selectors } from '../../modules';
 const { getSelectedMedias, getDeleteMediasState } = selectors;
-import { actions } from "../../modules"
+import { actions } from '../../modules';
 const { deleteMedias, resetDeleteMediasState } = actions;
 
-import styles from './carousel.css'
+import styles from './carousel.css';
 
 class MediasDeleter extends React.Component {
 
-	constructor(props) {
+	constructor (props) {
 		super(props);
 		this.handleDeleteMedias = this.handleDeleteMedias.bind(this);
 		this.cancel = this.cancel.bind(this);
@@ -26,7 +27,7 @@ class MediasDeleter extends React.Component {
 		};
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps (nextProps) {
 		const deletePending = nextProps.deleteMediasState.pending !== false;
 		const deleteFinished = nextProps.deleteMediasState.data !== null;
 		const deleteFulfilled = deleteFinished && !nextProps.deleteMediasState.error;
@@ -39,14 +40,14 @@ class MediasDeleter extends React.Component {
 		this.setState({ deletePending, deleteFinished, deleteFulfilled });
 	}
 
-	handleDeleteMedias() {
+	handleDeleteMedias () {
 		this.setState({
 			nbMedias: this.props.selectedMedias.length
 		});
 		this.props.dispatch(deleteMedias(this.props.selectedMedias));
 	}
 
-	cancel() {
+	cancel () {
 		this.setState({
 			deletePending: false,
 			deleteFinished: false,
@@ -57,23 +58,23 @@ class MediasDeleter extends React.Component {
 		});
 	}
 
-	retry() {
+	retry () {
 		const errorMedias = this.props.deleteMediasState.error.medias;
 		if (errorMedias.length > 0) {
 			this.setState({
 				nbMedias: errorMedias.length
 			});
-	  		this.props.dispatch(deleteMedias(errorMedias));
+			this.props.dispatch(deleteMedias(errorMedias));
 		}
 	}
 
-	render() {
+	render () {
 		const pending = this.props.deleteMediasState.pending;
-		const dialogActive = this.state.deletePending || 
-			(this.state.deleteFinished && !this.state.deleteFulfilled);
+		const dialogActive = this.state.deletePending
+			|| (this.state.deleteFinished && !this.state.deleteFulfilled);
 
-		var progressValue;
-		var progressString;
+		let progressValue;
+		let progressString;
 		if (this.state.deletePending) {
 			progressValue = parseInt(pending / this.state.nbMedias * 100);
 			progressString = `${pending}/${this.state.nbMedias}`;
@@ -82,44 +83,44 @@ class MediasDeleter extends React.Component {
 			progressString = `${this.state.nbMedias}/${this.state.nbMedias}`;
 		}
 
-		var successMessage;
+		let successMessage;
 		if (this.state.deleteFinished && this.props.deleteMediasState.data.length > 0) {
 			successMessage = `Successfully deleted ${this.props.deleteMediasState.data.length}/${this.state.nbMedias} medias`;
 		}
 
-		var mappedErrors;
+		let mappedErrors;
 		if (this.props.deleteMediasState.error) {
 			mappedErrors = this.props.deleteMediasState.error.messages.map((err, i)=> {
-				return <div key={`err-${i}`}>{err}</div>
+				return <div key={`err-${i}`}>{err}</div>;
 			});
 		}
 
 		return <div>
 			<div className={styles.mediasUploader}>
-				<Button accent 
+				<Button accent
 					disabled={this.props.selectedMedias.length === 0}
 					onClick={this.handleDeleteMedias}>
 					Delete Medias
 				</Button>
 			</div>
 			<Dialog active={dialogActive}
-				title="Deleting medias">
+				title='Deleting medias'>
 				<div className={styles.mediasUploaderProgress}>
-					<ProgressBar type="linear" 
-						mode="determinate"
+					<ProgressBar type='linear'
+						mode='determinate'
 						value={progressValue}/>
 					<div>{progressString}</div>
 				</div>
 				<div className={styles.mediasUploaderSuccess}>
 					{successMessage}
 				</div>
-				{mappedErrors &&
-					<div className={styles.mediasUploaderErrors}>
+				{mappedErrors
+					&& <div className={styles.mediasUploaderErrors}>
 						{mappedErrors}
 					</div>
 				}
-				{this.state.deleteFinished && !this.state.deleteFulfilled &&
-					<div className={styles.mediasUploaderErrorActions}>
+				{this.state.deleteFinished && !this.state.deleteFulfilled
+					&& <div className={styles.mediasUploaderErrorActions}>
 						<Button primary onClick={this.retry}>
 							Retry
 						</Button>
@@ -129,16 +130,34 @@ class MediasDeleter extends React.Component {
 					</div>
 				}
 			</Dialog>
-		</div>
+		</div>;
 	}
 }
+
+// Props :
+// * deleteServerState : state of the request DELETE_MEDIAS, provided by connect, required
+// *    pending: boolean, true if a request is on going
+// *    data: contains successfully deleted ids once the request is finished
+// *    error: contains an error string if users could not be deleted
+// * selectedMedias : currently selected medias, provided by connect
+MediasDeleter.propTypes = {
+	deleteMediasState: PropTypes.shape({
+        pending: PropTypes.oneOfType([
+			PropTypes.number,
+			PropTypes.bool
+		]).isRequired,
+        data: PropTypes.arrayOf(PropTypes.object),
+        error: PropTypes.string
+    }).isRequired,
+	dispatch: PropTypes.func.isRequired,
+	selectedMedias: PropTypes.arrayOf(PropTypes.object)
+};
 
 const ConnectedMediasDeleter = connect((store)=> {
 	return {
 		selectedMedias: getSelectedMedias(store),
 		deleteMediasState: getDeleteMediasState(store)
-	}
+	};
 })(MediasDeleter);
 
 export default ConnectedMediasDeleter;
-

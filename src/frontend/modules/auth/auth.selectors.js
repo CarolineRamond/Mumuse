@@ -1,31 +1,31 @@
-export function getAuthUser(state) {
+export const getAuthUser = (state) => {
 	return state.authUser.data;
-}
+};
 
-export function isAuthUserAdmin(state) {
-	return (state.authUser.data && state.authUser.data.roles.indexOf("admin") > -1);
-}
+export const isAuthUserAdmin = (state) => {
+	return (state.authUser.data && state.authUser.data.roles.indexOf('admin') > -1);
+};
 
-export function getAuthUserState(state) {
+export const getAuthUserState = (state) => {
 	return state.authUser;
-}
+};
 
-export function getLoginState(state) {
+export const getLoginState = (state) => {
 	return state.login;
-}
+};
 
-export function getRegisterState(state) {
+export const getRegisterState = (state) => {
 	return state.register;
-}
+};
 
-export function getLogoutState(state) {
+export const getLogoutState = (state) => {
 	return state.logout;
-}
+};
 
-export function getForgotPasswordState(state) {
+export const getForgotPasswordState = (state) => {
 	return state.forgotPassword;
-}
+};
 
-export function getResetPasswordState(state) {
+export const getResetPasswordState = (state) => {
 	return state.resetPassword;
-}
+};

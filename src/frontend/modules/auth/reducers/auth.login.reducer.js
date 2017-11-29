@@ -1,12 +1,12 @@
-export const initialState = { 
-	pending: false, 
-	data: null, 
+export const initialState = {
+	pending: false,
+	data: null,
 	error: null
 };
 
 const loginReducer = (state = initialState, action) => {
-	switch(action.type) {
-		case "LOGIN_PENDING": {
+	switch (action.type) {
+		case 'LOGIN_PENDING': {
 			return {
 				...state,
 				pending: true,
@@ -14,7 +14,7 @@ const loginReducer = (state = initialState, action) => {
 				data: null
 			};
 		}
-		case "LOGIN_FULFILLED": {
+		case 'LOGIN_FULFILLED': {
 			return {
 				...state,
 				pending: false,
@@ -22,17 +22,17 @@ const loginReducer = (state = initialState, action) => {
 				data: action.payload.data
 			};
 		}
-		case "LOGIN_REJECTED": {
+		case 'LOGIN_REJECTED': {
 			return {
 				...state,
 				pending: false,
-				error: "Error : Bad username or password.",
+				error: 'Error : Bad username or password.',
 				data: null
 			};
 		}
 		default:
 			return state;
 	}
-}
+};
 
 export default loginReducer;

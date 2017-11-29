@@ -1,21 +1,20 @@
-import React from "react";
-import { connect } from "react-redux"
-import PropTypes from "prop-types"
-import isEmail from 'validator/lib/isEmail'
-import isLength from 'validator/lib/isLength'
-import Dialog from "react-toolbox/lib/dialog"
+import React from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import isEmail from 'validator/lib/isEmail';
+import Dialog from 'react-toolbox/lib/dialog';
 
-import { actions } from '../../../modules'
+import { actions } from '../../../modules';
 const { fetchUser, updateUser, resetUpdateState } = actions;
-import { selectors } from '../../../modules'
+import { selectors } from '../../../modules';
 const { getCurrentUserState, getUpdateUserState } = selectors;
 
-import Form from "../../Common/Form"
-import styles from '../../Common/form.css'
+import Form from '../../Common/Form';
+import styles from '../../Common/form.css';
 
 class UsersEdit extends React.Component {
-    
-    constructor(props) {
+
+    constructor (props) {
         super(props);
         this.state = {
             active: false
@@ -25,21 +24,21 @@ class UsersEdit extends React.Component {
         this.userId = this.props.match.params.userId;
     }
 
-    componentDidMount() {
+    componentDidMount () {
         this.setState({
             active: true
         });
         this.props.dispatch(fetchUser(this.userId));
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps (nextProps) {
         if (nextProps.updateUserState.data) {
             this.cancel.bind(this)();
         }
     }
 
-    cancel() {
-        const rootUrl = "/admin/users";
+    cancel () {
+        const rootUrl = '/admin/users';
         this.props.dispatch(resetUpdateState());
         this.setState({
             active: false
@@ -49,77 +48,76 @@ class UsersEdit extends React.Component {
         }, 500);
     }
 
-    submit(form) {
+    submit (form) {
         this.props.dispatch(updateUser(form, this.userId));
     }
 
-    render() {
-        var dialogContent;
-        if (this.props.currentUserState.pending ||
-            (!this.props.currentUserState.data && !this.props.currentUserState.error)) {
-            dialogContent = <div>Loading...</div>
-        }
-        else if (this.props.currentUserState.error) {
-            dialogContent = <div>{this.props.currentUserState.error}</div>
+    render () {
+        let dialogContent;
+        if (this.props.currentUserState.pending
+            || (!this.props.currentUserState.data && !this.props.currentUserState.error)) {
+            dialogContent = <div>Loading...</div>;
+        } else if (this.props.currentUserState.error) {
+            dialogContent = <div>{this.props.currentUserState.error}</div>;
         } else {
             const fields = {
                 firstname: {
-                    label: "First Name",
-                    type: "text",
+                    label: 'First Name',
+                    type: 'text',
                     value: this.props.currentUserState.data.firstname,
                     required: true,
                     validate: (value)=> {
                         const isValid = (value.length > 0);
                         const error = isValid ? '' : 'First name is required';
-                        return { isValid, error }
+                        return { isValid, error };
                     }
                 },
                 lastname: {
-                    label: "Last Name",
-                    type: "text",
+                    label: 'Last Name',
+                    type: 'text',
                     value: this.props.currentUserState.data.lastname,
                     required: true,
                     validate: (value)=> {
                         const isValid = (value.length > 0);
                         const error = isValid ? '' : 'Last name is required';
-                        return { isValid, error }
+                        return { isValid, error };
                     }
                 },
                 email: {
-                    label: "Email",
-                    type: "email",
+                    label: 'Email',
+                    type: 'email',
                     value: this.props.currentUserState.data.email,
                     required: true,
                     validate: (value)=> {
                         const isValid = isEmail(value);
                         const error = isValid ? '' : 'Email is invalid';
-                        return { isValid, error }
+                        return { isValid, error };
                     }
                 },
                 roles: {
-                    label: "Role",
-                    type: "dropdown",
+                    label: 'Role',
+                    type: 'dropdown',
                     value: this.props.currentUserState.data.roles[0],
                     options: [
-                        { label: "User", value: "user" },
-                        { label: "Superuser", value: "superuser" },
-                        { label: "Admin", value: "admin" }
+                        { label: 'User', value: 'user' },
+                        { label: 'Superuser', value: 'superuser' },
+                        { label: 'Admin', value: 'admin' }
                     ],
-                    validate: (value)=> {
+                    validate: ()=> {
                         return { isValid: true, error: null };
                     }
-                },
+                }
             };
             dialogContent = <Form fields={fields}
-                helper=""
+                helper=''
                 error={this.props.updateUserState.error}
                 links={[]}
                 cancel={this.cancel}
                 submit={this.submit}
-            />
+            />;
         }
-        
-        return <Dialog title="Edit User" 
+
+        return <Dialog title='Edit User'
             active={this.state.active}
             onEscKeyDown={this.cancel}
             onOverlayClick={this.cancel}
@@ -127,9 +125,10 @@ class UsersEdit extends React.Component {
                 dialog: styles.formDialogContainer,
                 body: styles.formDialog,
                 title: styles.formDialogTitle
-            }}>
+            }}
+        >
             {dialogContent}
-        </Dialog>
+        </Dialog>;
     }
 }
 
@@ -146,27 +145,28 @@ class UsersEdit extends React.Component {
 // *    data: contains the newly edited user once the request is finished
 // *    error: contains an error string if user could not be edited
 UsersEdit.propTypes = {
-    location: PropTypes.object, 
-    match: PropTypes.object.isRequired, 
+    currentUserState: PropTypes.shape({
+        pending: PropTypes.bool,
+        data: PropTypes.object,
+        error: PropTypes.string
+    }).isRequired,
+    dispatch: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
-    currentUserState : PropTypes.shape({
+    location: PropTypes.object,
+    match: PropTypes.object.isRequired,
+    updateUserState: PropTypes.shape({
         pending: PropTypes.bool,
         data: PropTypes.object,
         error: PropTypes.string
-    }).isRequired,
-    updateUserState : PropTypes.shape({
-        pending: PropTypes.bool,
-        data: PropTypes.object,
-        error: PropTypes.string
-    }).isRequired,
-}
+    }).isRequired
+};
 
 // Store connection
 const ConnectedUsersEdit = connect((store)=> {
     return {
         currentUserState: getCurrentUserState(store),
         updateUserState: getUpdateUserState(store)
-    }
+    };
 })(UsersEdit);
 
 export default ConnectedUsersEdit;

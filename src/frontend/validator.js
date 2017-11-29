@@ -36,9 +36,9 @@ export default function (options = { validatorKey: 'meta', paramKey: 'payload' }
         const runValidatorContainer = (validator, param, key) => {
             let _flag;
             if (Array.prototype.isPrototypeOf(validator)) {
-                for (let j in validator) {
+                for (const j in validator) {
                     if (validator.hasOwnProperty(j)) {
-                        let item = validator[j];
+                        const item = validator[j];
                         _flag = runValidator(param, item.func, item.msg, j, key);
                         if (!_flag) break;
                     }
@@ -50,13 +50,14 @@ export default function (options = { validatorKey: 'meta', paramKey: 'payload' }
         };
 
         const params = action[options.paramKey] || {};
-        for (let i in validators) {
+        for (const i in validators) {
             if (validators.hasOwnProperty(i)) {
-                if (i === options.paramKey || i === 'thunk') continue;
-                let validator = validators[i];
+                if (!(i === options.paramKey || i === 'thunk')) {
+                    const validator = validators[i];
 
-                flag = runValidatorContainer(validator, params[i], i);
-                if (!flag) break;
+                    flag = runValidatorContainer(validator, params[i], i);
+                    if (!flag) break;
+                }
             }
         }
 

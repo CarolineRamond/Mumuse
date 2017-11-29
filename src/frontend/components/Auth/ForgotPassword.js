@@ -1,80 +1,80 @@
-import React from "react";
-import { connect } from "react-redux"
-import isEmail from 'validator/lib/isEmail'
-import PropTypes from "prop-types"
-import Dialog from "react-toolbox/lib/dialog"
+import React from 'react';
+import { connect } from 'react-redux';
+import isEmail from 'validator/lib/isEmail';
+import PropTypes from 'prop-types';
+import Dialog from 'react-toolbox/lib/dialog';
 
-import { actions } from '../../modules'
+import { actions } from '../../modules';
 const { forgotPassword } = actions;
-import { selectors } from '../../modules'
-const { getRootUrl, getForgotPasswordState } = selectors;
+import { selectors } from '../../modules';
+const { getRootUrl, getForgotPasswordState, getAuthUser } = selectors;
 
-import Form from '../Common/Form'
-import styles from '../Common/form.css'
+import Form from '../Common/Form';
+import styles from '../Common/form.css';
 
 class ForgotPassword extends React.Component {
-	constructor(props) {
+	constructor (props) {
 		super(props);
 		const search = this.props.location.search;
 		this.state = {
 			active: false,
-			verifyError: /verifyError=true/.test(search)
+			verifyError: (/verifyError=true/).test(search)
 		};
 		this.cancel = this.cancel.bind(this);
 		this.submit = this.submit.bind(this);
 	}
 
-	cancel() {
-		this.setState({
-		    active: false
-		});
-		setTimeout(()=> {
-		    this.props.history.push(this.props.rootUrl);
-		}, 500);
-	}
-
-	submit(form) {
-		this.props.dispatch(forgotPassword(form));
-	}
-
-	componentDidMount() {
+	componentDidMount () {
 		this.setState({
 			active: true
 		});
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.user) {
+	componentWillReceiveProps (nextProps) {
+		if (nextProps.serverState.data) {
 			this.cancel.bind(this)();
 		}
 	}
 
-	render() {
+	cancel () {
+		this.setState({
+			active: false
+		});
+		setTimeout(()=> {
+			this.props.history.push(this.props.rootUrl);
+		}, 500);
+	}
+
+	submit (form) {
+		this.props.dispatch(forgotPassword(form));
+	}
+
+	render () {
 		const fields = {
 			email: {
-				label: "Email",
-				type: "email",
+				label: 'Email',
+				type: 'email',
 				required: true,
 				validate: (value)=> {
 					const isValid = isEmail(value);
-				    const error = isValid ? '' : 'Email is invalid';
-				    return { isValid, error }
+					const error = isValid ? '' : 'Email is invalid';
+					return { isValid, error };
 				}
 			}
 		};
-		const links = []
-		const helper = "Please enter your email to reset your password";
-		const error = this.props.serverState.error || (this.state.verifyError ?
-			"Your reset session has expired. Please ask for a new session below." : null);
-				
-		return <Dialog title="Forgot Password" 
+		const links = [];
+		const helper = 'Please enter your email to reset your password';
+		const error = this.props.serverState.error
+			|| (this.state.verifyError ? 'Your reset session has expired. Please ask for a new session below.' : null);
+
+		return <Dialog title='Forgot Password'
             active={this.state.active}
             onEscKeyDown={this.cancel}
             onOverlayClick={this.cancel}
             theme={{
-            	dialog: styles.formDialogContainer,
-            	body: styles.formDialog,
-            	title: styles.formDialogTitle
+				dialog: styles.formDialogContainer,
+				body: styles.formDialog,
+				title: styles.formDialogTitle
             }}>
             <Form fields={fields}
                 helper={helper}
@@ -84,7 +84,7 @@ class ForgotPassword extends React.Component {
                 cancel={this.cancel}
                 submit={this.submit}
             />
-        </Dialog>
+        </Dialog>;
 	}
 }
 
@@ -95,26 +95,29 @@ class ForgotPassword extends React.Component {
 // *    data: contains success message once the request is finished
 // *    error: contains an error string if user account could not be retrieved
 // * location : current route location, provided by function withRouter (required)
-// * match : current route match, provided by function withRouter 
+// * match : current route match, provided by function withRouter
 // * history : current router history, provided by function withRouter (required)
 ForgotPassword.propTypes = {
+	dispatch: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    match: PropTypes.object,
 	rootUrl: PropTypes.string.isRequired,
-	 serverState : PropTypes.shape({
+	serverState: PropTypes.shape({
         pending: PropTypes.bool,
         data: PropTypes.string,
         error: PropTypes.string
     }).isRequired,
-    location: PropTypes.object.isRequired, 
-    match: PropTypes.object, 
-    history: PropTypes.object.isRequired
-}
+	user: PropTypes.object
+};
 
 // Store connection
 const ConnectedForgotPassword = connect((store)=> {
 	return {
 		rootUrl: getRootUrl(store),
-		serverState: getForgotPasswordState(store)
-	}
+		serverState: getForgotPasswordState(store),
+		user: getAuthUser(store)
+	};
 })(ForgotPassword);
 
 export default ConnectedForgotPassword;

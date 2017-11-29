@@ -1,16 +1,17 @@
-import React from "react";
-import ProgressBar from "react-toolbox/lib/progress_bar";
-import SplitPane from "react-split-pane";
+import React from 'react';
+import PropTypes from 'prop-types';
+import ProgressBar from 'react-toolbox/lib/progress_bar';
+import SplitPane from 'react-split-pane';
 
-import styles from "./preview.css";
-import Potree from "../Potree/Potree";
+import styles from './preview.css';
+import Potree from '../Potree/Potree';
 
 class ImagePreviewer extends React.Component {
-	constructor(props) {
+	constructor (props) {
 		super(props);
 		// preload preview & full image
-		const previewImg = document.createElement("img");
-		const fullImg = document.createElement("img");
+		const previewImg = document.createElement('img');
+		const fullImg = document.createElement('img');
 		previewImg.src = this.props.media.properties.preview_url;
 		fullImg.src = this.props.media.properties.url;
 
@@ -24,7 +25,7 @@ class ImagePreviewer extends React.Component {
 		this.handleLoadError = this.handleLoadError.bind(this);
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps (nextProps) {
 		if (nextProps.media.properties._id !== this.props.media.properties._id) {
 			// media did change => preload previewImg & fullImg
 			this.state.previewImg.src = this.props.media.properties.preview_url;
@@ -40,19 +41,19 @@ class ImagePreviewer extends React.Component {
 		}
 	}
 
-	handleLoadError() {
+	handleLoadError () {
 		this.setState({
 			loading: false
 		});
 	}
 
-	handleLoadComplete() {
+	handleLoadComplete () {
 		this.setState({
 			loading: false
 		});
 	}
 
-	render() {
+	render () {
 		const imgUrl = this.props.previewMode
 			? this.props.media.properties.preview_url
 			: this.props.media.properties.url;
@@ -61,7 +62,7 @@ class ImagePreviewer extends React.Component {
 			<div className={styles.previewImageContainer}>
 				{this.state.loading && (
 					<div className={styles.previewLoaderContainer}>
-						<ProgressBar type="circular" mode="indeterminate" />
+						<ProgressBar type='circular' mode='indeterminate' />
 					</div>
 				)}
 				<img
@@ -76,7 +77,7 @@ class ImagePreviewer extends React.Component {
 }
 
 class PointCloudPreviewer extends React.Component {
-	constructor(props) {
+	constructor (props) {
 		super(props);
 		const pointCloud = this.props.pointCloud;
 		this.state = {
@@ -84,13 +85,13 @@ class PointCloudPreviewer extends React.Component {
 		};
 	}
 
-	render() {
+	render () {
 		return <Potree className={styles.previewImageContainer} />;
 	}
 }
 
 class Previewer extends React.Component {
-	constructor(props) {
+	constructor (props) {
 		super(props);
 		this.state = {
 			isResizing: false
@@ -100,13 +101,13 @@ class Previewer extends React.Component {
 		this.handleDragFinished = this.handleDragFinished.bind(this);
 	}
 
-	handleDragStarted(props) {
+	handleDragStarted () {
 		this.setState({
 			isResizing: true
 		});
 	}
 
-	handleDragFinished(props) {
+	handleDragFinished () {
 		if (!this.props.mapPreviewMode) {
 			// this.props.dispatch(resizeMap());
 		}
@@ -115,30 +116,30 @@ class Previewer extends React.Component {
 		});
 	}
 
-	render() {
+	render () {
 		const resizerStyle = {
-			height: "12px",
-			width: "100%",
-			margin: "auto",
-			background: "grey",
-			borderLeft: "5px solid #ccc",
-			cursor: "ns-resize",
-			zIndex: "1"
+			height: '12px',
+			width: '100%',
+			margin: 'auto',
+			background: 'grey',
+			borderLeft: '5px solid #ccc',
+			cursor: 'ns-resize',
+			zIndex: '1'
 		};
 		const resizerStyleHover = Object.assign({}, resizerStyle, {
-			borderLeft: "5px solid blue"
+			borderLeft: '5px solid blue'
 		});
 		return (
 			<SplitPane
-				split="horizontal"
-				defaultSize="50%"
+				split='horizontal'
+				defaultSize='50%'
 				/*minSize={750}*/
 				resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
 				onDragStarted={this.handleDragStarted}
 				onDragFinished={this.handleDragFinished}
 			>
-				{this.props.media &&
-				this.props.media.properties.contentType === "image" && (
+				{this.props.media
+				&& this.props.media.properties.contentType === 'image' && (
 					<ImagePreviewer
 						media={this.props.media}
 						previewMode={this.props.previewMode}
@@ -152,8 +153,8 @@ class Previewer extends React.Component {
 				)}
 			</SplitPane>
 			/*<div>
-			{this.props.media.properties.contentType === 'image' && 
-				<ImagePreviewer media={this.props.media}
+			{this.props.media.properties.contentType === 'image'
+				&& <ImagePreviewer media={this.props.media}
 				previewMode={this.props.previewMode}/>
 			}
 			{this.props.pointCloud &&
@@ -165,5 +166,13 @@ class Previewer extends React.Component {
 		);
 	}
 }
+
+Previewer.propTypes = {
+	media: PropTypes.shape({
+		properties: PropTypes.object,
+		geometry: PropTypes.object
+	}).isRequired,
+	previewMode: PropTypes.bool
+};
 
 export default Previewer;

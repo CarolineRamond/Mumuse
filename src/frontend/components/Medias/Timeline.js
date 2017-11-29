@@ -1,43 +1,43 @@
-import React from "react";
-import { connect } from "react-redux"
-import Slider from "react-toolbox/lib/slider"
-import PropTypes from "prop-types"
+import React from 'react';
+import { connect } from 'react-redux';
+import Slider from 'react-toolbox/lib/slider';
+import PropTypes from 'prop-types';
 
-import { selectors } from "../../modules"
+import { selectors } from '../../modules';
 const { getViewportMediaCount, getMediasMinDate, getTimelineValue } = selectors;
-import { actions } from "../../modules"
+import { actions } from '../../modules';
 const { updateTimelineMedias } = actions;
 
-import styles from './timeline.css'
+import styles from './timeline.css';
 
 class Timeline extends React.Component {
 
-	constructor(props) {
+	constructor (props) {
 		super(props);
-		this.state = { 
-			value: this.props.value, 
+		this.state = {
+			value: this.props.value,
 			minDate: this.props.minDate,
 			maxDate: Date.now()
 		};
 		this.handleSlideChange = this.handleSlideChange.bind(this);
 	}
 
-	handleSlideChange(value) {
+	componentWillReceiveProps (nextProps) {
+		this.setState({
+			minDate: nextProps.minDate,
+			maxDate: Date.now()
+		});
+	}
+
+	handleSlideChange (value) {
 		this.setState({
 			value: value
 		});
 		this.props.dispatch(updateTimelineMedias({ value: parseInt(value) }));
 	}
 
-	componentWillReceiveProps(nextProps) {
-		this.setState({  
-			minDate: nextProps.minDate,
-			maxDate: Date.now()
-		});
-	}
-
-	render() {
-		var strValue = new Date(this.state.value).toLocaleDateString();
+	render () {
+		const strValue = new Date(this.state.value).toLocaleDateString();
 		return <div className={styles.timeline}>
 			<div className={styles.timelineInfos}>
 				<div className={styles.timelineDate}>{strValue}</div>
@@ -47,31 +47,32 @@ class Timeline extends React.Component {
 			</div>
 			<Slider min={this.state.minDate} max={this.state.maxDate}
 				value={this.state.value} onChange={this.handleSlideChange}/>
-		</div>
+		</div>;
 	}
 }
 
 // Props :
-// * viewportMediaCount : ready to display viewport media count 
+// * viewportMediaCount : ready to display viewport media count
 // (string with ~ if approximative count) ; provided by @connect (required)
 // * value : current slider value, provided by @connect (required)
-// * minDate : minimum date of the visible medias, provided by @connect (required) 
+// * minDate : minimum date of the visible medias, provided by @connect (required)
 Timeline.propTypes = {
+	dispatch: PropTypes.func.isRequired,
+	minDate: PropTypes.number.isRequired,
+	value: PropTypes.number.isRequired,
 	viewportMediaCount: PropTypes.oneOfType([
 		PropTypes.string,
 		PropTypes.number
-	]).isRequired,
-	value: PropTypes.number.isRequired,
-	minDate: PropTypes.number.isRequired
-}
+	]).isRequired
+};
 
 // Store connection
 const ConnectedTimeline = connect((store)=> {
-	return  {
+	return {
 		viewportMediaCount: getViewportMediaCount(store),
 		value: getTimelineValue(store),
 		minDate: getMediasMinDate(store)
-	}
+	};
 })(Timeline);
 
 export default ConnectedTimeline;

@@ -1,19 +1,20 @@
-import React from "react";
-import { connect } from "react-redux";
-import { Button } from "react-toolbox/lib/button"
-import { Dialog } from "react-toolbox/lib/dialog"
+import React from 'react';
+import { connect } from 'react-redux';
+import { Button } from 'react-toolbox/lib/button';
+import { Dialog } from 'react-toolbox/lib/dialog';
 import { ProgressBar } from 'react-toolbox/lib/progress_bar';
+import PropTypes from 'prop-types';
 
-import { selectors } from "../../modules";
+import { selectors } from '../../modules';
 const { getUploadMediasState } = selectors;
-import { actions } from "../../modules"
+import { actions } from '../../modules';
 const { uploadMedias, resetUploadMediasState } = actions;
 
-import styles from './carousel.css'
+import styles from './carousel.css';
 
 class MediasUploader extends React.Component {
 
-	constructor(props) {
+	constructor (props) {
 		super(props);
 		this.handleFileUpload = this.handleFileUpload.bind(this);
 		this.handleClick = this.handleClick.bind(this);
@@ -27,14 +28,14 @@ class MediasUploader extends React.Component {
 		};
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps (nextProps) {
 		const uploadPending = nextProps.uploadMediasState.pending !== false;
 		const uploadFinished = nextProps.uploadMediasState.data !== null;
 		const uploadFulfilled = uploadFinished && !nextProps.uploadMediasState.error;
-		
+
 		if (uploadFinished) {
 			// some medias were uploaded : reset input value
-			this.input.value = "";
+			this.input.value = '';
 		}
 
 		if (uploadFulfilled) {
@@ -45,18 +46,18 @@ class MediasUploader extends React.Component {
 		this.setState({ uploadPending, uploadFinished, uploadFulfilled });
 	}
 
-	handleFileUpload(event) {
+	handleFileUpload (event) {
 		this.setState({
 			nbFiles: event.target.files.length
 		});
-	  	this.props.dispatch(uploadMedias(event.target.files, this.props.position));
+		this.props.dispatch(uploadMedias(event.target.files, this.props.position));
 	}
 
-	handleClick(event) {
-	  	this.input.click();
+	handleClick () {
+		this.input.click();
 	}
 
-	cancel() {
+	cancel () {
 		this.setState({
 			uploadPending: false,
 			uploadFinished: false,
@@ -67,13 +68,13 @@ class MediasUploader extends React.Component {
 		});
 	}
 
-	retry() {
+	retry () {
 		const errorFiles = this.props.uploadMediasState.error.files;
 		if (errorFiles.length > 0) {
 			this.setState({
 				nbFiles: errorFiles.length
 			});
-	  		this.props.dispatch(uploadMedias(errorFiles, this.props.position));
+			this.props.dispatch(uploadMedias(errorFiles, this.props.position));
 		}
 	}
 
@@ -84,13 +85,13 @@ class MediasUploader extends React.Component {
 	// 	return (nextProps.uploadMediasState.pending !== this.props.uploadMediasState.pending);
 	// }
 
-	render() {
+	render () {
 		const pending = this.props.uploadMediasState.pending;
-		const dialogActive = this.state.uploadPending || 
-			(this.state.uploadFinished && !this.state.uploadFulfilled);
+		const dialogActive = this.state.uploadPending
+			|| (this.state.uploadFinished && !this.state.uploadFulfilled);
 
-		var progressValue;
-		var progressString;
+		let progressValue;
+		let progressString;
 		if (this.state.uploadPending) {
 			progressValue = parseInt(pending / this.state.nbFiles * 100);
 			progressString = `${pending}/${this.state.nbFiles}`;
@@ -99,47 +100,48 @@ class MediasUploader extends React.Component {
 			progressString = `${this.state.nbFiles}/${this.state.nbFiles}`;
 		}
 
-		var successMessage;
+		let successMessage;
 		if (this.state.uploadFinished && this.props.uploadMediasState.data.length > 0) {
 			successMessage = `Successfully uploaded ${this.props.uploadMediasState.data.length}/${this.state.nbFiles} medias`;
 		}
 
-		var mappedErrors;
+		let mappedErrors;
 		if (this.props.uploadMediasState.error) {
 			mappedErrors = this.props.uploadMediasState.error.messages.map((err, i)=> {
-				return <div key={`err-${i}`}>{err}</div>
+				return <div key={`err-${i}`}>{err}</div>;
 			});
 		}
 
 		return <div>
 			<div className={styles.mediasUploader}>
-				<input type="file"
+				<input type='file'
 					onChange={this.handleFileUpload}
 					multiple
-					ref={(input)=>{this.input = input}}/>
+					ref={(input)=>{this.input = input;}}
+				/>
 				<Button primary
 					onClick={this.handleClick}>
 					Upload medias
 				</Button>
 			</div>
 			<Dialog active={dialogActive}
-				title="Uploading medias">
+				title='Uploading medias'>
 				<div className={styles.mediasUploaderProgress}>
-					<ProgressBar type="linear" 
-						mode="determinate"
+					<ProgressBar type='linear'
+						mode='determinate'
 						value={progressValue}/>
 					<div>{progressString}</div>
 				</div>
 				<div className={styles.mediasUploaderSuccess}>
 					{successMessage}
 				</div>
-				{mappedErrors &&
-					<div className={styles.mediasUploaderErrors}>
+				{mappedErrors
+					&& <div className={styles.mediasUploaderErrors}>
 						{mappedErrors}
 					</div>
 				}
-				{this.state.uploadFinished && !this.state.uploadFulfilled &&
-					<div className={styles.mediasUploaderErrorActions}>
+				{this.state.uploadFinished && !this.state.uploadFulfilled
+					&& <div className={styles.mediasUploaderErrorActions}>
 						<Button primary onClick={this.retry}>
 							Retry
 						</Button>
@@ -149,9 +151,28 @@ class MediasUploader extends React.Component {
 					</div>
 				}
 			</Dialog>
-		</div>
+		</div>;
 	}
 }
+
+MediasUploader.propTypes = {
+	dispatch: PropTypes.func.isRequired,
+	position: PropTypes.shape({
+		lng: PropTypes.number.isRequired,
+		lat: PropTypes.number.isRequired
+	}).isRequired,
+	uploadMediasState: PropTypes.shape({
+		pending: PropTypes.oneOfType([
+			PropTypes.number,
+			PropTypes.bool
+		]).isRequired,
+		error: PropTypes.shape({
+			files: PropTypes.arrayOf(PropTypes.object),
+			messages: PropTypes.arrayOf(PropTypes.string)
+		}),
+		data: PropTypes.arrayOf(PropTypes.object)
+	}).isRequired
+};
 
 const ConnectedMediasUploader = connect((store)=> {
 	return {
@@ -160,7 +181,7 @@ const ConnectedMediasUploader = connect((store)=> {
 			lat: store.world.lat
 		},
 		uploadMediasState: getUploadMediasState(store)
-	}
+	};
 })(MediasUploader);
 
 export default ConnectedMediasUploader;
