@@ -8,13 +8,15 @@ import ForgotPassword from './ForgotPassword';
 import ResetPassword from './ResetPassword';
 
 class Auth extends React.Component {
-    render () {
-        return <Switch>
-			<Route path='/:loc/auth/login' component={Login}/>
-			<Route path='/:loc/auth/register' component={Register}/>
-			<Route path='/:loc/auth/forgot' component={ForgotPassword}/>
-            <Route path='/:loc/auth/reset' component={ResetPassword}/>
-		</Switch>;
+    render() {
+        return (
+            <Switch>
+                <Route path="/:loc/auth/login" component={Login} />
+                <Route path="/:loc/auth/register" component={Register} />
+                <Route path="/:loc/auth/forgot" component={ForgotPassword} />
+                <Route path="/:loc/auth/reset" component={ResetPassword} />
+            </Switch>
+        );
     }
 }
 

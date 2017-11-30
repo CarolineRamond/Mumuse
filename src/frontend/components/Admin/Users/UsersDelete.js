@@ -11,42 +11,45 @@ const { getDeleteUsersState } = selectors;
 import styles from '../admin.css';
 
 class UsersDelete extends React.Component {
-
-	componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
         if (nextProps.active && nextProps.serverState.data) {
             this.props.cancel();
         }
     }
 
-    deleteUsers () {
+    deleteUsers() {
         this.props.dispatch(deleteUsers(this.props.users));
     }
 
     actions = [
-		{ label: 'Delete', onClick: this.deleteUsers.bind(this) },
-		{ label: 'Cancel', onClick: this.props.cancel }
-	];
+        { label: 'Delete', onClick: this.deleteUsers.bind(this) },
+        { label: 'Cancel', onClick: this.props.cancel }
+    ];
 
-	render () {
+    render() {
         let dialogContent;
         if (this.props.serverState.error) {
             dialogContent = <div>{this.props.serverState.error}</div>;
         } else {
             dialogContent = <div>Are you sure you want the selected user(s) ?</div>;
         }
-        return <Dialog title='Delete User'
-            active={this.props.active}
-            onEscKeyDown={this.props.cancel}
-            onOverlayClick={this.props.cancel}
-            theme={{
-                dialog: styles.formDialogContainer,
-                body: styles.formDialog,
-                title: styles.formDialogTitle
-            }}
-            actions={this.actions}>
-            {dialogContent}
-        </Dialog>;
-	}
+        return (
+            <Dialog
+                title="Delete User"
+                active={this.props.active}
+                onEscKeyDown={this.props.cancel}
+                onOverlayClick={this.props.cancel}
+                theme={{
+                    dialog: styles.formDialogContainer,
+                    body: styles.formDialog,
+                    title: styles.formDialogTitle
+                }}
+                actions={this.actions}
+            >
+                {dialogContent}
+            </Dialog>
+        );
+    }
 }
 
 // Props :
@@ -70,7 +73,7 @@ UsersDelete.propTypes = {
     users: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
-const ConnectedUsersDelete = connect((store)=> {
+const ConnectedUsersDelete = connect(store => {
     return {
         serverState: getDeleteUsersState(store)
     };

@@ -7,12 +7,12 @@ import forgotPasswordReducer from './reducers/auth.forgotPassword.reducer';
 import resetPasswordReducer from './reducers/auth.resetPassword.reducer';
 
 const authReducer = combineReducers({
-	authUser: authUserReducer,
-	login: loginReducer,
-	logout: logoutReducer,
-	register: registerReducer,
-	forgotPassword: forgotPasswordReducer,
-	resetPassword: resetPasswordReducer
+    authUser: authUserReducer,
+    login: loginReducer,
+    logout: logoutReducer,
+    register: registerReducer,
+    forgotPassword: forgotPasswordReducer,
+    resetPassword: resetPasswordReducer
 });
 
 export default authReducer;

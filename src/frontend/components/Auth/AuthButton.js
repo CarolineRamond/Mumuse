@@ -14,47 +14,52 @@ const { getAuthUser, getRootUrl } = selectors;
 import { authButton } from './auth.css';
 
 class AuthButton extends React.Component {
+    constructor(props) {
+        super(props);
+        this.login = this.login.bind(this);
+        this.logout = this.logout.bind(this);
+    }
 
-	constructor (props) {
-		super(props);
-		this.login = this.login.bind(this);
-		this.logout = this.logout.bind(this);
-	}
+    shouldComponentUpdate(nextProps) {
+        return (
+            (nextProps.user && !this.props.user) ||
+            (!nextProps.user && this.props.user) ||
+            (nextProps.user && this.props.user && nextProps.user.email !== this.props.user.email)
+        );
+    }
 
-	shouldComponentUpdate (nextProps) {
-		return (nextProps.user && !this.props.user)
-			|| (!nextProps.user && this.props.user)
-			|| (nextProps.user && this.props.user && nextProps.user.email !== this.props.user.email);
-	}
+    login() {
+        const loginUrl = this.props.rootUrl + '/auth/login';
+        this.props.history.push(loginUrl);
+    }
 
-	login () {
-		const loginUrl = this.props.rootUrl + '/auth/login';
-		this.props.history.push(loginUrl);
-	}
+    logout() {
+        this.props.dispatch(logout());
+    }
 
-	logout () {
-		this.props.dispatch(logout());
-	}
-
-	render () {
-		if (this.props.user) {
-			return <TooltipButton
-				icon='directions_run'
-				onClick={this.logout}
-				floating
-				className={authButton}
-				tooltip='Logout'
-			/>;
-		} else {
-			return <TooltipButton
-				icon='account_box'
-				floating
-				className={authButton}
-				tooltip='Login'
-				onClick={this.login}
-			/>;
-		}
-	}
+    render() {
+        if (this.props.user) {
+            return (
+                <TooltipButton
+                    icon="directions_run"
+                    onClick={this.logout}
+                    floating
+                    className={authButton}
+                    tooltip="Logout"
+                />
+            );
+        } else {
+            return (
+                <TooltipButton
+                    icon="account_box"
+                    floating
+                    className={authButton}
+                    tooltip="Login"
+                    onClick={this.login}
+                />
+            );
+        }
+    }
 }
 
 // Props :
@@ -65,20 +70,20 @@ class AuthButton extends React.Component {
 // * rootUrl: current map url (with position & zoom), provided by @connect (required)
 // * user : currently logged in user (if any), provided by @connect
 AuthButton.propTypes = {
-	dispatch: PropTypes.func.isRequired,
+    dispatch: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
-	location: PropTypes.object,
+    location: PropTypes.object,
     match: PropTypes.object,
-	rootUrl: PropTypes.string.isRequired,
-	user: PropTypes.object
+    rootUrl: PropTypes.string.isRequired,
+    user: PropTypes.object
 };
 
 // Store connection
-const ConnectedAuthButton = connect((store)=> {
-	return {
-		user: getAuthUser(store),
-		rootUrl: getRootUrl(store)
-	};
+const ConnectedAuthButton = connect(store => {
+    return {
+        user: getAuthUser(store),
+        rootUrl: getRootUrl(store)
+    };
 })(AuthButton);
 
 export default withRouter(ConnectedAuthButton);

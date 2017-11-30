@@ -1,6 +1,10 @@
-export default function (options = { validatorKey: 'meta', paramKey: 'payload' }) {
+export default function(options = { validatorKey: 'meta', paramKey: 'payload' }) {
     const validatorMiddleware = store => next => action => {
-        if (!action[options.validatorKey] || !action[options.validatorKey].validator || action[options.validatorKey].disableValidate) {
+        if (
+            !action[options.validatorKey] ||
+            !action[options.validatorKey].validator ||
+            action[options.validatorKey].disableValidate
+        ) {
             // thunk compatible
             if (action[options.paramKey] && action[options.paramKey].thunk) {
                 return next(action[options.paramKey].thunk);
@@ -64,7 +68,11 @@ export default function (options = { validatorKey: 'meta', paramKey: 'payload' }
         // param object itself
         const paramObjValidator = validators[options.paramKey];
         if (paramObjValidator && flag) {
-            flag = runValidatorContainer(paramObjValidator, action[options.paramKey], options.paramKey);
+            flag = runValidatorContainer(
+                paramObjValidator,
+                action[options.paramKey],
+                options.paramKey
+            );
         }
         // -------
 

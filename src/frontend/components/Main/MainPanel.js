@@ -10,34 +10,37 @@ import Previewer from '../Medias/Previewer';
 import Timeline from '../Medias/Timeline';
 import styles from './main.css';
 
-
 class MainPanel extends React.Component {
-
-    render () {
+    render() {
         const mapClass = this.props.previewMode ? styles.preview : styles.main;
         const previewerClass = this.props.previewMode ? styles.main : styles.preview;
-        return <div className={styles.mainContainer}>
-            {/*Map*/}
-            <div className={mapClass}>
-                <Map/>
-                { this.props.previewMode && <PreviewSwitch/> }
+        return (
+            <div className={styles.mainContainer}>
+                {/*Map*/}
+                <div className={mapClass}>
+                    <Map />
+                    {this.props.previewMode && <PreviewSwitch />}
+                </div>
+                {/*Timeline*/}
+                {!this.props.previewMode && (
+                    <div className={styles.timelineContainer}>
+                        {this.props.showPreviewer && <div className={styles.dummyPreview} />}
+                        <Timeline />
+                    </div>
+                )}
+                {/*Previewer*/}
+                {this.props.showPreviewer && (
+                    <div className={previewerClass}>
+                        {!this.props.previewMode && <PreviewSwitch />}
+                        <Previewer
+                            media={this.props.selectedMedias[0]}
+                            pointCloud={this.props.selectedPointCloud}
+                            previewMode={!this.props.previewMode}
+                        />
+                    </div>
+                )}
             </div>
-            {/*Timeline*/}
-            { !this.props.previewMode
-                && <div className={styles.timelineContainer}>
-                    { this.props.showPreviewer && <div className={styles.dummyPreview}/>}
-                    <Timeline/>
-                </div>
-            }
-            {/*Previewer*/}
-            { this.props.showPreviewer
-                && <div className={previewerClass}>
-                    { !this.props.previewMode && <PreviewSwitch/> }
-                    <Previewer media={this.props.selectedMedias[0]} pointCloud={this.props.selectedPointCloud}
-                        previewMode={!this.props.previewMode}/>
-                </div>
-            }
-        </div>;
+        );
     }
 }
 
@@ -49,21 +52,25 @@ class MainPanel extends React.Component {
 //  (ie if there is exactly one selected media or a selected point cloud)
 MainPanel.propTypes = {
     previewMode: PropTypes.bool.isRequired,
-    selectedMedias: PropTypes.arrayOf(PropTypes.shape({
-        properties: PropTypes.object,
-        geometry: PropTypes.object
-    })).isRequired,
+    selectedMedias: PropTypes.arrayOf(
+        PropTypes.shape({
+            properties: PropTypes.object,
+            geometry: PropTypes.object
+        })
+    ).isRequired,
     selectedPointCloud: PropTypes.object.isRequired,
     showPreviewer: PropTypes.bool.isRequired
 };
 
 // Store connection
-const MainPanelConnected = connect((store)=> {
+const MainPanelConnected = connect(store => {
     const selectedMedias = getSelectedMedias(store);
-    const isPointCloudSelected = Object.keys(store.potree.pointCloud).length !== 0 && store.potree.pointCloud.constructor === Object;
+    const isPointCloudSelected =
+        Object.keys(store.potree.pointCloud).length !== 0 &&
+        store.potree.pointCloud.constructor === Object;
     return {
         previewMode: getMapPreviewMode(store),
-        showPreviewer: (selectedMedias.length === 1 || isPointCloudSelected),
+        showPreviewer: selectedMedias.length === 1 || isPointCloudSelected,
         selectedMedias: selectedMedias,
         selectedPointCloud: store.potree.pointCloud
     };

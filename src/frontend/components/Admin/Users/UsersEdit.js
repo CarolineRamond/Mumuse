@@ -13,8 +13,7 @@ import Form from '../../Common/Form';
 import styles from '../../Common/form.css';
 
 class UsersEdit extends React.Component {
-
-    constructor (props) {
+    constructor(props) {
         super(props);
         this.state = {
             active: false
@@ -24,38 +23,40 @@ class UsersEdit extends React.Component {
         this.userId = this.props.match.params.userId;
     }
 
-    componentDidMount () {
+    componentDidMount() {
         this.setState({
             active: true
         });
         this.props.dispatch(fetchUser(this.userId));
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
         if (nextProps.updateUserState.data) {
             this.cancel.bind(this)();
         }
     }
 
-    cancel () {
+    cancel() {
         const rootUrl = '/admin/users';
         this.props.dispatch(resetUpdateState());
         this.setState({
             active: false
         });
-        setTimeout(()=> {
+        setTimeout(() => {
             this.props.history.push(rootUrl);
         }, 500);
     }
 
-    submit (form) {
+    submit(form) {
         this.props.dispatch(updateUser(form, this.userId));
     }
 
-    render () {
+    render() {
         let dialogContent;
-        if (this.props.currentUserState.pending
-            || (!this.props.currentUserState.data && !this.props.currentUserState.error)) {
+        if (
+            this.props.currentUserState.pending ||
+            (!this.props.currentUserState.data && !this.props.currentUserState.error)
+        ) {
             dialogContent = <div>Loading...</div>;
         } else if (this.props.currentUserState.error) {
             dialogContent = <div>{this.props.currentUserState.error}</div>;
@@ -66,8 +67,8 @@ class UsersEdit extends React.Component {
                     type: 'text',
                     value: this.props.currentUserState.data.firstname,
                     required: true,
-                    validate: (value)=> {
-                        const isValid = (value.length > 0);
+                    validate: value => {
+                        const isValid = value.length > 0;
                         const error = isValid ? '' : 'First name is required';
                         return { isValid, error };
                     }
@@ -77,8 +78,8 @@ class UsersEdit extends React.Component {
                     type: 'text',
                     value: this.props.currentUserState.data.lastname,
                     required: true,
-                    validate: (value)=> {
-                        const isValid = (value.length > 0);
+                    validate: value => {
+                        const isValid = value.length > 0;
                         const error = isValid ? '' : 'Last name is required';
                         return { isValid, error };
                     }
@@ -88,7 +89,7 @@ class UsersEdit extends React.Component {
                     type: 'email',
                     value: this.props.currentUserState.data.email,
                     required: true,
-                    validate: (value)=> {
+                    validate: value => {
                         const isValid = isEmail(value);
                         const error = isValid ? '' : 'Email is invalid';
                         return { isValid, error };
@@ -103,32 +104,38 @@ class UsersEdit extends React.Component {
                         { label: 'Superuser', value: 'superuser' },
                         { label: 'Admin', value: 'admin' }
                     ],
-                    validate: ()=> {
+                    validate: () => {
                         return { isValid: true, error: null };
                     }
                 }
             };
-            dialogContent = <Form fields={fields}
-                helper=''
-                error={this.props.updateUserState.error}
-                links={[]}
-                cancel={this.cancel}
-                submit={this.submit}
-            />;
+            dialogContent = (
+                <Form
+                    fields={fields}
+                    helper=""
+                    error={this.props.updateUserState.error}
+                    links={[]}
+                    cancel={this.cancel}
+                    submit={this.submit}
+                />
+            );
         }
 
-        return <Dialog title='Edit User'
-            active={this.state.active}
-            onEscKeyDown={this.cancel}
-            onOverlayClick={this.cancel}
-            theme={{
-                dialog: styles.formDialogContainer,
-                body: styles.formDialog,
-                title: styles.formDialogTitle
-            }}
-        >
-            {dialogContent}
-        </Dialog>;
+        return (
+            <Dialog
+                title="Edit User"
+                active={this.state.active}
+                onEscKeyDown={this.cancel}
+                onOverlayClick={this.cancel}
+                theme={{
+                    dialog: styles.formDialogContainer,
+                    body: styles.formDialog,
+                    title: styles.formDialogTitle
+                }}
+            >
+                {dialogContent}
+            </Dialog>
+        );
     }
 }
 
@@ -163,7 +170,7 @@ UsersEdit.propTypes = {
 };
 
 // Store connection
-const ConnectedUsersEdit = connect((store)=> {
+const ConnectedUsersEdit = connect(store => {
     return {
         currentUserState: getCurrentUserState(store),
         updateUserState: getUpdateUserState(store)

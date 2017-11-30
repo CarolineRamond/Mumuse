@@ -11,7 +11,7 @@ const { clickMedias } = actions;
 import styles from './carousel.css';
 
 class Carousel extends React.Component {
-	constructor (props) {
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -22,7 +22,7 @@ class Carousel extends React.Component {
         this.handleClick = this.handleClick.bind(this);
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
         if (!nextProps.selectFilterPending && this.props.selectFilterPending) {
             const newMediasSlice = nextProps.medias.slice(0, this.state.mediasSlice.length);
             this.setState({
@@ -36,7 +36,7 @@ class Carousel extends React.Component {
         }
     }
 
-    loadMoreThumbnails () {
+    loadMoreThumbnails() {
         const n = this.state.mediasSlice.length;
         if (this.state.hasMore) {
             const newSlice = this.props.medias.slice(n, n + 10);
@@ -47,7 +47,7 @@ class Carousel extends React.Component {
         }
     }
 
-    handleClick (target, ctrlKey) {
+    handleClick(target, ctrlKey) {
         const isOutside = target.tagName !== 'IMG';
         if (isOutside) {
             const features = [];
@@ -55,50 +55,65 @@ class Carousel extends React.Component {
         }
     }
 
-    selectMedia (media, ctrlKey) {
+    selectMedia(media, ctrlKey) {
         const features = [media];
-        this.props.dispatch(clickMedias({
-            features: features,
-            ctrlKey: ctrlKey,
-            isAdmin: this.props.isAdmin
-        }));
+        this.props.dispatch(
+            clickMedias({
+                features: features,
+                ctrlKey: ctrlKey,
+                isAdmin: this.props.isAdmin
+            })
+        );
     }
 
-	render () {
-		const mappedThumbnails = [];
+    render() {
+        const mappedThumbnails = [];
         this.state.mediasSlice.map((media, i) => {
             const classes = [styles.thumbnail];
             if (media.properties.selected) {
                 classes.push(styles.thumbnailSelected);
             }
             mappedThumbnails.push(
-                <div className={styles.thumbnailContainer} key={i}
-                    onClick={(e)=>{this.selectMedia(media, e.ctrlKey);}}>
-                    <img className={classes.join(' ')}
-                        src={media.properties.thumbnail_url}
-                    />
+                <div
+                    className={styles.thumbnailContainer}
+                    key={i}
+                    onClick={e => {
+                        this.selectMedia(media, e.ctrlKey);
+                    }}
+                >
+                    <img className={classes.join(' ')} src={media.properties.thumbnail_url} />
                 </div>
             );
         });
 
-		if (this.props.areMediasLocked) {
-            return <div className={styles.mediasLockedMessage}>
-                <div>Please zoom in to view individual media.</div>
-            </div>;
+        if (this.props.areMediasLocked) {
+            return (
+                <div className={styles.mediasLockedMessage}>
+                    <div>Please zoom in to view individual media.</div>
+                </div>
+            );
         } else {
-            return <div className={styles.infiniteScrollContainer}
-                onClick={(e)=>{this.handleClick(e.target, e.ctrlKey);}}>
-                <InfiniteScroll className={styles.infiniteScroll}
-                    pageStart={0}
-                    loadMore={this.loadMoreThumbnails}
-                    hasMore={this.state.hasMore}
-                    useWindow={false}
-                    loader={<div className='loader'>Loading ...</div>}>
-                  {mappedThumbnails}
-                </InfiniteScroll>
-            </div>;
+            return (
+                <div
+                    className={styles.infiniteScrollContainer}
+                    onClick={e => {
+                        this.handleClick(e.target, e.ctrlKey);
+                    }}
+                >
+                    <InfiniteScroll
+                        className={styles.infiniteScroll}
+                        pageStart={0}
+                        loadMore={this.loadMoreThumbnails}
+                        hasMore={this.state.hasMore}
+                        useWindow={false}
+                        loader={<div className="loader">Loading ...</div>}
+                    >
+                        {mappedThumbnails}
+                    </InfiniteScroll>
+                </div>
+            );
         }
-	}
+    }
 }
 
 // Props :
@@ -118,7 +133,7 @@ Carousel.propTypes = {
 };
 
 // Store connection
-const ConnectedCarousel = connect((store)=> {
+const ConnectedCarousel = connect(store => {
     return {
         medias: getVisibleMedias(store),
         selectFilterPending: getSelectFilterPending(store),

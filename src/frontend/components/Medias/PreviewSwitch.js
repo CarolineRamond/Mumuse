@@ -7,34 +7,29 @@ const { switchPreviewMode } = actions;
 
 import styles from './preview.css';
 
-
 class PreviewSwitch extends React.Component {
+    constructor(props) {
+        super(props);
+        this.switchPreviewMode = this.switchPreviewMode.bind(this);
+    }
 
-	constructor (props) {
-		super(props);
-		this.switchPreviewMode = this.switchPreviewMode.bind(this);
-	}
+    switchPreviewMode() {
+        this.props.dispatch(switchPreviewMode());
+    }
 
-	switchPreviewMode () {
-		this.props.dispatch(switchPreviewMode());
-	}
-
-	render () {
-		return <button
-			className={styles.previewSwitch}
-			onClick={this.switchPreviewMode}
-			/>;
-	}
+    render() {
+        return <button className={styles.previewSwitch} onClick={this.switchPreviewMode} />;
+    }
 }
 
 // Props :
 // * dispatch: redux store dispatch function, provided by connect (required)
 PreviewSwitch.propTypes = {
-	dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired
 };
 
-const ConnectedPreviewSwitch = connect(()=> {
-	return {};
+const ConnectedPreviewSwitch = connect(() => {
+    return {};
 })(PreviewSwitch);
 
 export default ConnectedPreviewSwitch;

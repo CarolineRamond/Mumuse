@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {Tab, Tabs} from 'react-toolbox';
+import { Tab, Tabs } from 'react-toolbox';
 import PropTypes from 'prop-types';
 
 import { selectors } from '../../modules';
@@ -12,7 +12,7 @@ import MediasActions from '../Medias/MediasActions';
 import styles from './pannel.css';
 
 class SidePanel extends React.Component {
-	constructor (props) {
+    constructor(props) {
         super(props);
         this.state = {
             index: 0
@@ -20,42 +20,47 @@ class SidePanel extends React.Component {
         this.handleTabChange = this.handleTabChange.bind(this);
     }
 
-    handleTabChange (index) {
-		this.setState({index});
+    handleTabChange(index) {
+        this.setState({ index });
     }
 
-	render () {
-		return <div className={styles.pannel}>
-			<Tabs className={styles.pannelTabs}
-				theme={{navigationContainer: styles.pannelNavigationContainer, tab: styles.pannelTab}}
-				index={this.state.index}
-				onChange={this.handleTabChange}>
-				<Tab label='Medias'>
-					<Carousel/>
-					{this.props.isAdmin
-						&& <MediasActions/>
-					}
-				</Tab>
-				<Tab label='Layers'>
-					<Layers/>
-				</Tab>
-			</Tabs>
-		</div>;
-	}
+    render() {
+        return (
+            <div className={styles.pannel}>
+                <Tabs
+                    className={styles.pannelTabs}
+                    theme={{
+                        navigationContainer: styles.pannelNavigationContainer,
+                        tab: styles.pannelTab
+                    }}
+                    index={this.state.index}
+                    onChange={this.handleTabChange}
+                >
+                    <Tab label="Medias">
+                        <Carousel />
+                        {this.props.isAdmin && <MediasActions />}
+                    </Tab>
+                    <Tab label="Layers">
+                        <Layers />
+                    </Tab>
+                </Tabs>
+            </div>
+        );
+    }
 }
 
 // Props :
 // * dispatch: redux store dispatch function, provided by connect
 // * isAdmin: whether authenticated user has admin rights, provided by connect
 SidePanel.propTypes = {
-	dispatch: PropTypes.func,
+    dispatch: PropTypes.func,
     isAdmin: PropTypes.bool
 };
 
-const ConnectedSidePanel = connect((store)=> {
-	return {
-		isAdmin: isAuthUserAdmin(store)
-	};
+const ConnectedSidePanel = connect(store => {
+    return {
+        isAdmin: isAuthUserAdmin(store)
+    };
 })(SidePanel);
 
 export default ConnectedSidePanel;

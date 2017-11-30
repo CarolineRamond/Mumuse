@@ -7,14 +7,16 @@ import UsersCreate from './UsersCreate';
 import UsersEdit from './UsersEdit';
 
 class Users extends React.Component {
-    render () {
-        return <div>
-            <UsersTable/>
-            <Switch key={this.props.location.pathname} location={this.props.location}>
-                <Route path='/admin/users/create' component={UsersCreate}/>
-                <Route path='/admin/users/edit/:userId' component={UsersEdit}/>
-            </Switch>
-        </div>;
+    render() {
+        return (
+            <div>
+                <UsersTable />
+                <Switch key={this.props.location.pathname} location={this.props.location}>
+                    <Route path="/admin/users/create" component={UsersCreate} />
+                    <Route path="/admin/users/edit/:userId" component={UsersEdit} />
+                </Switch>
+            </div>
+        );
     }
 }
 
