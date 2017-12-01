@@ -7,11 +7,11 @@ import uploadMediasReducer from './reducers/medias.uploadMedias.reducer';
 import deleteMediasReducer from './reducers/medias.deleteMedias.reducer';
 
 const mediasReducer = combineReducers({
-	layers: layersReducer,
-	sources: sourcesReducer,
-	timeline: timelineReducer,
-	uploadMedias: uploadMediasReducer,
-	deleteMedias: deleteMediasReducer
+    layers: layersReducer,
+    sources: sourcesReducer,
+    timeline: timelineReducer,
+    uploadMedias: uploadMediasReducer,
+    deleteMedias: deleteMediasReducer
 });
 
 // default export : reducer function

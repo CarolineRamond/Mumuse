@@ -1,27 +1,27 @@
 export function getUsersList(state) {
-	return state.usersList.data;
+    return state.usersList.data;
 }
 
 export function getUsersListState(state) {
-	return state.usersList;
+    return state.usersList;
 }
 
 export function getCurrentUser(state) {
-	return state.currentUser.data;
+    return state.currentUser.data;
 }
 
 export function getCurrentUserState(state) {
-	return state.currentUser;
+    return state.currentUser;
 }
 
 export function getCreateUserState(state) {
-	return state.createUser;
+    return state.createUser;
 }
 
 export function getUpdateUserState(state) {
-	return state.updateUser;
+    return state.updateUser;
 }
 
 export function getDeleteUsersState(state) {
-	return state.deleteUsers;
+    return state.deleteUsers;
 }
