@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import potree from '@iconem/iconem-potree';
-import Camera from './camera';
+import Camera from './Camera';
 
 import { selectors } from '../../modules';
 const {
