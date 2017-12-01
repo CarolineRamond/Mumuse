@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import potree from '@iconem/iconem-potree';
 import Camera from './camera';
-import PropTypes from 'prop-types';
 
 import { selectors } from '../../modules';
 const {
@@ -14,7 +14,15 @@ const {
 import { actions } from '../../modules';
 const { selectMediaById } = actions;
 
-class Potree extends React.Component {
+@connect(store => {
+    return {
+        pointCloud: getSelectedPointCloud(store),
+        selectedMedias: getSelectedMedias(store),
+        visibleMedias: getVisibleMedias(store),
+        selectFilterPending: getSelectFilterPending(store)
+    };
+})
+export default class Potree extends React.Component {
     constructor(props) {
         super(props);
         this.hovered_cam_matrix = new THREE.Matrix4();
@@ -33,27 +41,32 @@ class Potree extends React.Component {
         // Load pointcloud and add cameraMedia to potree
         if (
             !this.potreeIsLoading &&
-            nextProps.pointCloud.metaData &&
             (this.potree.scene.pointclouds.length === 0 ||
                 (nextProps.pointCloud.metaData &&
                     nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id))
         ) {
-            if (nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id) {
+            // Empty point cloud if necessary
+            if (
+                nextProps.pointCloud.metaData &&
+                nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id
+            ) {
                 this.potree.scene.pointclouds = [];
             }
-            this.potreeIsLoading = true;
-            potree.loadPointCloud(
-                `potreeviewer/potreedataset/${nextProps.pointCloud.metaData._id}/cloud.js`,
-                nextProps.pointCloud.metaData.name,
-                e => {
-                    this.potreeIsLoading = false;
-                    this.potree.scene.addPointCloud(e.pointcloud);
-                    this.potree.fitToScreen();
-                }
-            );
+            if (nextProps.pointCloud.metaData && nextProps.pointCloud.metaData._id) {
+                this.potreeIsLoading = true;
+                potree.loadPointCloud(
+                    `potreeviewer/potreedataset/${nextProps.pointCloud.metaData._id}/cloud.js`,
+                    nextProps.pointCloud.metaData.name,
+                    e => {
+                        this.potreeIsLoading = false;
+                        this.potree.scene.addPointCloud(e.pointcloud);
+                        this.potree.fitToScreen();
+                    }
+                );
 
-            const pointCloudMedias = JSON.parse(nextProps.pointCloud.metaData.visus);
-            this.addCamerasToPotree(pointCloudMedias);
+                const pointCloudMedias = JSON.parse(nextProps.pointCloud.metaData.visus);
+                this.addCamerasToPotree(pointCloudMedias);
+            }
         }
 
         // Select media on 3D viewer when a media is selected, else reset viewer view
@@ -85,11 +98,8 @@ class Potree extends React.Component {
                 const isCameraVisible = nextProps.visibleMedias.some(function(f) {
                     return f.properties._id === camera.userData.mediaId;
                 });
-                if (isCameraVisible) {
-                    camera.visible = true;
-                } else {
-                    camera.visible = false;
-                }
+                if (isCameraVisible) camera.visible = true;
+                else camera.visible = false;
             });
         }
     }
@@ -104,13 +114,13 @@ class Potree extends React.Component {
         this.potree.stopRendering();
     }
 
-    initViewer(pointCloudId, pointCloudName) {
+    initViewer() {
         window.viewer = this.potree = new potree.Viewer(this.potreeContainer);
         this.potree.setEDLEnabled(false);
         this.potree.setPointSize(3);
         this.potree.setMaterial('RGB');
         this.potree.setFOV(60);
-        // this.potree.setPointSizing('Fixed');
+        // this.potree.setPointSizing("Fixed");
         this.potree.setQuality('Squares');
         this.potree.setPointBudget(10 * 1000 * 1000);
         this.potree.startRendering();
@@ -134,7 +144,7 @@ class Potree extends React.Component {
     }
 
     addCamerasToPotree(pointCloudMedias) {
-        pointCloudMedias.map(function(media) {
+        pointCloudMedias.map(media => {
             if (media.camera3d && media.camera3d.filename) {
                 const camera = new Camera(media);
                 this.potree.scene.scene.add(camera);
@@ -153,7 +163,7 @@ class Potree extends React.Component {
         const localToViewer = new THREE.Matrix4();
 
         // Move to mediaCamera position
-        const camPositionTween = new TWEEN.Tween(this.potree.scene.view.position)
+        new TWEEN.Tween(this.potree.scene.view.position)
             .to(
                 {
                     x: mediaCamera.position.x,
@@ -165,24 +175,24 @@ class Potree extends React.Component {
             .start();
 
         // Look in the same direction as the mediaCamera
-        const camLookAtTween = new TWEEN.Tween(fromLookAt)
+        new TWEEN.Tween(fromLookAt)
             .to({ x: camLookAt.x, y: camLookAt.y, z: camLookAt.z }, 1000)
-            .onUpdate(function(obj) {
+            .onUpdate(obj => {
                 this.potree.scene.view.lookAt(obj);
             })
             .start();
 
         // Set camera fov equal to the mediaCamera fov
-        const camFovTween = new TWEEN.Tween(mediaCamera)
-            .to(mediaCamera, 1000)
-            .onUpdate(obj => {
+        new TWEEN.Tween({})
+            .to({}, 1000)
+            .onUpdate(() => {
                 // Get transformation matrix from local camera coordinates to viewer coordinates - by passing by world coordinates using
                 // localToViewer = viewerMatrixT * obj_cam.matrix = localToWorld * worldToViewer
                 const viewerMatrixT = this.potree.scene.camera.matrix.clone();
                 viewerMatrixT.transpose();
                 // localToViewer = viewerMatrixT * obj.matrix = localToWorld * worldToViewer
 
-                localToViewer.multiplyMatrices(viewerMatrixT, obj.matrix);
+                localToViewer.multiplyMatrices(viewerMatrixT, mediaCamera.matrix);
                 // Set viewer dimensions arbitrarily using aspect ratio, and compute a scale factor to fit bounding box of dimensions boxWidth, boxHeight
                 const viewerHeight = 1,
                     viewerWidth = this.potree.scene.camera.aspect;
@@ -194,7 +204,8 @@ class Potree extends React.Component {
                 const scaleFactor = Math.max(boxWidth / viewerWidth, boxHeight / viewerHeight),
                     newHeight = viewerHeight * scaleFactor,
                     viewerMargin = 1.1;
-                let viewerFov = 2 * Math.atan(newHeight * 1.1 / (2 * obj.cam_scale.z));
+                let viewerFov =
+                    2 * Math.atan(newHeight * viewerMargin / (2 * mediaCamera.cam_scale.z));
                 viewerFov = viewerFov * 180 / Math.PI;
 
                 // Store camera with rotated axes
@@ -208,7 +219,7 @@ class Potree extends React.Component {
         // Useful issue from bugdanov, working on doxel viewer: https://github.com/potree/potree/issues/300
     }
 
-    onMouseMove(e) {
+    onMouseMove(event) {
         // Calculate mouse position in normalized device coordinates (-1 to +1) for both components
         const rect = this.potree.renderer.domElement.getBoundingClientRect();
         this.mouse.x = (event.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
@@ -228,9 +239,7 @@ class Potree extends React.Component {
                 !this.mediaCamera_intersected ||
                 this.mediaCamera_intersected.uuid !== intersects[0].object.uuid
             ) {
-                if (this.mediaCamera_intersected) {
-                    this.mediaCamera_intersected.toggleSelection();
-                }
+                if (this.mediaCamera_intersected) this.mediaCamera_intersected.toggleSelection();
                 this.mediaCamera_intersected = intersects[0].object;
                 this.mediaCamera_intersected.toggleSelection();
                 this.mediaCamera_intersected.loadMedia();
@@ -248,14 +257,14 @@ class Potree extends React.Component {
 
                 // Compute pitch and yaw from mouse position on screen
                 const yaw = 0.25 * this.mouse.x * Math.PI,
-                    pitch = -0.5 * this.mouse.y * Math.PI / 2,
-                    roll = 0;
+                    pitch = -0.5 * this.mouse.y * Math.PI / 2;
+                // roll = 0;
                 // Define rotation matrix from euler angles to apply to view direction
                 const rotLookAt = new THREE.Matrix4(),
                     rotPitchX = new THREE.Matrix4(), // rotate around local X, to get lookAt in Y direction of camera
                     rotYawY = new THREE.Matrix4(), // rotate around local Y, to get lookAt in X direction of camera
                     camToWorld = new THREE.Matrix4();
-                // yaw (Y) first, pitch (X) second // rotation.order = 'YXZ'; // three.js r.65
+                // yaw (Y) first, pitch (X) second // rotation.order = "YXZ"; // three.js r.65
                 rotPitchX.makeRotationX(pitch);
                 rotYawY.makeRotationY(yaw);
                 rotLookAt.multiplyMatrices(rotPitchX, rotYawY);
@@ -279,7 +288,7 @@ class Potree extends React.Component {
 
                 // Hint using transformDirection
                 // rotLookAt.makeRotationFromEuler(new THREE.Euler( pitch, yaw, roll, 'YXZ' )); // or try pitch, roll, yaw, 'ZXY' // ZYX
-                //var rayOrigin = new THREE.Vector3(),
+                //let rayOrigin = new THREE.Vector3(),
                 //  rayDirection = new THREE.Vector3();
                 //rayOrigin.setFromMatrixPosition( camera.matrixWorld );
                 //rayDirection.set( coords.x, coords.y, 0.5 ).unproject( camera ).sub( this.ray.origin ).normalize();
@@ -287,19 +296,27 @@ class Potree extends React.Component {
         }
     }
 
-    onMouseClick(e) {
-        const evt = e || window.event;
+    onMouseClick(event) {
+        const e = event || window.event;
         //right button click
         if (
-            ('which' in evt && evt.which === 3) || // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-            ('button' in evt && evt.button === 2) // IE, Opera
+            (('which' in e && e.which === 3) || // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+                ('button' in e && e.button === 2)) && // IE, Opera
+            this.mediaCamera_intersected
         ) {
             this.goToMediaCamera(this.mediaCamera_intersected);
-            this.props.dispatch(
-                selectMediaById({
-                    mediaId: this.mediaCamera_intersected.userData.mediaId
-                })
-            );
+
+            if (
+                !this.props.selectedMedias[0] ||
+                this.props.selectedMedias[0].properties._id !==
+                    this.mediaCamera_intersected.userData.mediaId
+            ) {
+                this.props.dispatch(
+                    selectMediaById({
+                        mediaId: this.mediaCamera_intersected.userData.mediaId
+                    })
+                );
+            }
         }
     }
 
@@ -325,14 +342,3 @@ Potree.propTypes = {
     selectedMedias: PropTypes.arrayOf(PropTypes.object),
     visibleMedias: PropTypes.arrayOf(PropTypes.object)
 };
-
-const ConnectedPotree = connect(store => {
-    return {
-        pointCloud: getSelectedPointCloud(store),
-        selectedMedias: getSelectedMedias(store),
-        visibleMedias: getVisibleMedias(store),
-        selectFilterPending: getSelectFilterPending(store)
-    };
-})(Potree);
-
-export default ConnectedPotree;

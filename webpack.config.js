@@ -7,6 +7,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+var UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 var ENV = process.env.npm_lifecycle_event;
 var isTest = ENV === 'test' || ENV === 'test-watch';
@@ -60,7 +61,6 @@ module.exports = function makeWebpackConfig() {
         exclude: /(node_modules|IconemPotree)/,
         loader: 'babel-loader',
         query: {
-          presets: ['react', 'es2015', 'stage-0'],
           plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy', 'transform-object-rest-spread'],
         }
       }, {
@@ -154,12 +154,17 @@ module.exports = function makeWebpackConfig() {
   if (isProd) {
     config.plugins.push(
       new webpack.NoEmitOnErrorsPlugin(),
-      new webpack.optimize.UglifyJsPlugin({
+      new UglifyJsPlugin({
         sourceMap: true,
         exclude: /(vendors|worker).*\.js$/,
-        compress: {
-            comparisons: false,  // don't optimize comparisons because it was buggy with mapbox
-        },
+        uglifyOptions: {
+          mangle: {
+            keep_fnames : true
+          },
+          compress: {
+            keep_fnames : true
+          }
+        }
       }),
       new BundleAnalyzerPlugin({analyzerMode: 'static'}) 
     )
