@@ -1,11 +1,8 @@
 {
-  "name": "test-react",
-  "description": "A draft version of Iconem platform frontend using react",
+  "name": "@iconem/frontend",
+  "description": "Iconem platform frontend using react",
   "version": "0.0.1",
-  "author": {
-    "name": "Iconem",
-    "url": "http://github.com/Iconem"
-  },
+  "author": "Iconem (http://github.com/Iconem)",
   "bugs": {
     "url": "https://github.com/Iconem/Product-Backlog"
   },
@@ -14,7 +11,9 @@
     "frontend",
     "react",
     "react-toolbox",
-    "redux"
+    "redux",
+    "mapbox",
+    "potree"
   ],
   "engines": {
     "node": ">=4.3.0",
@@ -91,11 +90,18 @@
     "webpack-dev-server": "^2.9.4"
   },
   "scripts": {
-    "dev": "./node_modules/.bin/webpack-dev-server --content-base src --inline --hot",
+    "dev": "webpack-dev-server --content-base src --inline --hot",
     "build": "jest && rimraf dist && cross-env NODE_ENV=production webpack --bail",
     "deploy": "gh-pages -d build",
     "test": "jest",
     "test:watch": "npm test -- --watch",
     "test:coverage": "jest --coverage"
-  }
+  },
+  "main": "gulpfile.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iconem/Frontend.git"
+  },
+  "license": "ISC",
+  "homepage": "https://github.com/Iconem/Frontend#readme"
 }
