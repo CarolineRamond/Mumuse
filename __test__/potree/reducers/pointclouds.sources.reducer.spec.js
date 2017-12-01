@@ -1,6 +1,6 @@
 import sourcesReducer, { pointCloudsSourceInitialState,
     sourcesInitialState, pointCloudsSourceReducer, defaultSourceReducer } 
-    from "../../../src/frontend/modules/potree/reducers/pointClouds.sources.reducer"
+    from "../../../src/frontend/modules/potree/reducers/pointclouds.sources.reducer"
 import { actions } from "../../../src/frontend/modules"
 
 describe('default reducer', () => {
