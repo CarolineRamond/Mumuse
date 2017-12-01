@@ -69,6 +69,8 @@
     "eslint-plugin-react": "^6.9.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.5",
+    "gulp": "^3.9.1",
+    "gulp-bump": "^2.8.0",
     "html-webpack-plugin": "^2.30.1",
     "jest": "^21.2.1",
     "postcss-cssnext": "^2.9.0",
@@ -90,9 +92,9 @@
   },
   "scripts": {
     "dev": "./node_modules/.bin/webpack-dev-server --content-base src --inline --hot",
-    "build": "rimraf dist && SET NODE_ENV=production&& webpack --bail",
+    "build": "jest && rimraf dist && SET NODE_ENV=production&& webpack --bail",
     "deploy": "gh-pages -d build",
-    "test": "jest --runInBand",
+    "test": "jest",
     "test:watch": "npm test -- --watch",
     "test:coverage": "jest --coverage"
   }
