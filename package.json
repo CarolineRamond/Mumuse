@@ -56,8 +56,8 @@
     "babel-plugin-react-html-attrs": "^2.0.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-node-env-inline": "^6.8.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-react": "^6.16.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "babel-preset-stage-2": "^6.18.0",
     "copy-webpack-plugin": "^4.2.0",
@@ -90,9 +90,9 @@
   },
   "scripts": {
     "dev": "./node_modules/.bin/webpack-dev-server --content-base src --inline --hot",
-    "build": "rimraf dist && webpack --bail",
+    "build": "rimraf dist && SET NODE_ENV=production&& webpack --bail",
     "deploy": "gh-pages -d build",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:watch": "npm test -- --watch",
     "test:coverage": "jest --coverage"
   }

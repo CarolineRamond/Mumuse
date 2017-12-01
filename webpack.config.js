@@ -12,6 +12,7 @@ var UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 var ENV = process.env.npm_lifecycle_event;
 var isTest = ENV === 'test' || ENV === 'test-watch';
 var isProd = ENV === 'build';
+console.log(process.env.NODE_ENV);
 
 module.exports = function makeWebpackConfig() {
   var config = {};
