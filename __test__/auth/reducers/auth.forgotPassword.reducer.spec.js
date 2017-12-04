@@ -40,4 +40,16 @@ describe('auth forgot password reducer', () => {
 	  		error: "Error retrieving your account. Please try again later."
 	  	});
   	});
+
+  	it('should handle FORGOT_PASSWORD_RESET', ()=> {
+	  	const action = {
+	  		type: "FORGOT_PASSWORD_RESET"
+	  	};
+	  	const state = {
+	  		pending: false,
+	  		error: "Error",
+	  		data: null
+	  	};
+	  	expect(reducer(state, action)).toEqual(initialState);
+  	});
 });

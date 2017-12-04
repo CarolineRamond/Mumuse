@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Dialog from 'react-toolbox/lib/dialog';
 
 import { actions } from '../../modules';
-const { forgotPassword } = actions;
+const { forgotPassword, resetForgotPasswordState } = actions;
 import { selectors } from '../../modules';
 const { getRootUrl, getForgotPasswordState, getAuthUser } = selectors;
 
@@ -30,18 +30,13 @@ class ForgotPassword extends React.Component {
         });
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.serverState.data) {
-            this.cancel.bind(this)();
-        }
-    }
-
     cancel() {
         this.setState({
             active: false
         });
         setTimeout(() => {
             this.props.history.push(this.props.rootUrl);
+            this.props.dispatch(resetForgotPasswordState());
         }, 500);
     }
 
@@ -66,7 +61,7 @@ class ForgotPassword extends React.Component {
         const helper = 'Please enter your email to reset your password';
         const error =
             this.props.serverState.error ||
-            (this.state.verifyError
+            (this.state.verifyError && !this.props.serverState.data
                 ? 'Your reset session has expired. Please ask for a new session below.'
                 : null);
 

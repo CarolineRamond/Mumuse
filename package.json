@@ -91,11 +91,11 @@
   },
   "scripts": {
     "dev": "webpack-dev-server --content-base src --inline --hot",
-    "build": "jest && rimraf dist && cross-env NODE_ENV=production webpack --bail",
+    "build": "jest --runInBand && rimraf dist && cross-env NODE_ENV=production webpack --bail",
     "deploy": "gh-pages -d build",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:watch": "npm test -- --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --runInBand --coverage"
   },
   "main": "gulpfile.js",
   "repository": {

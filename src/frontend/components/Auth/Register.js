@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Dialog from 'react-toolbox/lib/dialog';
 
 import { actions } from '../../modules';
-const { register } = actions;
+const { register, resetRegisterState } = actions;
 import { selectors } from '../../modules';
 const { getRegisterState, getRootUrl } = selectors;
 
@@ -37,6 +37,7 @@ class Register extends React.Component {
         });
         setTimeout(() => {
             this.props.history.push(this.props.rootUrl);
+            this.props.dispatch(resetRegisterState());
         }, 500);
     }
 

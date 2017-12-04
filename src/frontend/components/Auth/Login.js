@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Dialog from 'react-toolbox/lib/dialog';
 
 import { actions } from '../../modules';
-const { login } = actions;
+const { login, resetLoginState } = actions;
 import { selectors } from '../../modules';
 const { getLoginState, getRootUrl } = selectors;
 
@@ -43,6 +43,7 @@ class Login extends React.Component {
         });
         setTimeout(() => {
             this.props.history.push(this.props.rootUrl);
+            this.props.dispatch(resetLoginState());
         }, 500);
     }
 
