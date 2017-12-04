@@ -30,6 +30,9 @@ const resetPasswordReducer = (state = initialState, action) => {
                 data: null
             };
         }
+        case 'RESET_PASSWORD_RESET': {
+            return initialState;
+        }
         default:
             return state;
     }

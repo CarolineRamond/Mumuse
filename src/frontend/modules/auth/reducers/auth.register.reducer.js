@@ -31,6 +31,9 @@ const registerReducer = (state = initialState, action) => {
                 data: null
             };
         }
+        case 'REGISTER_RESET': {
+            return initialState;
+        }
         default:
             return state;
     }

@@ -30,6 +30,9 @@ const registerReducer = (state = initialState, action) => {
                 data: null
             };
         }
+        case 'FORGOT_PASSWORD_RESET': {
+            return initialState;
+        }
         default:
             return state;
     }

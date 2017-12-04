@@ -15,7 +15,8 @@ class Form extends React.Component {
             fieldValues: {},
             formErrors: {},
             validFields: {},
-            formValid: false
+            formValid: false,
+            submitted: false
         };
         forIn(this.props.fields, (field, name) => {
             if (field.value) {
@@ -37,6 +38,14 @@ class Form extends React.Component {
     componentDidMount() {
         this.validateForm();
         document.addEventListener('keypress', this.handleKeyPress);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.state.submitted && nextProps.error) {
+            this.setState({
+                submitted: false
+            });
+        }
     }
 
     componentWillUnmount() {
@@ -63,6 +72,11 @@ class Form extends React.Component {
     }
 
     submit() {
+        this.setState({
+            submitted: true,
+            error: null,
+            success: null
+        });
         this.props.submit(this.state.fieldValues);
     }
 
@@ -166,7 +180,7 @@ class Form extends React.Component {
                     <Button
                         primary
                         id="submit-button"
-                        disabled={!this.state.formValid}
+                        disabled={!this.state.formValid || this.state.submitted}
                         onClick={this.submit}
                     >
                         Submit

@@ -30,6 +30,9 @@ const loginReducer = (state = initialState, action) => {
                 data: null
             };
         }
+        case 'LOGIN_RESET': {
+            return initialState;
+        }
         default:
             return state;
     }

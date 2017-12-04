@@ -40,4 +40,16 @@ describe('auth reset password reducer', () => {
 	  		error: "Error resetting your password. Please try again later."
 	  	});
   	});
+
+  	it('should handle RESET_PASSWORD_RESET', ()=> {
+	  	const action = {
+	  		type: "RESET_PASSWORD_RESET"
+	  	};
+	  	const state = {
+	  		pending: false,
+	  		error: "Error",
+	  		data: null
+	  	};
+	  	expect(reducer(state, action)).toEqual(initialState);
+  	});
 });

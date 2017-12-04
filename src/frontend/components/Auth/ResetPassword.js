@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Dialog from 'react-toolbox/lib/dialog';
 
 import { actions } from '../../modules';
-const { resetPassword } = actions;
+const { resetPassword, resetResetPasswordState } = actions;
 import { selectors } from '../../modules';
 const { getRootUrl, getResetPasswordState } = selectors;
 
@@ -36,6 +36,7 @@ class ResetPassword extends React.Component {
         });
         setTimeout(() => {
             this.props.history.push(this.props.rootUrl);
+            this.props.dispatch(resetResetPasswordState());
         }, 500);
     }
 

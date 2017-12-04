@@ -14,10 +14,22 @@ export const login = form => {
     };
 };
 
+export const resetLoginState = () => {
+    return {
+        type: 'LOGIN_RESET'
+    };
+};
+
 export const register = form => {
     return {
         type: 'REGISTER',
         payload: axios.post('/userdrive/auth/register', form)
+    };
+};
+
+export const resetRegisterState = () => {
+    return {
+        type: 'REGISTER_RESET'
     };
 };
 
@@ -35,10 +47,22 @@ export const forgotPassword = form => {
     };
 };
 
+export const resetForgotPasswordState = () => {
+    return {
+        type: 'FORGOT_PASSWORD_RESET'
+    };
+};
+
 export const resetPassword = (form, token) => {
     const url = '/userdrive/auth/reset/' + token;
     return {
         type: 'RESET_PASSWORD',
         payload: axios.post(url, form)
+    };
+};
+
+export const resetResetPasswordState = () => {
+    return {
+        type: 'RESET_PASSWORD_RESET'
     };
 };

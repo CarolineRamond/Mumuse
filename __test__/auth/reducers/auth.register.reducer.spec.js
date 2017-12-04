@@ -40,4 +40,16 @@ describe('auth register reducer', () => {
 	  		error: "Error creating your account. Please try again later."
 	  	});
   	});
+
+  	it('should handle REGISTER_RESET', ()=> {
+	  	const action = {
+	  		type: "REGISTER_RESET"
+	  	};
+	  	const state = {
+	  		pending: false,
+	  		error: "Error",
+	  		data: null
+	  	};
+	  	expect(reducer(state, action)).toEqual(initialState);
+  	});
 });

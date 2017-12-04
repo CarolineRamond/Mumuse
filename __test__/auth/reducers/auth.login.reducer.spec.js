@@ -43,4 +43,16 @@ describe('auth login reducer', () => {
 	  		error: "Error : Bad username or password."
 	  	});
   	});
+
+  	it('should handle LOGIN_RESET', ()=> {
+	  	const action = {
+	  		type: "LOGIN_RESET"
+	  	};
+	  	const state = {
+	  		pending: false,
+	  		error: "Error",
+	  		data: null
+	  	};
+	  	expect(reducer(state, action)).toEqual(initialState);
+  	});
 });
