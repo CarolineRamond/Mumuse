@@ -14,15 +14,7 @@ const {
 import { actions } from '../../modules';
 const { selectMediaById } = actions;
 
-@connect(store => {
-    return {
-        pointCloud: getSelectedPointCloud(store),
-        selectedMedias: getSelectedMedias(store),
-        visibleMedias: getVisibleMedias(store),
-        selectFilterPending: getSelectFilterPending(store)
-    };
-})
-export default class Potree extends React.Component {
+class Potree extends React.Component {
     constructor(props) {
         super(props);
         this.hovered_cam_matrix = new THREE.Matrix4();
@@ -342,3 +334,14 @@ Potree.propTypes = {
     selectedMedias: PropTypes.arrayOf(PropTypes.object),
     visibleMedias: PropTypes.arrayOf(PropTypes.object)
 };
+
+const ConnectedPotree = connect(store => {
+    return {
+        pointCloud: getSelectedPointCloud(store),
+        selectedMedias: getSelectedMedias(store),
+        visibleMedias: getVisibleMedias(store),
+        selectFilterPending: getSelectFilterPending(store)
+    };
+})(Potree);
+
+export default ConnectedPotree;

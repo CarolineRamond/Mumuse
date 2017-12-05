@@ -9,16 +9,9 @@ import Potree from '../Potree/Potree';
 class ImagePreviewer extends React.Component {
     constructor(props) {
         super(props);
-        // preload preview & full image
-        const previewImg = document.createElement('img');
-        const fullImg = document.createElement('img');
-        previewImg.src = this.props.media.properties.preview_url;
-        fullImg.src = this.props.media.properties.url;
 
         this.state = {
-            loading: true,
-            previewImg: previewImg,
-            fullImg: fullImg
+            loading: true
         };
 
         this.handleLoadComplete = this.handleLoadComplete.bind(this);
@@ -28,8 +21,6 @@ class ImagePreviewer extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.media.properties._id !== this.props.media.properties._id) {
             // media did change => preload previewImg & fullImg
-            this.state.previewImg.src = this.props.media.properties.preview_url;
-            this.state.fullImg.src = this.props.media.properties.url;
             this.setState({
                 loading: true
             });
@@ -41,7 +32,11 @@ class ImagePreviewer extends React.Component {
         }
     }
 
-    handleLoadError() {
+    handleLoadError(e) {
+        // Use full media picture if preview is no available
+        if (e.target.src === this.props.media.properties.preview_url) {
+            e.target.src = this.props.media.properties.url;
+        }
         this.setState({
             loading: false
         });
@@ -69,7 +64,7 @@ class ImagePreviewer extends React.Component {
                     className={styles.previewImage}
                     src={imgUrl}
                     onLoad={this.handleLoadComplete}
-                    onError={this.handleLoadError}
+                    onError={e => this.handleLoadError(e)}
                 />
             </div>
         );

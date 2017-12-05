@@ -20,6 +20,7 @@ class Carousel extends React.Component {
         };
         this.loadMoreThumbnails = this.loadMoreThumbnails.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.handleLoadError = this.handleLoadError.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -66,10 +67,27 @@ class Carousel extends React.Component {
         );
     }
 
+    handleLoadError(e, media) {
+        // Use full media picture if preview is no available
+        if (e.target.src === media.properties.thumbnail_url) {
+            e.target.src = media.properties.url;
+        }
+        this.setState({
+            loading: false
+        });
+    }
+
+    handleLoadComplete(e, media) {
+        e.target.style.display = 'block';
+        this.setState({
+            loading: false
+        });
+    }
+
     render() {
         const mappedThumbnails = [];
         this.state.mediasSlice.map((media, i) => {
-            const classes = [styles.thumbnail];
+            const classes = [styles.thumbnail, styles.thumbnailLoading];
             if (media.properties.selected) {
                 classes.push(styles.thumbnailSelected);
             }
@@ -81,7 +99,12 @@ class Carousel extends React.Component {
                         this.selectMedia(media, e.ctrlKey);
                     }}
                 >
-                    <img className={classes.join(' ')} src={media.properties.thumbnail_url} />
+                    <img
+                        className={classes.join(' ')}
+                        src={media.properties.thumbnail_url}
+                        onLoad={e => this.handleLoadComplete(e, media)}
+                        onError={e => this.handleLoadError(e, media)}
+                    />
                 </div>
             );
         });

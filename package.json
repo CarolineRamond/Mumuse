@@ -20,7 +20,7 @@
     "npm": ">=4.0.1"
   },
   "dependencies": {
-    "@iconem/iconem-potree": "0.0.22",
+    "@iconem/iconem-potree": "0.0.23",
     "axios": "^0.17.0",
     "exif-parser": "^0.1.12",
     "mapbox-gl": "^0.41.0",

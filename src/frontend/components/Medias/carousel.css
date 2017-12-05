@@ -25,6 +25,10 @@
 	object-fit: scale-down;
 }
 
+.thumbnailLoading {
+	display:none;
+}
+
 .thumbnailSelected {
 	border: 2px solid blue;
 }
