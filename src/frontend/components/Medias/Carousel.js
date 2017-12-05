@@ -77,7 +77,7 @@ class Carousel extends React.Component {
         });
     }
 
-    handleLoadComplete(e, media) {
+    handleLoadComplete(e) {
         e.target.style.display = 'block';
         this.setState({
             loading: false
@@ -102,7 +102,7 @@ class Carousel extends React.Component {
                     <img
                         className={classes.join(' ')}
                         src={media.properties.thumbnail_url}
-                        onLoad={e => this.handleLoadComplete(e, media)}
+                        onLoad={e => this.handleLoadComplete(e)}
                         onError={e => this.handleLoadError(e, media)}
                     />
                 </div>
