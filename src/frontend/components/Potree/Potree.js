@@ -86,12 +86,12 @@ class Potree extends React.Component {
             nextProps.visibleMedias &&
             nextProps.visibleMedias.length !== this.props.visibleMedias.length
         ) {
-            this.potree.scene.scene.children.map(function(camera) {
+            this.potree.scene.scene.children.map(function(mesh) {
                 const isCameraVisible = nextProps.visibleMedias.some(function(f) {
-                    return f.properties._id === camera.userData.mediaId;
+                    return !(mesh instanceof Camera) || f.properties._id === mesh.userData.mediaId;
                 });
-                if (isCameraVisible) camera.visible = true;
-                else camera.visible = false;
+                if (isCameraVisible) mesh.visible = true;
+                else mesh.visible = false;
             });
         }
     }

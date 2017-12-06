@@ -100,6 +100,9 @@ export default class Camera extends THREE.Mesh {
 
         this.name = media.camera3d.filepath;
         this.userData.mediaId = media._id;
+        this.userData.url = media.url;
+        this.userData.preview_url = media.preview_url;
+        this.userData.thumbnail_url = media.url;
 
         // Apply matrix
         this.applyMatrix(world_cam_matrix_inv);
@@ -128,13 +131,10 @@ export default class Camera extends THREE.Mesh {
 
     loadMedia() {
         if (!this.texture) {
-            textureLoader.load(
-                'http://localhost:9000\\userdrive\\media\\image\\' + this.userData.mediaId,
-                mediaTexture => {
-                    this.texture = mediaTexture;
-                    this.setMediaPlanePositionAndTextureForThisCamera(mediaTexture);
-                }
-            );
+            textureLoader.load(this.userData.url, mediaTexture => {
+                this.texture = mediaTexture;
+                this.setMediaPlanePositionAndTextureForThisCamera(mediaTexture);
+            });
         } else {
             this.setMediaPlanePositionAndTextureForThisCamera(this.texture);
         }
