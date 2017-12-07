@@ -88,6 +88,7 @@ class Potree extends React.Component {
         ) {
             this.potree.scene.scene.children.map(function(mesh) {
                 const isCameraVisible = nextProps.visibleMedias.some(function(f) {
+                    // We test if the mesh in scene.children is instance of Camera because we do not want to hide others objects than camera
                     return !(mesh instanceof Camera) || f.properties._id === mesh.userData.mediaId;
                 });
                 if (isCameraVisible) mesh.visible = true;
@@ -234,7 +235,6 @@ class Potree extends React.Component {
                 if (this.mediaCamera_intersected) this.mediaCamera_intersected.toggleSelection();
                 this.mediaCamera_intersected = intersects[0].object;
                 this.mediaCamera_intersected.toggleSelection();
-                this.mediaCamera_intersected.loadMedia();
             }
         } else if (this.mediaCamera_intersected) {
             this.mediaCamera_intersected.toggleSelection();
@@ -296,8 +296,8 @@ class Potree extends React.Component {
                 ('button' in e && e.button === 2)) && // IE, Opera
             this.mediaCamera_intersected
         ) {
-            this.goToMediaCamera(this.mediaCamera_intersected);
-
+            // this.goToMediaCamera(this.mediaCamera_intersected); //THIS IS CALLED WHEN COMPONENTS RECEIVE PROPS
+            this.mediaCamera_intersected.loadMedia();
             if (
                 !this.props.selectedMedias[0] ||
                 this.props.selectedMedias[0].properties._id !==
