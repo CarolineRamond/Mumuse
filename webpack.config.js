@@ -59,10 +59,7 @@ module.exports = function makeWebpackConfig() {
       {
         test: /\.jsx?$/,
         exclude: /(node_modules|IconemPotree)/,
-        loader: 'babel-loader',
-        query: {
-          plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy', 'transform-object-rest-spread'],
-        }
+        loader: 'babel-loader'
       }, {
         test: /\.css$/,
         exclude: /mapbox-gl\.css/,
