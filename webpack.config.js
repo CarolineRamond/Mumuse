@@ -48,12 +48,6 @@ module.exports = function makeWebpackConfig() {
         enforce: 'pre',
         test: /\.jsx?$/,
         exclude: /(node_modules|IconemPotree)/,
-        loader: 'prettier-loader'
-      },
-      {
-        enforce: 'pre',
-        test: /\.jsx?$/,
-        exclude: /(node_modules|IconemPotree)/,
         loader: 'eslint-loader'
       },
       {
