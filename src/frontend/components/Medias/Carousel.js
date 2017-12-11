@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
+import LazyLoad from 'react-lazy-load';
 import PropTypes from 'prop-types';
 
 import { selectors } from '../../modules';
@@ -99,12 +100,14 @@ class Carousel extends React.Component {
                         this.selectMedia(media, e.ctrlKey);
                     }}
                 >
-                    <img
-                        className={classes.join(' ')}
-                        src={media.properties.thumbnail_url}
-                        onLoad={e => this.handleLoadComplete(e)}
-                        onError={e => this.handleLoadError(e, media)}
-                    />
+                    <LazyLoad>
+                        <img
+                            className={classes.join(' ')}
+                            src={media.properties.thumbnail_url}
+                            onLoad={e => this.handleLoadComplete(e)}
+                            onError={e => this.handleLoadError(e, media)}
+                        />
+                    </LazyLoad>
                 </div>
             );
         });

@@ -1,4 +1,4 @@
-const potreeReducer = (state = {}, action) => {
+const potreeReducer = (state = null, action) => {
     switch (action.type) {
         case 'POINTCLOUD_CLICK': {
             let pointCloud;
@@ -9,7 +9,7 @@ const potreeReducer = (state = {}, action) => {
                         : null
                 });
             } else {
-                pointCloud = Object.assign({});
+                pointCloud = null;
             }
             return pointCloud;
         }

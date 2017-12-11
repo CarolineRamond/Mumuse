@@ -1,10 +1,15 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ProgressBar from 'react-toolbox/lib/progress_bar';
 import SplitPane from 'react-split-pane';
 
 import styles from './preview.css';
 import Potree from '../Potree/Potree';
+import { actions } from '../../modules';
+import { selectors } from '../../modules';
+const { switchPreviewMode } = actions;
+const { getMapPreviewMode, getSelectedMedias, getSelectedPointCloud } = selectors;
 
 class ImagePreviewer extends React.Component {
     constructor(props) {
@@ -108,6 +113,12 @@ class Previewer extends React.Component {
         this.handleDragFinished = this.handleDragFinished.bind(this);
     }
 
+    componentWillUnmount() {
+        if (this.props.previewMode) {
+            this.props.dispatch(switchPreviewMode());
+        }
+    }
+
     handleDragStarted() {
         this.setState({
             isResizing: true
@@ -133,27 +144,52 @@ class Previewer extends React.Component {
         const resizerStyleHover = Object.assign({}, resizerStyle, {
             borderLeft: '5px solid blue'
         });
+
+        // We define default empty pan, because the splitPan component do no work only with one pan.
+        let firstPan = <div />;
+        let secondPan = <div />;
+        const isMediaSelected =
+            this.props.media && this.props.media.properties.contentType === 'image' ? true : false;
+        const isPointCloudSelected = this.props.pointCloud !== null;
+        let defaultSize = '100%';
+        let allowResize = false;
+
+        if (isMediaSelected && !isPointCloudSelected) {
+            firstPan = (
+                <ImagePreviewer media={this.props.media} previewMode={this.props.previewMode} />
+            );
+        } else if (isPointCloudSelected && !isMediaSelected) {
+            firstPan = (
+                <PointCloudPreviewer
+                    pointCloud={this.props.pointCloud}
+                    previewMode={this.props.previewMode}
+                />
+            );
+        } else if (isMediaSelected && isPointCloudSelected) {
+            firstPan = (
+                <ImagePreviewer media={this.props.media} previewMode={this.props.previewMode} />
+            );
+            secondPan = (
+                <PointCloudPreviewer
+                    pointCloud={this.props.pointCloud}
+                    previewMode={this.props.previewMode}
+                />
+            );
+            allowResize = true;
+            defaultSize = '50%';
+        }
+
         return (
             <SplitPane
                 split="horizontal"
-                defaultSize="50%"
-                /*minSize={750}*/
+                defaultSize={defaultSize}
+                allowResize={allowResize}
                 resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
                 onDragStarted={this.handleDragStarted}
                 onDragFinished={this.handleDragFinished}
             >
-                {this.props.media &&
-                    this.props.media.properties.contentType === 'image' && (
-                        <ImagePreviewer
-                            media={this.props.media}
-                            previewMode={this.props.previewMode}
-                        />
-                    )}
-                {this.props.pointCloud && (
-                    <PointCloudPreviewer
-                        pointCloud={this.props.pointCloud}
-                        previewMode={this.props.previewMode}
-                    />
+                {firstPan}
+                {secondPan}
                 )}
             </SplitPane>
             /*<div>
@@ -179,12 +215,24 @@ class Previewer extends React.Component {
 // * previewMode : whether the previewer should be in preview mode (ie small) or not,
 //   inherited from MainPanel
 Previewer.propTypes = {
+    dispatch: PropTypes.func.isRequired,
     media: PropTypes.shape({
         properties: PropTypes.object,
         geometry: PropTypes.object
-    }).isRequired,
+    }),
     pointCloud: PropTypes.object,
     previewMode: PropTypes.bool
 };
 
-export default Previewer;
+const ConnectedPreviewer = connect(store => {
+    const selectedMedias = getSelectedMedias(store);
+    const selectedPointCloud = getSelectedPointCloud(store);
+    return {
+        previewMode: getMapPreviewMode(store),
+        showPreviewer: selectedMedias.length === 1 || selectedPointCloud !== null,
+        media: selectedMedias[0],
+        pointCloud: selectedPointCloud
+    };
+})(Previewer);
+
+export default ConnectedPreviewer;

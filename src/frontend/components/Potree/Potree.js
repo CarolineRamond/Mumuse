@@ -58,6 +58,7 @@ class Potree extends React.Component {
 
                 const pointCloudMedias = JSON.parse(nextProps.pointCloud.metaData.visus);
                 this.addCamerasToPotree(pointCloudMedias);
+                this.filterVisibleCamera(this.props.visibleMedias);
             }
         }
 
@@ -86,14 +87,7 @@ class Potree extends React.Component {
             nextProps.visibleMedias &&
             nextProps.visibleMedias.length !== this.props.visibleMedias.length
         ) {
-            this.potree.scene.scene.children.map(function(mesh) {
-                const isCameraVisible = nextProps.visibleMedias.some(function(f) {
-                    // We test if the mesh in scene.children is instance of Camera because we do not want to hide others objects than camera
-                    return !(mesh instanceof Camera) || f.properties._id === mesh.userData.mediaId;
-                });
-                if (isCameraVisible) mesh.visible = true;
-                else mesh.visible = false;
-            });
+            this.filterVisibleCamera(nextProps.visibleMedias);
         }
     }
 
@@ -142,6 +136,17 @@ class Potree extends React.Component {
                 const camera = new Camera(media);
                 this.potree.scene.scene.add(camera);
             }
+        });
+    }
+
+    filterVisibleCamera(visibleCameras) {
+        this.potree.scene.scene.children.map(function(mesh) {
+            const isCameraVisible = visibleCameras.some(function(f) {
+                // We test if the mesh in scene.children is instance of Camera because we do not want to hide others objects than camera
+                return !(mesh instanceof Camera) || f.properties._id === mesh.userData.mediaId;
+            });
+            if (isCameraVisible) mesh.visible = true;
+            else mesh.visible = false;
         });
     }
 

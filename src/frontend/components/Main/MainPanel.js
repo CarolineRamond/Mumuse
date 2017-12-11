@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { selectors } from '../../modules';
-const { getSelectedMedias, getMapPreviewMode } = selectors;
+const { getSelectedMedias, getMapPreviewMode, getSelectedPointCloud } = selectors;
 import Map from '../Map';
 import PreviewSwitch from '../Medias/PreviewSwitch';
 import Previewer from '../Medias/Previewer';
@@ -32,11 +32,7 @@ class MainPanel extends React.Component {
                 {this.props.showPreviewer && (
                     <div className={previewerClass}>
                         {!this.props.previewMode && <PreviewSwitch />}
-                        <Previewer
-                            media={this.props.selectedMedias[0]}
-                            pointCloud={this.props.selectedPointCloud}
-                            previewMode={!this.props.previewMode}
-                        />
+                        <Previewer />
                     </div>
                 )}
             </div>
@@ -52,27 +48,16 @@ class MainPanel extends React.Component {
 //  (ie if there is exactly one selected media or a selected point cloud)
 MainPanel.propTypes = {
     previewMode: PropTypes.bool.isRequired,
-    selectedMedias: PropTypes.arrayOf(
-        PropTypes.shape({
-            properties: PropTypes.object,
-            geometry: PropTypes.object
-        })
-    ).isRequired,
-    selectedPointCloud: PropTypes.object.isRequired,
     showPreviewer: PropTypes.bool.isRequired
 };
 
 // Store connection
 const MainPanelConnected = connect(store => {
     const selectedMedias = getSelectedMedias(store);
-    const isPointCloudSelected =
-        Object.keys(store.potree.pointCloud).length !== 0 &&
-        store.potree.pointCloud.constructor === Object;
+    const selectedPointCloud = getSelectedPointCloud(store);
     return {
         previewMode: getMapPreviewMode(store),
-        showPreviewer: selectedMedias.length === 1 || isPointCloudSelected,
-        selectedMedias: selectedMedias,
-        selectedPointCloud: store.potree.pointCloud
+        showPreviewer: selectedMedias.length === 1 || selectedPointCloud !== null
     };
 })(MainPanel);
 
