@@ -112,7 +112,7 @@ class Map extends React.Component {
             layers.push(layer);
         });
         layers.sort((a, b) => {
-            return a.metadata.priority > b.metadata.priority;
+            return a.metadata.priority - b.metadata.priority;
         });
         // add layers to map
         layers.map(layer => {
