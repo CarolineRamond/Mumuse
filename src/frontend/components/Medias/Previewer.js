@@ -54,7 +54,7 @@ class ImagePreviewer extends React.Component {
     }
 
     render() {
-        const imgUrl = this.props.previewMode
+        const imgUrl = !this.props.previewMode
             ? this.props.media.properties.preview_url
             : this.props.media.properties.url;
 
