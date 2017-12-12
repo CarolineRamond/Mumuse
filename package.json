@@ -1,7 +1,7 @@
 {
   "name": "@iconem/frontend",
   "description": "Iconem platform frontend using react",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Iconem (http://github.com/Iconem)",
   "bugs": {
     "url": "https://github.com/Iconem/Product-Backlog"
