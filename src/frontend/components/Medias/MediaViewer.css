@@ -1,0 +1,16 @@
+.previewMediaContainer {
+	width: 100%;
+	height: 100%;
+	position:relative;
+	background-image: radial-gradient(ellipse, #1f2f35 0%, #0d1417 100%);
+}
+
+.previewLoaderContainer {
+	position:absolute;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 2;
+}

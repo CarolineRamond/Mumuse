@@ -1,18 +1,11 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import styles from './MediaViewer.css';
 import PropTypes from 'prop-types';
 import ProgressBar from 'react-toolbox/lib/progress_bar';
-import SplitPane from 'react-split-pane';
 
-import styles from './preview.css';
-import Potree from '../Potree/Potree';
-import { actions } from '../../modules';
-import { selectors } from '../../modules';
-const { switchPreviewMode } = actions;
-const { getMapPreviewMode, getSelectedMedias, getSelectedPointCloud } = selectors;
 let context = null;
 
-class ImagePreviewer extends React.Component {
+class MediaViewer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -33,7 +26,7 @@ class ImagePreviewer extends React.Component {
             const imgUrl = !this.props.previewMode
                 ? nextProps.media.properties.preview_url
                 : nextProps.media.properties.url;
-            this.image.src = imgUrl;
+            this.media.src = imgUrl;
         }
         if (nextProps.previewMode !== this.props.previewMode) {
             this.initViewer();
@@ -43,11 +36,11 @@ class ImagePreviewer extends React.Component {
     initViewer() {
         this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
         this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;
-        this.image = new Image();
+        this.media = new Image();
         const imgUrl = !this.props.previewMode
             ? this.props.media.properties.preview_url
             : this.props.media.properties.url;
-        this.image.src = imgUrl;
+        this.media.src = imgUrl;
         context = this.mediaCanvas.getContext('2d');
         this.trackTransforms(context);
 
@@ -57,8 +50,8 @@ class ImagePreviewer extends React.Component {
         this.dragged = null;
         this.scaleFactor = 1.1;
 
-        this.image.onload = () => this.handleImageLoad();
-        this.image.onerror = e => this.handleImageLoadError(e);
+        this.media.onload = () => this.handleMediaLoad();
+        this.media.onerror = e => this.handleMediaLoadError(e);
         this.mediaCanvas.addEventListener('mousedown', this.handleMouseDown.bind(this), false);
         this.mediaCanvas.addEventListener('mousemove', this.handleMouseMove.bind(this), false);
         this.mediaCanvas.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
@@ -66,14 +59,14 @@ class ImagePreviewer extends React.Component {
         this.mediaCanvas.addEventListener('mousewheel', this.handleScroll.bind(this), false);
     }
 
-    handleImageLoad() {
+    handleMediaLoad() {
         this.redraw();
         this.setState({
             loading: false
         });
     }
 
-    handleImageLoadError(e) {
+    handleMediaLoadError(e) {
         // Use full media picture if preview is no available
         if (e.target.src === this.props.media.properties.preview_url) {
             e.target.src = this.props.media.properties.url;
@@ -135,27 +128,27 @@ class ImagePreviewer extends React.Component {
         context.clearRect(0, 0, this.mediaCanvas.width, this.mediaCanvas.height);
         context.restore();
 
-        //We draw the image fitting and centering it in the canvas
-        const hRatio = this.mediaCanvas.width / this.image.width;
-        const vRatio = this.mediaCanvas.height / this.image.height;
+        //We draw the media fitting and centering it in the canvas
+        const hRatio = this.mediaCanvas.width / this.media.width;
+        const vRatio = this.mediaCanvas.height / this.media.height;
         const ratio = Math.min(hRatio, vRatio);
-        const centerShift_x = (this.mediaCanvas.width - this.image.width * ratio) / 2;
-        const centerShift_y = (this.mediaCanvas.height - this.image.height * ratio) / 2;
+        const centerShift_x = (this.mediaCanvas.width - this.media.width * ratio) / 2;
+        const centerShift_y = (this.mediaCanvas.height - this.media.height * ratio) / 2;
         context.clearRect(0, 0, this.mediaCanvas.width, this.mediaCanvas.height);
         context.drawImage(
-            this.image,
+            this.media,
             0,
             0,
-            this.image.width,
-            this.image.height,
+            this.media.width,
+            this.media.height,
             centerShift_x,
             centerShift_y,
-            this.image.width * ratio,
-            this.image.height * ratio
+            this.media.width * ratio,
+            this.media.height * ratio
         );
 
-        //If we want to draw the full image without fitting and centering it in the canvas
-        // context.drawImage(this.image, 0, 0);
+        //If we want to draw the full media without fitting and centering it in the canvas
+        // context.drawImage(this.media, 0, 0);
     }
 
     // Adds ctx.getTransform() - returns an SVGMatrix
@@ -236,7 +229,7 @@ class ImagePreviewer extends React.Component {
             : this.props.media.properties.url;
 
         return (
-            <div className={styles.previewImageContainer}>
+            <div className={styles.previewMediaContainer}>
                 {this.state.loading && (
                     <div className={styles.previewLoaderContainer}>
                         <ProgressBar type="circular" mode="indeterminate" />
@@ -244,14 +237,14 @@ class ImagePreviewer extends React.Component {
                 )}
                 <canvas
                     ref={mediaCanvas => (this.mediaCanvas = mediaCanvas)}
-                    className={styles.previewImage}
+                    className={styles.previewMedia}
                 />
             </div>
         );
     }
 }
 
-ImagePreviewer.propTypes = {
+MediaViewer.propTypes = {
     media: PropTypes.shape({
         properties: PropTypes.object,
         geometry: PropTypes.object
@@ -259,155 +252,4 @@ ImagePreviewer.propTypes = {
     previewMode: PropTypes.bool
 };
 
-class PointCloudPreviewer extends React.Component {
-    constructor(props) {
-        super(props);
-        const pointCloud = this.props.pointCloud;
-        this.state = {
-            pointCloud: pointCloud
-        };
-    }
-
-    render() {
-        return <Potree className={styles.previewImageContainer} />;
-    }
-}
-
-PointCloudPreviewer.propTypes = {
-    pointCloud: PropTypes.object.isRequired
-};
-
-class Previewer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isResizing: false
-        };
-
-        this.handleDragStarted = this.handleDragStarted.bind(this);
-        this.handleDragFinished = this.handleDragFinished.bind(this);
-    }
-
-    componentWillUnmount() {
-        if (this.props.previewMode) {
-            this.props.dispatch(switchPreviewMode());
-        }
-    }
-
-    handleDragStarted() {
-        this.setState({
-            isResizing: true
-        });
-    }
-
-    handleDragFinished() {
-        this.setState({
-            isResizing: false
-        });
-    }
-
-    render() {
-        const resizerStyle = {
-            height: '12px',
-            width: '100%',
-            margin: 'auto',
-            background: 'grey',
-            borderLeft: '5px solid #ccc',
-            cursor: 'ns-resize',
-            zIndex: '1'
-        };
-        const resizerStyleHover = Object.assign({}, resizerStyle, {
-            borderLeft: '5px solid blue'
-        });
-
-        // We define default empty pan, because the splitPan component do no work only with one pan.
-        let firstPan = <div />;
-        let secondPan = <div />;
-        const isMediaSelected =
-            this.props.media && this.props.media.properties.contentType === 'image' ? true : false;
-        const isPointCloudSelected = this.props.pointCloud !== null;
-        let defaultSize = '100%';
-        let allowResize = false;
-
-        if (isMediaSelected && !isPointCloudSelected) {
-            firstPan = (
-                <ImagePreviewer media={this.props.media} previewMode={this.props.previewMode} />
-            );
-        } else if (isPointCloudSelected && !isMediaSelected) {
-            firstPan = (
-                <PointCloudPreviewer
-                    pointCloud={this.props.pointCloud}
-                    previewMode={this.props.previewMode}
-                />
-            );
-        } else if (isMediaSelected && isPointCloudSelected) {
-            firstPan = (
-                <ImagePreviewer media={this.props.media} previewMode={this.props.previewMode} />
-            );
-            secondPan = (
-                <PointCloudPreviewer
-                    pointCloud={this.props.pointCloud}
-                    previewMode={this.props.previewMode}
-                />
-            );
-            allowResize = true;
-            defaultSize = '50%';
-        }
-
-        return (
-            <SplitPane
-                split="horizontal"
-                defaultSize={defaultSize}
-                allowResize={allowResize}
-                resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
-                onDragStarted={this.handleDragStarted}
-                onDragFinished={this.handleDragFinished}
-            >
-                {firstPan}
-                {secondPan}
-                )}
-            </SplitPane>
-            /*<div>
-			{this.props.media.properties.contentType === 'image'
-				&& <ImagePreviewer media={this.props.media}
-				previewMode={this.props.previewMode}/>
-			}
-			{this.props.pointCloud &&
-				<PointCloudPreviewer pointCloud={this.props.pointCloud}
-				previewMode={this.props.previewMode} />
-			}
-			</div>
-			*/
-        );
-    }
-}
-
-// Props :
-// * media: currently selected media (if any),
-//   inherited from MainPanel
-// * pointCloud : currently selected pointcloud (if any),
-//   inherited from MainPanel
-// * previewMode : whether the previewer should be in preview mode (ie small) or not,
-//   inherited from MainPanel
-Previewer.propTypes = {
-    dispatch: PropTypes.func.isRequired,
-    media: PropTypes.shape({
-        properties: PropTypes.object,
-        geometry: PropTypes.object
-    }),
-    pointCloud: PropTypes.object,
-    previewMode: PropTypes.bool
-};
-
-const ConnectedPreviewer = connect(store => {
-    const selectedMedias = getSelectedMedias(store);
-    const selectedPointCloud = getSelectedPointCloud(store);
-    return {
-        previewMode: getMapPreviewMode(store),
-        showPreviewer: selectedMedias.length === 1 || selectedPointCloud !== null,
-        media: selectedMedias[0],
-        pointCloud: selectedPointCloud
-    };
-})(Previewer);
-
-export default ConnectedPreviewer;
+export default MediaViewer;
