@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { actions } from '../../modules';
 const { switchPreviewMode } = actions;
 
-import styles from './preview.css';
+import styles from './ViewerSwitch.css';
 
 class PreviewSwitch extends React.Component {
     constructor(props) {
