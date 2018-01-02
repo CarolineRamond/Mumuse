@@ -19,12 +19,17 @@ class Viewer extends React.Component {
 
         this.handleDragStarted = this.handleDragStarted.bind(this);
         this.handleDragFinished = this.handleDragFinished.bind(this);
+        this.handleResize = this.handleResize.bind(this);
     }
 
     componentWillUnmount() {
         if (this.props.previewMode) {
             this.props.dispatch(switchPreviewMode());
         }
+    }
+
+    handleResize() {
+        this.mediaViewerRef.handleResize();
     }
 
     handleDragStarted() {
@@ -64,7 +69,13 @@ class Viewer extends React.Component {
 
         if (isMediaSelected && !isPointCloudSelected) {
             firstPan = (
-                <MediaViewer media={this.props.media} previewMode={this.props.previewMode} />
+                <MediaViewer
+                    ref={mediaViewerRef => {
+                        this.mediaViewerRef = mediaViewerRef;
+                    }}
+                    media={this.props.media}
+                    previewMode={this.props.previewMode}
+                />
             );
         } else if (isPointCloudSelected && !isMediaSelected) {
             firstPan = (
@@ -75,7 +86,13 @@ class Viewer extends React.Component {
             );
         } else if (isMediaSelected && isPointCloudSelected) {
             firstPan = (
-                <MediaViewer media={this.props.media} previewMode={this.props.previewMode} />
+                <MediaViewer
+                    ref={mediaViewerRef => {
+                        this.mediaViewerRef = mediaViewerRef;
+                    }}
+                    media={this.props.media}
+                    previewMode={this.props.previewMode}
+                />
             );
             secondPan = (
                 <PointCloudViewer
@@ -93,6 +110,7 @@ class Viewer extends React.Component {
                 defaultSize={defaultSize}
                 allowResize={allowResize}
                 resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
+                onChange={this.handleResize}
                 onDragStarted={this.handleDragStarted}
                 onDragFinished={this.handleDragFinished}
             >

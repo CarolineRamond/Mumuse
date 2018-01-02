@@ -103,6 +103,16 @@ class MediaViewer extends React.Component {
         }
     }
 
+    handleResize(e) {
+        context = this.mediaCanvas.getContext('2d');
+        const pt = context.transformedPoint(this.lastX, this.lastY);
+        this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
+        this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;
+
+        this.trackTransforms(context);
+        this.redraw();
+    }
+
     handleScroll(e) {
         const delta = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0;
         if (delta) this.zoom(delta);
