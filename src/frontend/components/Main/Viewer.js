@@ -116,7 +116,6 @@ class Viewer extends React.Component {
             >
                 {firstPan}
                 {secondPan}
-                )}
             </SplitPane>
             /*<div>
             {this.props.media.properties.contentType === 'image'

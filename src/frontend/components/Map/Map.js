@@ -14,6 +14,9 @@ import { mapConfig } from '../../modules';
 
 import styles from './map.css';
 
+import proj4 from 'proj4';
+import Camera from '../Potree/Camera';
+
 function getUniqueFeatures(array, comparatorProperty) {
     const existingFeatureKeys = {};
     // Because features come from tiled vector data, feature geometries may be split
@@ -92,8 +95,8 @@ class Map extends React.Component {
             this._loadSources();
             this._loadLayers();
             this._addSimpleEventsHandling();
-            this._addClickHandling();
             this._addDragndropHandling();
+            this._addClickHandling();
             this._addViewportChangeHandling();
             this._resizeMap();
         });
@@ -299,6 +302,45 @@ class Map extends React.Component {
         forIn(nextProps.sourcesState.data, (source, sourceId) => {
             if (source.metadata && source.metadata.didChange && this.map.getSource(sourceId)) {
                 if (source.type === 'geojson') {
+                    if (source.data.features.length > 0) {
+                        source.data.features.map(feature => {
+                            if (feature.properties.camera3d) {
+                                feature.properties.camera3d = JSON.parse(
+                                    feature.properties.camera3d
+                                );
+                                const camera = new Camera(feature.properties);
+                                const firstProjection =
+                                    '+proj=utm +zone=38 +ellps=WGS84 +datum=WGS84 +units=m +no_defs';
+                                const secondProjection =
+                                    '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs';
+                                feature.geometry.type = 'GeometryCollection';
+                                feature.geometry.geometries = [];
+                                camera.geometry.faces.map((face, i) => {
+                                    if (i < 4) {
+                                        const facesEnum = ['a', 'b', 'c'];
+                                        const triangle = [];
+                                        facesEnum.map(faceNumber => {
+                                            let vertex = camera.geometry.vertices[
+                                                face[faceNumber]
+                                            ].clone();
+                                            vertex = proj4(
+                                                firstProjection,
+                                                secondProjection,
+                                                vertex.applyMatrix4(camera.world_cam_matrix_inv)
+                                            );
+                                            triangle.push([vertex.x, vertex.y]);
+                                        });
+                                        triangle.push(triangle[0]);
+                                        feature.geometry.geometries[i] = {
+                                            type: 'Polygon',
+                                            coordinates: [triangle]
+                                        };
+                                    }
+                                });
+                            }
+                        });
+                    }
+
                     this.map.getSource(sourceId).setData(source.data);
                 }
                 if (source.type === 'vector') {

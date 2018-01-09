@@ -1,4 +1,6 @@
 // Define camera geometry & material
+import potree from '@iconem/iconem-potree';
+
 const camGeometry = new THREE.Geometry();
 camGeometry.vertices = [
     new THREE.Vector3(0, 0, 0),
@@ -65,6 +67,14 @@ textureLoader.crossOrigin = '';
 export default class Camera extends THREE.Mesh {
     static mediaPlane = new THREE.Mesh(mediaGeometry, mediaMaterial);
     constructor(media) {
+        camGeometry.vertices = [
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(-0.5, -0.5, -1),
+            new THREE.Vector3(-0.5, +0.5, -1),
+            new THREE.Vector3(+0.5, +0.5, -1),
+            new THREE.Vector3(+0.5, -0.5, -1)
+        ];
+
         super(camGeometry, camDefaultMaterial);
         const bundler_rot_0 = media.camera3d.rotationMatrix[0],
             bundler_rot_1 = media.camera3d.rotationMatrix[1],
@@ -115,7 +125,7 @@ export default class Camera extends THREE.Mesh {
             cam_scale = get_pyramid_sensor_scale(intrinsic_f_k1_k2, scaleCam);
         this.scale.set(cam_scale.x, cam_scale.y, cam_scale.z);
         this.cam_scale = cam_scale;
-
+        this.world_cam_matrix_inv = world_cam_matrix_inv;
         // Deal with focal
         // focal length in pixels = (image width in pixels) * (focal length in mm) / (CCD width in mm)
         // http://phototour.cs.washington.edu/focal.html
