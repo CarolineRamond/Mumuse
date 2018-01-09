@@ -305,9 +305,11 @@ class Map extends React.Component {
                     if (source.data.features.length > 0) {
                         source.data.features.map(feature => {
                             if (feature.properties.camera3d) {
-                                feature.properties.camera3d = JSON.parse(
-                                    feature.properties.camera3d
-                                );
+                                if (typeof feature.properties.camera3d === 'string') {
+                                    feature.properties.camera3d = JSON.parse(
+                                        feature.properties.camera3d
+                                    );
+                                }
                                 const camera = new Camera(feature.properties);
                                 const firstProjection =
                                     '+proj=utm +zone=38 +ellps=WGS84 +datum=WGS84 +units=m +no_defs';
