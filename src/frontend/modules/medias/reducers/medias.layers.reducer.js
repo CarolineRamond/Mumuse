@@ -285,6 +285,7 @@ export const selectedMediasLayerInitialState = {
         'circle-radius': 8,
         'circle-color': 'blue'
     },
+    filter: ['!has', 'camera3d'],
     metadata: {
         name: 'Selected Medias',
         isLocked: false,
@@ -320,8 +321,58 @@ export const selectedMediasLayerReducer = (state = selectedMediasLayerInitialSta
     }
 };
 
+export const selectedMedias3DLayerInitialState = {
+    id: 'selected-medias3D-layer',
+    type: 'fill',
+    source: 'selected-medias-source',
+    layout: {
+        visibility: 'visible'
+    },
+    paint: {
+        'fill-color': '#ccc',
+        'fill-opacity': 0.5
+    },
+    filter: ['has', 'camera3d'],
+    minzoom: 0,
+    maxzoom: 24,
+    metadata: {
+        name: 'Selected Medias 3d',
+        isLocked: false,
+        isShown: true,
+        wasShownBeforeLock: true,
+        priority: 6000
+    }
+};
+
+// Reducer for selected medias with 3d camera layer
+// (geojson source, containing only selected medias with 3d camera)
+export const selectedMedias3DLayerReducer = (state = selectedMedias3DLayerInitialState, action) => {
+    switch (action.type) {
+        case 'TOGGLE_LAYER': {
+            if (action.payload.layerId === state.id) {
+                const layoutChange = {
+                    visibility: state.metadata.isShown ? 'none' : 'visible'
+                };
+                return {
+                    ...state,
+                    layout: layoutChange,
+                    metadata: {
+                        ...state.metadata,
+                        isShown: !state.metadata.isShown,
+                        didChange: { layout: layoutChange }
+                    }
+                };
+            }
+            return defaultLayerReducer(state);
+        }
+        default:
+            return defaultLayerReducer(state);
+    }
+};
+
 export default combineReducers({
     'medias-layer': mediasLayerReducer,
     'grid-medias-layer': gridLayerReducer,
-    'selected-medias-layer': selectedMediasLayerReducer
+    'selected-medias-layer': selectedMediasLayerReducer,
+    'selected-medias3D-layer': selectedMedias3DLayerReducer
 });

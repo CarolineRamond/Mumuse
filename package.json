@@ -81,6 +81,7 @@
     "postcss-mixins": "^5.4.1",
     "prettier": "^1.8.2",
     "prettier-loader": "^2.0.1",
+    "proj4": "^2.4.4",
     "raw-loader": "^0.5.1",
     "react-hot-loader": "^3.0.0-beta.6",
     "redux-devtools-extension": "^1.0.0",
