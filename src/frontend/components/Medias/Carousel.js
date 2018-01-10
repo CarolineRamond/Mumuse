@@ -5,7 +5,13 @@ import LazyLoad from 'react-lazy-load';
 import PropTypes from 'prop-types';
 
 import { selectors } from '../../modules';
-const { isAuthUserAdmin, getVisibleMedias, getSelectFilterPending, areMediasLocked } = selectors;
+const {
+    isAuthUserAdmin,
+    getVisibleMedias,
+    getSelectFilterPending,
+    areMediasLocked,
+    getSelectedMedias
+} = selectors;
 import { actions } from '../../modules';
 const { clickMedias } = actions;
 
@@ -19,6 +25,9 @@ class Carousel extends React.Component {
             mediasSlice: [],
             hasMore: true
         };
+        this.loadThumbnailsUntilFirstSelectedMediaVisible = this.loadThumbnailsUntilFirstSelectedMediaVisible.bind(
+            this
+        );
         this.loadMoreThumbnails = this.loadMoreThumbnails.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleLoadError = this.handleLoadError.bind(this);
@@ -36,17 +45,50 @@ class Carousel extends React.Component {
                 hasMore: nextProps.medias.length > 0
             });
         }
+
+        if (
+            nextProps.firstSelectedMedia &&
+            (!this.props.firstSelectedMedia ||
+                nextProps.firstSelectedMedia.properties._id !==
+                    this.props.firstSelectedMedia.properties._id)
+        ) {
+            this.loadThumbnailsUntilFirstSelectedMediaVisible(
+                nextProps.firstSelectedMedia.properties._id
+            );
+        }
     }
 
-    loadMoreThumbnails() {
+    loadThumbnailsUntilFirstSelectedMediaVisible(mediaId) {
+        const isSelectedMediaVisible = this.state.mediasSlice.some(
+            media => media.properties.selected
+        );
+        if (!isSelectedMediaVisible) {
+            this.loadMoreThumbnails(() => {
+                this.loadThumbnailsUntilFirstSelectedMediaVisible(mediaId);
+            });
+        } else {
+            this.scrollToMedia(mediaId);
+        }
+    }
+
+    loadMoreThumbnails(callback) {
         const n = this.state.mediasSlice.length;
         if (this.state.hasMore) {
             const newSlice = this.props.medias.slice(n, n + 10);
-            this.setState({
-                mediasSlice: this.state.mediasSlice.concat(newSlice),
-                hasMore: this.props.medias.length > n + 10
-            });
+            this.setState(
+                {
+                    mediasSlice: this.state.mediasSlice.concat(newSlice),
+                    hasMore: this.props.medias.length > n + 10
+                },
+                () => {
+                    typeof callback === 'function' && callback();
+                }
+            );
         }
+    }
+
+    scrollToMedia(mediaId) {
+        this.refs[mediaId].scrollIntoView({ behavior: 'smooth' });
     }
 
     handleClick(target, ctrlKey) {
@@ -96,6 +138,7 @@ class Carousel extends React.Component {
                 <div
                     className={styles.thumbnailContainer}
                     key={i}
+                    ref={media.properties._id}
                     onClick={e => {
                         this.selectMedia(media, e.ctrlKey);
                     }}
@@ -155,13 +198,16 @@ Carousel.propTypes = {
     dispatch: PropTypes.func.isRequired,
     isAdmin: PropTypes.bool,
     medias: PropTypes.arrayOf(PropTypes.object).isRequired,
-    selectFilterPending: PropTypes.bool.isRequired
+    selectFilterPending: PropTypes.bool.isRequired,
+    firstSelectedMedia: PropTypes.object
 };
 
 // Store connection
 const ConnectedCarousel = connect(store => {
+    const selectedMedias = getSelectedMedias(store);
     return {
         medias: getVisibleMedias(store),
+        firstSelectedMedia: selectedMedias[0],
         selectFilterPending: getSelectFilterPending(store),
         areMediasLocked: areMediasLocked(store),
         isAdmin: isAuthUserAdmin(store)
