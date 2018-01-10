@@ -25,7 +25,8 @@ class Carousel extends React.Component {
             mediasSlice: [],
             hasMore: true
         };
-        this.loadThumbnailsUntilFirstSelectedMediaVisible = this.loadThumbnailsUntilFirstSelectedMediaVisible.bind(
+        this.mediaDomElements = {};
+        this.loadThumbnailsUntilFirstSelectedMediaVisible = this.loadThumbnailsUntilFirstSelectedMediaAvailable.bind(
             this
         );
         this.loadMoreThumbnails = this.loadMoreThumbnails.bind(this);
@@ -52,19 +53,19 @@ class Carousel extends React.Component {
                 nextProps.firstSelectedMedia.properties._id !==
                     this.props.firstSelectedMedia.properties._id)
         ) {
-            this.loadThumbnailsUntilFirstSelectedMediaVisible(
+            this.loadThumbnailsUntilFirstSelectedMediaAvailable(
                 nextProps.firstSelectedMedia.properties._id
             );
         }
     }
 
-    loadThumbnailsUntilFirstSelectedMediaVisible(mediaId) {
-        const isSelectedMediaVisible = this.state.mediasSlice.some(
-            media => media.properties.selected
+    loadThumbnailsUntilFirstSelectedMediaAvailable(mediaId) {
+        const isSelectedMediaAvailable = this.state.mediasSlice.find(
+            media => media.properties._id === mediaId
         );
-        if (!isSelectedMediaVisible) {
+        if (!isSelectedMediaAvailable) {
             this.loadMoreThumbnails(() => {
-                this.loadThumbnailsUntilFirstSelectedMediaVisible(mediaId);
+                this.loadThumbnailsUntilFirstSelectedMediaAvailable(mediaId);
             });
         } else {
             this.scrollToMedia(mediaId);
@@ -88,7 +89,8 @@ class Carousel extends React.Component {
     }
 
     scrollToMedia(mediaId) {
-        this.refs[mediaId].scrollIntoView({ behavior: 'smooth' });
+        this.mediaDomElements[mediaId] &&
+            this.mediaDomElements[mediaId].scrollIntoView({ behavior: 'smooth' });
     }
 
     handleClick(target, ctrlKey) {
@@ -138,7 +140,10 @@ class Carousel extends React.Component {
                 <div
                     className={styles.thumbnailContainer}
                     key={i}
-                    ref={media.properties._id}
+                    // ref={media.properties._id}
+                    ref={el => {
+                        this.mediaDomElements[media.properties._id] = el;
+                    }}
                     onClick={e => {
                         this.selectMedia(media, e.ctrlKey);
                     }}
