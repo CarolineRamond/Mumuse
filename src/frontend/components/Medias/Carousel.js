@@ -148,7 +148,7 @@ class Carousel extends React.Component {
                         this.selectMedia(media, e.ctrlKey);
                     }}
                 >
-                    <LazyLoad>
+                    <LazyLoad className={styles.thumbnail}>
                         <img
                             className={classes.join(' ')}
                             src={media.properties.thumbnail_url}
