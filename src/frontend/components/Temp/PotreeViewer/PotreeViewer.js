@@ -678,8 +678,8 @@ class PotreeViewer extends React.Component {
         }
 
         const imgCenter = {
-            x: window.innerWidth / 2,
-            y: window.innerHeight / 2
+            x: this.potreeElement.offsetWidth / 2,
+            y: this.potreeElement.offsetHeight / 2
         };
 
         const imgLeft = imgCenter.x - imgWidth / 2;
@@ -695,7 +695,9 @@ class PotreeViewer extends React.Component {
                 width: imgWidth,
                 height: imgHeight,
                 alpha: alphaDeg,
-                quarter: quarter
+                quarter: quarter,
+                parentWidth: this.potreeElement.offsetWidth,
+                parentHeight: this.potreeElement.offsetHeight
             }
         });
     }

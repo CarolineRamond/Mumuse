@@ -167,35 +167,31 @@ class MediaViewer extends React.Component {
         return (
             <div>
                 {this.props.media && (
-                    <div>
-                        <div onWheel={this.handleMouseWheel}>
-                            <ResizableComponent
-                                full={this.state.full}
-                                className={styles.mediaViewerImg}
+                    <div onWheel={this.handleMouseWheel}>
+                        <ResizableComponent
+                            full={this.state.full}
+                            className={styles.mediaViewerImg}
+                            dimensions={this.props.media}
+                            transitionDuration={resizeTransitionDuration}
+                            onTransitionComplete={this.handleResizeTransitionComplete}
+                        >
+                            <ClippableComponent
+                                clipped={this.state.clipped}
                                 dimensions={this.props.media}
-                                transitionDuration={resizeTransitionDuration}
-                                onTransitionComplete={this.handleResizeTransitionComplete}
+                                transitionDuration={clipTransitionDuration}
+                                onTransitionComplete={this.handleClipTransitionComplete}
                             >
-                                <ClippableComponent
-                                    clipped={this.state.clipped}
-                                    dimensions={this.props.media}
-                                    transitionDuration={clipTransitionDuration}
-                                    onTransitionComplete={this.handleClipTransitionComplete}
-                                >
-                                    <InteractiveCanvas
-                                        media={this.props.media}
-                                        interactive={isCanvasInteractive}
-                                        resizeAnimationOnGoing={
-                                            this.state.fullScreenTransitionOnGoing
-                                        }
-                                        exit={this.launchFullScreenTransition}
-                                        ref={el => {
-                                            this.mediaCanvas = el;
-                                        }}
-                                    />
-                                </ClippableComponent>
-                            </ResizableComponent>
-                        </div>
+                                <InteractiveCanvas
+                                    media={this.props.media}
+                                    interactive={isCanvasInteractive}
+                                    resizeAnimationOnGoing={this.state.fullScreenTransitionOnGoing}
+                                    exit={this.launchFullScreenTransition}
+                                    ref={el => {
+                                        this.mediaCanvas = el;
+                                    }}
+                                />
+                            </ClippableComponent>
+                        </ResizableComponent>
                     </div>
                 )}
             </div>

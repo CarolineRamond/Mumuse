@@ -75,8 +75,8 @@ class Slider extends React.Component {
         event.preventDefault();
         event.stopPropagation();
         const alpha = this.props.dimensions.alpha * Math.PI / 180;
-        const X = event.clientX - window.innerWidth / 2;
-        const Y = event.clientY - window.innerHeight / 2;
+        const X = event.clientX - this.props.dimensions.parentWidth / 2;
+        const Y = event.clientY - this.props.dimensions.parentHeight / 2;
         let x;
         if (this.props.dimensions.quarter % 2 === 0) {
             x =
@@ -134,8 +134,8 @@ class Slider extends React.Component {
     handleSliderMouseMove(event) {
         event.preventDefault();
         const alpha = this.props.dimensions.alpha * Math.PI / 180;
-        const X = event.clientX - window.innerWidth / 2;
-        const Y = event.clientY - window.innerHeight / 2;
+        const X = event.clientX - this.props.dimensions.parentWidth / 2;
+        const Y = event.clientY - this.props.dimensions.parentHeight / 2;
         let y;
         if (this.props.dimensions.quarter % 2 === 0) {
             y =
@@ -250,7 +250,9 @@ Slider.propTypes = {
         left: PropTypes.number.isRequired,
         top: PropTypes.number.isRequired,
         width: PropTypes.number.isRequired,
-        height: PropTypes.number.isRequired
+        height: PropTypes.number.isRequired,
+        parentWidth: PropTypes.number.isRequired,
+        parentHeight: PropTypes.number.isRequired
     }).isRequired,
     handleClip: PropTypes.func.isRequired,
     handleOpacityChange: PropTypes.func.isRequired,

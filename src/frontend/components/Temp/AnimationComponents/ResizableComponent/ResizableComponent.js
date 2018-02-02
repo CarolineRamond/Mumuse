@@ -16,24 +16,24 @@ const ResizableComponent = props => {
     switch (props.dimensions.quarter) {
         case 0:
             fullScreenRotation = 0;
-            fullScreenWidth = window.innerWidth;
-            fullScreenHeight = window.innerHeight;
+            fullScreenWidth = props.dimensions.parentWidth;
+            fullScreenHeight = props.dimensions.parentHeight;
             fullScreenTop = 0;
             fullScreenLeft = 0;
             defaultRotation = -props.dimensions.alpha;
             break;
         case 1:
             fullScreenRotation = -90;
-            fullScreenTop = (window.innerHeight - window.innerWidth) / 2;
-            fullScreenLeft = -(window.innerHeight - window.innerWidth) / 2;
-            fullScreenWidth = window.innerHeight;
-            fullScreenHeight = window.innerWidth;
+            fullScreenTop = (props.dimensions.parentHeight - props.dimensions.parentWidth) / 2;
+            fullScreenLeft = -(props.dimensions.parentHeight - props.dimensions.parentWidth) / 2;
+            fullScreenWidth = props.dimensions.parentHeight;
+            fullScreenHeight = props.dimensions.parentWidth;
             defaultRotation = -props.dimensions.alpha;
             break;
         case 2:
             fullScreenRotation = 180;
-            fullScreenWidth = window.innerWidth;
-            fullScreenHeight = window.innerHeight;
+            fullScreenWidth = props.dimensions.parentWidth;
+            fullScreenHeight = props.dimensions.parentHeight;
             fullScreenTop = 0;
             fullScreenLeft = 0;
             if (-180 < props.dimensions.alpha && props.dimensions.alpha < -135) {
@@ -44,10 +44,10 @@ const ResizableComponent = props => {
             break;
         case 3:
             fullScreenRotation = 90;
-            fullScreenTop = (window.innerHeight - window.innerWidth) / 2;
-            fullScreenLeft = -(window.innerHeight - window.innerWidth) / 2;
-            fullScreenWidth = window.innerHeight;
-            fullScreenHeight = window.innerWidth;
+            fullScreenTop = (props.dimensions.parentHeight - props.dimensions.parentWidth) / 2;
+            fullScreenLeft = -(props.dimensions.parentHeight - props.dimensions.parentWidth) / 2;
+            fullScreenWidth = props.dimensions.parentHeight;
+            fullScreenHeight = props.dimensions.parentWidth;
             defaultRotation = -props.dimensions.alpha;
             break;
         default:
@@ -135,7 +135,9 @@ ResizableComponent.propTypes = {
         width: PropTypes.number,
         height: PropTypes.number,
         alpha: PropTypes.number,
-        quarter: PropTypes.number
+        quarter: PropTypes.number,
+        parentWidth: PropTypes.number,
+        parentHeight: PropTypes.number
     }),
     full: PropTypes.bool,
     onTransitionComplete: PropTypes.func,
