@@ -14,7 +14,8 @@ const {
     getSelectedMedias,
     getSelectFilterPending,
     getVisibleMedias,
-    getSelectedPointCloud
+    getSelectedPointCloud,
+    getMapPreviewMode
 } = selectors;
 import { actions } from '../../../modules';
 const { selectMediaById } = actions;
@@ -52,6 +53,7 @@ class PotreeViewer extends React.Component {
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
+        this.onResizeWindow = this.onResizeWindow.bind(this);
 
         //Tween functions
         // this.tweenLookAt = this.tweenLookAt.bind(this);
@@ -80,10 +82,13 @@ class PotreeViewer extends React.Component {
         //     this.initialMediaName = mediaName;
         // }
 
-        window.addEventListener('resize', this.onResizeWindow.bind(this));
+        window.addEventListener('resize', this.onResizeWindow);
     }
 
     componentWillReceiveProps(nextProps) {
+        if (nextProps.previewMode !== this.props.previewMode) {
+            this.onResizeWindow();
+        }
         // Load pointcloud and add cameraMedia to potree
         if (
             !this.potreeIsLoading &&
@@ -857,6 +862,7 @@ class PotreeViewer extends React.Component {
 PotreeViewer.propTypes = {
     dispatch: PropTypes.func.isRequired,
     pointCloud: PropTypes.object,
+    previewMode: PropTypes.bool,
     selectedMedias: PropTypes.arrayOf(PropTypes.object),
     visibleMedias: PropTypes.arrayOf(PropTypes.object)
 };
@@ -864,6 +870,7 @@ PotreeViewer.propTypes = {
 const ConnectedPotreeViewer = connect(store => {
     return {
         pointCloud: getSelectedPointCloud(store),
+        previewMode: getMapPreviewMode(store),
         selectedMedias: getSelectedMedias(store),
         visibleMedias: getVisibleMedias(store),
         selectFilterPending: getSelectFilterPending(store)

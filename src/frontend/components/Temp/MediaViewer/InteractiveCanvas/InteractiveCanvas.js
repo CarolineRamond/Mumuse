@@ -9,6 +9,7 @@ class InteractiveCanvas extends React.Component {
 
         this.handleScroll = this.handleScroll.bind(this);
         this.onResizeAnimation = this.onResizeAnimation.bind(this);
+        this.handleResize = this.handleResize.bind(this);
     }
 
     componentDidMount() {
@@ -21,6 +22,18 @@ class InteractiveCanvas extends React.Component {
         }
         if (!nextProps.resizeAnimationOnGoing && this.props.resizeAnimationOnGoing) {
             cancelAnimationFrame(this.resizeRequest);
+        }
+
+        if (nextProps.media && this.props.media) {
+            const didMediaDimensionsChange =
+                nextProps.media.width !== this.props.media.width ||
+                nextProps.media.height !== this.props.media.height ||
+                nextProps.media.left !== this.props.media.left ||
+                nextProps.media.top !== this.props.media.top;
+            if (didMediaDimensionsChange) {
+                console.log('MEDIA DIMENSIONS CHANGED');
+                this.handleResize();
+            }
         }
     }
 
@@ -50,7 +63,7 @@ class InteractiveCanvas extends React.Component {
         this.mediaCanvas.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
 
         this.leaveFullMode = this.leaveFullMode.bind(this);
-        window.addEventListener('resize', this.handleResize.bind(this), false);
+        window.addEventListener('resize', this.handleResize, false);
     }
 
     computeMouseCoords(e) {
@@ -330,6 +343,8 @@ InteractiveCanvas.propTypes = {
     interactive: PropTypes.bool,
     media: PropTypes.shape({
         quarter: PropTypes.number,
+        top: PropTypes.number,
+        left: PropTypes.number,
         width: PropTypes.number,
         height: PropTypes.number,
         src: PropTypes.string

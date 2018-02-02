@@ -30,6 +30,7 @@ class Viewer extends React.Component {
 
     handleResize() {
         this.mediaViewerRef.handleResize();
+        this.pointCloudViewerRef.handleResize();
     }
 
     handleDragStarted() {
@@ -62,6 +63,9 @@ class Viewer extends React.Component {
                     )}
                 {isPointCloudSelected && (
                     <PointCloudViewer
+                        ref={pointCloudViewerRef => {
+                            this.pointCloudViewerRef = pointCloudViewerRef;
+                        }}
                         pointCloud={this.props.pointCloud}
                         previewMode={this.props.previewMode}
                     />

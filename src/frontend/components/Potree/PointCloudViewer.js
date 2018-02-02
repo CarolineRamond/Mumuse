@@ -13,6 +13,11 @@ class PointCloudViewer extends React.Component {
         this.state = {
             pointCloud: pointCloud
         };
+        this.handleResize = this.handleResize.bind(this);
+    }
+
+    handleResize() {
+        console.log('HANDLE RESIZE POINTCLOUD VIEWER');
     }
 
     render() {
