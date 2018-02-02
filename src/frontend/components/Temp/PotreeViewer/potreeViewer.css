@@ -1,0 +1,22 @@
+.potreeContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.potree {
+	position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+}
+
+.mediaViewerContainer {
+	position: absolute;
+    height: 100%;
+    width: 100%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    pointer-events: none;
+}
