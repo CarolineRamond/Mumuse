@@ -802,6 +802,11 @@ class PotreeViewer extends React.Component {
     handleClick() {
         if (this.mediaCamera_intersected) {
             this.selectMediaCamera(this.mediaCamera_intersected);
+            this.props.dispatch(
+                selectMediaById({
+                    mediaId: this.mediaCamera_intersected.userData.mediaId
+                })
+            );
         }
     }
 
