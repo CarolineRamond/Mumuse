@@ -124,13 +124,12 @@ class PotreeViewer extends React.Component {
             nextMedia &&
             (!currentMedia || currentMedia.properties._id !== nextMedia.properties._id)
         ) {
-            // const mediaCamera = this.potree.scene.scene.children.find(
-            //     mesh => mesh.userData.mediaId === nextMedia.properties._id
-            // );
-            // if (mediaCamera) {
-            //     this.goToMediaCamera(mediaCamera);
-            //     mediaCamera.loadMedia();
-            // }
+            const mediaCamera = this.potree.scene.scene.children.find(
+                mesh => mesh.userData.mediaId === nextMedia.properties._id
+            );
+            if (mediaCamera) {
+                this.selectMediaCamera(mediaCamera);
+            }
         } else if (!nextMedia) {
             this.potree.fitToScreen();
         }
