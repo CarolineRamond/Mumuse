@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
+// import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 
 import potree from '@iconem/iconem-potree';
@@ -353,7 +353,7 @@ class PotreeViewer extends React.Component {
 
             // this.lastSearch = this.props.location.search;
             this.currentMediaCamera = null;
-            this.routeToMedia();
+            // this.routeToMedia();
             this.setState({
                 media: null,
                 displayMedia: false
@@ -367,17 +367,17 @@ class PotreeViewer extends React.Component {
         }
     }
 
-    routeToMedia(camera) {
-        // const siteUrl = '/' + this.props.match.params.siteName;
-        // let mediaUrl = siteUrl;
-        // const search = this.lastSearch || '?full=false&infos=false';
-        // if (camera && camera.userData && camera.userData.name) {
-        //     mediaUrl += `/${camera.userData.name}${search}`;
-        // }
-        // if (mediaUrl !== this.props.location.pathname + this.props.location.search) {
-        //     this.props.history.push(mediaUrl);
-        // }
-    }
+    // routeToMedia(camera) {
+    //     const siteUrl = '/' + this.props.match.params.siteName;
+    //     let mediaUrl = siteUrl;
+    //     const search = this.lastSearch || '?full=false&infos=false';
+    //     if (camera && camera.userData && camera.userData.name) {
+    //         mediaUrl += `/${camera.userData.name}${search}`;
+    //     }
+    //     if (mediaUrl !== this.props.location.pathname + this.props.location.search) {
+    //         this.props.history.push(mediaUrl);
+    //     }
+    // }
 
     // navigate to a media camera
     // once navigation animation is finished, calls renderMediaPreviewer
@@ -688,7 +688,7 @@ class PotreeViewer extends React.Component {
 
         const imgLeft = imgCenter.x - imgWidth / 2;
         const imgTop = imgCenter.y - imgHeight / 2;
-        this.routeToMedia(mediaCamera);
+        // this.routeToMedia(mediaCamera);
         this.navigating = false;
         this.setState({
             displayMedia: true,
@@ -804,6 +804,7 @@ class PotreeViewer extends React.Component {
     }
 
     handleClick() {
+        console.log('HANDLE CLICK POTREE VIEWER');
         if (this.mediaCamera_intersected) {
             this.selectMediaCamera(this.mediaCamera_intersected);
             this.props.dispatch(
@@ -878,25 +879,3 @@ const ConnectedPotreeViewer = connect(store => {
 })(PotreeViewer);
 
 export default ConnectedPotreeViewer;
-
-// PotreeViewer.propTypes = {
-//     dispatch: PropTypes.func.isRequired,
-//     history: PropTypes.object.isRequired,
-//     location: PropTypes.object.isRequired,
-//     match: PropTypes.object.isRequired,
-//     subsiteState: PropTypes.shape({
-//         display: PropTypes.bool,
-//         pending: PropTypes.bool,
-//         data: PropTypes.object,
-//         error: PropTypes.string,
-//         mediaIndex: PropTypes.number
-//     })
-// };
-
-// const ConnectedPotreeViewer = connect(store => {
-//     return {
-//         subsiteState: store.subsite
-//     };
-// })(PotreeViewer);
-
-// export default withRouter(ConnectedPotreeViewer);

@@ -43,28 +43,28 @@ class MediaViewer extends React.Component {
         };
     }
 
-    updateSearch(newParams) {
-        this.params = {
-            ...this.params,
-            ...newParams
-        };
-        let search = '?';
-        Object.keys(this.params).map((key, index) => {
-            search += `${key}=${this.params[key]}`;
-            if (index < Object.keys(this.params).length - 1) {
-                search += '&';
-            }
-        });
-        const newUrl = this.props.location.pathname + search;
-        this.props.history.replace(newUrl);
-    }
+    // updateSearch(newParams) {
+    //     this.params = {
+    //         ...this.params,
+    //         ...newParams
+    //     };
+    //     let search = '?';
+    //     Object.keys(this.params).map((key, index) => {
+    //         search += `${key}=${this.params[key]}`;
+    //         if (index < Object.keys(this.params).length - 1) {
+    //             search += '&';
+    //         }
+    //     });
+    //     const newUrl = this.props.location.pathname + search;
+    //     this.props.history.replace(newUrl);
+    // }
 
     toggleInfosPanel() {
         const newDisplayInfos = !this.state.infos;
         this.setState({
             infos: newDisplayInfos
         });
-        this.updateSearch({ infos: newDisplayInfos });
+        // this.updateSearch({ infos: newDisplayInfos });
     }
 
     handleMouseWheel(e) {
@@ -111,7 +111,7 @@ class MediaViewer extends React.Component {
             this.shouldExit = false;
             this.props.exit();
         } else {
-            this.updateSearch({ full: this.state.full });
+            // this.updateSearch({ full: this.state.full });
             // wait a bit before making canvas interactive after transition completed
             setTimeout(() => {
                 this.setState({
@@ -167,7 +167,21 @@ class MediaViewer extends React.Component {
         return (
             <div>
                 {this.props.media && (
-                    <div onWheel={this.handleMouseWheel}>
+                    <div
+                        onWheel={this.handleMouseWheel}
+                        onClick={e => {
+                            e.stopPropagation();
+                        }}
+                        onMouseUp={e => {
+                            e.stopPropagation();
+                        }}
+                        onMouseDown={e => {
+                            e.stopPropagation();
+                        }}
+                        onMouseMove={e => {
+                            e.stopPropagation();
+                        }}
+                    >
                         <ResizableComponent
                             full={this.state.full}
                             className={styles.mediaViewerImg}
