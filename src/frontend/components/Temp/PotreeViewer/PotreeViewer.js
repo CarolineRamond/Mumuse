@@ -682,14 +682,15 @@ class PotreeViewer extends React.Component {
         }
 
         const imgCenter = {
-            x: this.potreeElement.offsetWidth / 2,
-            y: this.potreeElement.offsetHeight / 2
+            x: rect.width / 2,
+            y: rect.height / 2
         };
 
         const imgLeft = imgCenter.x - imgWidth / 2;
         const imgTop = imgCenter.y - imgHeight / 2;
         // this.routeToMedia(mediaCamera);
         this.navigating = false;
+
         this.setState({
             displayMedia: true,
             media: {
@@ -700,8 +701,10 @@ class PotreeViewer extends React.Component {
                 height: imgHeight,
                 alpha: alphaDeg,
                 quarter: quarter,
-                parentWidth: this.potreeElement.offsetWidth,
-                parentHeight: this.potreeElement.offsetHeight
+                parentWidth: rect.width,
+                parentHeight: rect.height,
+                parentTop: rect.y,
+                parentLeft: rect.x
             }
         });
     }
@@ -804,7 +807,6 @@ class PotreeViewer extends React.Component {
     }
 
     handleClick() {
-        console.log('HANDLE CLICK POTREE VIEWER');
         if (this.mediaCamera_intersected) {
             this.selectMediaCamera(this.mediaCamera_intersected);
             this.props.dispatch(
