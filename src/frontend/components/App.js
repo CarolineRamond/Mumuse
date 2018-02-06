@@ -4,7 +4,7 @@ import { HashRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import Admin from './Admin';
 import Auth from './Auth';
 import Main from './Main';
-import MediasRouter from './Medias/MediasRouter';
+import MainRouter from './Main/MainRouter';
 
 const App = () => {
     return (
@@ -17,7 +17,7 @@ const App = () => {
                         <div>
                             <Route path="/:loc/auth" component={Auth} />
                             <Main />
-                            <MediasRouter />
+                            <MainRouter />
                         </div>
                     )}
                 />

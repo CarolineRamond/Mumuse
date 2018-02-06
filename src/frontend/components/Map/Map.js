@@ -10,6 +10,8 @@ import PropTypes from 'prop-types';
 
 import { selectors } from '../../modules';
 const { isAuthUserAdmin, getLayersState, getSourcesState } = selectors;
+import { actions } from '../../modules';
+const { updateWorldState } = actions;
 import { mapConfig } from '../../modules';
 
 import styles from './map.css';
@@ -235,14 +237,12 @@ class Map extends React.Component {
     }
 
     _addViewportChangeHandling() {
-        // update window location on moveend
+        // update world state on moveend
         this.map.on('moveend', () => {
-            const splitLocation = this.props.location.pathname.split('/');
             const { lng, lat } = this.map.getCenter();
             const zoom = this.map.getZoom();
-            splitLocation[1] = [lng, lat, zoom].join(',');
-            const newLocation = splitLocation.join('/');
-            this.props.history.replace(newLocation);
+            const bounds = this.map.getBounds();
+            updateWorldState({ lng, lat, zoom, bounds });
         });
 
         // set up events to update viewport counts
