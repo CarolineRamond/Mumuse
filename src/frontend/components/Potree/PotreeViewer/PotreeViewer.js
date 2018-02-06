@@ -115,7 +115,6 @@ class PotreeViewer extends React.Component {
                         this.potree.fitToScreen();
                     }
                 );
-
                 const pointCloudMedias = JSON.parse(nextProps.pointCloud.metaData.visus);
                 this.addCamerasToPotree(pointCloudMedias);
                 this.filterVisibleCamera(this.props.visibleMedias);

@@ -6,19 +6,38 @@ import PropTypes from 'prop-types';
 import { selectors } from '../../modules';
 const { getSelectedMedias, getSelectedPointCloud } = selectors;
 import { actions } from '../../modules';
-const { initSelectedMedia } = actions;
+const { initSelectedMedia, initSelectedPointCloud } = actions;
 
 class MainRouter extends React.Component {
+    // on mount component : check current route
+    // to see if some data should be loaded
     componentDidMount() {
-        // const splitLocation = this.props.location.pathname.split('/');
-        // let mediaId;
-        // if (splitLocation.length > 3 && splitLocation[2] === 'medias' && splitLocation[3]) {
-        //     mediaId = splitLocation[3];
-        //     this.props.dispatch(initSelectedMedia({ mediaId }));
-        // }
-        // this.state = {
-        //     init: mediaId
-        // };
+        const splitLocation = this.props.location.pathname.split('/');
+
+        // check if a point cloud is required on init
+        let pointCloudId;
+        const pointCloudIndex = splitLocation.findIndex(item => {
+            return item === '3d';
+        });
+        if (pointCloudIndex > -1 && splitLocation.length > pointCloudIndex) {
+            pointCloudId = splitLocation[pointCloudIndex + 1];
+            this.props.dispatch(initSelectedPointCloud({ pointCloudId }));
+        }
+
+        // check if a media is required on init
+        let mediaId;
+        const mediaIndex = splitLocation.findIndex(item => {
+            return item === 'media';
+        });
+        if (mediaIndex > -1 && splitLocation.length > mediaIndex) {
+            mediaId = splitLocation[mediaIndex + 1];
+            this.props.dispatch(initSelectedMedia({ mediaId }));
+        }
+
+        this.state = {
+            initialMediaId: mediaId,
+            initialPointcloudId: pointCloudId
+        };
     }
 
     // update route according to new props
@@ -28,26 +47,51 @@ class MainRouter extends React.Component {
             nextProps.world.lng !== this.props.world.lng ||
             nextProps.world.zoom !== this.props.world.zoom;
         const didPointCloudChange =
-            (nextProps.selectedPointCloud && !this.props.selectedPointCloud) ||
-            (!nextProps.selectedPointCloud && this.props.selectedPointCloud) ||
-            (nextProps.selectedPointCloud &&
-                this.props.selectedPointCloud &&
-                nextProps.selectedPointCloud.metaData._id !==
-                    this.props.selectedPointCloud.metaData._id);
+            !this.state.initialPointcloudId && // do not update route until initial pointCloud was loaded
+            ((nextProps.selectedPointCloud && !this.props.selectedPointCloud) ||
+                (!nextProps.selectedPointCloud && this.props.selectedPointCloud) ||
+                (nextProps.selectedPointCloud &&
+                    this.props.selectedPointCloud &&
+                    nextProps.selectedPointCloud.metaData._id !==
+                        this.props.selectedPointCloud.metaData._id));
         const didMediaChange =
-            (nextProps.selectedMedias[0] && !this.props.selectedMedias[0]) ||
-            (!nextProps.selectedMedias[0] && this.props.selectedMedias[0]) ||
-            (nextProps.selectedMedias[0] &&
-                this.props.selectedMedias[0] &&
-                nextProps.selectedMedias[0].properties._id !==
-                    this.props.selectedMedias[0].properties._id);
+            !this.state.initialMediaId && // do not update route until initial media was loaded
+            ((nextProps.selectedMedias[0] && !this.props.selectedMedias[0]) ||
+                (!nextProps.selectedMedias[0] && this.props.selectedMedias[0]) ||
+                (nextProps.selectedMedias[0] &&
+                    this.props.selectedMedias[0] &&
+                    nextProps.selectedMedias[0].properties._id !==
+                        this.props.selectedMedias[0].properties._id));
 
+        // initial media was loaded => set initialMediaId to null
+        if (
+            this.state.initialMediaId &&
+            nextProps.selectedMedias[0] &&
+            nextProps.selectedMedias[0].properties._id === this.state.initialMediaId
+        ) {
+            this.setState({
+                initialMediaId: null
+            });
+        }
+
+        // initial point cloud was loaded => set initialPointcloudId to null
+        if (
+            this.state.initialPointcloudId &&
+            nextProps.selectedPointCloud &&
+            nextProps.selectedPointCloud.metaData._id === this.state.initialPointcloudId
+        ) {
+            this.setState({
+                initialPointcloudId: null
+            });
+        }
+
+        // a property changed => update route
         if (didWorldChange || didPointCloudChange || didMediaChange) {
             // first part of route : /${lat},${lng},${zoom}
             let newRoute =
                 '/' + [nextProps.world.lng, nextProps.world.lat, nextProps.world.zoom].join(',');
 
-            // second part of route : /3d/${pointcloudId} (optional)
+            // second part of route : /3d/${pointCloudId} (optional)
             if (nextProps.selectedPointCloud) {
                 newRoute += `/3d/${nextProps.selectedPointCloud.metaData._id}`;
             }
@@ -59,29 +103,6 @@ class MainRouter extends React.Component {
 
             this.props.history.push(newRoute);
         }
-
-        // const rootPath = '/' + this.props.location.pathname.split('/')[1];
-        // const hasSelectedMedia = nextProps.selectedMedias.length === 1;
-        // if (this.state.init && hasSelectedMedia) {
-        //     this.setState({
-        //         init: false
-        //     });
-        // } else if (hasSelectedMedia) {
-        //     const mediaId = nextProps.selectedMedias[0].properties._id;
-        //     const didSelectedChange =
-        //         this.props.selectedMedias.length !== 1 ||
-        //         this.props.selectedMedias[0].properties._id !== mediaId;
-        //     if (didSelectedChange) {
-        //         const newPathName =
-        //             rootPath + '/medias/' + nextProps.selectedMedias[0].properties._id;
-        //         this.props.history.push(newPathName);
-        //     }
-        // } else {
-        //     const hadSelected = this.props.selectedMedias.length === 1;
-        //     if (hadSelected) {
-        //         this.props.history.push(rootPath);
-        //     }
-        // }
     }
 
     shouldComponentUpdate() {
