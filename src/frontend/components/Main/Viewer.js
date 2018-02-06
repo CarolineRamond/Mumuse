@@ -22,6 +22,10 @@ class Viewer extends React.Component {
         this.handleResize = this.handleResize.bind(this);
     }
 
+    componentDidMount() {
+        this.props.setResizeHandler(this.handleResize);
+    }
+
     componentWillUnmount() {
         if (this.props.previewMode) {
             this.props.dispatch(switchPreviewMode());
@@ -29,8 +33,14 @@ class Viewer extends React.Component {
     }
 
     handleResize() {
-        this.mediaViewerRef.handleResize();
-        this.pointCloudViewerRef.handleResize();
+        if (this.mediaViewerRef && this.mediaViewerRef.handleResize) {
+            this.mediaViewerRef.handleResize();
+        }
+        if (this.pointCloudViewerRef && this.pointCloudViewerRef.handleResize) {
+            if (this.props.previewMode) {
+                this.pointCloudViewerRef.handleResize();
+            }
+        }
     }
 
     handleDragStarted() {
@@ -89,7 +99,8 @@ Viewer.propTypes = {
         geometry: PropTypes.object
     }),
     pointCloud: PropTypes.object,
-    previewMode: PropTypes.bool
+    previewMode: PropTypes.bool,
+    setResizeHandler: PropTypes.func.isRequired
 };
 
 const ConnectedViewer = connect(store => {

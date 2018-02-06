@@ -17,12 +17,21 @@ class PointCloudViewer extends React.Component {
     }
 
     handleResize() {
-        console.log('HANDLE RESIZE POINTCLOUD VIEWER');
+        if (this.handlePotreeViewerResize) {
+            this.handlePotreeViewerResize();
+        }
     }
 
     render() {
         // return <Potree className={styles.previewPointCloudContainer} />;
-        return <PotreeViewer className={styles.previewPointCloudContainer} />;
+        return (
+            <PotreeViewer
+                className={styles.previewPointCloudContainer}
+                setResizeHandler={resizeHandler => {
+                    this.handlePotreeViewerResize = resizeHandler;
+                }}
+            />
+        );
     }
 }
 

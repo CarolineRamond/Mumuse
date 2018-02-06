@@ -31,7 +31,6 @@ class InteractiveCanvas extends React.Component {
                 nextProps.media.left !== this.props.media.left ||
                 nextProps.media.top !== this.props.media.top;
             if (didMediaDimensionsChange) {
-                console.log('MEDIA DIMENSIONS CHANGED');
                 this.handleResize();
             }
         }

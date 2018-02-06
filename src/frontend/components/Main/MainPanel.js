@@ -11,6 +11,19 @@ import Timeline from '../Medias/Timeline';
 import styles from './main.css';
 
 class MainPanel extends React.Component {
+    componentDidMount() {
+        this.props.setResizeHandler(this.handleResize.bind(this));
+    }
+
+    handleResize() {
+        if (this.handleMapResize) {
+            this.handleMapResize();
+        }
+        if (this.handleViewerResize) {
+            this.handleViewerResize();
+        }
+    }
+
     render() {
         const mapClass = this.props.previewMode ? styles.preview : styles.main;
         const viewerClass = this.props.previewMode ? styles.main : styles.preview;
@@ -18,7 +31,11 @@ class MainPanel extends React.Component {
             <div className={styles.mainContainer}>
                 {/*Map*/}
                 <div className={mapClass}>
-                    <Map />
+                    <Map
+                        setResizeHandler={resizeHandler => {
+                            this.handleMapResize = resizeHandler;
+                        }}
+                    />
                     {this.props.previewMode && <PreviewSwitch />}
                 </div>
                 {/*Timeline*/}
@@ -32,7 +49,11 @@ class MainPanel extends React.Component {
                 {this.props.showViewer && (
                     <div className={viewerClass}>
                         {!this.props.previewMode && <PreviewSwitch />}
-                        <Viewer />
+                        <Viewer
+                            setResizeHandler={resizeHandler => {
+                                this.handleViewerResize = resizeHandler;
+                            }}
+                        />
                     </div>
                 )}
             </div>
@@ -48,6 +69,7 @@ class MainPanel extends React.Component {
 //  (ie if there is exactly one selected media or a selected point cloud)
 MainPanel.propTypes = {
     previewMode: PropTypes.bool.isRequired,
+    setResizeHandler: PropTypes.func.isRequired,
     showViewer: PropTypes.bool.isRequired
 };
 

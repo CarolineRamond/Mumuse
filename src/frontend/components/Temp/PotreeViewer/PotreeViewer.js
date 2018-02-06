@@ -83,6 +83,7 @@ class PotreeViewer extends React.Component {
         // }
 
         window.addEventListener('resize', this.onResizeWindow);
+        this.props.setResizeHandler(this.onResizeWindow);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -867,6 +868,7 @@ PotreeViewer.propTypes = {
     pointCloud: PropTypes.object,
     previewMode: PropTypes.bool,
     selectedMedias: PropTypes.arrayOf(PropTypes.object),
+    setResizeHandler: PropTypes.func.isRequired,
     visibleMedias: PropTypes.arrayOf(PropTypes.object)
 };
 

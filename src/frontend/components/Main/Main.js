@@ -17,6 +17,7 @@ class Main extends React.Component {
         super(props);
         this.handleDragStarted = this.handleDragStarted.bind(this);
         this.handleDragFinished = this.handleDragFinished.bind(this);
+        this.handleResize = this.handleResize.bind(this);
         this.state = {
             isResizing: false
         };
@@ -35,6 +36,12 @@ class Main extends React.Component {
         this.setState({
             isResizing: false
         });
+    }
+
+    handleResize() {
+        if (this.handleMainPanelResize) {
+            this.handleMainPanelResize();
+        }
     }
 
     render() {
@@ -58,8 +65,13 @@ class Main extends React.Component {
                     resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
                     onDragStarted={this.handleDragStarted}
                     onDragFinished={this.handleDragFinished}
+                    onChange={this.handleResize}
                 >
-                    <MainPanel />
+                    <MainPanel
+                        setResizeHandler={resizeHandler => {
+                            this.handleMainPanelResize = resizeHandler;
+                        }}
+                    />
                     <SidePanel />
                 </SplitPane>
             </div>
