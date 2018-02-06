@@ -17,7 +17,7 @@ const {
     getMapPreviewMode
 } = selectors;
 import { actions } from '../../../modules';
-const { selectMediaById } = actions;
+const { selectMediaById, clickMedias } = actions;
 
 class PotreeViewer extends React.Component {
     constructor(props) {
@@ -238,6 +238,7 @@ class PotreeViewer extends React.Component {
             this.navigating = true;
             this.shouldResetMediaAfterTransition = true;
             this.launchFadeOutTransition();
+            this.props.dispatch(clickMedias({ features: [] }));
         }
     }
 
