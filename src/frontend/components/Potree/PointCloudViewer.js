@@ -2,9 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import styles from './PointCloudViewer.css';
-import Potree from '../Potree/Potree';
-
-import PotreeViewer from '../Temp/PotreeViewer';
+import PotreeViewer from './PotreeViewer';
 
 class PointCloudViewer extends React.Component {
     constructor(props) {
@@ -23,7 +21,6 @@ class PointCloudViewer extends React.Component {
     }
 
     render() {
-        // return <Potree className={styles.previewPointCloudContainer} />;
         return (
             <PotreeViewer
                 className={styles.previewPointCloudContainer}

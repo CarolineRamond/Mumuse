@@ -11,7 +11,7 @@ import { selectors } from '../../modules';
 const { getLoginState, getRootUrl } = selectors;
 
 import Form from '../Common/Form';
-import styles from '../Common/form.css';
+import styles from '../Common/Form/form.css';
 
 class Login extends React.Component {
     constructor(props) {

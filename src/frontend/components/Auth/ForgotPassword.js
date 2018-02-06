@@ -10,7 +10,7 @@ import { selectors } from '../../modules';
 const { getRootUrl, getForgotPasswordState, getAuthUser } = selectors;
 
 import Form from '../Common/Form';
-import styles from '../Common/form.css';
+import styles from '../Common/Form/form.css';
 
 class ForgotPassword extends React.Component {
     constructor(props) {

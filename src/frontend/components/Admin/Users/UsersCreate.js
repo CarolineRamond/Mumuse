@@ -11,7 +11,7 @@ import { selectors } from '../../../modules';
 const { getCreateUserState } = selectors;
 
 import Form from '../../Common/Form';
-import styles from '../../Common/form.css';
+import styles from '../../Common/Form/form.css';
 
 class UsersCreate extends React.Component {
     constructor(props) {

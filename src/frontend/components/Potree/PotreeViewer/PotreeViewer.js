@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import potree from '@iconem/iconem-potree';
-import Camera from '../../Potree/Camera';
+import Camera from '../Camera';
 import MediaViewer from '../MediaViewer';
-import FadeInComponent from '../AnimationComponents/FadeInComponent';
+import FadeInComponent from '../../Common/AnimationComponents/FadeInComponent';
 import styles from './potreeViewer.css';
 
 import { selectors } from '../../../modules';

@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 
 import InteractiveCanvas from './InteractiveCanvas';
-import ResizableComponent from '../AnimationComponents/ResizableComponent';
-import ClippableComponent from '../AnimationComponents/ClippableComponent';
+import ResizableComponent from '../../Common/AnimationComponents/ResizableComponent';
+import ClippableComponent from '../../Common/AnimationComponents/ClippableComponent';
 import styles from './mediaViewer.css';
 
 class MediaViewer extends React.Component {
