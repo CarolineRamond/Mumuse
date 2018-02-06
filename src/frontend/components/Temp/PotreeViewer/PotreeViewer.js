@@ -53,7 +53,7 @@ class PotreeViewer extends React.Component {
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
-        this.onResizeWindow = this.onResizeWindow.bind(this);
+        this.handleResize = this.handleResize.bind(this);
 
         //Tween functions
         // this.tweenLookAt = this.tweenLookAt.bind(this);
@@ -82,13 +82,13 @@ class PotreeViewer extends React.Component {
         //     this.initialMediaName = mediaName;
         // }
 
-        window.addEventListener('resize', this.onResizeWindow);
-        this.props.setResizeHandler(this.onResizeWindow);
+        window.addEventListener('resize', this.handleResize);
+        this.props.setResizeHandler(this.handleResize);
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.previewMode !== this.props.previewMode) {
-            this.onResizeWindow();
+            this.handleResize();
         }
         // Load pointcloud and add cameraMedia to potree
         if (
@@ -138,6 +138,7 @@ class PotreeViewer extends React.Component {
             }
         } else if (!nextMedia) {
             this.potree.fitToScreen();
+            this.deselectMediaCamera();
         }
 
         //Hide or show camera based on timeline filtering
@@ -710,7 +711,7 @@ class PotreeViewer extends React.Component {
         });
     }
 
-    onResizeWindow() {
+    handleResize() {
         if (this.currentMediaCamera) {
             // if a media is selected, recompute its position and rotation on windows resize
             requestAnimationFrame(() => {
