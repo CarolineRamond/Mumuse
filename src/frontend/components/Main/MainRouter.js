@@ -14,7 +14,7 @@ class MainRouter extends React.Component {
     componentDidMount() {
         const splitLocation = this.props.location.pathname.split('/');
 
-        // check if a point cloud is required on init
+        // check if a point cloud is required on pageload
         let pointCloudId;
         const pointCloudIndex = splitLocation.findIndex(item => {
             return item === '3d';
@@ -24,14 +24,20 @@ class MainRouter extends React.Component {
             this.props.dispatch(initSelectedPointCloud({ pointCloudId }));
         }
 
-        // check if a media is required on init
+        // check if a media is required on pageload
         let mediaId;
         const mediaIndex = splitLocation.findIndex(item => {
             return item === 'media';
         });
         if (mediaIndex > -1 && splitLocation.length > mediaIndex) {
             mediaId = splitLocation[mediaIndex + 1];
-            this.props.dispatch(initSelectedMedia({ mediaId }));
+            // this.props.dispatch(initSelectedMedia({ mediaId }));
+            // a media was required on pageload
+            // => if a pointcloud was also required, load pointcloud before loading media (cf componentWillRecevieProps)
+            // => else, load media using initSelectedMedia action
+            if (!pointCloudId) {
+                this.props.dispatch(initSelectedMedia({ mediaId }));
+            }
         }
 
         this.state = {
@@ -42,26 +48,46 @@ class MainRouter extends React.Component {
 
     // update route according to new props
     componentWillReceiveProps(nextProps) {
+        const isInitFinished = !this.state.initialMediaId && !this.state.initialPointcloudId;
         const didWorldChange =
             nextProps.world.lat !== this.props.world.lat ||
             nextProps.world.lng !== this.props.world.lng ||
             nextProps.world.zoom !== this.props.world.zoom;
         const didPointCloudChange =
-            !this.state.initialPointcloudId && // do not update route until initial pointCloud was loaded
-            ((nextProps.selectedPointCloud && !this.props.selectedPointCloud) ||
-                (!nextProps.selectedPointCloud && this.props.selectedPointCloud) ||
-                (nextProps.selectedPointCloud &&
-                    this.props.selectedPointCloud &&
-                    nextProps.selectedPointCloud.metaData._id !==
-                        this.props.selectedPointCloud.metaData._id));
+            (nextProps.selectedPointCloud && !this.props.selectedPointCloud) ||
+            (!nextProps.selectedPointCloud && this.props.selectedPointCloud) ||
+            (nextProps.selectedPointCloud &&
+                this.props.selectedPointCloud &&
+                nextProps.selectedPointCloud.metaData._id !==
+                    this.props.selectedPointCloud.metaData._id);
         const didMediaChange =
-            !this.state.initialMediaId && // do not update route until initial media was loaded
-            ((nextProps.selectedMedias[0] && !this.props.selectedMedias[0]) ||
-                (!nextProps.selectedMedias[0] && this.props.selectedMedias[0]) ||
-                (nextProps.selectedMedias[0] &&
-                    this.props.selectedMedias[0] &&
-                    nextProps.selectedMedias[0].properties._id !==
-                        this.props.selectedMedias[0].properties._id));
+            (nextProps.selectedMedias[0] && !this.props.selectedMedias[0]) ||
+            (!nextProps.selectedMedias[0] && this.props.selectedMedias[0]) ||
+            (nextProps.selectedMedias[0] &&
+                this.props.selectedMedias[0] &&
+                nextProps.selectedMedias[0].properties._id !==
+                    this.props.selectedMedias[0].properties._id);
+
+        // initial point cloud was loaded => set initialPointcloudId to null
+        // if a media was also required on pageload, load the media
+        if (
+            this.state.initialPointcloudId &&
+            nextProps.selectedPointCloud &&
+            nextProps.selectedPointCloud.metaData._id === this.state.initialPointcloudId
+        ) {
+            this.setState(
+                {
+                    initialPointcloudId: null
+                },
+                () => {
+                    if (this.state.initialMediaId) {
+                        this.props.dispatch(
+                            initSelectedMedia({ mediaId: this.state.initialMediaId })
+                        );
+                    }
+                }
+            );
+        }
 
         // initial media was loaded => set initialMediaId to null
         if (
@@ -74,19 +100,8 @@ class MainRouter extends React.Component {
             });
         }
 
-        // initial point cloud was loaded => set initialPointcloudId to null
-        if (
-            this.state.initialPointcloudId &&
-            nextProps.selectedPointCloud &&
-            nextProps.selectedPointCloud.metaData._id === this.state.initialPointcloudId
-        ) {
-            this.setState({
-                initialPointcloudId: null
-            });
-        }
-
         // a property changed => update route
-        if (didWorldChange || didPointCloudChange || didMediaChange) {
+        if (isInitFinished && (didWorldChange || didPointCloudChange || didMediaChange)) {
             // first part of route : /${lat},${lng},${zoom}
             let newRoute =
                 '/' + [nextProps.world.lng, nextProps.world.lat, nextProps.world.zoom].join(',');

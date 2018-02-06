@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-// import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 
 import potree from '@iconem/iconem-potree';
@@ -45,7 +44,6 @@ class PotreeViewer extends React.Component {
         this.resetMedia = this.resetMedia.bind(this);
         this.currentMediaCamera = null; // currently selected media camera
         this.navigating = false; // whether a camera transition is on going
-        // this.lastSearch = this.props.location.search; // last search params
 
         // mouse events
         this.handleMouseWheel = this.handleMouseWheel.bind(this);
@@ -71,17 +69,6 @@ class PotreeViewer extends React.Component {
 
     componentDidMount() {
         this.initViewer();
-        // const siteName = this.props.match.params.siteName;
-        // this.props.dispatch(fetchSubsite(siteName));
-
-        // if (this.props.location.pathname !== '/' + siteName) {
-        //     // a camera should be selected according to route
-        //     // => store camera name to launch camera navigation
-        //     // once all cameras are displayed
-        //     const mediaName = this.props.location.pathname.split('/')[2];
-        //     this.initialMediaName = mediaName;
-        // }
-
         window.addEventListener('resize', this.handleResize);
         this.props.setResizeHandler(this.handleResize);
     }
@@ -136,8 +123,10 @@ class PotreeViewer extends React.Component {
                 this.selectMediaCamera(mediaCamera);
             }
         } else if (!nextMedia) {
-            this.potree.fitToScreen();
-            this.deselectMediaCamera();
+            if (this.props.selectedMedias[0]) {
+                // this.potree.fitToScreen();
+                this.deselectMediaCamera();
+            }
         }
 
         //Hide or show camera based on timeline filtering
@@ -148,30 +137,6 @@ class PotreeViewer extends React.Component {
             this.filterVisibleCamera(nextProps.visibleMedias);
         }
     }
-
-    // componentWillReceiveProps(nextProps) {
-    // potree data were fetched : init potree viewer
-    // if (nextProps.subsiteState.data && this.props.subsiteState.pending) {
-    //     this.initViewer(nextProps.subsiteState.data);
-    // }
-    // check route change : if user clicked on browser navbuttons,
-    // current path and current state should not match
-    // if (nextProps.location.pathname !== this.props.location.pathname) {
-    //     const mediaName = nextProps.location.pathname.split('/')[2];
-    //     const mediaIndex = this.mediaCameras.findIndex(item => {
-    //         return item.userData.name === mediaName;
-    //     });
-    //     if (mediaIndex !== this.currentCameraIndex) {
-    //         // route does not correspond to current state
-    //         // => user clicked browser navigation  buttons
-    //         if (mediaIndex < 0) {
-    //             this.deselectMediaCamera();
-    //         } else {
-    //             this.selectMediaCamera(mediaIndex);
-    //         }
-    //     }
-    // }
-    // }
 
     shouldComponentUpdate(nextProps, nextState) {
         // avoid re-rendering on route change
@@ -198,7 +163,6 @@ class PotreeViewer extends React.Component {
     }
 
     componentWillUnmount() {
-        // this.props.dispatch(resetSubsiteState());
         //remove pointcloud from potree (for now potree is always running event when)
         this.potree.scene.pointclouds = [];
         this.potree.stopRendering();
@@ -215,13 +179,6 @@ class PotreeViewer extends React.Component {
         this.potree.setPointBudget(10 * 1000 * 1000);
         this.potree.startRendering();
         this.potree.scene.scene.add(Camera.mediaPlane);
-
-        /*potree.loadPointCloud(data.pointcloud, data.name, e => {
-            this.potreeIsLoading = false;
-            this.potree.scene.addPointCloud(e.pointcloud);
-            this.potree.fitToScreen();
-            this.addCamerasToPotree(data.visus);
-        });*/
     }
 
     filterVisibleCamera(visibleCameras) {
@@ -242,14 +199,6 @@ class PotreeViewer extends React.Component {
                 this.potree.scene.scene.add(camera);
             }
         });
-        // if (this.initialMediaName) {
-        //     // according to route, a media should be selected on init
-        //     // (cf componentDidMount)
-        //     const initialCameraIndex = this.mediaCameras.findIndex(camera => {
-        //         return camera.userData.name === this.initialMediaName;
-        //     });
-        //     this.selectMediaCamera(initialCameraIndex);
-        // }
     }
 
     selectMediaCamera(newCamera) {
@@ -352,9 +301,7 @@ class PotreeViewer extends React.Component {
             // tweenPromises.push(this.tweenPosition(this.previous3dPosition));
             // tweenPromises.push(this.tweenQuaternion(this.previous3dQuaternion));
 
-            // this.lastSearch = this.props.location.search;
             this.currentMediaCamera = null;
-            // this.routeToMedia();
             this.setState({
                 media: null,
                 displayMedia: false
@@ -367,18 +314,6 @@ class PotreeViewer extends React.Component {
             });
         }
     }
-
-    // routeToMedia(camera) {
-    //     const siteUrl = '/' + this.props.match.params.siteName;
-    //     let mediaUrl = siteUrl;
-    //     const search = this.lastSearch || '?full=false&infos=false';
-    //     if (camera && camera.userData && camera.userData.name) {
-    //         mediaUrl += `/${camera.userData.name}${search}`;
-    //     }
-    //     if (mediaUrl !== this.props.location.pathname + this.props.location.search) {
-    //         this.props.history.push(mediaUrl);
-    //     }
-    // }
 
     // navigate to a media camera
     // once navigation animation is finished, calls renderMediaPreviewer
@@ -689,7 +624,6 @@ class PotreeViewer extends React.Component {
 
         const imgLeft = imgCenter.x - imgWidth / 2;
         const imgTop = imgCenter.y - imgHeight / 2;
-        // this.routeToMedia(mediaCamera);
         this.navigating = false;
 
         this.setState({
