@@ -38,11 +38,12 @@ class Map extends React.Component {
         if (!this.props.layersState.pending) {
             this._initMap();
         }
+        this.props.setResizeHandler(this.handleResize.bind(this));
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.world.shouldMapResize) {
-            this._resizeMap();
+        if (nextProps.world.previewMode !== this.props.world.previewMode) {
+            this.handleResize();
         }
         if (!nextProps.layersState.pending && this.props.layersState.pending) {
             // layers did just load : init map
@@ -98,7 +99,8 @@ class Map extends React.Component {
             this._addDragndropHandling();
             this._addClickHandling();
             this._addViewportChangeHandling();
-            this._resizeMap();
+            // this._resizeMap();
+            this.handleResize();
         });
     }
 
@@ -294,7 +296,8 @@ class Map extends React.Component {
         }
     }
 
-    _resizeMap() {
+    // _resizeMap() {
+    handleResize() {
         this.map.resize();
     }
 
@@ -432,6 +435,7 @@ Map.propTypes = {
     }).isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object,
+    setResizeHandler: PropTypes.func.isRequired,
     sourcesState: PropTypes.shape({
         pending: PropTypes.bool.isRequired,
         error: PropTypes.object,
@@ -440,8 +444,8 @@ Map.propTypes = {
     world: PropTypes.shape({
         lat: PropTypes.number.isRequired,
         lng: PropTypes.number.isRequired,
-        zoom: PropTypes.number.isRequired,
-        shouldMapResize: PropTypes.bool
+        previewMode: PropTypes.bool,
+        zoom: PropTypes.number.isRequired
     }).isRequired
 };
 

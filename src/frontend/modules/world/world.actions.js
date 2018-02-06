@@ -38,12 +38,6 @@ export function updateWorldState({ lng, lat, zoom, bounds }) {
     };
 }
 
-export function resizeMap() {
-    return {
-        type: 'RESIZE_MAP'
-    };
-}
-
 export function switchPreviewMode() {
     return {
         type: 'SWITCH_PREVIEW_MODE'

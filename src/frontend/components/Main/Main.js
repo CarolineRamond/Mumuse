@@ -30,9 +30,9 @@ class Main extends React.Component {
     }
 
     handleDragFinished() {
-        if (!this.props.mapPreviewMode) {
-            this.props.dispatch(resizeMap());
-        }
+        // if (!this.props.mapPreviewMode) {
+        //     this.props.dispatch(resizeMap());
+        // }
         this.setState({
             isResizing: false
         });
