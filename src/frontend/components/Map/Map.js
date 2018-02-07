@@ -45,7 +45,8 @@ class Map extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.world.previewMode !== this.props.world.previewMode) {
-            this.handleResize();
+            const shouldFitBoundsAfterResize = true;
+            this.handleResize(shouldFitBoundsAfterResize);
         }
         if (!nextProps.layersState.pending && this.props.layersState.pending) {
             // layers did just load : init map
@@ -101,7 +102,6 @@ class Map extends React.Component {
             this._addDragndropHandling();
             this._addClickHandling();
             this._addViewportChangeHandling();
-            // this._resizeMap();
             this.handleResize();
         });
     }
@@ -296,9 +296,12 @@ class Map extends React.Component {
         }
     }
 
-    // _resizeMap() {
-    handleResize() {
+    handleResize(shouldFitBoundsAfterResize) {
+        const bounds = this.map.getBounds();
         this.map.resize();
+        if (shouldFitBoundsAfterResize) {
+            this.map.fitBounds(bounds);
+        }
     }
 
     _reloadSourcesData(nextProps) {
