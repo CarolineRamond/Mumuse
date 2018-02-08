@@ -459,4 +459,4 @@ const ConnectedMap = connect(store => {
     };
 })(Map);
 
-export default ConnectedMap;
+export default withRouter(ConnectedMap);

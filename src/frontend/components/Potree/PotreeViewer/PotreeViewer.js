@@ -168,7 +168,7 @@ class PotreeViewer extends React.Component {
         this.potree.stopRendering();
     }
 
-    initViewer(data) {
+    initViewer() {
         window.viewer = this.potree = new potree.Viewer(this.potreeElement);
         this.potree.setEDLEnabled(false);
         this.potree.setPointSize(3);
@@ -268,11 +268,11 @@ class PotreeViewer extends React.Component {
 
     resetMedia() {
         if (this.state.media !== null) {
-            const z_viewer = new THREE.Vector3(
-                -this.currentMediaCamera.matrix.elements[8],
-                -this.currentMediaCamera.matrix.elements[9],
-                -this.currentMediaCamera.matrix.elements[10]
-            );
+            // const z_viewer = new THREE.Vector3(
+            //     -this.currentMediaCamera.matrix.elements[8],
+            //     -this.currentMediaCamera.matrix.elements[9],
+            //     -this.currentMediaCamera.matrix.elements[10]
+            // );
 
             // this.potree.scene.view.direction = z_viewer;
 
@@ -295,9 +295,9 @@ class PotreeViewer extends React.Component {
 
             const tweenPromises = [];
 
-            const mediaTransformations = this.computeMediaCameraTransformations(
-                this.currentMediaCamera
-            );
+            // const mediaTransformations = this.computeMediaCameraTransformations(
+            //     this.currentMediaCamera
+            // );
             // tweenPromises.push(this.tweenQuaternion(mediaTransformations.mediaViewerQuaternion));
             tweenPromises.push(this.tweenFov(60));
             tweenPromises.push(this.tweenPosition(this.previous3dPosition));

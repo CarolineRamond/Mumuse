@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import SplitPane from 'react-split-pane';
 import MediaViewer from '../Medias/MediaViewer';
 import PointCloudViewer from '../Potree/PointCloudViewer';
 import { actions } from '../../modules';

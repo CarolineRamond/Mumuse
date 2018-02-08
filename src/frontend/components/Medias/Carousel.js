@@ -201,10 +201,10 @@ class Carousel extends React.Component {
 Carousel.propTypes = {
     areMediasLocked: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
+    firstSelectedMedia: PropTypes.object,
     isAdmin: PropTypes.bool,
     medias: PropTypes.arrayOf(PropTypes.object).isRequired,
-    selectFilterPending: PropTypes.bool.isRequired,
-    firstSelectedMedia: PropTypes.object
+    selectFilterPending: PropTypes.bool.isRequired
 };
 
 // Store connection

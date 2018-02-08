@@ -1,12 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import SplitPane from 'react-split-pane';
-import PropTypes from 'prop-types';
-
-import { actions } from '../../modules';
-const { resizeMap } = actions;
-import { selectors } from '../../modules';
-const { getMapPreviewMode } = selectors;
 
 import AuthButton from '../Auth/AuthButton';
 import MainPanel from './MainPanel';
@@ -76,19 +69,4 @@ class Main extends React.Component {
     }
 }
 
-Main.propTypes = {
-    /** redux store dispatch function, provided by connect */
-    dispatch: PropTypes.func.isRequired,
-
-    /** whether map is in preview mode (ie small) or not, provided by connect */
-    mapPreviewMode: PropTypes.bool.isRequired
-};
-
-// Store connection (to dispatch resizeMap action)
-const ConnectedMain = connect(store => {
-    return {
-        mapPreviewMode: getMapPreviewMode(store)
-    };
-})(Main);
-
-export default ConnectedMain;
+export default Main;
