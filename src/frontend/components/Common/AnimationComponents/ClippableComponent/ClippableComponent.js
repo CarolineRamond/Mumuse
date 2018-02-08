@@ -189,20 +189,37 @@ class ClippableComponent extends React.Component {
 }
 
 ClippableComponent.propTypes = {
-    children: PropTypes.object,
+    /** the children elements of the clipped container */
+    children: PropTypes.object.isRequired,
+
+    /** the className to apply to the clipped container */
     className: PropTypes.string,
+
+    /** wether the container should be clipped or not */
     clipped: PropTypes.bool,
+
+    /** dimensions of the clipped container, in px */
     dimensions: PropTypes.shape({
-        top: PropTypes.number,
-        left: PropTypes.number,
-        width: PropTypes.number,
-        height: PropTypes.number,
-        alpha: PropTypes.number,
-        quarter: PropTypes.number
+        top: PropTypes.number.isRequired,
+        left: PropTypes.number.isRequired,
+        width: PropTypes.number.isRequired,
+        height: PropTypes.number.isRequired,
+        parentWidth: PropTypes.number.isRequired,
+        parentHeight: PropTypes.number.isRequired,
+        parentTop: PropTypes.number.isRequired,
+        parentLeft: PropTypes.number.isRequired,
+        alpha: PropTypes.number.isRequired,
+        quarter: PropTypes.number.isRequired
     }),
+
+    /** function called on clip/unclip animation complete */
     onTransitionComplete: PropTypes.func,
+
+    /** clip/unclip animation duration (in ms)*/
     transitionDuration: PropTypes.shape({
+        /** duration of the animation unclip => clip*/
         enter: PropTypes.number,
+        /** duration of the animation clip => unclip */
         exit: PropTypes.number
     })
 };

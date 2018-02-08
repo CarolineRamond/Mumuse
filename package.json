@@ -85,6 +85,7 @@
     "proj4": "^2.4.4",
     "raw-loader": "^0.5.1",
     "react-hot-loader": "^3.0.0-beta.6",
+    "react-styleguidist": "^6.2.3",
     "redux-devtools-extension": "^1.0.0",
     "rimraf": "^2.6.2",
     "style-loader": "^0.13.1",
@@ -99,7 +100,9 @@
     "deploy": "gh-pages -d build",
     "test": "jest --runInBand",
     "test:watch": "npm test -- --watch",
-    "test:coverage": "jest --runInBand --coverage"
+    "test:coverage": "jest --runInBand --coverage",
+    "docs": "styleguidist server",
+    "docs:build": "styleguidist build"
   },
   "main": "gulpfile.js",
   "repository": {

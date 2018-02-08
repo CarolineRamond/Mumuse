@@ -7,7 +7,7 @@ const { switchPreviewMode } = actions;
 
 import styles from './ViewerSwitch.css';
 
-class PreviewSwitch extends React.Component {
+class ViewerSwitch extends React.Component {
     constructor(props) {
         super(props);
         this.switchPreviewMode = this.switchPreviewMode.bind(this);
@@ -24,12 +24,12 @@ class PreviewSwitch extends React.Component {
 
 // Props :
 // * dispatch: redux store dispatch function, provided by connect (required)
-PreviewSwitch.propTypes = {
+ViewerSwitch.propTypes = {
     dispatch: PropTypes.func.isRequired
 };
 
-const ConnectedPreviewSwitch = connect(() => {
+const ConnectedViewerSwitch = connect(() => {
     return {};
-})(PreviewSwitch);
+})(ViewerSwitch);
 
-export default ConnectedPreviewSwitch;
+export default ConnectedViewerSwitch;

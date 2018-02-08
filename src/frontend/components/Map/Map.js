@@ -410,7 +410,6 @@ class Map extends React.Component {
 
 // Props :
 // * dispatch: redux store dispatch function, provided by connect (required)
-// * history : current router history, provided by function withRouter (required)
 // * isAdmin: whether currently authenticated user has admin rights
 // * layersState : map layers, provided by connect (required)
 // * 	pending: whether layers are being retrieved from server
@@ -426,10 +425,8 @@ class Map extends React.Component {
 // * 	lat: current map center's latitude
 // *    lng: current map center's longitude
 // * 	zoom: current map zoom
-// *	shouldMapResize : true if map should resize on componentReceiveNextProps
 Map.propTypes = {
     dispatch: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
     isAdmin: PropTypes.bool,
     layersState: PropTypes.shape({
         pending: PropTypes.bool.isRequired,

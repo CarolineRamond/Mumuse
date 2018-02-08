@@ -8,7 +8,7 @@ const { getSelectedMedias, getSelectedPointCloud } = selectors;
 import { actions } from '../../modules';
 const { initSelectedMedia, initSelectedPointCloud } = actions;
 
-class MainRouter extends React.Component {
+export class MainRouter extends React.Component {
     // on mount component : check current route
     // to see if some data should be loaded
     componentDidMount() {
@@ -130,24 +130,31 @@ class MainRouter extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * history : current router history, provided by withRouter (required)
-// * location : current route location, provided by withRouter
-// * match : current route match, provided by withRouter
-// * selectedMedias : currently selected medias, provided by connect
 MainRouter.propTypes = {
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func.isRequired,
+
+    /** current router history, provided by withRouter */
     history: PropTypes.object.isRequired,
+
+    /** current route location, provided by withRouter */
     location: PropTypes.object,
+
+    /** current route match, provided by withRouter */
     match: PropTypes.object.isRequired,
+
+    /** currently selected medias, provided by connect */
     selectedMedias: PropTypes.arrayOf(PropTypes.object),
+
+    /** currently selected pointcloud, provided by connect */
     selectedPointCloud: PropTypes.object,
+
+    /** current state of the map, provided by connect */
     world: PropTypes.shape({
         lat: PropTypes.number.isRequired,
         lng: PropTypes.number.isRequired,
         zoom: PropTypes.number.isRequired
-    })
+    }).isRequired
 };
 
 const ConnectedMainRouter = connect(store => {

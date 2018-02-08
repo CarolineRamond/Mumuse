@@ -192,34 +192,44 @@ class Form extends React.Component {
     }
 }
 
-// Props :
-// * cancel: cancel function, inherited (required)
-// * error: error string, inherited
-// * fields: form fields, inherited (required)
-// * helper: helper text, inherited
-// * links: other links, inherited
-// * submit: submit function, inherited (required)
-// * success string, inherited
 Form.propTypes = {
+    /** cancel function, inherited */
     cancel: PropTypes.func.isRequired,
+
+    /** error string, inherited */
     error: PropTypes.string,
+
+    /** form fields, inherited */
     fields: PropTypes.objectOf(
         PropTypes.shape({
+            /** label of the field (ex : 'First Name')*/
             label: PropTypes.string.isRequired,
+            /** Type of the field (ex : 'string')*/
             type: PropTypes.string.isRequired,
+            /** whether field is required for form to be valid*/
             required: PropTypes.boolean,
+            /** other field index that should be compared to current field (for 'confirm password' fields for example)*/
             refValue: PropTypes.string,
+            /** field validation fonction, takes field as argument and returns boolean*/
             validate: PropTypes.func.isRequired
         })
     ).isRequired,
+
+    /** helper text, inherited */
     helper: PropTypes.string,
+
+    /** other links, inherited */
     links: PropTypes.arrayOf(
         PropTypes.shape({
             to: PropTypes.string,
             text: PropTypes.string
         })
     ),
+
+    /** submit function, inherited */
     submit: PropTypes.func.isRequired,
+
+    /** success string, inherited */
     success: PropTypes.string
 };
 

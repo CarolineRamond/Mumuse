@@ -13,7 +13,7 @@ const { getAuthUser, getRootUrl } = selectors;
 
 import { authButton } from './auth.css';
 
-class AuthButton extends React.Component {
+export class AuthButton extends React.Component {
     constructor(props) {
         super(props);
         this.login = this.login.bind(this);
@@ -62,19 +62,23 @@ class AuthButton extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * history : current router history, provided by function withRouter (required)
-// * location : current route location, provided by function withRouter
-// * match : current route match, provided by function withRouter
-// * rootUrl: current map url (with position & zoom), provided by @connect (required)
-// * user : currently logged in user (if any), provided by @connect
 AuthButton.propTypes = {
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func.isRequired,
+
+    /** current router history, provided by function withRouter */
     history: PropTypes.object.isRequired,
+
+    /** current route location, provided by function withRouter */
     location: PropTypes.object,
+
+    /** current route match, provided by function withRouter */
     match: PropTypes.object,
+
+    /** current map url (with position & zoom), provided by connect */
     rootUrl: PropTypes.string.isRequired,
+
+    /** currently logged in user (if any), provided by connect */
     user: PropTypes.object
 };
 

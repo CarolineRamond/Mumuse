@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import SplitPane from 'react-split-pane';
 import MediaViewer from '../Medias/MediaViewer';
 import PointCloudViewer from '../Potree/PointCloudViewer';
 import { actions } from '../../modules';
@@ -85,21 +84,22 @@ class Viewer extends React.Component {
     }
 }
 
-// Props :
-// * media: currently selected media (if any),
-//   inherited from MainPanel
-// * pointCloud : currently selected pointcloud (if any),
-//   inherited from MainPanel
-// * previewMode : whether the previewer should be in preview mode (ie small) or not,
-//   inherited from MainPanel
 Viewer.propTypes = {
     dispatch: PropTypes.func.isRequired,
+
+    /** media: currently selected media (if any), provided by connect */
     media: PropTypes.shape({
         properties: PropTypes.object,
         geometry: PropTypes.object
     }),
+
+    /** pointCloud : currently selected pointcloud (if any), provided by connect */
     pointCloud: PropTypes.object,
+
+    /** previewMode : whether the previewer should be in preview mode (ie small) or not, provided by connect */
     previewMode: PropTypes.bool,
+
+    /** function called on mount to transmit handleResize function to component's parent (MainPanel), inherited from MainPanel */
     setResizeHandler: PropTypes.func.isRequired
 };
 
@@ -108,7 +108,6 @@ const ConnectedViewer = connect(store => {
     const selectedPointCloud = getSelectedPointCloud(store);
     return {
         previewMode: getMapPreviewMode(store),
-        showViewer: selectedMedias.length === 1 || selectedPointCloud !== null,
         media: selectedMedias[0],
         pointCloud: selectedPointCloud
     };

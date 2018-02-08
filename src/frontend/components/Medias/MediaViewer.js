@@ -104,7 +104,7 @@ class MediaViewer extends React.Component {
         }
     }
 
-    handleResize(e) {
+    handleResize() {
         context = this.mediaCanvas.getContext('2d');
         this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
         this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;
@@ -234,10 +234,6 @@ class MediaViewer extends React.Component {
     }
 
     render() {
-        const imgUrl = !this.props.previewMode
-            ? this.props.media.properties.preview_url
-            : this.props.media.properties.url;
-
         return (
             <div className={styles.previewMediaContainer}>
                 {this.state.loading && (

@@ -256,6 +256,7 @@ class Slider extends React.Component {
 }
 
 Slider.propTypes = {
+    /** dimensions of the clipped container */
     dimensions: PropTypes.shape({
         alpha: PropTypes.number.isRequired,
         quarter: PropTypes.number.isRequired,
@@ -268,10 +269,18 @@ Slider.propTypes = {
         parentTop: PropTypes.number.isRequired,
         parentLeft: PropTypes.number.isRequired
     }).isRequired,
+
+    /** function to call on slider horizontal move*/
     handleClip: PropTypes.func.isRequired,
+
+    /** function to call on slider's knot vertical move*/
     handleOpacityChange: PropTypes.func.isRequired,
+
+    /** initial values to compute slider & knot positions*/
     init: PropTypes.shape({
+        /** image opacity (to compute knot vertical position)*/
         imgOpacity: PropTypes.number.isRequired,
+        /** image clip (to compute slider horizontal position), in px*/
         imgClip: PropTypes.number.isRequired
     }).isRequired
 };

@@ -49,11 +49,10 @@ class SidePanel extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect
-// * isAdmin: whether authenticated user has admin rights, provided by connect
 SidePanel.propTypes = {
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func,
+    /** whether authenticated user has admin rights, provided by connect */
     isAdmin: PropTypes.bool
 };
 
