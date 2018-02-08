@@ -1,0 +1,23 @@
+.infosPanel {
+	height: 100%;
+	width: 100%;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    padding: 0 10px;
+    pointer-events: auto;
+}
+
+.infosPanel::-webkit-scrollbar {
+	width: 10px;
+	background-color: rgba(0,0,0,0.2);
+}
+
+.infosPanel::-webkit-scrollbar-button {
+	display: none;
+}
+
+.infosPanel::-webkit-scrollbar-thumb {
+	background-color: rgba(255,255,255,0.7);
+}

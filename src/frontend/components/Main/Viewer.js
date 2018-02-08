@@ -22,6 +22,10 @@ class Viewer extends React.Component {
         this.handleResize = this.handleResize.bind(this);
     }
 
+    componentDidMount() {
+        this.props.setResizeHandler(this.handleResize);
+    }
+
     componentWillUnmount() {
         if (this.props.previewMode) {
             this.props.dispatch(switchPreviewMode());
@@ -29,7 +33,14 @@ class Viewer extends React.Component {
     }
 
     handleResize() {
-        this.mediaViewerRef.handleResize();
+        if (this.mediaViewerRef && this.mediaViewerRef.handleResize) {
+            this.mediaViewerRef.handleResize();
+        }
+        if (this.pointCloudViewerRef && this.pointCloudViewerRef.handleResize) {
+            if (this.props.previewMode) {
+                this.pointCloudViewerRef.handleResize();
+            }
+        }
     }
 
     handleDragStarted() {
@@ -45,89 +56,31 @@ class Viewer extends React.Component {
     }
 
     render() {
-        const resizerStyle = {
-            height: '12px',
-            width: '100%',
-            margin: 'auto',
-            background: 'grey',
-            borderLeft: '5px solid #ccc',
-            cursor: 'ns-resize',
-            zIndex: '1'
-        };
-        const resizerStyleHover = Object.assign({}, resizerStyle, {
-            borderLeft: '5px solid blue'
-        });
-
-        // We define default empty pan, because the splitPan component do no work only with one pan.
-        let firstPan = <div />;
-        let secondPan = <div />;
         const isMediaSelected =
             this.props.media && this.props.media.properties.contentType === 'image' ? true : false;
         const isPointCloudSelected = this.props.pointCloud !== null;
-        let defaultSize = '100%';
-        let allowResize = false;
-
-        if (isMediaSelected && !isPointCloudSelected) {
-            firstPan = (
-                <MediaViewer
-                    ref={mediaViewerRef => {
-                        this.mediaViewerRef = mediaViewerRef;
-                    }}
-                    media={this.props.media}
-                    previewMode={this.props.previewMode}
-                />
-            );
-        } else if (isPointCloudSelected && !isMediaSelected) {
-            firstPan = (
-                <PointCloudViewer
-                    pointCloud={this.props.pointCloud}
-                    previewMode={this.props.previewMode}
-                />
-            );
-        } else if (isMediaSelected && isPointCloudSelected) {
-            firstPan = (
-                <MediaViewer
-                    ref={mediaViewerRef => {
-                        this.mediaViewerRef = mediaViewerRef;
-                    }}
-                    media={this.props.media}
-                    previewMode={this.props.previewMode}
-                />
-            );
-            secondPan = (
-                <PointCloudViewer
-                    pointCloud={this.props.pointCloud}
-                    previewMode={this.props.previewMode}
-                />
-            );
-            allowResize = true;
-            defaultSize = '50%';
-        }
-
         return (
-            <SplitPane
-                split="horizontal"
-                defaultSize={defaultSize}
-                allowResize={allowResize}
-                resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
-                onChange={this.handleResize}
-                onDragStarted={this.handleDragStarted}
-                onDragFinished={this.handleDragFinished}
-            >
-                {firstPan}
-                {secondPan}
-            </SplitPane>
-            /*<div>
-            {this.props.media.properties.contentType === 'image'
-                && <MediaViewer media={this.props.media}
-                previewMode={this.props.previewMode}/>
-            }
-            {this.props.pointCloud &&
-                <PointCloudViewer pointCloud={this.props.pointCloud}
-                previewMode={this.props.previewMode} />
-            }
+            <div style={{ height: '100%', width: '100%' }}>
+                {isMediaSelected &&
+                    !isPointCloudSelected && (
+                        <MediaViewer
+                            ref={mediaViewerRef => {
+                                this.mediaViewerRef = mediaViewerRef;
+                            }}
+                            media={this.props.media}
+                            previewMode={this.props.previewMode}
+                        />
+                    )}
+                {isPointCloudSelected && (
+                    <PointCloudViewer
+                        ref={pointCloudViewerRef => {
+                            this.pointCloudViewerRef = pointCloudViewerRef;
+                        }}
+                        pointCloud={this.props.pointCloud}
+                        previewMode={this.props.previewMode}
+                    />
+                )}
             </div>
-            */
         );
     }
 }
@@ -146,7 +99,8 @@ Viewer.propTypes = {
         geometry: PropTypes.object
     }),
     pointCloud: PropTypes.object,
-    previewMode: PropTypes.bool
+    previewMode: PropTypes.bool,
+    setResizeHandler: PropTypes.func.isRequired
 };
 
 const ConnectedViewer = connect(store => {

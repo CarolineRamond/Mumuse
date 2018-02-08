@@ -2,15 +2,7 @@ export const initialState = {
     lng: 0,
     lat: 0,
     zoom: 0,
-    previewMode: false,
-    shouldMapResize: false
-};
-
-export const defaultReducer = state => {
-    return {
-        ...state,
-        shouldMapResize: false
-    };
+    previewMode: false
 };
 
 const worldReducer = (state = initialState, action) => {
@@ -21,25 +13,17 @@ const worldReducer = (state = initialState, action) => {
                 lat: action.payload.lat,
                 lng: action.payload.lng,
                 zoom: action.payload.zoom,
-                bounds: action.payload.bounds,
-                shouldMapResize: false
-            };
-        }
-        case 'RESIZE_MAP': {
-            return {
-                ...state,
-                shouldMapResize: true
+                bounds: action.payload.bounds
             };
         }
         case 'SWITCH_PREVIEW_MODE': {
             return {
                 ...state,
-                previewMode: !state.previewMode,
-                shouldMapResize: true
+                previewMode: !state.previewMode
             };
         }
         default:
-            return defaultReducer(state);
+            return state;
     }
 };
 

@@ -10,7 +10,7 @@ import { selectors } from '../../../modules';
 const { getCurrentUserState, getUpdateUserState } = selectors;
 
 import Form from '../../Common/Form';
-import styles from '../../Common/form.css';
+import styles from '../../Common/Form/form.css';
 
 class UsersEdit extends React.Component {
     constructor(props) {

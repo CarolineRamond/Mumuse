@@ -13,6 +13,16 @@ const potreeReducer = (state = null, action) => {
             }
             return pointCloud;
         }
+        case 'POINTCLOUD_INIT_SELECTED_FULFILLED': {
+            const metaData = action.payload.data.properties ? action.payload.data.properties : null;
+            if (metaData && metaData.visus) {
+                metaData.visus = JSON.stringify(metaData.visus);
+            }
+            const pointCloud = Object.assign({}, state, {
+                metaData: metaData
+            });
+            return pointCloud;
+        }
         default:
             return state;
     }

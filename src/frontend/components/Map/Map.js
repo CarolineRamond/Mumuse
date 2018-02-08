@@ -10,6 +10,8 @@ import PropTypes from 'prop-types';
 
 import { selectors } from '../../modules';
 const { isAuthUserAdmin, getLayersState, getSourcesState } = selectors;
+import { actions } from '../../modules';
+const { updateWorldState } = actions;
 import { mapConfig } from '../../modules';
 
 import styles from './map.css';
@@ -38,11 +40,13 @@ class Map extends React.Component {
         if (!this.props.layersState.pending) {
             this._initMap();
         }
+        this.props.setResizeHandler(this.handleResize.bind(this));
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.world.shouldMapResize) {
-            this._resizeMap();
+        if (nextProps.world.previewMode !== this.props.world.previewMode) {
+            const shouldFitBoundsAfterResize = true;
+            this.handleResize(shouldFitBoundsAfterResize);
         }
         if (!nextProps.layersState.pending && this.props.layersState.pending) {
             // layers did just load : init map
@@ -98,7 +102,7 @@ class Map extends React.Component {
             this._addDragndropHandling();
             this._addClickHandling();
             this._addViewportChangeHandling();
-            this._resizeMap();
+            this.handleResize();
         });
     }
 
@@ -233,14 +237,12 @@ class Map extends React.Component {
     }
 
     _addViewportChangeHandling() {
-        // update window location on moveend
+        // update world state on moveend
         this.map.on('moveend', () => {
-            const splitLocation = this.props.location.pathname.split('/');
             const { lng, lat } = this.map.getCenter();
             const zoom = this.map.getZoom();
-            splitLocation[1] = [lng, lat, zoom].join(',');
-            const newLocation = splitLocation.join('/');
-            this.props.history.replace(newLocation);
+            const bounds = this.map.getBounds();
+            updateWorldState({ lng, lat, zoom, bounds });
         });
 
         // set up events to update viewport counts
@@ -294,8 +296,12 @@ class Map extends React.Component {
         }
     }
 
-    _resizeMap() {
+    handleResize(shouldFitBoundsAfterResize) {
+        const bounds = this.map.getBounds();
         this.map.resize();
+        if (shouldFitBoundsAfterResize) {
+            this.map.fitBounds(bounds);
+        }
     }
 
     _reloadSourcesData(nextProps) {
@@ -432,6 +438,7 @@ Map.propTypes = {
     }).isRequired,
     location: PropTypes.object.isRequired,
     match: PropTypes.object,
+    setResizeHandler: PropTypes.func.isRequired,
     sourcesState: PropTypes.shape({
         pending: PropTypes.bool.isRequired,
         error: PropTypes.object,
@@ -440,8 +447,8 @@ Map.propTypes = {
     world: PropTypes.shape({
         lat: PropTypes.number.isRequired,
         lng: PropTypes.number.isRequired,
-        zoom: PropTypes.number.isRequired,
-        shouldMapResize: PropTypes.bool
+        previewMode: PropTypes.bool,
+        zoom: PropTypes.number.isRequired
     }).isRequired
 };
 

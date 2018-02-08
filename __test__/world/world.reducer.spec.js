@@ -25,28 +25,16 @@ describe('world reducer', () => {
 				zoom: 8,
 				bounds: [44, 30, 45, 31],
 				previewMode: false,
-				shouldMapResize: false
-			});
-		});
-	});
-
-	describe('on RESIZE_MAP', ()=> {
-		it('should ask for map resize (by setting shouldMapResize)', ()=> {
-			const action = actions.resizeMap();
-			expect(reducer(initialState, action)).toEqual({
-				...initialState,
-				shouldMapResize: true
 			});
 		});
 	});
 
 	describe('on SWITCH_PREVIEW_MODE', ()=> {
-		it('should switch previewMode and ask for map resize (by setting shouldMapResize)', ()=> {
+		it('should switch previewMode', ()=> {
 			const action = actions.switchPreviewMode();
 			expect(reducer(initialState, action)).toEqual({
 				...initialState,
 				previewMode: true,
-				shouldMapResize: true
 			});
 		});
 	});
