@@ -38,10 +38,6 @@ class ClippableComponent extends React.Component {
 
             // else : a transition is needed
             // set transitionCompleted to false
-            console.log('START TRANSITION from state ', this.props.clipped);
-            if (!this.props.clipped) {
-                this.clippableElement.style.border = '2px solid blue';
-            }
             this.setState({
                 transitionCompleted: false
             });
@@ -49,7 +45,6 @@ class ClippableComponent extends React.Component {
     }
 
     onTransitionComplete() {
-        console.log('FINISHED TRANSITION to state ', this.props.clipped);
         this.setState({
             transitionCompleted: true
         });
@@ -86,10 +81,9 @@ class ClippableComponent extends React.Component {
                 imgClipRight = this.props.dimensions.width;
                 imgClipBottom = this.props.dimensions.height;
                 imgClipLeft = this.state.imgClip / 100 * this.props.dimensions.width;
-                defaultClip = `rect(${imgClipTop}px, ${imgClipRight}px, ${imgClipBottom}px, 0px)`;
-                // defaultClip = `rect(${-window.innerHeight}px, ${window.innerWidth}px, ${
-                //     window.innerHeight
-                // }px, ${-window.innerWidth}px)`;
+                defaultClip = `rect(${-window.innerHeight}px, ${window.innerWidth}px, ${
+                    window.innerHeight
+                }px, ${-window.innerWidth}px)`;
                 break;
             }
             case 1: {
@@ -97,10 +91,9 @@ class ClippableComponent extends React.Component {
                 imgClipRight = this.props.dimensions.width;
                 imgClipBottom = this.props.dimensions.height;
                 imgClipLeft = 0;
-                defaultClip = `rect(0px, ${imgClipRight}px, ${imgClipBottom}px, ${imgClipLeft}px)`;
-                // defaultClip = `rect(${-window.innerWidth}px, ${window.innerHeight}px, ${
-                //     window.innerWidth
-                // }px, ${-window.innerHeight}px)`;
+                defaultClip = `rect(${-window.innerWidth}px, ${window.innerHeight}px, ${
+                    window.innerWidth
+                }px, ${-window.innerHeight}px)`;
                 break;
             }
             case 2: {
@@ -108,12 +101,9 @@ class ClippableComponent extends React.Component {
                 imgClipRight = (100 - this.state.imgClip) / 100 * this.props.dimensions.width;
                 imgClipBottom = this.props.dimensions.height;
                 imgClipLeft = 0;
-                defaultClip = `rect(${imgClipTop}px, ${
-                    this.props.dimensions.width
-                }px, ${imgClipBottom}px, ${imgClipLeft}px)`;
-                // defaultClip = `rect(${-window.innerHeight}px, ${window.innerWidth}px, ${
-                //     window.innerHeight
-                // }px, ${-window.innerWidth}px)`;
+                defaultClip = `rect(${-window.innerHeight}px, ${window.innerWidth}px, ${
+                    window.innerHeight
+                }px, ${-window.innerWidth}px)`;
                 break;
             }
             case 3: {
@@ -121,12 +111,9 @@ class ClippableComponent extends React.Component {
                 imgClipRight = this.props.dimensions.width;
                 imgClipBottom = (100 - this.state.imgClip) / 100 * this.props.dimensions.height;
                 imgClipLeft = 0;
-                defaultClip = `rect(${imgClipTop}px, ${imgClipRight}px, ${
-                    this.props.dimensions.height
-                }px, ${imgClipLeft}px)`;
-                // defaultClip = `rect(${-window.innerWidth}px, ${window.innerHeight}px, ${
-                //     window.innerWidth
-                // }px, ${-window.innerHeight}px)`;
+                defaultClip = `rect(${-window.innerWidth}px, ${window.innerHeight}px, ${
+                    window.innerWidth
+                }px, ${-window.innerHeight}px)`;
                 break;
             }
             default:
@@ -161,7 +148,7 @@ class ClippableComponent extends React.Component {
                 ...defaultStyle,
                 transition: `all ${this.props.transitionDuration.exit}ms linear`
             },
-            exited: this.state.transitionCompleted ? {} : defaultStyle
+            exited: defaultStyle
         };
 
         return (
@@ -176,9 +163,6 @@ class ClippableComponent extends React.Component {
                         <div
                             className={this.props.className}
                             style={{ ...basisStyle, ...transitionStyles[state] }}
-                            ref={el => {
-                                this.clippableElement = el;
-                            }}
                         >
                             {this.props.children}
                         </div>
