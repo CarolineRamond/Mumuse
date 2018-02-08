@@ -33,8 +33,8 @@ class PotreeViewer extends React.Component {
         // This is used to store camera position, quaternion and potree direction when we use
         // this.potree.scene.camera.matrixAutoUpdate = false
         // (by-passing potree controls) and then modify the camera manually in three.js (so that we can set them back afterwards);
-        // this.previous3dQuaternion = null;
-        // this.previous3dDirection = null;
+        this.previous3dQuaternion = null;
+        this.previous3dPosition = null;
 
         // media selection functions
         this.selectMediaCamera = this.selectMediaCamera.bind(this);
@@ -205,8 +205,8 @@ class PotreeViewer extends React.Component {
         if (this.currentMediaCamera === null) {
             this.potree.inputHandler.removeInputListener(this.potree.controls);
             this.potree.scene.camera.matrixAutoUpdate = false;
-            // this.previous3dPosition = this.potree.scene.view.position.clone();
-            // this.previous3dQuaternion = this.potree.scene.camera.getWorldQuaternion();
+            this.previous3dPosition = this.potree.scene.view.position.clone();
+            this.previous3dQuaternion = this.potree.scene.camera.getWorldQuaternion();
         }
 
         // a camera has been clicked : navigate to this camera if
@@ -273,34 +273,35 @@ class PotreeViewer extends React.Component {
                 -this.currentMediaCamera.matrix.elements[9],
                 -this.currentMediaCamera.matrix.elements[10]
             );
-            this.potree.scene.view.direction = z_viewer;
 
-            const mouse = {
-                x: this.potree.renderer.domElement.clientWidth / 2,
-                y: this.potree.renderer.domElement.clientHeight / 2
-            };
+            // this.potree.scene.view.direction = z_viewer;
 
-            const interserctionMediaCameraPointCloud = this.potree.inputHandler.getMousePointCloudIntersection(
-                mouse
-            );
+            // const mouse = {
+            //     x: this.potree.renderer.domElement.clientWidth / 2,
+            //     y: this.potree.renderer.domElement.clientHeight / 2
+            // };
 
-            if (interserctionMediaCameraPointCloud) {
-                this.potree.scene.view.lookAt(interserctionMediaCameraPointCloud.location);
-            } else {
-                this.potree.scene.view.lookAt(
-                    new THREE.Vector3().addVectors(this.currentMediaCamera.position, z_viewer)
-                );
-            }
+            // const interserctionMediaCameraPointCloud = this.potree.inputHandler.getMousePointCloudIntersection(
+            //     mouse
+            // );
+
+            // if (interserctionMediaCameraPointCloud) {
+            //     this.potree.scene.view.lookAt(interserctionMediaCameraPointCloud.location);
+            // } else {
+            //     this.potree.scene.view.lookAt(
+            //         new THREE.Vector3().addVectors(this.currentMediaCamera.position, z_viewer)
+            //     );
+            // }
 
             const tweenPromises = [];
 
             const mediaTransformations = this.computeMediaCameraTransformations(
                 this.currentMediaCamera
             );
-            tweenPromises.push(this.tweenQuaternion(mediaTransformations.mediaViewerQuaternion));
+            // tweenPromises.push(this.tweenQuaternion(mediaTransformations.mediaViewerQuaternion));
             tweenPromises.push(this.tweenFov(60));
-            // tweenPromises.push(this.tweenPosition(this.previous3dPosition));
-            // tweenPromises.push(this.tweenQuaternion(this.previous3dQuaternion));
+            tweenPromises.push(this.tweenPosition(this.previous3dPosition));
+            tweenPromises.push(this.tweenQuaternion(this.previous3dQuaternion));
 
             this.currentMediaCamera = null;
             this.setState({
