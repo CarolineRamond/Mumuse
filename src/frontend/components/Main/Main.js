@@ -76,12 +76,11 @@ class Main extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * mapPreviewMode : whether map is in preview mode (ie small) or not,
-//   provided by connect (required)
 Main.propTypes = {
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func.isRequired,
+
+    /** whether map is in preview mode (ie small) or not, provided by connect */
     mapPreviewMode: PropTypes.bool.isRequired
 };
 

@@ -41,12 +41,23 @@ const FadeInComponent = props => {
 };
 
 FadeInComponent.propTypes = {
+    /** the children elements of the fading container */
     children: PropTypes.object,
+
+    /** the classname to apply to the fading container */
     className: PropTypes.string,
+
+    /** whether the fading container should be visible */
     display: PropTypes.bool,
+
+    /** function called on fading animation complete*/
     onTransitionComplete: PropTypes.func,
+
+    /** fading animation duration (in ms)*/
     transitionDuration: PropTypes.shape({
+        /** duration of the animation hidden => visible*/
         enter: PropTypes.number,
+        /** duration of the animation visible => hidden*/
         exit: PropTypes.number
     })
 };

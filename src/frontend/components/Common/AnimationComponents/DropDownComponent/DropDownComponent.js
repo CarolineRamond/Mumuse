@@ -41,12 +41,23 @@ const DropDownComponent = props => {
 };
 
 DropDownComponent.propTypes = {
+    /** the children elements of the dropdown container */
     children: PropTypes.object,
+
+    /** the classname to apply to the dropdown container */
     className: PropTypes.string,
+
+    /** whether the dropdown container should be visible (ie collapsed) */
     display: PropTypes.bool,
+
+    /** function called on dropdown animation complete*/
     onTransitionComplete: PropTypes.func,
+
+    /** dropdown animation duration (in ms)*/
     transitionDuration: PropTypes.shape({
+        /** duration of the animation hidden => visible*/
         enter: PropTypes.number,
+        /** duration of the animation visible => hidden*/
         exit: PropTypes.number
     })
 };

@@ -116,25 +116,29 @@ class Login extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * history : current router history, provided by function withRouter (required)
-// * location : current route location, provided by function withRouter (required)
-// * match : current route match, provided by function withRouter
-// * rootUrl: current map url (with position & zoom), provided by @connect (required)
-// * serverState : state of the request LOGIN, provided by connect (required)
-// *    pending: boolean, true if a request is on going
-// *    data: contains success message once the request is finished
-// *    error: contains an error string if user could not login
 Login.propTypes = {
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func.isRequired,
+
+    /** current router history, provided by function withRouter */
     history: PropTypes.object.isRequired,
+
+    /** current route location, provided by function withRouter */
     location: PropTypes.object.isRequired,
+
+    /** current route match, provided by function withRouter */
     match: PropTypes.object,
+
+    /** current map url (with position & zoom), provided by connect */
     rootUrl: PropTypes.string.isRequired,
+
+    /** serverState : state of the request LOGIN, provided by connect */
     serverState: PropTypes.shape({
+        /** true if a request is on going */
         pending: PropTypes.bool,
+        /** contains success message once the request is finished */
         data: PropTypes.object,
+        /** contains an error string if user could not login */
         error: PropTypes.string
     }).isRequired
 };

@@ -127,8 +127,13 @@ const ResizableComponent = props => {
 };
 
 ResizableComponent.propTypes = {
+    /** the children elements of the resizable container */
     children: PropTypes.object,
+
+    /** the classname to apply to the resizable container */
     className: PropTypes.string,
+
+    /** the default dimensions of the resizable container (in px)*/
     dimensions: PropTypes.shape({
         top: PropTypes.number,
         left: PropTypes.number,
@@ -139,10 +144,18 @@ ResizableComponent.propTypes = {
         parentWidth: PropTypes.number,
         parentHeight: PropTypes.number
     }),
+
+    /** whether the resizable container should be in full mode */
     full: PropTypes.bool,
+
+    /** function called on fading animation complete*/
     onTransitionComplete: PropTypes.func,
+
+    /** resize animation duration (in ms)*/
     transitionDuration: PropTypes.shape({
+        /** duration of the animation default => fullscreen*/
         enter: PropTypes.number,
+        /** duration of the animation fullscreen => default */
         exit: PropTypes.number
     })
 };
