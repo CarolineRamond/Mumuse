@@ -17,7 +17,7 @@ class MainPanel extends React.Component {
 
     handleResize() {
         if (this.handleMapResize) {
-            if (!this.props.previewMode) {
+            if (!this.props.mapPreviewMode) {
                 this.handleMapResize();
             }
         }
@@ -27,8 +27,8 @@ class MainPanel extends React.Component {
     }
 
     render() {
-        const mapClass = this.props.previewMode ? styles.preview : styles.main;
-        const viewerClass = this.props.previewMode ? styles.main : styles.preview;
+        const mapClass = this.props.mapPreviewMode ? styles.preview : styles.main;
+        const viewerClass = this.props.mapPreviewMode ? styles.main : styles.preview;
         return (
             <div className={styles.mainContainer}>
                 {/*Map*/}
@@ -38,10 +38,10 @@ class MainPanel extends React.Component {
                             this.handleMapResize = resizeHandler;
                         }}
                     />
-                    {this.props.previewMode && <PreviewSwitch />}
+                    {this.props.mapPreviewMode && <PreviewSwitch />}
                 </div>
                 {/*Timeline*/}
-                {!this.props.previewMode && (
+                {!this.props.mapPreviewMode && (
                     <div className={styles.timelineContainer}>
                         {this.props.showViewer && <div className={styles.dummyPreview} />}
                         <Timeline />
@@ -50,7 +50,7 @@ class MainPanel extends React.Component {
                 {/*Viewer*/}
                 {this.props.showViewer && (
                     <div className={viewerClass}>
-                        {!this.props.previewMode && <PreviewSwitch />}
+                        {!this.props.mapPreviewMode && <PreviewSwitch />}
                         <Viewer
                             setResizeHandler={resizeHandler => {
                                 this.handleViewerResize = resizeHandler;
@@ -63,15 +63,14 @@ class MainPanel extends React.Component {
     }
 }
 
-// Props :
-// * previewMode: whether map is in preview mode or in full mode, provided by connect (required)
-// * selectedMedias: array of selected media features, provided by connect (required)
-// * selectedPointCloud: currently selected point cloud, provided by connect (required)
-// * showViewer : whether viewer should be shown
-//  (ie if there is exactly one selected media or a selected point cloud)
 MainPanel.propTypes = {
-    previewMode: PropTypes.bool.isRequired,
+    /** whether map is in preview mode or in full mode, provided by connect */
+    mapPreviewMode: PropTypes.bool.isRequired,
+
+    /** function called on mount to transmit handleResize function to component's parent (Main), inherited from Main */
     setResizeHandler: PropTypes.func.isRequired,
+
+    /**  whether viewer should be shown (ie if there is exactly one selected media or a selected point cloud) */
     showViewer: PropTypes.bool.isRequired
 };
 
@@ -80,7 +79,7 @@ const MainPanelConnected = connect(store => {
     const selectedMedias = getSelectedMedias(store);
     const selectedPointCloud = getSelectedPointCloud(store);
     return {
-        previewMode: getMapPreviewMode(store),
+        mapPreviewMode: getMapPreviewMode(store),
         showViewer: selectedMedias.length === 1 || selectedPointCloud !== null
     };
 })(MainPanel);
