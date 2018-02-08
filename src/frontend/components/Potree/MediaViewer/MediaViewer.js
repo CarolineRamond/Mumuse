@@ -148,7 +148,10 @@ class MediaViewer extends React.Component {
     handleResizeTransitionComplete() {
         this.shouldToggleFullScreen = false;
         if (this.shouldToggleClip) {
-            this.toggleClip();
+            setTimeout(() => {
+                this.toggleClip();
+            }, 1000); // TEST
+            // this.toggleClip(); // GOOD
         } else {
             this.handleFullScreenTransitionComplete();
         }
@@ -157,12 +160,12 @@ class MediaViewer extends React.Component {
     render() {
         const isCanvasInteractive = this.state.full && !this.state.fullScreenTransitionOnGoing;
         const resizeTransitionDuration = {
-            enter: 400,
-            exit: 400
+            enter: 2000,
+            exit: 2000
         };
         const clipTransitionDuration = {
-            enter: 400,
-            exit: 400
+            enter: 2000,
+            exit: 2000
         };
         return (
             <div>
