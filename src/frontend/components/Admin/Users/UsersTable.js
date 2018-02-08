@@ -130,17 +130,17 @@ class UsersTable extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * usersListState : state of the request FETCH_USERS_LIST, provided by connect, required
-// *    pending: boolean, true if a request is on going
-// *    data: contains the full list of users once the request is finished
-// *    error: contains an error string if users could not be retrieved
 UsersTable.propTypes = {
+    /** redux store dispatch function, provided by connect  */
     dispatch: PropTypes.func.isRequired,
+
+    /** state of the request FETCH\_USERS\_LIST, provided by connect */
     usersListState: PropTypes.shape({
+        /** true if a request is on going */
         pending: PropTypes.bool,
+        /** contains the full list of users once the request is finished */
         data: PropTypes.arrayOf(PropTypes.object),
+        /** contains an error string if users could not be retrieved */
         error: PropTypes.string
     }).isRequired
 };

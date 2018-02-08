@@ -8,7 +8,7 @@ const { getSelectedMedias, getSelectedPointCloud } = selectors;
 import { actions } from '../../modules';
 const { initSelectedMedia, initSelectedPointCloud } = actions;
 
-class MainRouter extends React.Component {
+export class MainRouter extends React.Component {
     // on mount component : check current route
     // to see if some data should be loaded
     componentDidMount() {

@@ -20,13 +20,14 @@ class Users extends React.Component {
     }
 }
 
-// Props :
-// * history : current router history, inherited from Route component
-// * location : current route location, inherited from Route component (required)
-// * match : current route match, inherited from Route component
 Users.propTypes = {
+    /** current router history, inherited from Route component */
     history: PropTypes.object,
+
+    /** current route location, inherited from Route component */
     location: PropTypes.object.isRequired,
+
+    /** current route match, inherited from Route component */
     match: PropTypes.object
 };
 export default Users;

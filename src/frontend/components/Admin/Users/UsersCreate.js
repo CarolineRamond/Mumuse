@@ -187,23 +187,28 @@ class UsersCreate extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * history : current router history, inherited from Route component (required)
-// * location : current route location, inherited from Route component
-// * match : current route match, inherited from Route component
-// * serverState : state of the request CREATE_USER, provided by connect (required)
-// *    pending: boolean, true if a request is on going
-// *    data: contains newly created user (if any) once the request is finished
-// *    error: contains an error string if user could not be created
 UsersCreate.propTypes = {
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func.isRequired,
+
+    /** current router history, inherited from Route component */
     history: PropTypes.object.isRequired,
-    location: PropTypes.object,
+
+    /** current route location, inherited from Route component */
+    location: PropTypes.object.isRequired,
+
+    /** current route match, inherited from Route component */
     match: PropTypes.object,
+
+    /** state of the request CREATE\_USER, provided by connect */
     serverState: PropTypes.shape({
+        /** true if a request is on going */
         pending: PropTypes.bool,
+
+        /**  contains newly created user (if any) once the request is finished */
         data: PropTypes.object,
+
+        /** contains an error string if user could not be created */
         error: PropTypes.string
     }).isRequired
 };

@@ -107,24 +107,29 @@ class Admin extends React.Component {
     }
 }
 
-// Props :
-// * authUserState : state of the request FETCH_AUTH_USER, provided by connect, required
-// *	pending: boolean, true if a request is on going
-// *	data: contains currently authenticated user (if any) once the request is finished
-// *	error: contains an error string if no authenticated user was retrieved
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * history: current router history, inherited from Route component (required)
-// * location: current route location, inherited from Route component (required)
-// * match: current route match, inherited from Route component
 Admin.propTypes = {
+    /** state of the request FETCH\_AUTH\_USER, provided by connect */
     authUserState: PropTypes.shape({
+        /** true if a request is on going */
         pending: PropTypes.bool,
+
+        /**  contains currently authenticated user (if any) once the request is finished */
         data: PropTypes.object,
+
+        /** contains an error string if no authenticated user was retrieved */
         error: PropTypes.string
     }).isRequired,
+
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func.isRequired,
+
+    /** current router history, inherited from Route component */
     history: PropTypes.object.isRequired,
+
+    /** current route location, inherited from Route component */
     location: PropTypes.object.isRequired,
+
+    /** current route match, inherited from Route component */
     match: PropTypes.object
 };
 

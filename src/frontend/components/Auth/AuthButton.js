@@ -13,7 +13,7 @@ const { getAuthUser, getRootUrl } = selectors;
 
 import { authButton } from './auth.css';
 
-class AuthButton extends React.Component {
+export class AuthButton extends React.Component {
     constructor(props) {
         super(props);
         this.login = this.login.bind(this);

@@ -139,32 +139,36 @@ class UsersEdit extends React.Component {
     }
 }
 
-// Props :
-// * currentUserState : state of the request FETCH_USER, provided by connect (required)
-// *    pending: boolean, true if a request is on going
-// *    data: contains the currently edited user once the request is finished
-// *    error: contains an error string if currently edited user could not be retrieved
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * history : current router history, inherited from Route component (required)
-// * location : current route location, inherited from Route component
-// * match : current route match, inherited from Route component (required)
-// * updateUserState : state of the request UPDATE_USER, provided by connect (required)
-// *    pending: boolean, true if a request is on going
-// *    data: contains the newly edited user once the request is finished
-// *    error: contains an error string if user could not be edited
 UsersEdit.propTypes = {
+    /** state of the request FETCH_USER, provided by connect  */
     currentUserState: PropTypes.shape({
+        /** boolean, true if a request is on going */
         pending: PropTypes.bool,
+        /** contains the currently edited user once the request is finished */
         data: PropTypes.object,
+        /** contains an error string if currently edited user could not be retrieved */
         error: PropTypes.string
     }).isRequired,
+
+    /** redux store dispatch function, provided by connect  */
     dispatch: PropTypes.func.isRequired,
+
+    /** current router history, inherited from Route component  */
     history: PropTypes.object.isRequired,
+
+    /** current route location, inherited from Route component */
     location: PropTypes.object,
+
+    /** current route match, inherited from Route component  */
     match: PropTypes.object.isRequired,
+
+    /** state of the request UPDATE_USER, provided by connect  */
     updateUserState: PropTypes.shape({
+        /** boolean, true if a request is on going */
         pending: PropTypes.bool,
+        /** contains the newly edited user once the request is finished */
         data: PropTypes.object,
+        /** contains an error string if user could not be edited */
         error: PropTypes.string
     }).isRequired
 };

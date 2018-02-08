@@ -20,13 +20,14 @@ class Auth extends React.Component {
     }
 }
 
-// Props :
-// * history : current router history, inherited from Route component
-// * location : current route location, inherited from Route component (required)
-// * match : current route match, inherited from Route component
 Auth.propTypes = {
+    /** current router history, inherited from Route component */
     history: PropTypes.object,
-    location: PropTypes.object.isRequired,
+
+    /** current route location, inherited from Route component */
+    location: PropTypes.object,
+
+    /** current route match, inherited from Route component */
     match: PropTypes.object
 };
 
