@@ -141,12 +141,12 @@ class ClippableComponent extends React.Component {
         const transitionStyles = {
             entering: {
                 ...clippedStyle,
-                transition: `all ${this.props.transitionDuration.enter}ms linear`
+                transition: `all ${this.props.transitionDuration.enter}ms ease-out`
             },
             entered: clippedStyle,
             exiting: {
                 ...defaultStyle,
-                transition: `all ${this.props.transitionDuration.exit}ms linear`
+                transition: `all ${this.props.transitionDuration.exit}ms ease-in`
             },
             exited: defaultStyle
         };
