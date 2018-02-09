@@ -9,7 +9,7 @@ module.exports = {
   		sections: [
         {
           name: 'Store',
-          content: 'docs/redux.md'
+          content: 'docs/store.md'
         },
         {
           name: 'Actions',
@@ -22,13 +22,37 @@ module.exports = {
       ]
   	}, 
   	{
-  		name: 'Components',
+  		name: 'React',
   		content: 'docs/components.md',
   		sections: [
   			{
   				name: 'Common Components',
   				components: 'src/frontend/components/Common/**/[A-Z]*.js'
-  			}
+  			},
+        {
+          name: 'Admin Components',
+          components: 'src/frontend/components/Admin/**/[A-Z]*.js'
+        },
+        {
+          name: 'Authentication Components',
+          components: 'src/frontend/components/Auth/**/[A-Z]*.js'
+        },
+        {
+          name: 'Main Layout Components',
+          components: 'src/frontend/components/Main/**/[A-Z]*.js'
+        },
+        {
+          name: 'Map-related Components',
+          components: 'src/frontend/components/Map/**/[A-Z]*.js'
+        },
+        {
+          name: 'Media-related Components',
+          components: 'src/frontend/components/Medias/**/[A-Z]*.js'
+        },
+        {
+          name: 'Potree-related Components',
+          components: 'src/frontend/components/Potree/**/[A-Z]*.js'
+        }
   		]
   	}
   ],

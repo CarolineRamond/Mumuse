@@ -1,4 +1,3 @@
-/** This is authUser reducer*/
 export const initialState = {
     pending: false,
     data: null,
