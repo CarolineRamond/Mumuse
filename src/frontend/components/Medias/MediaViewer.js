@@ -251,10 +251,13 @@ class MediaViewer extends React.Component {
 }
 
 MediaViewer.propTypes = {
+    /** currently selected media, inherited from Viewer */
     media: PropTypes.shape({
         properties: PropTypes.object,
         geometry: PropTypes.object
     }).isRequired,
+
+    /** whether MediaViewer is in preview mode, inherited from Viewer */
     previewMode: PropTypes.bool
 };
 

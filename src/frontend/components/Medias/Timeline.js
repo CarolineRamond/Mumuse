@@ -56,16 +56,17 @@ class Timeline extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * minDate : minimum date of the visible medias, provided by connect (required)
-// * value : current slider value, provided by connect (required)
-// * viewportMediaCount : ready to display viewport media count
-//   (string with ~ if approximative count) ; provided by connect (required)
 Timeline.propTypes = {
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func.isRequired,
+
+    /** minimum date of the visible medias, provided by connect */
     minDate: PropTypes.number.isRequired,
+
+    /** current slider value, provided by connect */
     value: PropTypes.number.isRequired,
+
+    /** ready to display viewport media count (string with ~ if approximative count) ; provided by connect */
     viewportMediaCount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
 };
 
