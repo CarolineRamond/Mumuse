@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+/** This is action FETCH AUTH USER */
 export const fetchAuthUser = () => {
     return {
         type: 'FETCH_AUTH_USER',
@@ -7,6 +8,7 @@ export const fetchAuthUser = () => {
     };
 };
 
+/** This is action LOGIN */
 export const login = form => {
     return {
         type: 'LOGIN',
@@ -14,6 +16,7 @@ export const login = form => {
     };
 };
 
+/** This is action RESET LOGIN STATE */
 export const resetLoginState = () => {
     return {
         type: 'LOGIN_RESET'

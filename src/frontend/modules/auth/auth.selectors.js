@@ -1,3 +1,4 @@
+/** This is auth user selectors */
 export const getAuthUser = state => {
     return state.authUser.data;
 };

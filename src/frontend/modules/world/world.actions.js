@@ -1,3 +1,4 @@
+/** This is action UPDATE WORLD STATE */
 export function updateWorldState({ lng, lat, zoom, bounds }) {
     return {
         type: 'UPDATE_WORLD_STATE',
@@ -38,12 +39,14 @@ export function updateWorldState({ lng, lat, zoom, bounds }) {
     };
 }
 
+/** This is action SWITCH PREVIEW MODE */
 export function switchPreviewMode() {
     return {
         type: 'SWITCH_PREVIEW_MODE'
     };
 }
 
+/** This is action TOGGLE LAYER */
 export const toggleLayer = ({ layerId }) => {
     return {
         type: 'TOGGLE_LAYER',

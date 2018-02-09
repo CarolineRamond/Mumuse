@@ -1,3 +1,4 @@
+/** This is auth reducer */
 import { combineReducers } from 'redux';
 import authUserReducer from './reducers/auth.authUser.reducer';
 import loginReducer from './reducers/auth.login.reducer';

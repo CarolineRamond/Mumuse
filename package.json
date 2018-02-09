@@ -22,6 +22,8 @@
   "dependencies": {
     "@iconem/iconem-potree": "0.0.23",
     "axios": "^0.17.0",
+    "esdoc": "^1.0.4",
+    "esdoc-standard-plugin": "^1.0.0",
     "exif-parser": "^0.1.12",
     "mapbox-gl": "^0.41.0",
     "prop-types": "^15.6.0",
@@ -102,7 +104,7 @@
     "test:watch": "npm test -- --watch",
     "test:coverage": "jest --runInBand --coverage",
     "docs": "styleguidist server",
-    "docs:build": "styleguidist build"
+    "docs:build": "documentation build --document-exported src/frontend/modules/**/*.selectors.js -f md --markdown-toc=false > docs/selectors.md && documentation build --document-exported src/frontend/modules/**/*.actions.js -f md --markdown-toc=false > docs/actions.md && styleguidist build"
   },
   "main": "gulpfile.js",
   "repository": {
