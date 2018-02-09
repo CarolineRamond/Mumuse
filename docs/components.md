@@ -1,3 +1,5 @@
+General layout : 
+
 ```html
 <App>
 	<Admin (if url="/admin")>

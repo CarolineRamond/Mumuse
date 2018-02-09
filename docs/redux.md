@@ -11,28 +11,27 @@ A module exports :
 
 Reducers, actions, selectors & mapConfigs are all merged and exposed in modules/index.js.
 
-/!\ A module that has layers & sources as parts of its state must implement the methods getLayersState() & getSourcesState() in its selectors.
+**/!\ A module that has layers & sources as parts of its state must implement the methods getLayersState() & getSourcesState() in its selectors /!\\**
 (this way, layers & sources will be exposed and added by map)
 
 
 ### Store organization
 
 
-```html
+```js static
 {
 	world: {
 		lng: Number, // map longitude as given by mapbox
 		lat: Number, // map latitude as given by mapbox
 		zoom: Number, // map zoom as given by mapbox,
 		bounds: [LngLat], // map bounds as given by mapbox (LngLat is a mapbox class)
-		previewMode: Bool, // is map in preview mode (ie small)
-	/!\	shouldMapResize: Bool // whether map should resize on next react render
+		previewMode: Boolean // is map in preview mode (ie small)
 	},
 	medias: {
-		sources: {Source}, // medias-related map sources 
-		layers: {Layer}, // medias-related map layers 
+		sources: ServerResource( data = { sourceId => Source }), // medias-related map sources 
+		layers: ServerResource( data = { layerId => Layer }), // medias-related map layers 
 		timeline: Number, // timeline value => to put into map state (not only relative to medias)
-		selectFilterPending: Bool // whether a select filter is begin applied (useful to count medias)
+		selectFilterPending: Boolean // whether a select filter is begin applied (useful to count medias)
 	},
 	auth: {
 		authUser: ServerResource, // authenticated user data
@@ -50,7 +49,7 @@ Reducers, actions, selectors & mapConfigs are all merged and exposed in modules/
 		deleteUsers: ServerResource // delete user data (admin only)
 	},
 	rastertiles: {
-		pending: Bool, // true if rastertiles are being fetched from server
+		pending: Boolean, // true if rastertiles are being fetched from server
 		error: String, // server error
 		layers: {Layer}, // rastertile layers
 		sources: {Source} // rastertile sources
@@ -58,24 +57,43 @@ Reducers, actions, selectors & mapConfigs are all merged and exposed in modules/
 }
 ```
 
+### ServerResource
+
+```js static
+ServerResource: {
+	pending: Boolean, // whether a server request is on going
+	error: String, // server error
+	data: Object // returned server data
+}
+```
+
+Example : 
+```js static
+authUser: {
+	pending // whether authenticated user is being retrieved
+	error // if an error occured when retrieving authenticated user
+	data // authenticated user
+}
+```
+
 ### Layers
 
-```html
+```js static
 Layer : {
 	// cf mapbox layer definition : same attributes +
 	metadata: {
 		name: String, // layer display name
 		priority: Number, // layer priority (equivalent to "z-index")
-		isLocked: Bool, // if locked, user can't interact with this layer 
+		isLocked: Boolean, // if locked, user can't interact with this layer 
 						// (ex: medias-layer is locked where there are too much medias)
-		isShown: Bool, // whether layer is displayed on map
-		wasShownBeforeLock: Bool // used on unlock to know if layer should be displayed again
-		isInBounds: Bool // optional, whether layer is in map bounds (used for rastertilesets)
+		isShown: Boolean, // whether layer is displayed on map
+		wasShownBeforeLock: Boolean, // used on unlock to know if layer should be displayed again
+		isInBounds: Boolean, // optional, whether layer is in map bounds (used for rastertilesets)
 	/!\ didChange: { // used to update map layer on next react render
 			paint: {paintProperties->paintValue} // paint properties (cf mapbox) that will change on next react render,
 			layout: {layoutProperties-> layoutValue} // layout properties (cf mapbox) that will change on next react render,
-			filter: Bool // whether map should update layer's filter on next react render,
-			zoom: Bool // whether map should update layer's min/maxzoom on next react render
+			filter: Boolean, // whether map should update layer's filter on next react render,
+			zoom: Boolean // whether map should update layer's min/maxzoom on next react render
 		}
 	}
 }
@@ -83,36 +101,17 @@ Layer : {
 
 ### Sources
 
-```html
+```js static
 Source : {
 	// cf mapbox source definition : same attributes +
 	metadata: {
-	/!\ didChange: Bool // true if source shall be reloaded on next react render
-		loaded: Bool // true when source is added to map
+	/!\ didChange: Boolean, // true if source shall be reloaded on next react render
+		loaded: Boolean, // true when source is added to map
 		renderedFeatures: [Features] // optional, currently rendered features (used for medias)
-		selectFilterPending: Bool // used only for selected-medias source, true if a select filter is being applied,
+		selectFilterPending: Boolean, // used only for selected-medias source, true if a select filter is being applied,
 		stillFiltered: [Features] // used only for selected-medias source, features that are still filtered on medias-source
 								  // (empty when no select filter is being applied)
 	}
-}
-```
-
-### ServerResource
-
-```html
-ServerResource: {
-	pending: Bool // whether a server request is on going
-	error: String // server error
-	data: Object // returned server data
-}
-```
-
-Example : 
-```html
-authUser: {
-	pending // whether authenticated user is being retrieved
-	error // if an error occured when retrieving authenticated user
-	data // authenticated user
 }
 ```
 
@@ -132,7 +131,7 @@ As redux actions are functions, they are not serializable. Thus, they **should n
 
 ### Clicks
 
-```html
+```js static
 click: [{
 	layerIds: [String] // the layers to detect click on,
 	action: Function // the action to be fired on click
@@ -141,7 +140,7 @@ click: [{
 
 ### Dragndrop
 
-```html
+```js static
 dragndrop: [{
     layerId: String // the layer containing draggable features
     mousedown: Function, // the action to be fired on mousedown
@@ -152,13 +151,13 @@ dragndrop: [{
 
 ### Moveend
 
-```html
+```js static
 moveend: [Function] // array of actions to be fired on moveend
 ```
 
 ### Update currently rendered features
 
-```html
+```js static
 renderedFeatures: [{
     layerIds: [String], // layers containing the features to count
     source: String, // associated source id
