@@ -5,7 +5,7 @@ import { IconButton } from 'react-toolbox/lib/button';
 import PropTypes from 'prop-types';
 
 import { actions } from '../../modules';
-const { toggleLayer } = actions;
+const { toggleLayer, togglePointCloud } = actions;
 import { selectors } from '../../modules';
 const { getRasterLayersInBounds, getVisiblePointClouds } = selectors;
 
@@ -24,9 +24,11 @@ class Layers extends React.Component {
         this.props.dispatch(toggleLayer({ layerId }));
     }
 
-    render() {
-        console.log(this.props.visiblePointClouds);
+    togglePointCloud(pointCloudId) {
+        this.props.dispatch(togglePointCloud({ pointCloudId }));
+    }
 
+    render() {
         const mappedMediaLayers = [];
         const mappedRasterLayers = [];
         // const mappedPointCloudLayers = [];
@@ -96,21 +98,15 @@ class Layers extends React.Component {
         // });
 
         forIn(this.props.visiblePointClouds, feature => {
-            // let icon = 'visibility_off';
-            // if (layer.metadata.isLocked) {
-            //     icon = 'lock';
-            // } else if (layer.metadata.isShown) {
-            //     icon = 'visibility';
-            // }
+            const icon = feature.metadata.isShown ? 'visibility' : 'visibility_off';
             mappedPointClouds.push(
                 <div key={feature.properties._id} className={styles.layer}>
-                    {/*<IconButton
-                                            disabled={layer.metadata.isLocked}
-                                            onClick={() => {
-                                                this.toggleLayer(layerId);
-                                            }}
-                                            icon={icon}
-                                        />*/}
+                    <IconButton
+                        onClick={() => {
+                            this.togglePointCloud(feature.properties._id);
+                        }}
+                        icon={icon}
+                    />
                     {feature.properties.name}
                 </div>
             );

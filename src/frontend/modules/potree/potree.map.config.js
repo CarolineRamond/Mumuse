@@ -10,6 +10,7 @@ export default {
     dragndrop: [],
     renderedFeatures: [
         {
+            shouldQueryOnSource: true,
             layerIds: ['pointClouds-layer'],
             source: 'pointClouds-source',
             uniqueKey: '_id',

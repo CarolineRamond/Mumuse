@@ -46,3 +46,21 @@ export const updateFeaturesPointCloud = ({ features, zoom }) => {
         }
     };
 };
+
+/** This is action TOGGLE POINT CLOUD */
+export const togglePointCloud = ({ pointCloudId }) => {
+    return {
+        type: 'POINTCLOUD_TOGGLE',
+        payload: {
+            pointCloudId
+        },
+        meta: {
+            validator: {
+                pointCloudId: {
+                    func: _pointCloudId => typeof _pointCloudId === 'string',
+                    msg: 'pointCloudId must be a string'
+                }
+            }
+        }
+    };
+};
