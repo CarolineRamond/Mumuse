@@ -113,7 +113,7 @@ class Layers extends React.Component {
         });
 
         return (
-            <div>
+            <div style={{ overflowY: 'scroll' }}>
                 <h3>Medias</h3>
                 <div>{mappedMediaLayers}</div>
                 {/* {mappedPointCloudLayers.length > 0 && (

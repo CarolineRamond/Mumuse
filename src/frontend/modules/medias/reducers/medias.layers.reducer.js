@@ -30,7 +30,7 @@ export const mediasLayerInitialState = {
         isLocked: true,
         isShown: false,
         wasShownBeforeLock: true,
-        priority: 5000
+        priority: 6000
     }
 };
 
@@ -220,7 +220,7 @@ export const gridLayerInitialState = {
         isLocked: false,
         isShown: true,
         wasShownBeforeLock: true,
-        priority: 4000,
+        priority: 5000,
         before: 'medias-layer'
     }
 };
@@ -291,7 +291,7 @@ export const selectedMediasLayerInitialState = {
         isLocked: false,
         isShown: true,
         wasShownBeforeLock: true,
-        priority: 6000
+        priority: 7000
     }
 };
 
@@ -340,7 +340,7 @@ export const selectedMedias3DLayerInitialState = {
         isLocked: false,
         isShown: true,
         wasShownBeforeLock: true,
-        priority: 6000
+        priority: 7000
     }
 };
 

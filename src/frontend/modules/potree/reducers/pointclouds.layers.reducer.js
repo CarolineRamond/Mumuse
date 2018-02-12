@@ -24,6 +24,7 @@ export const pointCloudsLayerInitialState = {
         'fill-opacity': 0.6
     },
     metadata: {
+        priority: 4000,
         name: 'Pointcloud',
         isLocked: false,
         isShown: true,

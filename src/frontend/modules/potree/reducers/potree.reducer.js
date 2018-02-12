@@ -1,17 +1,14 @@
 const potreeReducer = (state = null, action) => {
     switch (action.type) {
         case 'POINTCLOUD_CLICK': {
-            let pointCloud;
-            if (action.payload.features.length) {
-                pointCloud = Object.assign({}, state, {
-                    metaData: action.payload.features.length
-                        ? action.payload.features[0].properties
-                        : null
-                });
+            if (action.payload.pointCloud) {
+                return {
+                    ...state,
+                    metaData: action.payload.pointCloud.properties
+                };
             } else {
-                pointCloud = null;
+                return null;
             }
-            return pointCloud;
         }
         case 'POINTCLOUD_INIT_SELECTED_FULFILLED': {
             const metaData = action.payload.data.properties ? action.payload.data.properties : null;
@@ -22,14 +19,6 @@ const potreeReducer = (state = null, action) => {
                 metaData: metaData
             });
             return pointCloud;
-        }
-        case 'MEDIAS_CLICK': {
-            if (action.payload.pointCloud) {
-                return Object.assign({}, state, {
-                    metaData: action.payload.pointCloud.properties
-                });
-            }
-            return state;
         }
         default:
             return state;
