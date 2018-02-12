@@ -1,4 +1,11 @@
-/** This is action UPDATE WORLD STATE */
+/** This will fill store.world with current map location.<br>
+ * It is called each time map is moved by user
+ * @param {Object} params - current map params, as provided by mapbox
+ * @param {number} params.lng - longitude
+ * @param {number} params.lat - latitude
+ * @param {number} params.zoom - zoom
+ * @param {Array} params.bounds - bounds
+ */
 export function updateWorldState({ lng, lat, zoom, bounds }) {
     return {
         type: 'UPDATE_WORLD_STATE',
@@ -39,14 +46,19 @@ export function updateWorldState({ lng, lat, zoom, bounds }) {
     };
 }
 
-/** This is action SWITCH PREVIEW MODE */
+/** This will toggle store.previewMode (when previewMode=true, map fills the small part of the screen).<br>
+ * It is called each time user clicks on PreviewSwitch component.
+ */
 export function switchPreviewMode() {
     return {
         type: 'SWITCH_PREVIEW_MODE'
     };
 }
 
-/** This is action TOGGLE LAYER */
+/** This will toggle a layer's visibility.<br>
+ * @param {Object} params
+ * @param {string} params.layerId - id of the layer to toggle
+ */
 export const toggleLayer = ({ layerId }) => {
     return {
         type: 'TOGGLE_LAYER',

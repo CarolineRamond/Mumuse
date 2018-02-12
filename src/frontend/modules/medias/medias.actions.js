@@ -11,6 +11,14 @@ const isArrayOfFeatures = x => {
     return false;
 };
 
+/** This will toggle media selection/deselection.<br>
+ * It is called each time a user clicks on the map
+ * and each time they click on a media in the Carousel component.
+ * @param {Object} params
+ * @param {Array} params.features - array of media features that were clicked (can be empty)
+ * @param {boolean} params.ctrlKey - whether user was pressing ctrl key when they clicked
+ * @param {boolean} params.isAdmin - whether user has admin rights
+ */
 export const clickMedias = ({ features, ctrlKey, isAdmin }) => {
     return {
         type: 'MEDIAS_CLICK',
@@ -30,6 +38,13 @@ export const clickMedias = ({ features, ctrlKey, isAdmin }) => {
     };
 };
 
+/** This will toggle media selection/deselection.<br>
+ * Used instead of clickMedias when only the media id is known.
+ * @param {Object} params
+ * @param {string} params.mediaId - the id of the media to select
+ * @param {boolean} params.ctrlKey - whether user was pressing ctrl key when they clicked
+ * @param {boolean} params.isAdmin - whether user has admin rights
+ */
 export const selectMediaById = ({ mediaId, ctrlKey, isAdmin }) => {
     return {
         type: 'MEDIAS_SELECT_BY_ID',
@@ -49,6 +64,13 @@ export const selectMediaById = ({ mediaId, ctrlKey, isAdmin }) => {
     };
 };
 
+/** This will toggle media selection/deselection.<br>
+ * Used instead of clickMedias when only the media id is known.
+ * @param {Object} params
+ * @param {string} params.mediaId - the id of the media to select
+ * @param {boolean} params.ctrlKey - whether user was pressing ctrl key when they clicked
+ * @param {boolean} params.isAdmin - whether user has admin rights
+ */
 export const startDragMapMedias = ({ features, isAdmin }) => {
     return {
         type: 'MEDIAS_MAP_START_DRAG',

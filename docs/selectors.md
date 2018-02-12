@@ -134,6 +134,12 @@ This is auth user selectors
 
 -   `state`  
 
+## getVisiblePointClouds
+
+**Parameters**
+
+-   `state`  
+
 ## getLogoutState
 
 **Parameters**
