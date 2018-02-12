@@ -11,6 +11,7 @@ const defaultReducer = combineReducers({
 
 const potreeReducer = (state, action) => {
     switch (action.type) {
+        case 'MEDIAS_CLICK':
         case 'POINTCLOUD_CLICK': {
             const pointCloudFeatures = [];
             const mediaFeatures = [];
