@@ -18,12 +18,24 @@ export const pointCloudsSourceInitialState = {
     metadata: {
         didChange: false,
         selectFilterPending: false,
-        stillFiltered: []
+        stillFiltered: [],
+        renderedFeatures: []
     }
 };
 
 export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, action) => {
     switch (action.type) {
+        case 'POINTCLOUD_UPDATE_FEATURES': {
+            // store rendered features in source's metadata
+            return {
+                ...state,
+                metadata: {
+                    ...state.metadata,
+                    renderedFeatures: action.payload.features,
+                    didChange: false
+                }
+            };
+        }
         case 'LOGOUT_FULFILLED':
         case 'FETCH_USER_FULFILLED':
         case 'LOGIN_FULFILLED':

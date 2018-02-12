@@ -17,3 +17,7 @@ export const getSourcesState = state => {
 export const getSelectedPointCloud = state => {
     return state.pointCloud;
 };
+
+export const getVisiblePointClouds = state => {
+    return state.sources['pointClouds-source'].metadata.renderedFeatures;
+};

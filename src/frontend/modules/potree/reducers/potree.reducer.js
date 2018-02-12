@@ -24,6 +24,11 @@ const potreeReducer = (state = null, action) => {
             return pointCloud;
         }
         case 'MEDIAS_CLICK': {
+            if (action.payload.pointCloud) {
+                return Object.assign({}, state, {
+                    metaData: action.payload.pointCloud.properties
+                });
+            }
             return state;
         }
         default:

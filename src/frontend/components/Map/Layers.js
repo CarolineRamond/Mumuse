@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { actions } from '../../modules';
 const { toggleLayer } = actions;
 import { selectors } from '../../modules';
-const { getRasterLayersInBounds } = selectors;
+const { getRasterLayersInBounds, getVisiblePointClouds } = selectors;
 
 import styles from './layers.css';
 
@@ -25,9 +25,12 @@ class Layers extends React.Component {
     }
 
     render() {
+        console.log(this.props.visiblePointClouds);
+
         const mappedMediaLayers = [];
         const mappedRasterLayers = [];
-        const mappedPointCloudLayers = [];
+        // const mappedPointCloudLayers = [];
+        const mappedPointClouds = [];
 
         forIn(this.props.mediaLayers, (layer, layerId) => {
             let icon = 'visibility_off';
@@ -71,23 +74,44 @@ class Layers extends React.Component {
             );
         });
 
-        forIn(this.props.pointCloudLayers, (layer, layerId) => {
-            let icon = 'visibility_off';
-            if (layer.metadata.isLocked) {
-                icon = 'lock';
-            } else if (layer.metadata.isShown) {
-                icon = 'visibility';
-            }
-            mappedPointCloudLayers.push(
-                <div key={layerId} className={styles.layer}>
-                    <IconButton
-                        disabled={layer.metadata.isLocked}
-                        onClick={() => {
-                            this.toggleLayer(layerId);
-                        }}
-                        icon={icon}
-                    />
-                    {layer.metadata.name}
+        // forIn(this.props.pointCloudLayers, (layer, layerId) => {
+        //     let icon = 'visibility_off';
+        //     if (layer.metadata.isLocked) {
+        //         icon = 'lock';
+        //     } else if (layer.metadata.isShown) {
+        //         icon = 'visibility';
+        //     }
+        //     mappedPointCloudLayers.push(
+        //         <div key={layerId} className={styles.layer}>
+        //             <IconButton
+        //                 disabled={layer.metadata.isLocked}
+        //                 onClick={() => {
+        //                     this.toggleLayer(layerId);
+        //                 }}
+        //                 icon={icon}
+        //             />
+        //             {layer.metadata.name}
+        //         </div>
+        //     );
+        // });
+
+        forIn(this.props.visiblePointClouds, feature => {
+            // let icon = 'visibility_off';
+            // if (layer.metadata.isLocked) {
+            //     icon = 'lock';
+            // } else if (layer.metadata.isShown) {
+            //     icon = 'visibility';
+            // }
+            mappedPointClouds.push(
+                <div key={feature.properties._id} className={styles.layer}>
+                    {/*<IconButton
+                                            disabled={layer.metadata.isLocked}
+                                            onClick={() => {
+                                                this.toggleLayer(layerId);
+                                            }}
+                                            icon={icon}
+                                        />*/}
+                    {feature.properties.name}
                 </div>
             );
         });
@@ -96,13 +120,18 @@ class Layers extends React.Component {
             <div>
                 <h3>Medias</h3>
                 <div>{mappedMediaLayers}</div>
-                {mappedPointCloudLayers.length > 0 && (
+                {/* {mappedPointCloudLayers.length > 0 && (
                     <div>
                         <hr />
                         <h3>Point clouds</h3>
                         <div>{mappedPointCloudLayers}</div>
                     </div>
-                )}
+                )}*/}
+                <div>
+                    <hr />
+                    <h3>Point clouds</h3>
+                    <div>{mappedPointClouds}</div>
+                </div>
                 {mappedRasterLayers.length > 0 && (
                     <div>
                         <hr />
@@ -123,10 +152,13 @@ Layers.propTypes = {
     mediaLayers: PropTypes.object.isRequired,
 
     /** map {layerId -> layer} containing pointCloud-related layers, provided by connect */
-    pointCloudLayers: PropTypes.object.isRequired,
+    // pointCloudLayers: PropTypes.object.isRequired,
 
     /** map {layerId -> layer} containing rasterlayers, provided by connect */
-    rasterLayers: PropTypes.object.isRequired
+    rasterLayers: PropTypes.object.isRequired,
+
+    /** array of currently visible pointCloud features, provided by connect */
+    visiblePointClouds: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 // Store connection
@@ -134,7 +166,8 @@ const ConnectedLayers = connect(store => {
     return {
         mediaLayers: store.medias.layers,
         rasterLayers: getRasterLayersInBounds(store),
-        pointCloudLayers: store.potree.layers
+        // pointCloudLayers: store.potree.layers,
+        visiblePointClouds: getVisiblePointClouds(store)
     };
 })(Layers);
 

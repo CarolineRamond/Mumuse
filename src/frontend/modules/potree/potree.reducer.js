@@ -22,14 +22,12 @@ const potreeReducer = (state, action) => {
                 }
             }, null);
             if (pointCloudId) {
-                console.log('FOUND POINT CLOUD ID : ', pointCloudId);
-                console.log(state);
-                // const pointCloud = state.sources['pointClouds-source'].data.features.find(
-                //     feature => {
-                //         return feature.properties._id === pointCloudId;
-                //     }
-                // );
-                // console.log(pointCloud);
+                const pointCloud = state.sources[
+                    'pointClouds-source'
+                ].metadata.renderedFeatures.find(feature => {
+                    return feature.properties._id.toString() === pointCloudId.toString();
+                });
+                action.payload.pointCloud = pointCloud;
                 return defaultReducer(state, action);
             } else {
                 return defaultReducer(state, action);
