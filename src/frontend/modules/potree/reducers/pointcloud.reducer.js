@@ -1,6 +1,5 @@
 const potreeReducer = (state = null, action) => {
     switch (action.type) {
-        case 'MEDIAS_CLICK':
         case 'POINTCLOUD_CLICK': {
             if (action.payload.pointCloud) {
                 return {

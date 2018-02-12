@@ -13,7 +13,7 @@ const {
     getSelectedMedias
 } = selectors;
 import { actions } from '../../modules';
-const { clickMedias } = actions;
+const { clickMedias, clickPointCloud } = actions;
 
 import styles from './carousel.css';
 
@@ -105,6 +105,13 @@ class Carousel extends React.Component {
         const features = [media];
         this.props.dispatch(
             clickMedias({
+                features: features,
+                ctrlKey: ctrlKey,
+                isAdmin: this.props.isAdmin
+            })
+        );
+        this.props.dispatch(
+            clickPointCloud({
                 features: features,
                 ctrlKey: ctrlKey,
                 isAdmin: this.props.isAdmin
