@@ -1,45 +1,49 @@
 import reducer
-    from "../../../src/frontend/modules/potree/reducers/potree.reducer"
+    from "../../../src/frontend/modules/potree/potree.reducer"
 import { actions } from "../../../src/frontend/modules"
 
 describe('potree reducer', () => {
-    it('should add clickedPointClouds to metaData when no media was previously selected', () => {
+    it('should transmit a pointCloud to pointcloud reducer when a point cloud is clicked', () => {
         const features = [{
             type: "Feature",
+            layer: { id: "pointClouds-layer" },
             geometry: { type: "Polygon" },
             properties: { _id: "5a0e9dab75b85544253e4fb2" }
         }];
 
         const action = actions.clickPointCloud({ features });
 
-        expect(reducer({}, action)).toEqual({
+        expect(reducer({}, action).pointCloud).toEqual({
             "metaData": {                      
                 "_id": "5a0e9dab75b85544253e4fb2"      
             }                                        
         });
     });
 
-    it('should replace clickedPointCloud in data when a media was previously selected (no multiselection)', () => {
-        const features1 = [{
+    it('should transmit a pointCloud to pointcloud reducer when a media belonging to a visible point cloud is clicked', () => {
+        const visiblePointCloudFeatures = [{
             type: "Feature",
-            geometry: { type: "Point" },
-            properties: { _id: "5a0e9dab75b85544253e4fb2" }
-        }]
-        const features2 = [{
-            type: "Feature",
-            geometry: { type: "Point" },
-            properties: { _id: "5a0e9dab75b85544253e4fb3" }
+            layer: { id: "pointClouds-layer" },
+            geometry: { type: "Polygon" },
+            properties: { _id: "5a0e9dab75b85544253e4fb2", attr: "value" }
         }];
 
-        const action1 = actions.clickPointCloud({ features: features1 });
-        const action2 = actions.clickPointCloud({ features: features2 });
-
+        const action1 = actions.updateFeaturesPointCloud({ features: visiblePointCloudFeatures });
         const initialState = reducer({}, action1);
 
-        expect(reducer(initialState, action2)).toEqual({
-            metaData: {
-                "_id": "5a0e9dab75b85544253e4fb3" 
-            }
+        const mediaFeatures = [{
+            type: "Feature",
+            layer: { id: "medias-layer" },
+            properties: { _id: "5a0e9dab75b85544253e4fb3", potreedataSet: "5a0e9dab75b85544253e4fb2" }
+        }];
+
+        const action2 = actions.clickPointCloud({ features: mediaFeatures });
+
+        expect(reducer(initialState, action2).pointCloud).toEqual({
+            "metaData": {                      
+                "_id": "5a0e9dab75b85544253e4fb2",
+                attr: "value"    
+            }                                        
         });
     });
 });

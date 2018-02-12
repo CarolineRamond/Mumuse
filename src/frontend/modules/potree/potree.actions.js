@@ -28,19 +28,15 @@ export const initSelectedPointCloud = ({ pointCloudId }) => {
     };
 };
 
-export const updateFeaturesPointCloud = ({ features, zoom }) => {
+export const updateFeaturesPointCloud = ({ features }) => {
     return {
         type: 'POINTCLOUD_UPDATE_FEATURES',
-        payload: { features, zoom },
+        payload: { features },
         meta: {
             validator: {
                 features: {
                     func: _features => isArrayOfFeatures(_features),
                     msg: 'features must be an array of mapbox features'
-                },
-                zoom: {
-                    func: _zoom => typeof _zoom === 'number',
-                    msg: 'zoom must be a number'
                 }
             }
         }
