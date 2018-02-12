@@ -23,6 +23,9 @@ const potreeReducer = (state = null, action) => {
             });
             return pointCloud;
         }
+        case 'MEDIAS_CLICK': {
+            return state;
+        }
         default:
             return state;
     }
