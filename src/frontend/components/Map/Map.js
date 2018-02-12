@@ -35,7 +35,7 @@ function getUniqueFeatures(array, comparatorProperty) {
     return uniqueFeatures;
 }
 
-class Map extends React.Component {
+export class Map extends React.Component {
     componentDidMount() {
         if (!this.props.layersState.pending) {
             this._initMap();
@@ -408,43 +408,51 @@ class Map extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * isAdmin: whether currently authenticated user has admin rights
-// * layersState : map layers, provided by connect (required)
-// * 	pending: whether layers are being retrieved from server
-// *    error: contains an array of error strings if some layers could not be retrieved from server
-// * 	data: contains a map { layerId -> layer } once layers are retrieved from server
-// * location : current route location, provided by function withRouter
-// * match : current route match, provided by function withRouter (required)
-// * sources : map sources, provided by connect (required)
-// * 	pending: whether sources are being retrieved from server
-// *    error: contains an array of error strings if some sources could not be retrieved from server
-// * 	data: contains a map { sourceId -> source } once sources are retrieved from server
-// * world : current world state, provided by connect (required)
-// * 	lat: current map center's latitude
-// *    lng: current map center's longitude
-// * 	zoom: current map zoom
 Map.propTypes = {
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func.isRequired,
+
+    /** whether currently authenticated user has admin rights */
     isAdmin: PropTypes.bool,
+
+    /** map layers, provided by connect */
     layersState: PropTypes.shape({
+        /** whether layers are being retrieved from server */
         pending: PropTypes.bool.isRequired,
+        /** contains an array of error strings if some layers could not be retrieved from server */
         error: PropTypes.object,
+        /** contains a map { layerId -> layer } once layers are retrieved from server */
         data: PropTypes.object
     }).isRequired,
+
+    /** current route location, provided by function withRouter */
     location: PropTypes.object.isRequired,
+
+    /** current route match, provided by function withRouter */
     match: PropTypes.object,
+
+    /** function called on mount to transmit handleResize function to component's parent (Main), inherited from Main */
     setResizeHandler: PropTypes.func.isRequired,
+
+    /** map sources, provided by connect */
     sourcesState: PropTypes.shape({
+        /** whether sources are being retrieved from server */
         pending: PropTypes.bool.isRequired,
+        /** contains an array of error strings if some sources could not be retrieved from server */
         error: PropTypes.object,
+        /** contains a map { sourceId -> source } once sources are retrieved from server */
         data: PropTypes.object
     }).isRequired,
+
+    /** current world state, provided by connect */
     world: PropTypes.shape({
+        /** map center's latitude */
         lat: PropTypes.number.isRequired,
+        /** map center's longitude */
         lng: PropTypes.number.isRequired,
+        /** whether map is in preview mode */
         previewMode: PropTypes.bool,
+        /** map zoom */
         zoom: PropTypes.number.isRequired
     }).isRequired
 };

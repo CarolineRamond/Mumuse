@@ -190,20 +190,23 @@ class Carousel extends React.Component {
     }
 }
 
-// Props :
-// * areMediasLocked: whether medias layer is locked (user should zoom more)
-//   provided by connect (required)
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * isAdmin : whether currently authenticated user has admin rights, provided by connect
-// * medias: array of visible media features, provided by connect (required)
-// * selectFilterPending : whether a filter is being applied on medias layers
-//   (if so, carousel thumbnails should not reload)
 Carousel.propTypes = {
+    /** whether medias layer is locked (user should zoom more), provided by connect */
     areMediasLocked: PropTypes.bool.isRequired,
+
+    /** redux store dispatch function, provided by connect */
     dispatch: PropTypes.func.isRequired,
+
+    /** first selected media feature */
     firstSelectedMedia: PropTypes.object,
+
+    /** whether currently authenticated user has admin rights, provided by connect */
     isAdmin: PropTypes.bool,
+
+    /** array of visible media features, provided by connect */
     medias: PropTypes.arrayOf(PropTypes.object).isRequired,
+
+    /** whether a filter is being applied on medias layers (if so, carousel thumbnails should not reload) */
     selectFilterPending: PropTypes.bool.isRequired
 };
 

@@ -155,28 +155,26 @@ class MediasUploader extends React.Component {
     }
 }
 
-// Props :
-// * dispatch: redux store dispatch function, provided by connect (required)
-// * position: current map position, provided by connect (required)
-//   (by default, medias will be uploaded with this position)
-// * uploadMediasState : state of the request UPLOAD_MEDIAS, provided by connect (required)
-// *    pending: boolean or number, assigned if a request is on going
-//      (index corresponds to the index of the on going request in case of several medias)
-// *    data: contains successfully uploaded files once the request is finished
-// *    error: object { files, errors } containing the files that could not be uploaded
-//      and the associated error messages.
 MediasUploader.propTypes = {
+    /** redux store dispatch function, provided by connect*/
     dispatch: PropTypes.func.isRequired,
+
+    /** current map position, provided by connect (by default, medias will be uploaded with this position)*/
     position: PropTypes.shape({
         lng: PropTypes.number.isRequired,
         lat: PropTypes.number.isRequired
     }).isRequired,
+
+    /** state of the request UPLOAD_MEDIAS, provided by connect*/
     uploadMediasState: PropTypes.shape({
+        /** assigned if a request is on going (number corresponds to the index of the on going request in case of several medias)*/
         pending: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]).isRequired,
+        /** object { files, errors } containing the files that could not be uploaded and the associated error messages*/
         error: PropTypes.shape({
             files: PropTypes.arrayOf(PropTypes.object),
             messages: PropTypes.arrayOf(PropTypes.string)
         }),
+        /** contains successfully uploaded files once the request is finished*/
         data: PropTypes.arrayOf(PropTypes.object)
     }).isRequired
 };
