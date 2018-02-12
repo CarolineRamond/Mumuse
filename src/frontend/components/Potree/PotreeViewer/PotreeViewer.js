@@ -100,6 +100,20 @@ class PotreeViewer extends React.Component {
                         this.potreeIsLoading = false;
                         this.potree.scene.addPointCloud(e.pointcloud);
                         this.potree.fitToScreen();
+                        requestAnimationFrame(() => {
+                            this.previous3dPosition = this.potree.scene.camera.position;
+                            this.previous3dQuaternion = this.potree.scene.camera.getWorldQuaternion();
+                            if (this.props.selectedMedias[0]) {
+                                const mediaCamera = this.potree.scene.scene.children.find(
+                                    mesh =>
+                                        mesh.userData.mediaId ===
+                                        this.props.selectedMedias[0].properties._id
+                                );
+                                if (mediaCamera) {
+                                    this.selectMediaCamera(mediaCamera);
+                                }
+                            }
+                        });
                     }
                 );
                 const pointCloudMedias = JSON.parse(nextProps.pointCloud.metaData.visus);
@@ -112,6 +126,7 @@ class PotreeViewer extends React.Component {
         const currentMedia = this.props.selectedMedias[0];
         const nextMedia = nextProps.selectedMedias[0];
         if (
+            !this.potreeIsLoading &&
             this.props.pointCloud.metaData &&
             nextMedia &&
             (!currentMedia || currentMedia.properties._id !== nextMedia.properties._id)
