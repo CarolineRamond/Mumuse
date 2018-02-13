@@ -151,10 +151,10 @@ Layers.propTypes = {
     pointCloudLayers: PropTypes.object.isRequired,
 
     /** map {layerId -> layer} containing rasterlayers, provided by connect */
-    rasterLayers: PropTypes.object.isRequired,
+    rasterLayers: PropTypes.object.isRequired
 
     /** array of currently visible pointCloud features, provided by connect */
-    visiblePointClouds: PropTypes.arrayOf(PropTypes.object).isRequired
+    // visiblePointClouds: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 // Store connection
@@ -162,8 +162,8 @@ const ConnectedLayers = connect(store => {
     return {
         mediaLayers: store.medias.layers,
         rasterLayers: getRasterLayersInBounds(store),
-        pointCloudLayers: store.potree.layers,
-        visiblePointClouds: getVisiblePointClouds(store)
+        pointCloudLayers: store.potree.layers
+        // visiblePointClouds: getVisiblePointClouds(store)
     };
 })(Layers);
 
