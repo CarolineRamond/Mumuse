@@ -10,6 +10,13 @@ const isArrayOfFeatures = x => {
     return false;
 };
 
+export const fetchPointClouds = () => {
+    return {
+        type: 'POINTCLOUD_FETCH',
+        payload: axios.get('/potreeviewer/potreedataset')
+    };
+};
+
 export const clickPointCloud = ({ features, ctrlKey, isAdmin }) => {
     return {
         type: 'POINTCLOUD_CLICK',
@@ -25,21 +32,6 @@ export const initSelectedPointCloud = ({ pointCloudId }) => {
     return {
         type: 'POINTCLOUD_INIT_SELECTED',
         payload: axios.get('/potreeviewer/potreedataset/' + pointCloudId)
-    };
-};
-
-export const updateFeaturesPointCloud = ({ features }) => {
-    return {
-        type: 'POINTCLOUD_UPDATE_FEATURES',
-        payload: { features },
-        meta: {
-            validator: {
-                features: {
-                    func: _features => isArrayOfFeatures(_features),
-                    msg: 'features must be an array of mapbox features'
-                }
-            }
-        }
     };
 };
 

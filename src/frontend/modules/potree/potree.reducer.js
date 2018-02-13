@@ -32,11 +32,9 @@ const potreeReducer = (state, action) => {
                     return feature.properties.potreedataSet || id;
                 }, null);
                 if (pointCloudId) {
-                    pointCloud = state.sources['pointClouds-source'].metadata.renderedFeatures.find(
-                        item => {
-                            return item.properties._id.toString() === pointCloudId.toString();
-                        }
-                    );
+                    pointCloud = state.sources['pointClouds-source'].data.features.find(item => {
+                        return item.properties._id.toString() === pointCloudId.toString();
+                    });
                 }
             }
             action.payload.pointCloud = pointCloud;

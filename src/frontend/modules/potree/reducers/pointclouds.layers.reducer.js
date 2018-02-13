@@ -17,7 +17,7 @@ export const pointCloudsLayerInitialState = {
     layout: {
         visibility: 'visible'
     },
-    filter: ['all', ['!in', '_id']],
+    filter: ['==', '_isShown', true],
     paint: {
         'fill-outline-color': '#22a37a ',
         'fill-color': '#22a37a ',
@@ -66,24 +66,6 @@ export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, ac
             }
             return defaultLayerReducer(state);
         }
-        case 'POINTCLOUD_TOGGLE':
-            const currentFilter = state.filter;
-            const filteredIds = currentFilter[1].slice(2, currentFilter[1].length) || [];
-            const pointCloudIndex = filteredIds.indexOf(action.payload.pointCloudId);
-            if (pointCloudIndex > -1) {
-                filteredIds.splice(pointCloudIndex, 1);
-            } else {
-                filteredIds.push(action.payload.pointCloudId);
-            }
-            const newFilter = ['all', ['!in', '_id'].concat(filteredIds)];
-            return {
-                ...state,
-                filter: newFilter,
-                metadata: {
-                    ...state.metadata,
-                    didChange: { filter: newFilter }
-                }
-            };
         case 'POINTCLOUD_UPDATE_FEATURES':
         case 'POINTCLOUD_GRID_UPDATE_FEATURES':
         case 'POINTCLOUD_TIMELINE_UPDATE':

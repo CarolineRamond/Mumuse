@@ -2,6 +2,12 @@ import { combineReducers } from 'redux';
 const baseUrl =
     window.location.origin !== 'null' ? window.location.origin : 'http://localhost:8080';
 
+const _boundsIntersect = (boundsA, boundsB) => {
+    const intersectLng = !(boundsA[2] < boundsB[0] || boundsA[0] > boundsB[2]);
+    const intersectLat = !(boundsA[3] < boundsB[1] || boundsA[1] > boundsB[3]);
+    return intersectLng && intersectLat;
+};
+
 export const defaultSourceReducer = state => {
     return {
         ...state,
@@ -14,25 +20,83 @@ export const defaultSourceReducer = state => {
 
 export const pointCloudsSourceInitialState = {
     type: 'geojson',
-    data: `${baseUrl}/potreeviewer/potreedataset`,
+    data: {
+        type: 'FeatureCollection',
+        features: []
+    },
     metadata: {
         didChange: false,
         selectFilterPending: false,
-        stillFiltered: [],
-        renderedFeatures: []
+        stillFiltered: []
     }
 };
 
 export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, action) => {
     switch (action.type) {
-        case 'POINTCLOUD_UPDATE_FEATURES': {
-            // store rendered features in source's metadata
+        case 'POINTCLOUD_FETCH_FULFILLED': {
+            const newFeatures = action.payload.data.features.map(feature => {
+                return {
+                    ...feature,
+                    properties: {
+                        ...feature.properties,
+                        _isShown: true
+                    }
+                };
+            });
             return {
                 ...state,
+                data: {
+                    ...state.data,
+                    features: newFeatures
+                },
                 metadata: {
                     ...state.metadata,
-                    renderedFeatures: action.payload.features,
-                    didChange: false
+                    didChange: true
+                }
+            };
+        }
+        case 'POINTCLOUD_TOGGLE': {
+            const newFeatures = state.data.features.map(feature => {
+                return {
+                    ...feature,
+                    properties: {
+                        ...feature.properties,
+                        _isShown:
+                            feature.properties._id === action.payload.pointCloudId
+                                ? !feature.properties._isShown
+                                : feature.properties._isShown
+                    }
+                };
+            });
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    features: newFeatures
+                },
+                metadata: {
+                    ...state.metadata,
+                    didChange: true
+                }
+            };
+        }
+        case 'UPDATE_WORLD_STATE': {
+            const mapBounds = action.payload.bounds;
+            const newFeatures = state.data.features.map(feature => {
+                return {
+                    ...feature,
+                    properties: {
+                        ...feature.properties,
+                        // _isInBounds: _boundsIntersect(feature.properties.bounds, mapBounds)
+                        _isInBounds: true
+                    }
+                };
+            });
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    features: newFeatures
                 }
             };
         }
