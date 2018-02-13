@@ -80,7 +80,7 @@ const MainPanelConnected = connect(store => {
     const selectedPointCloud = getSelectedPointCloud(store);
     return {
         mapPreviewMode: getMapPreviewMode(store),
-        showViewer: selectedMedias.length === 1 || selectedPointCloud !== null
+        showViewer: selectedMedias.length === 1 || selectedPointCloud !== undefined
     };
 })(MainPanel);
 

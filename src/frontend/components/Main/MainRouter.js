@@ -58,8 +58,8 @@ export class MainRouter extends React.Component {
             (!nextProps.selectedPointCloud && this.props.selectedPointCloud) ||
             (nextProps.selectedPointCloud &&
                 this.props.selectedPointCloud &&
-                nextProps.selectedPointCloud.metaData._id !==
-                    this.props.selectedPointCloud.metaData._id);
+                nextProps.selectedPointCloud.properties._id !==
+                    this.props.selectedPointCloud.properties._id);
         const didMediaChange =
             (nextProps.selectedMedias[0] && !this.props.selectedMedias[0]) ||
             (!nextProps.selectedMedias[0] && this.props.selectedMedias[0]) ||
@@ -73,7 +73,7 @@ export class MainRouter extends React.Component {
         if (
             this.state.initialPointcloudId &&
             nextProps.selectedPointCloud &&
-            nextProps.selectedPointCloud.metaData._id === this.state.initialPointcloudId
+            nextProps.selectedPointCloud.properties._id === this.state.initialPointcloudId
         ) {
             this.setState(
                 {
@@ -108,7 +108,7 @@ export class MainRouter extends React.Component {
 
             // second part of route : /3d/${pointCloudId} (optional)
             if (nextProps.selectedPointCloud) {
-                newRoute += `/3d/${nextProps.selectedPointCloud.metaData._id}`;
+                newRoute += `/3d/${nextProps.selectedPointCloud.properties._id}`;
             }
 
             // third part of route : /media/${mediaId} (optional)

@@ -1,15 +1,5 @@
 import axios from 'axios';
 
-const isArrayOfFeatures = x => {
-    if (Array.isArray(x)) {
-        const typeCheck = x.reduce((bool, item) => {
-            return bool && item.constructor.name === 'Feature';
-        }, true);
-        return typeCheck;
-    }
-    return false;
-};
-
 export const fetchPointClouds = () => {
     return {
         type: 'POINTCLOUD_FETCH',
@@ -17,13 +7,42 @@ export const fetchPointClouds = () => {
     };
 };
 
-export const clickPointCloud = ({ features, ctrlKey, isAdmin }) => {
+export const clickPointCloud = ({ features }) => {
+    const pointCloudFeatures = [];
+    const mediaFeatures = [];
+    let pointCloudId = null;
+    features.map(feature => {
+        if (feature.layer.id === 'pointClouds-layer') {
+            pointCloudFeatures.push(feature);
+        } else {
+            mediaFeatures.push(feature);
+        }
+    });
+    if (pointCloudFeatures.length > 0) {
+        pointCloudId = pointCloudFeatures[0].properties._id;
+    } else if (mediaFeatures.length > 0) {
+        pointCloudId = mediaFeatures.reduce((value, feature) => {
+            return feature.properties.potreedataSet || value;
+        }, null);
+    }
     return {
-        type: 'POINTCLOUD_CLICK',
+        type: 'POINTCLOUD_SELECT_BY_ID',
         payload: {
-            features: features,
-            ctrlKey: ctrlKey,
-            isAdmin: isAdmin
+            pointCloudId: pointCloudId
+        }
+    };
+};
+
+/** This will toggle pointcloud selection/deselection.<br>
+ * Used instead of clickPointcloud when only the pointcloud id is known.
+ * @param {Object} params
+ * @param {string} params.pointClouId - the id of the pointCloud to select (can be undefined)
+ */
+export const selectPointCloudById = ({ pointCloudId }) => {
+    return {
+        type: 'POINTCLOUD_SELECT_BY_ID',
+        payload: {
+            pointCloudId: pointCloudId
         }
     };
 };

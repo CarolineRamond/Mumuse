@@ -15,7 +15,9 @@ export const getSourcesState = state => {
 };
 
 export const getSelectedPointCloud = state => {
-    return state.pointCloud;
+    return state.sources['pointClouds-source'].data.features.find(feature => {
+        return feature.properties._isSelected;
+    });
 };
 
 export const getVisiblePointClouds = state => {

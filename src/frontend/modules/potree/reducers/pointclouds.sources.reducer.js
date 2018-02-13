@@ -55,6 +55,24 @@ export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, 
                 }
             };
         }
+        case 'POINTCLOUD_SELECT_BY_ID': {
+            const newFeatures = state.data.features.map(feature => {
+                return {
+                    ...feature,
+                    properties: {
+                        ...feature.properties,
+                        _isSelected: feature.properties._id === action.payload.pointCloudId
+                    }
+                };
+            });
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    features: newFeatures
+                }
+            };
+        }
         case 'POINTCLOUD_TOGGLE': {
             const newFeatures = state.data.features.map(feature => {
                 return {
