@@ -17,12 +17,14 @@ export const pointCloudsLayerInitialState = {
     layout: {
         visibility: 'visible'
     },
+    filter: ['all', ['!in', '_id']],
     paint: {
         'fill-outline-color': '#22a37a ',
         'fill-color': '#22a37a ',
         'fill-opacity': 0.6
     },
     metadata: {
+        priority: 4000,
         name: 'Pointcloud',
         isLocked: false,
         isShown: true,
@@ -34,10 +36,10 @@ export const pointCloudsLayerInitialState = {
 // (pointwise pointclouds representation, originated from geojson source)
 export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, action) => {
     switch (action.type) {
-        case 'POINTCLOUDS_INIT_SELECTED_FULFILLED': {
+        case 'POINTCLOUD_INIT_SELECTED_FULFILLED': {
             return defaultLayerReducer(state);
         }
-        case 'POINTCLOUDS_CLICK': {
+        case 'POINTCLOUD_CLICK': {
             return {
                 ...state,
                 metadata: {
@@ -64,9 +66,27 @@ export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, ac
             }
             return defaultLayerReducer(state);
         }
-        case 'POINTCLOUDS_UPDATE_FEATURES':
-        case 'POINTCLOUDS_GRID_UPDATE_FEATURES':
-        case 'POINTCLOUDS_TIMELINE_UPDATE':
+        case 'POINTCLOUD_TOGGLE':
+            const currentFilter = state.filter;
+            const filteredIds = currentFilter[1].slice(2, currentFilter[1].length) || [];
+            const pointCloudIndex = filteredIds.indexOf(action.payload.pointCloudId);
+            if (pointCloudIndex > -1) {
+                filteredIds.splice(pointCloudIndex, 1);
+            } else {
+                filteredIds.push(action.payload.pointCloudId);
+            }
+            const newFilter = ['all', ['!in', '_id'].concat(filteredIds)];
+            return {
+                ...state,
+                filter: newFilter,
+                metadata: {
+                    ...state.metadata,
+                    didChange: { filter: newFilter }
+                }
+            };
+        case 'POINTCLOUD_UPDATE_FEATURES':
+        case 'POINTCLOUD_GRID_UPDATE_FEATURES':
+        case 'POINTCLOUD_TIMELINE_UPDATE':
         default:
             return defaultLayerReducer(state);
     }

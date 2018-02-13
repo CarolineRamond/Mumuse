@@ -28,10 +28,15 @@ Reducers, actions, selectors & mapConfigs are all merged and exposed in modules/
 		previewMode: Boolean // is map in preview mode (ie small)
 	},
 	medias: {
-		sources: ServerResource( data = { sourceId => Source }), // medias-related map sources 
-		layers: ServerResource( data = { layerId => Layer }), // medias-related map layers 
+		sources: Object ({ sourceId => Source }), // medias-related map sources 
+		layers: Object ({ layerId => Layer }), // medias-related map layers 
 		timeline: Number, // timeline value => to put into map state (not only relative to medias)
 		selectFilterPending: Boolean // whether a select filter is begin applied (useful to count medias)
+	},
+	potree: {
+		pointCloud: Object // the currently selected pointcloud,
+		layers: Object ({ layerId => Layer }), // pointcloud-related map layers ,
+		sources: Object ({ sourceId => Source }), // pointcloud-related map sources 
 	},
 	auth: {
 		authUser: ServerResource, // authenticated user data
@@ -164,5 +169,7 @@ renderedFeatures: [{
     				// (map will wait until source is loaded to count features)
     uniqueKey: String, // features unique key (to avoid duplicates)
     action: Function // action to be fired when rendered features are retrieved
+	shouldQueryOnSource: Boolean // when set to true, mapbox will perform a querySourceFeatures() 
+								 // instead of a queryRenderedFeatures() to update features
 }]
 ```

@@ -261,10 +261,18 @@ export class Map extends React.Component {
             // => there is at most one listener per renderedFeatures item
             // at any time
             const getRenderedFeatures = () => {
-                const renderedFeatures = getUniqueFeatures(
-                    this.map.queryRenderedFeatures({ layers: item.layerIds }),
-                    item.uniqueKey
-                );
+                let renderedFeatures;
+                if (item.shouldQueryOnSource) {
+                    renderedFeatures = getUniqueFeatures(
+                        this.map.querySourceFeatures(item.source),
+                        item.uniqueKey
+                    );
+                } else {
+                    renderedFeatures = getUniqueFeatures(
+                        this.map.queryRenderedFeatures({ layers: item.layerIds }),
+                        item.uniqueKey
+                    );
+                }
                 this.props.dispatch(
                     item.action({
                         features: renderedFeatures,

@@ -1,13 +1,21 @@
-import { clickPointCloud } from './potree.actions';
+import { clickPointCloud, updateFeaturesPointCloud } from './potree.actions';
 
 export default {
     click: [
         {
-            layerIds: ['pointClouds-layer'],
+            layerIds: ['pointClouds-layer', 'medias-layer'],
             action: clickPointCloud
         }
     ],
     dragndrop: [],
-    renderedFeatures: [],
+    renderedFeatures: [
+        {
+            shouldQueryOnSource: true,
+            layerIds: ['pointClouds-layer'],
+            source: 'pointClouds-source',
+            uniqueKey: '_id',
+            action: updateFeaturesPointCloud
+        }
+    ],
     events: []
 };
