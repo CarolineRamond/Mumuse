@@ -103,15 +103,17 @@ class Carousel extends React.Component {
 
     selectMedia(media, ctrlKey) {
         const features = [media];
+        // fake pointcloud click (to select potential pointcloud associated to media)
         this.props.dispatch(
-            clickMedias({
+            clickPointCloud({
                 features: features,
                 ctrlKey: ctrlKey,
                 isAdmin: this.props.isAdmin
             })
         );
+        // media click (/!\ should be called in this order)
         this.props.dispatch(
-            clickPointCloud({
+            clickMedias({
                 features: features,
                 ctrlKey: ctrlKey,
                 isAdmin: this.props.isAdmin

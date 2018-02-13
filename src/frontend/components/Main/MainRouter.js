@@ -116,7 +116,9 @@ export class MainRouter extends React.Component {
                 newRoute += `/media/${nextProps.selectedMedias[0].properties._id}`;
             }
 
-            this.props.history.push(newRoute);
+            if (this.props.location.pathname !== newRoute) {
+                this.props.history.push(newRoute);
+            }
         }
     }
 

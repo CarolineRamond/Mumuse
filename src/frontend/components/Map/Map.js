@@ -264,7 +264,7 @@ export class Map extends React.Component {
                 let renderedFeatures;
                 if (item.shouldQueryOnSource) {
                     renderedFeatures = getUniqueFeatures(
-                        this.map.querySourceFeatures(item.source, { sourceLayer: item.layerIds }),
+                        this.map.querySourceFeatures(item.source),
                         item.uniqueKey
                     );
                 } else {
