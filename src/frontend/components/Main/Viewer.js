@@ -57,11 +57,10 @@ class Viewer extends React.Component {
     render() {
         const isMediaSelected =
             this.props.media && this.props.media.properties.contentType === 'image' ? true : false;
-        const isPointCloudSelected = this.props.pointCloud !== null;
         return (
             <div style={{ height: '100%', width: '100%' }}>
                 {isMediaSelected &&
-                    !isPointCloudSelected && (
+                    !this.props.pointCloud && (
                         <MediaViewer
                             ref={mediaViewerRef => {
                                 this.mediaViewerRef = mediaViewerRef;
@@ -70,7 +69,7 @@ class Viewer extends React.Component {
                             previewMode={this.props.previewMode}
                         />
                     )}
-                {isPointCloudSelected && (
+                {this.props.pointCloud && (
                     <PointCloudViewer
                         ref={pointCloudViewerRef => {
                             this.pointCloudViewerRef = pointCloudViewerRef;

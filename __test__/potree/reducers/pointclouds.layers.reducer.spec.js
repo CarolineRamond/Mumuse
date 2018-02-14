@@ -42,20 +42,17 @@ describe('pointclouds layer reducer', () => {
         type: "Feature",
         properties: {}
       }];
-      const action1 = actions.clickPointCloud({ features });
-      const action2 = actions.toggleLayer({ layerId: "pointClouds-layer" });
-      const initialState = reducer(pointCloudsLayerInitialState, action1);
+      const action = actions.toggleLayer({ layerId: "pointClouds-layer" });
 
-      expect(reducer(initialState, action2)).toEqual({
-        ...initialState,
+      expect(reducer(pointCloudsLayerInitialState, action)).toEqual({
+        ...pointCloudsLayerInitialState,
         layout: {
-          ...initialState.layout,
+          ...pointCloudsLayerInitialState.layout,
           visibility: "none"
         },
         metadata: {
-          ...initialState.metadata,
+          ...pointCloudsLayerInitialState.metadata,
           isShown: false,
-          wasShownBeforeLock: false,
           didChange: { layout: { visibility: "none" } }
         }
       });
@@ -66,15 +63,11 @@ describe('pointclouds layer reducer', () => {
         type: "Feature",
         properties: {}
       }];
-      const action1 = actions.clickPointCloud({ features });
+      const action1 = actions.toggleLayer({ layerId: "pointClouds-layer" });
       const action2 = actions.toggleLayer({ layerId: "pointClouds-layer" });
-      const action3 = actions.toggleLayer({ layerId: "pointClouds-layer" });
-      const initialState = reducer(
-          reducer(pointCloudsLayerInitialState, action1),
-          action2
-      );
+      const initialState = reducer(pointCloudsLayerInitialState, action1);
 
-      expect(reducer(initialState, action3)).toEqual({
+      expect(reducer(initialState, action2)).toEqual({
         ...initialState,
         layout: {
           ...initialState.layout,
@@ -83,7 +76,6 @@ describe('pointclouds layer reducer', () => {
         metadata: {
           ...initialState.metadata,
           isShown: true,
-          wasShownBeforeLock: true,
           didChange: { layout: { visibility: "visible" } }
         }
       });

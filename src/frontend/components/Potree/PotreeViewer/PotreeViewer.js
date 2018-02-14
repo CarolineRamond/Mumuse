@@ -81,21 +81,21 @@ class PotreeViewer extends React.Component {
         if (
             !this.potreeIsLoading &&
             (this.potree.scene.pointclouds.length === 0 ||
-                (nextProps.pointCloud.metaData &&
-                    nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id))
+                (nextProps.pointCloud.properties &&
+                    nextProps.pointCloud.properties._id !== this.props.pointCloud.properties._id))
         ) {
             // Empty point cloud if necessary
             if (
-                nextProps.pointCloud.metaData &&
-                nextProps.pointCloud.metaData._id !== this.props.pointCloud.metaData._id
+                nextProps.pointCloud.properties &&
+                nextProps.pointCloud.properties._id !== this.props.pointCloud.properties._id
             ) {
                 this.potree.scene.pointclouds = [];
             }
-            if (nextProps.pointCloud.metaData && nextProps.pointCloud.metaData._id) {
+            if (nextProps.pointCloud.properties && nextProps.pointCloud.properties._id) {
                 this.potreeIsLoading = true;
                 potree.loadPointCloud(
-                    `potreeviewer/potreedataset/${nextProps.pointCloud.metaData._id}/cloud.js`,
-                    nextProps.pointCloud.metaData.name,
+                    `potreeviewer/potreedataset/${nextProps.pointCloud.properties._id}/cloud.js`,
+                    nextProps.pointCloud.properties.name,
                     e => {
                         this.potreeIsLoading = false;
                         this.potree.scene.addPointCloud(e.pointcloud);
@@ -116,7 +116,10 @@ class PotreeViewer extends React.Component {
                         });
                     }
                 );
-                const pointCloudMedias = JSON.parse(nextProps.pointCloud.metaData.visus);
+                let pointCloudMedias = nextProps.pointCloud.properties.visus;
+                if (typeof pointCloudMedias === 'string') {
+                    pointCloudMedias = JSON.parse(pointCloudMedias);
+                }
                 this.addCamerasToPotree(pointCloudMedias);
                 this.filterVisibleCamera(this.props.visibleMedias);
             }
@@ -127,7 +130,7 @@ class PotreeViewer extends React.Component {
         const nextMedia = nextProps.selectedMedias[0];
         if (
             !this.potreeIsLoading &&
-            this.props.pointCloud.metaData &&
+            this.props.pointCloud.properties &&
             nextMedia &&
             (!currentMedia || currentMedia.properties._id !== nextMedia.properties._id)
         ) {

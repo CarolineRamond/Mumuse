@@ -12,24 +12,6 @@
 
 -   `state`  
 
-## getLayersState
-
-**Parameters**
-
--   `state`  
-
-## getLayersState
-
-**Parameters**
-
--   `state`  
-
-## getLayersState
-
-**Parameters**
-
--   `state`  
-
 ## getVisibleMedias
 
 **Parameters**
@@ -45,6 +27,26 @@ This is auth user selectors
 -   `state`  
 
 ## getRasterLayersInBounds
+
+**Parameters**
+
+-   `state`  
+
+## getLayersState
+
+This will retrieve pointcloud-related layers state.
+
+**Parameters**
+
+-   `state`  
+
+## getLayersState
+
+**Parameters**
+
+-   `state`  
+
+## getLayersState
 
 **Parameters**
 
@@ -68,24 +70,6 @@ This is auth user selectors
 
 -   `state`  
 
-## getSourcesState
-
-**Parameters**
-
--   `state`  
-
-## getSourcesState
-
-**Parameters**
-
--   `state`  
-
-## getSourcesState
-
-**Parameters**
-
--   `state`  
-
 ## getCurrentUser
 
 **Parameters**
@@ -93,6 +77,26 @@ This is auth user selectors
 -   `state`  
 
 ## getAuthUserState
+
+**Parameters**
+
+-   `state`  
+
+## getSourcesState
+
+This will retrieve pointcloud-related sources state.
+
+**Parameters**
+
+-   `state`  
+
+## getSourcesState
+
+**Parameters**
+
+-   `state`  
+
+## getSourcesState
 
 **Parameters**
 
@@ -116,12 +120,6 @@ This is auth user selectors
 
 -   `state`  
 
-## getSelectedPointCloud
-
-**Parameters**
-
--   `state`  
-
 ## getRegisterState
 
 **Parameters**
@@ -134,13 +132,15 @@ This is auth user selectors
 
 -   `state`  
 
-## getVisiblePointClouds
+## getLogoutState
 
 **Parameters**
 
 -   `state`  
 
-## getLogoutState
+## getSelectedPointCloud
+
+This will retrieve the currently selected pointcloud.
 
 **Parameters**
 
@@ -159,6 +159,14 @@ This is auth user selectors
 -   `state`  
 
 ## getResetPasswordState
+
+**Parameters**
+
+-   `state`  
+
+## getVisiblePointClouds
+
+This will retrieve the currently visible pointclouds (ie pointclouds in map bounds).
 
 **Parameters**
 

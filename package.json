@@ -43,6 +43,7 @@
     "redux-promise-middleware": "^4.4.1",
     "redux-throttle": "^0.1.1",
     "redux-thunk": "^2.2.0",
+    "turf-extent": "^1.0.4",
     "validator": "^9.1.1"
   },
   "devDependencies": {
