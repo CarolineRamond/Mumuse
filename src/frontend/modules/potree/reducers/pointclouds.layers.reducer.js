@@ -26,9 +26,7 @@ export const pointCloudsLayerInitialState = {
     metadata: {
         priority: 4000,
         name: 'Pointcloud',
-        isLocked: false,
-        isShown: true,
-        wasShownBeforeLock: true
+        isShown: true
     }
 };
 
@@ -36,15 +34,6 @@ export const pointCloudsLayerInitialState = {
 // (pointwise pointclouds representation, originated from geojson source)
 export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, action) => {
     switch (action.type) {
-        case 'POINTCLOUD_CLICK': {
-            return {
-                ...state,
-                metadata: {
-                    ...state.metadata,
-                    didChange: {}
-                }
-            };
-        }
         case 'TOGGLE_LAYER': {
             if (action.payload.layerId === state.id) {
                 const layoutChange = {
@@ -56,7 +45,6 @@ export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, ac
                     metadata: {
                         ...state.metadata,
                         isShown: !state.metadata.isShown,
-                        wasShownBeforeLock: !state.metadata.isShown,
                         didChange: { layout: layoutChange }
                     }
                 };
