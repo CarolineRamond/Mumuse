@@ -282,4 +282,66 @@ describe('pointClouds source reducer', () => {
             });
         });
     });
+
+    describe('on UPDATE_WORLD_STATE', ()=> {
+        it('should update pointcloud features\' property _isInBounds according to map bounds', () => {
+            const action1 = {
+                type: 'POINTCLOUD_FETCH_FULFILLED',
+                payload: {
+                    data: {
+                        type: 'FeatureCollection',
+                        features: [
+                            {
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Polygon',
+                                    coordinates: [
+                                        [43.09624817926561, 36.738274660512516],
+                                        [43.09656603525892, 36.73827974647246],
+                                        [43.09655846350405, 36.73858630338618],
+                                        [43.09624060624819, 36.738581217369806],
+                                        [43.09624817926561, 36.738274660512516]
+                                    ]
+                                },
+                                properties: { _id: 'id1', name: 'feature1' }
+                            }
+                        ]
+                    }
+                }
+            };
+            const initialState = reducer(pointCloudsSourceInitialState, action1);
+            const action2 = actions.updateWorldState({
+                bounds: [-94.99282760819624, -55.840832301980456, 2.7457405633925873, 47.35339878658954],
+                lat: -6.841625022242255,
+                lng: -46.123543522414394,
+                zoom: 2.090450397200301
+            });
+            expect(reducer(initialState, action2)).toEqual({
+                ...initialState,
+                data: {
+                    ...initialState.data,
+                    features: [
+                        {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Polygon',
+                                coordinates: [
+                                    [43.09624817926561, 36.738274660512516],
+                                    [43.09656603525892, 36.73827974647246],
+                                    [43.09655846350405, 36.73858630338618],
+                                    [43.09624060624819, 36.738581217369806],
+                                    [43.09624817926561, 36.738274660512516]
+                                ]
+                            },
+                            properties: { _id: 'id1', name: 'feature1', _isShown: true, _isSelected: false, _isInBounds: false }
+                        }
+                    ]
+                },
+                metadata: {
+                    ...initialState.metadata,
+                    didChange: true
+                }
+            });
+        });
+    });
 });
