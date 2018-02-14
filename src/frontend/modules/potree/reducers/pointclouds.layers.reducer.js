@@ -36,9 +36,6 @@ export const pointCloudsLayerInitialState = {
 // (pointwise pointclouds representation, originated from geojson source)
 export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, action) => {
     switch (action.type) {
-        case 'POINTCLOUD_INIT_SELECTED_FULFILLED': {
-            return defaultLayerReducer(state);
-        }
         case 'POINTCLOUD_CLICK': {
             return {
                 ...state,
@@ -66,9 +63,6 @@ export const pointCloudsLayerReducer = (state = pointCloudsLayerInitialState, ac
             }
             return defaultLayerReducer(state);
         }
-        case 'POINTCLOUD_UPDATE_FEATURES':
-        case 'POINTCLOUD_GRID_UPDATE_FEATURES':
-        case 'POINTCLOUD_TIMELINE_UPDATE':
         default:
             return defaultLayerReducer(state);
     }

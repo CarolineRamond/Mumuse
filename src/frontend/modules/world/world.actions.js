@@ -1,4 +1,5 @@
-/** This will fill store.world with current map location.<br>
+/** This will fill store.world with current map location
+ * and update in bounds objects (rasterlayers, pointclouds, etc).<br>
  * It is called each time map is moved by user
  * @param {Object} params - current map params, as provided by mapbox
  * @param {number} params.lng - longitude

@@ -31,7 +31,6 @@ class Layers extends React.Component {
     render() {
         const mappedMediaLayers = [];
         const mappedRasterLayers = [];
-        const mappedPointCloudLayers = [];
         const mappedPointClouds = [];
 
         forIn(this.props.mediaLayers, (layer, layerId) => {
@@ -76,27 +75,6 @@ class Layers extends React.Component {
             );
         });
 
-        // forIn(this.props.pointCloudLayers, (layer, layerId) => {
-        //     let icon = 'visibility_off';
-        //     if (layer.metadata.isLocked) {
-        //         icon = 'lock';
-        //     } else if (layer.metadata.isShown) {
-        //         icon = 'visibility';
-        //     }
-        //     mappedPointCloudLayers.push(
-        //         <div key={layerId} className={styles.layer}>
-        //             <IconButton
-        //                 disabled={layer.metadata.isLocked}
-        //                 onClick={() => {
-        //                     this.toggleLayer(layerId);
-        //                 }}
-        //                 icon={icon}
-        //             />
-        //             {layer.metadata.name}
-        //         </div>
-        //     );
-        // });
-
         forIn(this.props.visiblePointClouds, feature => {
             const icon = feature.properties._isShown ? 'visibility' : 'visibility_off';
             mappedPointClouds.push(
@@ -116,13 +94,6 @@ class Layers extends React.Component {
             <div style={{ overflowY: 'scroll' }}>
                 <h3>Medias</h3>
                 <div>{mappedMediaLayers}</div>
-                {/*{mappedPointCloudLayers.length > 0 && (
-                                    <div>
-                                        <hr />
-                                        <h3>Point clouds</h3>
-                                        <div>{mappedPointCloudLayers}</div>
-                                    </div>
-                                )}*/}
                 {mappedPointClouds.length > 0 && (
                     <div>
                         <hr />

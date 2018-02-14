@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
-const baseUrl =
-    window.location.origin !== 'null' ? window.location.origin : 'http://localhost:8080';
+import mapboxgl from 'mapbox-gl';
 
 const _boundsIntersect = (boundsA, boundsB) => {
     const intersectLng = !(boundsA[2] < boundsB[0] || boundsA[0] > boundsB[2]);
@@ -26,8 +25,7 @@ export const pointCloudsSourceInitialState = {
     },
     metadata: {
         didChange: false,
-        selectFilterPending: false,
-        stillFiltered: []
+        initSelectedPending: null
     }
 };
 
@@ -39,7 +37,9 @@ export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, 
                     ...feature,
                     properties: {
                         ...feature.properties,
-                        _isShown: true
+                        _isShown: true,
+                        _isInBounds: true,
+                        _isSelected: feature.properties._id === state.metadata.initSelectedPending
                     }
                 };
             });
@@ -51,9 +51,41 @@ export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, 
                 },
                 metadata: {
                     ...state.metadata,
-                    didChange: true
+                    didChange: true,
+                    initSelectedPending: undefined
                 }
             };
+        }
+        case 'POINTCLOUD_INIT_SELECTED': {
+            if (state.data.features.length > 0) {
+                // pointcloud features were already loaded :
+                // simply add property _isSelected to required pointcloud feature
+                const newFeatures = state.data.features.map(feature => {
+                    return {
+                        ...feature,
+                        properties: {
+                            ...feature.properties,
+                            _isSelected: feature.properties._id === action.payload.pointCloudId
+                        }
+                    };
+                });
+                return {
+                    ...state,
+                    data: {
+                        ...state.data,
+                        features: newFeatures
+                    }
+                };
+            } else {
+                // pointcloud features were not loaded : populate metadata.initSelectedPending
+                return {
+                    ...state,
+                    metadata: {
+                        ...state.metadata,
+                        initSelectedPending: action.payload.pointCloudId
+                    }
+                };
+            }
         }
         case 'POINTCLOUD_SELECT_BY_ID': {
             const newFeatures = state.data.features.map(feature => {
@@ -101,12 +133,20 @@ export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, 
         case 'UPDATE_WORLD_STATE': {
             const mapBounds = action.payload.bounds;
             const newFeatures = state.data.features.map(feature => {
+                const coordinates = feature.geometry.coordinates[0];
+                const bounds = coordinates
+                    .reduce(function(_bounds, coord) {
+                        return _bounds.extend(coord);
+                    }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]))
+                    .toArray()
+                    .reduce(function(a, b) {
+                        return a.concat(b);
+                    }, []);
                 return {
                     ...feature,
                     properties: {
                         ...feature.properties,
-                        // _isInBounds: _boundsIntersect(feature.properties.bounds, mapBounds)
-                        _isInBounds: true
+                        _isInBounds: _boundsIntersect(bounds, mapBounds)
                     }
                 };
             });
@@ -117,14 +157,6 @@ export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, 
                     features: newFeatures
                 }
             };
-        }
-        case 'LOGOUT_FULFILLED':
-        case 'FETCH_USER_FULFILLED':
-        case 'LOGIN_FULFILLED':
-        case 'POINTCLOUDS_UPLOAD_FULFILLED':
-        case 'POINTCLOUDS_DELETE_FULFILLED':
-        case 'POINTCLOUDS_MAP_END_DRAG_FULFILLED': {
-            return defaultSourceReducer(state);
         }
         default:
             return defaultSourceReducer(state);

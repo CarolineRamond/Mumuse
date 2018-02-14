@@ -1,4 +1,4 @@
-import { clickPointCloud, updateFeaturesPointCloud } from './potree.actions';
+import { clickPointCloud } from './potree.actions';
 
 export default {
     click: [

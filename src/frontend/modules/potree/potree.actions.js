@@ -7,6 +7,29 @@ export const fetchPointClouds = () => {
     };
 };
 
+/** This will toggle pointcloud selection/deselection on init.<br>
+ * @param {Object} params
+ * @param {Array} params.features - the clicked mapbox features,
+ * either pointcloud features (feature.layer.id='pointClouds-layer'),
+ * either media features (feature.layer.id='medias-layer').<br>
+ * In case no pointcloud feature is clicked, check if any of the clicked media
+ * has an associated pointcloud and select it
+ */
+export const initSelectedPointCloud = ({ pointCloudId }) => {
+    return {
+        type: 'POINTCLOUD_INIT_SELECTED',
+        payload: { pointCloudId: pointCloudId }
+    };
+};
+
+/** This will toggle pointcloud selection/deselection.<br>
+ * @param {Object} params
+ * @param {Array} params.features - the clicked mapbox features,
+ * either pointcloud features (feature.layer.id='pointClouds-layer'),
+ * either media features (feature.layer.id='medias-layer').<br>
+ * In case no pointcloud feature is clicked, check if any of the clicked media
+ * has an associated pointcloud and select it
+ */
 export const clickPointCloud = ({ features }) => {
     const pointCloudFeatures = [];
     const mediaFeatures = [];
@@ -47,14 +70,10 @@ export const selectPointCloudById = ({ pointCloudId }) => {
     };
 };
 
-export const initSelectedPointCloud = ({ pointCloudId }) => {
-    return {
-        type: 'POINTCLOUD_INIT_SELECTED',
-        payload: axios.get('/potreeviewer/potreedataset/' + pointCloudId)
-    };
-};
-
-/** This is action TOGGLE POINT CLOUD */
+/** This will toggle pointcloud visibility.<br>
+ * @param {Object} params
+ * @param {string} params.pointClouId - the id of the pointCloud to show/hide
+ */
 export const togglePointCloud = ({ pointCloudId }) => {
     return {
         type: 'POINTCLOUD_TOGGLE',
