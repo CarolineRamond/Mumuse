@@ -34,7 +34,6 @@ Reducers, actions, selectors & mapConfigs are all merged and exposed in modules/
 		selectFilterPending: Boolean // whether a select filter is begin applied (useful to count medias)
 	},
 	potree: {
-		pointCloud: Object // the currently selected pointcloud,
 		layers: Object ({ layerId => Layer }), // pointcloud-related map layers ,
 		sources: Object ({ sourceId => Source }), // pointcloud-related map sources 
 	},
@@ -120,6 +119,32 @@ Source : {
 }
 ```
 
+#### Special case : pointClouds-source
+
+PointClouds source is a GeoJSON source containing all available pointclouds on map. Each feature is taken from the server and its properties are enriched with three additional attributes :
+```js static
+{
+	_isShown: Boolean // whether pointcloud should be visible on map
+	_isInBounds: Boolean // whether pointcloud is in current map bounds
+	_isSelected: Boolean // whether pointcloud is currently selected
+}
+```
+
+Example : this pointcloud feature is in map bounds, non visible on map, and selected (visible in preview)
+```js static
+feature = {
+	type: 'Feature',
+	geometry: { ... },
+	properties: {
+		...,
+		_isShown: false
+		_isInBounds: true
+		_isSelected: true
+	}
+}
+```
+
+
 ### Special fields (/!\\) 
 
 When set to true or non-undefined, the fields marked with /!\ will induce a map change.
@@ -169,7 +194,5 @@ renderedFeatures: [{
     				// (map will wait until source is loaded to count features)
     uniqueKey: String, // features unique key (to avoid duplicates)
     action: Function // action to be fired when rendered features are retrieved
-	shouldQueryOnSource: Boolean // when set to true, mapbox will perform a querySourceFeatures() 
-								 // instead of a queryRenderedFeatures() to update features
 }]
 ```

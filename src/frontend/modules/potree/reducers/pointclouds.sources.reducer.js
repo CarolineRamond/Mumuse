@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-// import mapboxgl from 'mapbox-gl';
+import extent from 'turf-extent';
 
 const _boundsIntersect = (boundsA, boundsB) => {
     const intersectLng = !(boundsA[2] < boundsB[0] || boundsA[0] > boundsB[2]);
@@ -133,21 +133,12 @@ export const pointCloudsSourceReducer = (state = pointCloudsSourceInitialState, 
         case 'UPDATE_WORLD_STATE': {
             const mapBounds = action.payload.bounds;
             const newFeatures = state.data.features.map(feature => {
-                // const coordinates = feature.geometry.coordinates[0];
-                // const bounds = coordinates
-                //     .reduce(function(_bounds, coord) {
-                //         return _bounds.extend(coord);
-                //     }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]))
-                //     .toArray()
-                //     .reduce(function(a, b) {
-                //         return a.concat(b);
-                //     }, []);
+                const bounds = extent(feature);
                 return {
                     ...feature,
                     properties: {
                         ...feature.properties,
-                        // _isInBounds: _boundsIntersect(bounds, mapBounds)
-                        _isInBounds: true
+                        _isInBounds: _boundsIntersect(bounds, mapBounds)
                     }
                 };
             });
