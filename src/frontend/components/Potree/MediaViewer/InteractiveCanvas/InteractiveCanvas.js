@@ -30,11 +30,7 @@ class InteractiveCanvas extends React.Component {
         this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
         this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;
         this.media = new Image();
-        // const imgUrl = !this.props.previewMode
-        //     ? this.props.media.properties.preview_url
-        //     : this.props.media.properties.url;
-        // this.media.src = imgUrl;
-        this.media.src = this.props.media.src;
+        this.media.src = this.props.mediaUrl;
         context = this.mediaCanvas.getContext('2d');
         this.trackTransforms(context);
 
@@ -54,7 +50,7 @@ class InteractiveCanvas extends React.Component {
 
     computeMouseCoords(e) {
         const rect = this.mediaCanvas.getBoundingClientRect();
-        switch (this.props.media.quarter) {
+        switch (this.props.quarter) {
             case 0:
                 this.lastX = (e.clientX - rect.left) / (rect.right - rect.left) * rect.width;
                 this.lastY = (e.clientY - rect.top) / (rect.bottom - rect.top) * rect.height;
@@ -166,8 +162,8 @@ class InteractiveCanvas extends React.Component {
             return e.preventDefault() && false;
         } else {
             e.stopPropagation();
-            if (this.props.exit) {
-                this.props.exit();
+            if (this.props.handleScrollExit) {
+                this.props.handleScrollExit();
             }
         }
     }
@@ -316,12 +312,10 @@ class InteractiveCanvas extends React.Component {
 }
 
 InteractiveCanvas.propTypes = {
-    exit: PropTypes.func,
+    handleScrollExit: PropTypes.func,
     interactive: PropTypes.bool,
-    media: PropTypes.shape({
-        quarter: PropTypes.number,
-        src: PropTypes.string
-    }).isRequired,
+    mediaUrl: PropTypes.string.isRequired,
+    quarter: PropTypes.number,
     previewMode: PropTypes.bool,
     resizeAnimationOnGoing: PropTypes.bool,
     setResizeHandler: PropTypes.func.isRequired

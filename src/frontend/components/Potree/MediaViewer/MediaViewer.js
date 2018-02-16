@@ -58,7 +58,6 @@ class MediaViewer extends React.Component {
     }
 
     handleResize() {
-        console.log('MEDIA VIEWER RESIZE');
         requestAnimationFrame(() => {
             this.handleCanvasResize();
         });
@@ -69,7 +68,6 @@ class MediaViewer extends React.Component {
         this.setState({
             infos: newDisplayInfos
         });
-        // this.updateSearch({ infos: newDisplayInfos });
     }
 
     handleMouseWheel(e) {
@@ -198,10 +196,11 @@ class MediaViewer extends React.Component {
                                 onTransitionComplete={this.handleClipTransitionComplete}
                             >
                                 <InteractiveCanvas
-                                    media={this.props.media}
+                                    mediaUrl={this.props.media.src}
+                                    quarter={this.props.media.quarter}
                                     interactive={isCanvasInteractive}
                                     resizeAnimationOnGoing={this.state.fullScreenTransitionOnGoing}
-                                    exit={this.launchFullScreenTransition}
+                                    handleScrollExit={this.launchFullScreenTransition}
                                     setResizeHandler={resizeHandler => {
                                         this.handleCanvasResize = resizeHandler;
                                     }}

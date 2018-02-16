@@ -57,10 +57,8 @@ class Viewer extends React.Component {
                             setResizeHandler={resizeHandler => {
                                 this.handleMediaResize = resizeHandler;
                             }}
-                            mediaUrl={{
-                                src: this.props.media.properties.url,
-                                quarter: 0
-                            }}
+                            mediaUrl={this.props.media.properties.url}
+                            quarter={0}
                             interactive={true}
                         />
                     )}
