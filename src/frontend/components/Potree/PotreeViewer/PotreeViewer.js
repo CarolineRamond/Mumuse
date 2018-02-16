@@ -69,14 +69,10 @@ class PotreeViewer extends React.Component {
 
     componentDidMount() {
         this.initViewer();
-        window.addEventListener('resize', this.handleResize);
         this.props.setResizeHandler(this.handleResize);
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.previewMode !== this.props.previewMode) {
-            this.handleResize();
-        }
         // Load pointcloud and add cameraMedia to potree
         if (
             !this.potreeIsLoading &&
@@ -820,7 +816,6 @@ class PotreeViewer extends React.Component {
 PotreeViewer.propTypes = {
     dispatch: PropTypes.func.isRequired,
     pointCloud: PropTypes.object,
-    previewMode: PropTypes.bool,
     selectedMedias: PropTypes.arrayOf(PropTypes.object),
     setResizeHandler: PropTypes.func.isRequired,
     visibleMedias: PropTypes.arrayOf(PropTypes.object)
@@ -829,10 +824,8 @@ PotreeViewer.propTypes = {
 const ConnectedPotreeViewer = connect(store => {
     return {
         pointCloud: getSelectedPointCloud(store),
-        previewMode: getMapPreviewMode(store),
         selectedMedias: getSelectedMedias(store),
-        visibleMedias: getVisibleMedias(store),
-        selectFilterPending: getSelectFilterPending(store)
+        visibleMedias: getVisibleMedias(store)
     };
 })(PotreeViewer);
 

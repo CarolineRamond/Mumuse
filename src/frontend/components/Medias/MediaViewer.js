@@ -32,6 +32,20 @@ class MediaViewer extends React.Component {
         if (nextProps.previewMode !== this.props.previewMode) {
             this.initViewer();
         }
+
+        // if (nextProps.media && this.props.media) {
+        //     const containerRect = this.mediaCanvas.offsetParent.getBoundingClientRect();
+        //     const didContainerDimensionsChange;
+        //     const didMediaDimensionsChange =
+        //         nextProps.media.width !== this.props.media.width ||
+        //         nextProps.media.height !== this.props.media.height ||
+        //         nextProps.media.left !== this.props.media.left ||
+        //         nextProps.media.top !== this.props.media.top;
+        //     if (didMediaDimensionsChange) {
+        //         this.handleResize();
+        //     }
+        // }
+    }
     }
 
     initViewer() {

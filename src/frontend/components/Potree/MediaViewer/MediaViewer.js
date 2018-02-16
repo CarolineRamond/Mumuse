@@ -22,6 +22,7 @@ class MediaViewer extends React.Component {
         this.toggleClip = this.toggleClip.bind(this);
         this.toggleFullScreen = this.toggleFullScreen.bind(this);
         this.fullScreenTransitionOnGoing = false;
+        this.handleResize = this.handleResize.bind(this);
 
         this.params = {
             full: false,
@@ -43,21 +44,25 @@ class MediaViewer extends React.Component {
         };
     }
 
-    // updateSearch(newParams) {
-    //     this.params = {
-    //         ...this.params,
-    //         ...newParams
-    //     };
-    //     let search = '?';
-    //     Object.keys(this.params).map((key, index) => {
-    //         search += `${key}=${this.params[key]}`;
-    //         if (index < Object.keys(this.params).length - 1) {
-    //             search += '&';
-    //         }
-    //     });
-    //     const newUrl = this.props.location.pathname + search;
-    //     this.props.history.replace(newUrl);
-    // }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.media && this.props.media) {
+            const didMediaDimensionsChange =
+                nextProps.media.width !== this.props.media.width ||
+                nextProps.media.height !== this.props.media.height ||
+                nextProps.media.left !== this.props.media.left ||
+                nextProps.media.top !== this.props.media.top;
+            if (didMediaDimensionsChange && this.handleCanvasResize) {
+                this.handleResize();
+            }
+        }
+    }
+
+    handleResize() {
+        console.log('MEDIA VIEWER RESIZE');
+        requestAnimationFrame(() => {
+            this.handleCanvasResize();
+        });
+    }
 
     toggleInfosPanel() {
         const newDisplayInfos = !this.state.infos;
@@ -122,9 +127,6 @@ class MediaViewer extends React.Component {
     }
 
     toggleFullScreen() {
-        if (this.state.full) {
-            this.mediaCanvas.leaveFullMode();
-        }
         this.setState({
             full: !this.state.full
         });
@@ -200,8 +202,8 @@ class MediaViewer extends React.Component {
                                     interactive={isCanvasInteractive}
                                     resizeAnimationOnGoing={this.state.fullScreenTransitionOnGoing}
                                     exit={this.launchFullScreenTransition}
-                                    ref={el => {
-                                        this.mediaCanvas = el;
+                                    setResizeHandler={resizeHandler => {
+                                        this.handleCanvasResize = resizeHandler;
                                     }}
                                 />
                             </ClippableComponent>

@@ -13,6 +13,7 @@ class InteractiveCanvas extends React.Component {
     }
 
     componentDidMount() {
+        this.props.setResizeHandler(this.handleResize);
         this.initViewer();
     }
 
@@ -22,17 +23,6 @@ class InteractiveCanvas extends React.Component {
         }
         if (!nextProps.resizeAnimationOnGoing && this.props.resizeAnimationOnGoing) {
             cancelAnimationFrame(this.resizeRequest);
-        }
-
-        if (nextProps.media && this.props.media) {
-            const didMediaDimensionsChange =
-                nextProps.media.width !== this.props.media.width ||
-                nextProps.media.height !== this.props.media.height ||
-                nextProps.media.left !== this.props.media.left ||
-                nextProps.media.top !== this.props.media.top;
-            if (didMediaDimensionsChange) {
-                this.handleResize();
-            }
         }
     }
 
@@ -60,9 +50,6 @@ class InteractiveCanvas extends React.Component {
         this.mediaCanvas.addEventListener('mousedown', this.handleMouseDown.bind(this), false);
         this.mediaCanvas.addEventListener('mousemove', this.handleMouseMove.bind(this), false);
         this.mediaCanvas.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
-
-        this.leaveFullMode = this.leaveFullMode.bind(this);
-        window.addEventListener('resize', this.handleResize, false);
     }
 
     computeMouseCoords(e) {
@@ -133,9 +120,6 @@ class InteractiveCanvas extends React.Component {
     }
 
     handleMouseMove(e) {
-        if (this.props.interactive) {
-            e.stopPropagation();
-        }
         this.computeMouseCoords(e);
         this.dragged = true;
         if (this.dragStart) {
@@ -182,16 +166,10 @@ class InteractiveCanvas extends React.Component {
             return e.preventDefault() && false;
         } else {
             e.stopPropagation();
-            // this.props.toggleFullScreen();
-            this.props.exit();
+            if (this.props.exit) {
+                this.props.exit();
+            }
         }
-    }
-
-    leaveFullMode() {
-        this.mediaCanvas.width = this.props.media.width;
-        this.mediaCanvas.height = this.props.media.height;
-        this.trackTransforms(context);
-        this.redraw();
     }
 
     zoom(clicks) {
@@ -317,12 +295,12 @@ class InteractiveCanvas extends React.Component {
                     backgroundColor: 'black',
                     position: 'absolute'
                 }}
-                onClick={e => {
-                    e.stopPropagation();
-                }}
-                onMouseDown={e => {
-                    e.stopPropagation();
-                }}
+                // onClick={e => {
+                //     e.stopPropagation();
+                // }}
+                // onMouseDown={e => {
+                //     e.stopPropagation();
+                // }}
             >
                 <canvas
                     onWheel={this.handleScroll}
@@ -342,14 +320,11 @@ InteractiveCanvas.propTypes = {
     interactive: PropTypes.bool,
     media: PropTypes.shape({
         quarter: PropTypes.number,
-        top: PropTypes.number,
-        left: PropTypes.number,
-        width: PropTypes.number,
-        height: PropTypes.number,
         src: PropTypes.string
     }).isRequired,
     previewMode: PropTypes.bool,
-    resizeAnimationOnGoing: PropTypes.bool
+    resizeAnimationOnGoing: PropTypes.bool,
+    setResizeHandler: PropTypes.func.isRequired
 };
 
 export default InteractiveCanvas;

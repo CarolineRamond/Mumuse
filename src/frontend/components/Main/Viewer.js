@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import MediaViewer from '../Medias/MediaViewer';
-import PointCloudViewer from '../Potree/PointCloudViewer';
+import InteractiveCanvas from '../Potree/MediaViewer/InteractiveCanvas';
+import PotreeViewer from '../Potree/PotreeViewer/PotreeViewer';
 import { actions } from '../../modules';
 import { selectors } from '../../modules';
 const { switchPreviewMode } = actions;
@@ -12,17 +12,18 @@ const { getMapPreviewMode, getSelectedMedias, getSelectedPointCloud } = selector
 class Viewer extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isResizing: false
-        };
-
-        this.handleDragStarted = this.handleDragStarted.bind(this);
-        this.handleDragFinished = this.handleDragFinished.bind(this);
         this.handleResize = this.handleResize.bind(this);
     }
 
     componentDidMount() {
         this.props.setResizeHandler(this.handleResize);
+        window.addEventListener('resize', this.handleResize);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.previewMode !== this.props.previewMode) {
+            this.handleResize();
+        }
     }
 
     componentWillUnmount() {
@@ -32,50 +33,42 @@ class Viewer extends React.Component {
     }
 
     handleResize() {
-        if (this.mediaViewerRef && this.mediaViewerRef.handleResize) {
-            this.mediaViewerRef.handleResize();
+        if (this.handleMediaResize) {
+            this.handleMediaResize();
         }
-        if (this.pointCloudViewerRef && this.pointCloudViewerRef.handleResize) {
-            if (this.props.previewMode) {
-                this.pointCloudViewerRef.handleResize();
-            }
+        if (this.handlePotreeResize) {
+            this.handlePotreeResize();
         }
-    }
-
-    handleDragStarted() {
-        this.setState({
-            isResizing: true
-        });
-    }
-
-    handleDragFinished() {
-        this.setState({
-            isResizing: false
-        });
     }
 
     render() {
         const isMediaSelected =
             this.props.media && this.props.media.properties.contentType === 'image' ? true : false;
         return (
-            <div style={{ height: '100%', width: '100%' }}>
+            <div
+                style={{ height: '100%', width: '100%' }}
+                ref={el => {
+                    this.viewerElement = el;
+                }}
+            >
                 {isMediaSelected &&
                     !this.props.pointCloud && (
-                        <MediaViewer
-                            ref={mediaViewerRef => {
-                                this.mediaViewerRef = mediaViewerRef;
+                        <InteractiveCanvas
+                            setResizeHandler={resizeHandler => {
+                                this.handleMediaResize = resizeHandler;
                             }}
-                            media={this.props.media}
-                            previewMode={this.props.previewMode}
+                            mediaUrl={{
+                                src: this.props.media.properties.url,
+                                quarter: 0
+                            }}
+                            interactive={true}
                         />
                     )}
                 {this.props.pointCloud && (
-                    <PointCloudViewer
-                        ref={pointCloudViewerRef => {
-                            this.pointCloudViewerRef = pointCloudViewerRef;
+                    <PotreeViewer
+                        setResizeHandler={resizeHandler => {
+                            this.handlePotreeResize = resizeHandler;
                         }}
-                        pointCloud={this.props.pointCloud}
-                        previewMode={this.props.previewMode}
                     />
                 )}
             </div>
