@@ -6,7 +6,8 @@ import styles from './interactive-image.css';
 
 let context = null;
 
-class InteractiveCanvas extends React.Component {
+/** A component representing a zoomable and movable image. Implemented with canvas. */
+class InteractiveImage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -20,7 +21,9 @@ class InteractiveCanvas extends React.Component {
     }
 
     componentDidMount() {
-        this.props.setResizeHandler(this.handleResize);
+        if (this.props.setResizeHandler) {
+            this.props.setResizeHandler(this.handleResize);
+        }
         this.initViewer();
     }
 
@@ -31,7 +34,7 @@ class InteractiveCanvas extends React.Component {
         if (!nextProps.resizeAnimationOnGoing && this.props.resizeAnimationOnGoing) {
             cancelAnimationFrame(this.resizeRequest);
         }
-        if (!nextProps.mediaUrl !== this.props.mediaUrl) {
+        if (nextProps.mediaUrl !== this.props.mediaUrl) {
             this.media.src = nextProps.mediaUrl;
             this.setState({
                 loading: true
@@ -324,7 +327,7 @@ class InteractiveCanvas extends React.Component {
     }
 }
 
-InteractiveCanvas.propTypes = {
+InteractiveImage.propTypes = {
     /** a fallback url of the image to display (loaded in case mediaUrl is not available)*/
     fallbackMediaUrl: PropTypes.string,
     /** function to call when user scrolls out of the media (ie zoom level is < 1), optional */
@@ -342,4 +345,10 @@ InteractiveCanvas.propTypes = {
     setResizeHandler: PropTypes.func.isRequired
 };
 
-export default InteractiveCanvas;
+InteractiveImage.defaultProps = {
+    interactive: false,
+    quarter: 0,
+    resizeAnimationOnGoing: false
+};
+
+export default InteractiveImage;

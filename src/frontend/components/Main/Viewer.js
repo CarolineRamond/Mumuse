@@ -21,7 +21,7 @@ class Viewer extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.previewMode !== this.props.previewMode && this.props.pointCloud) {
+        if (nextProps.previewMode !== this.props.previewMode) {
             this.handleResize();
         }
     }
@@ -47,7 +47,7 @@ class Viewer extends React.Component {
     }
 
     componentWillUnmount() {
-        if (this.props.previewMode) {
+        if (!this.props.previewMode) {
             this.props.dispatch(switchPreviewMode());
         }
     }
@@ -83,7 +83,6 @@ class Viewer extends React.Component {
                                     : this.props.media.properties.url
                             }
                             fallbackMediaUrl={this.props.media.properties.url}
-                            quarter={0}
                             interactive
                         />
                     )}
