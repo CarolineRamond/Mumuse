@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import MediaViewer from '../Medias/MediaViewer';
-import PointCloudViewer from '../Potree/PointCloudViewer';
+import InteractiveImage from '../Common/InteractiveImage';
+import PotreeViewer from '../Potree/PotreeViewer/PotreeViewer';
 import { actions } from '../../modules';
 import { selectors } from '../../modules';
 const { switchPreviewMode } = actions;
@@ -12,70 +12,85 @@ const { getMapPreviewMode, getSelectedMedias, getSelectedPointCloud } = selector
 class Viewer extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isResizing: false
-        };
-
-        this.handleDragStarted = this.handleDragStarted.bind(this);
-        this.handleDragFinished = this.handleDragFinished.bind(this);
         this.handleResize = this.handleResize.bind(this);
     }
 
     componentDidMount() {
         this.props.setResizeHandler(this.handleResize);
+        window.addEventListener('resize', this.handleResize);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.previewMode !== this.props.previewMode) {
+            this.handleResize();
+        }
+    }
+
+    shouldComponentUpdate(nextProps) {
+        const didMediaChange =
+            (this.props.media &&
+                nextProps.media &&
+                this.props.media.properties._id !== nextProps.media.properties._id) ||
+            (this.props.media && !nextProps.media) ||
+            (!this.props.media && nextProps.media);
+        const didPointCloudChange =
+            (this.props.pointCloud &&
+                nextProps.pointCloud &&
+                this.props.pointCloud.properties._id !== nextProps.pointCloud.properties._id) ||
+            (this.props.pointCloud && !nextProps.pointCloud) ||
+            (!this.props.pointCloud && nextProps.pointCloud);
+        return (
+            didMediaChange ||
+            didPointCloudChange ||
+            this.props.previewMode !== nextProps.previewMode
+        );
     }
 
     componentWillUnmount() {
-        if (this.props.previewMode) {
+        if (!this.props.previewMode) {
             this.props.dispatch(switchPreviewMode());
         }
     }
 
     handleResize() {
-        if (this.mediaViewerRef && this.mediaViewerRef.handleResize) {
-            this.mediaViewerRef.handleResize();
+        if (this.handleMediaResize) {
+            this.handleMediaResize();
         }
-        if (this.pointCloudViewerRef && this.pointCloudViewerRef.handleResize) {
-            if (this.props.previewMode) {
-                this.pointCloudViewerRef.handleResize();
-            }
+        if (this.handlePotreeResize) {
+            this.handlePotreeResize();
         }
-    }
-
-    handleDragStarted() {
-        this.setState({
-            isResizing: true
-        });
-    }
-
-    handleDragFinished() {
-        this.setState({
-            isResizing: false
-        });
     }
 
     render() {
         const isMediaSelected =
             this.props.media && this.props.media.properties.contentType === 'image' ? true : false;
         return (
-            <div style={{ height: '100%', width: '100%' }}>
+            <div
+                style={{ height: '100%', width: '100%' }}
+                ref={el => {
+                    this.viewerElement = el;
+                }}
+            >
                 {isMediaSelected &&
                     !this.props.pointCloud && (
-                        <MediaViewer
-                            ref={mediaViewerRef => {
-                                this.mediaViewerRef = mediaViewerRef;
+                        <InteractiveImage
+                            setResizeHandler={resizeHandler => {
+                                this.handleMediaResize = resizeHandler;
                             }}
-                            media={this.props.media}
-                            previewMode={this.props.previewMode}
+                            mediaUrl={
+                                this.props.previewMode
+                                    ? this.props.media.properties.preview_url
+                                    : this.props.media.properties.url
+                            }
+                            fallbackMediaUrl={this.props.media.properties.url}
+                            interactive
                         />
                     )}
                 {this.props.pointCloud && (
-                    <PointCloudViewer
-                        ref={pointCloudViewerRef => {
-                            this.pointCloudViewerRef = pointCloudViewerRef;
+                    <PotreeViewer
+                        setResizeHandler={resizeHandler => {
+                            this.handlePotreeResize = resizeHandler;
                         }}
-                        pointCloud={this.props.pointCloud}
-                        previewMode={this.props.previewMode}
                     />
                 )}
             </div>
@@ -86,16 +101,16 @@ class Viewer extends React.Component {
 Viewer.propTypes = {
     dispatch: PropTypes.func.isRequired,
 
-    /** media: currently selected media (if any), provided by connect */
+    /** currently selected media (if any), provided by connect */
     media: PropTypes.shape({
         properties: PropTypes.object,
         geometry: PropTypes.object
     }),
 
-    /** pointCloud : currently selected pointcloud (if any), provided by connect */
+    /** currently selected pointcloud (if any), provided by connect */
     pointCloud: PropTypes.object,
 
-    /** previewMode : whether the previewer should be in preview mode (ie small) or not, provided by connect */
+    /** whether the viewer is in preview mode (ie small) or not, provided by connect */
     previewMode: PropTypes.bool,
 
     /** function called on mount to transmit handleResize function to component's parent (MainPanel), inherited from MainPanel */
@@ -106,7 +121,7 @@ const ConnectedViewer = connect(store => {
     const selectedMedias = getSelectedMedias(store);
     const selectedPointCloud = getSelectedPointCloud(store);
     return {
-        previewMode: getMapPreviewMode(store),
+        previewMode: !getMapPreviewMode(store),
         media: selectedMedias[0],
         pointCloud: selectedPointCloud
     };

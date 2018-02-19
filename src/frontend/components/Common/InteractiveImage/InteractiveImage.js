@@ -1,18 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ProgressBar from 'react-toolbox/lib/progress_bar';
+
+import styles from './interactive-image.css';
 
 let context = null;
 
-class InteractiveCanvas extends React.Component {
+/** A component representing a zoomable and movable image. Implemented with canvas. */
+class InteractiveImage extends React.Component {
     constructor(props) {
         super(props);
 
         this.handleScroll = this.handleScroll.bind(this);
         this.onResizeAnimation = this.onResizeAnimation.bind(this);
         this.handleResize = this.handleResize.bind(this);
+
+        this.state = {
+            loading: false
+        };
     }
 
     componentDidMount() {
+        if (this.props.setResizeHandler) {
+            this.props.setResizeHandler(this.handleResize);
+        }
         this.initViewer();
     }
 
@@ -23,16 +34,11 @@ class InteractiveCanvas extends React.Component {
         if (!nextProps.resizeAnimationOnGoing && this.props.resizeAnimationOnGoing) {
             cancelAnimationFrame(this.resizeRequest);
         }
-
-        if (nextProps.media && this.props.media) {
-            const didMediaDimensionsChange =
-                nextProps.media.width !== this.props.media.width ||
-                nextProps.media.height !== this.props.media.height ||
-                nextProps.media.left !== this.props.media.left ||
-                nextProps.media.top !== this.props.media.top;
-            if (didMediaDimensionsChange) {
-                this.handleResize();
-            }
+        if (nextProps.mediaUrl !== this.props.mediaUrl) {
+            this.media.src = nextProps.mediaUrl;
+            this.setState({
+                loading: true
+            });
         }
     }
 
@@ -40,11 +46,10 @@ class InteractiveCanvas extends React.Component {
         this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
         this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;
         this.media = new Image();
-        // const imgUrl = !this.props.previewMode
-        //     ? this.props.media.properties.preview_url
-        //     : this.props.media.properties.url;
-        // this.media.src = imgUrl;
-        this.media.src = this.props.media.src;
+        this.media.src = this.props.mediaUrl;
+        this.setState({
+            loading: true
+        });
         context = this.mediaCanvas.getContext('2d');
         this.trackTransforms(context);
 
@@ -60,14 +65,11 @@ class InteractiveCanvas extends React.Component {
         this.mediaCanvas.addEventListener('mousedown', this.handleMouseDown.bind(this), false);
         this.mediaCanvas.addEventListener('mousemove', this.handleMouseMove.bind(this), false);
         this.mediaCanvas.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
-
-        this.leaveFullMode = this.leaveFullMode.bind(this);
-        window.addEventListener('resize', this.handleResize, false);
     }
 
     computeMouseCoords(e) {
         const rect = this.mediaCanvas.getBoundingClientRect();
-        switch (this.props.media.quarter) {
+        switch (this.props.quarter) {
             case 0:
                 this.lastX = (e.clientX - rect.left) / (rect.right - rect.left) * rect.width;
                 this.lastY = (e.clientY - rect.top) / (rect.bottom - rect.top) * rect.height;
@@ -100,14 +102,15 @@ class InteractiveCanvas extends React.Component {
         });
     }
 
-    handleMediaLoadError() {
-        // Use full media picture if preview is no available
-        // if (e.target.src === this.props.media.properties.preview_url) {
-        //     e.target.src = this.props.media.properties.url;
-        // }
-        this.setState({
-            loading: false
-        });
+    handleMediaLoadError(e) {
+        // Use fallback picture
+        if (this.props.fallbackMediaUrl && this.props.fallbackMediaUrl !== this.props.mediaUrl) {
+            e.target.src = this.props.fallbackMediaUrl;
+        } else {
+            this.setState({
+                loading: false
+            });
+        }
     }
 
     handleMouseDown(e) {
@@ -133,9 +136,6 @@ class InteractiveCanvas extends React.Component {
     }
 
     handleMouseMove(e) {
-        if (this.props.interactive) {
-            e.stopPropagation();
-        }
         this.computeMouseCoords(e);
         this.dragged = true;
         if (this.dragStart) {
@@ -182,16 +182,10 @@ class InteractiveCanvas extends React.Component {
             return e.preventDefault() && false;
         } else {
             e.stopPropagation();
-            // this.props.toggleFullScreen();
-            this.props.exit();
+            if (this.props.handleScrollExit) {
+                this.props.handleScrollExit();
+            }
         }
-    }
-
-    leaveFullMode() {
-        this.mediaCanvas.width = this.props.media.width;
-        this.mediaCanvas.height = this.props.media.height;
-        this.trackTransforms(context);
-        this.redraw();
     }
 
     zoom(clicks) {
@@ -311,12 +305,7 @@ class InteractiveCanvas extends React.Component {
     render() {
         return (
             <div
-                style={{
-                    height: '100%',
-                    width: '100%',
-                    backgroundColor: 'black',
-                    position: 'absolute'
-                }}
+                className={styles.interactiveImage}
                 onClick={e => {
                     e.stopPropagation();
                 }}
@@ -324,12 +313,13 @@ class InteractiveCanvas extends React.Component {
                     e.stopPropagation();
                 }}
             >
+                {this.state.loading && (
+                    <div className={styles.interactiveImageLoader}>
+                        <ProgressBar type="circular" mode="indeterminate" />
+                    </div>
+                )}
                 <canvas
                     onWheel={this.handleScroll}
-                    style={{
-                        height: '100%',
-                        width: '100%'
-                    }}
                     ref={mediaCanvas => (this.mediaCanvas = mediaCanvas)}
                 />
             </div>
@@ -337,19 +327,28 @@ class InteractiveCanvas extends React.Component {
     }
 }
 
-InteractiveCanvas.propTypes = {
-    exit: PropTypes.func,
+InteractiveImage.propTypes = {
+    /** a fallback url of the image to display (loaded in case mediaUrl is not available)*/
+    fallbackMediaUrl: PropTypes.string,
+    /** function to call when user scrolls out of the media (ie zoom level is < 1), optional */
+    handleScrollExit: PropTypes.func,
+    /** whether image is interactive or not (zoomable/movable) */
     interactive: PropTypes.bool,
-    media: PropTypes.shape({
-        quarter: PropTypes.number,
-        top: PropTypes.number,
-        left: PropTypes.number,
-        width: PropTypes.number,
-        height: PropTypes.number,
-        src: PropTypes.string
-    }).isRequired,
-    previewMode: PropTypes.bool,
-    resizeAnimationOnGoing: PropTypes.bool
+    /** the url of the image to display */
+    mediaUrl: PropTypes.string.isRequired,
+    /** the orientation of the canvas (0,1,2 or 3)*/
+    quarter: PropTypes.number,
+    /** whether an animation is on going : if so, canvas should resize on requestAnimationFrame
+     * until animation is finished*/
+    resizeAnimationOnGoing: PropTypes.bool,
+    /** function to set resize handler so that parent can call it when a resize is necessary */
+    setResizeHandler: PropTypes.func.isRequired
 };
 
-export default InteractiveCanvas;
+InteractiveImage.defaultProps = {
+    interactive: false,
+    quarter: 0,
+    resizeAnimationOnGoing: false
+};
+
+export default InteractiveImage;

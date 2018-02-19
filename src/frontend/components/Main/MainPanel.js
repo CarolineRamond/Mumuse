@@ -15,6 +15,13 @@ class MainPanel extends React.Component {
         this.props.setResizeHandler(this.handleResize.bind(this));
     }
 
+    shouldComponentUpdate(nextProps) {
+        return (
+            this.props.mapPreviewMode !== nextProps.mapPreviewMode ||
+            this.props.showViewer !== nextProps.showViewer
+        );
+    }
+
     handleResize() {
         if (this.handleMapResize) {
             if (!this.props.mapPreviewMode) {
