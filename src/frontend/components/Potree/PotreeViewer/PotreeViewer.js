@@ -9,13 +9,7 @@ import FadeInComponent from '../../Common/AnimationComponents/FadeInComponent';
 import styles from './potreeViewer.css';
 
 import { selectors } from '../../../modules';
-const {
-    getSelectedMedias,
-    getSelectFilterPending,
-    getVisibleMedias,
-    getSelectedPointCloud,
-    getMapPreviewMode
-} = selectors;
+const { getSelectedMedias, getVisibleMedias, getSelectedPointCloud } = selectors;
 import { actions } from '../../../modules';
 const { selectMediaById, clickMedias } = actions;
 

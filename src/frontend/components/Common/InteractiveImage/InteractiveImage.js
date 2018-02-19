@@ -1,66 +1,58 @@
 import React from 'react';
-import styles from './MediaViewer.css';
 import PropTypes from 'prop-types';
 import ProgressBar from 'react-toolbox/lib/progress_bar';
 
+import styles from './interactive-image.css';
+
 let context = null;
 
-class MediaViewer extends React.Component {
+class InteractiveCanvas extends React.Component {
     constructor(props) {
         super(props);
+
+        this.handleScroll = this.handleScroll.bind(this);
+        this.onResizeAnimation = this.onResizeAnimation.bind(this);
+        this.handleResize = this.handleResize.bind(this);
+
         this.state = {
-            loading: true
+            loading: false
         };
     }
 
     componentDidMount() {
+        this.props.setResizeHandler(this.handleResize);
         this.initViewer();
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.media.properties._id !== this.props.media.properties._id) {
-            // media did change => preload previewImg & fullImg
+        if (nextProps.resizeAnimationOnGoing && !this.props.resizeAnimationOnGoing) {
+            this.resizeRequest = requestAnimationFrame(this.onResizeAnimation);
+        }
+        if (!nextProps.resizeAnimationOnGoing && this.props.resizeAnimationOnGoing) {
+            cancelAnimationFrame(this.resizeRequest);
+        }
+        if (!nextProps.mediaUrl !== this.props.mediaUrl) {
+            this.media.src = nextProps.mediaUrl;
             this.setState({
                 loading: true
             });
-            const imgUrl = !this.props.previewMode
-                ? nextProps.media.properties.preview_url
-                : nextProps.media.properties.url;
-            this.media.src = imgUrl;
-            this.handleResize();
         }
-        if (nextProps.previewMode !== this.props.previewMode) {
-            this.initViewer();
-        }
-
-        // if (nextProps.media && this.props.media) {
-        //     const containerRect = this.mediaCanvas.offsetParent.getBoundingClientRect();
-        //     const didContainerDimensionsChange;
-        //     const didMediaDimensionsChange =
-        //         nextProps.media.width !== this.props.media.width ||
-        //         nextProps.media.height !== this.props.media.height ||
-        //         nextProps.media.left !== this.props.media.left ||
-        //         nextProps.media.top !== this.props.media.top;
-        //     if (didMediaDimensionsChange) {
-        //         this.handleResize();
-        //     }
-        // }
-    }
     }
 
     initViewer() {
         this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
         this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;
         this.media = new Image();
-        const imgUrl = !this.props.previewMode
-            ? this.props.media.properties.preview_url
-            : this.props.media.properties.url;
-        this.media.src = imgUrl;
+        this.media.src = this.props.mediaUrl;
+        this.setState({
+            loading: true
+        });
         context = this.mediaCanvas.getContext('2d');
         this.trackTransforms(context);
 
         this.lastX = this.mediaCanvas.width / 2;
         this.lastY = this.mediaCanvas.height / 2;
+
         this.dragStart = null;
         this.dragged = null;
         this.scaleFactor = 1.1;
@@ -70,8 +62,34 @@ class MediaViewer extends React.Component {
         this.mediaCanvas.addEventListener('mousedown', this.handleMouseDown.bind(this), false);
         this.mediaCanvas.addEventListener('mousemove', this.handleMouseMove.bind(this), false);
         this.mediaCanvas.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
-        this.mediaCanvas.addEventListener('DOMMouseScroll', this.handleScroll.bind(this), false);
-        this.mediaCanvas.addEventListener('mousewheel', this.handleScroll.bind(this), false);
+    }
+
+    computeMouseCoords(e) {
+        const rect = this.mediaCanvas.getBoundingClientRect();
+        switch (this.props.quarter) {
+            case 0:
+                this.lastX = (e.clientX - rect.left) / (rect.right - rect.left) * rect.width;
+                this.lastY = (e.clientY - rect.top) / (rect.bottom - rect.top) * rect.height;
+                break;
+            case 1:
+                this.lastX =
+                    rect.height - (e.clientY - rect.top) / (rect.bottom - rect.top) * rect.height;
+                this.lastY = (e.clientX - rect.left) / (rect.right - rect.left) * rect.width;
+                break;
+            case 2:
+                this.lastX =
+                    rect.width - (e.clientX - rect.left) / (rect.right - rect.left) * rect.width;
+                this.lastY =
+                    rect.height - (e.clientY - rect.top) / (rect.bottom - rect.top) * rect.height;
+                break;
+            case 3:
+                this.lastX = (e.clientY - rect.top) / (rect.bottom - rect.top) * rect.height;
+                this.lastY =
+                    rect.width - (e.clientX - rect.left) / (rect.right - rect.left) * rect.width;
+                break;
+            default:
+                break;
+        }
     }
 
     handleMediaLoad() {
@@ -82,34 +100,40 @@ class MediaViewer extends React.Component {
     }
 
     handleMediaLoadError(e) {
-        // Use full media picture if preview is no available
-        if (e.target.src === this.props.media.properties.preview_url) {
-            e.target.src = this.props.media.properties.url;
+        // Use fallback picture
+        if (this.props.fallbackMediaUrl && this.props.fallbackMediaUrl !== this.props.mediaUrl) {
+            e.target.src = this.props.fallbackMediaUrl;
+        } else {
+            this.setState({
+                loading: false
+            });
         }
-        this.setState({
-            loading: false
-        });
     }
 
     handleMouseDown(e) {
+        if (this.props.interactive) {
+            e.stopPropagation();
+        }
+        if (!this.props.interactive) {
+            return e.preventDefault();
+        }
         document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect =
             'none';
-        const rect = this.mediaCanvas.getBoundingClientRect();
-        this.lastX = (e.clientX - rect.left) / (rect.right - rect.left) * this.mediaCanvas.width;
-        this.lastY = (e.clientY - rect.top) / (rect.bottom - rect.top) * this.mediaCanvas.height;
+        this.computeMouseCoords(e);
         this.dragStart = context.transformedPoint(this.lastX, this.lastY);
         this.dragged = false;
     }
 
     handleMouseUp(e) {
+        if (this.props.interactive) {
+            e.stopPropagation();
+        }
         this.dragStart = null;
         if (!this.dragged) this.zoom(e.shiftKey ? -1 : 1);
     }
 
     handleMouseMove(e) {
-        const rect = this.mediaCanvas.getBoundingClientRect();
-        this.lastX = (e.clientX - rect.left) / (rect.right - rect.left) * this.mediaCanvas.width;
-        this.lastY = (e.clientY - rect.top) / (rect.bottom - rect.top) * this.mediaCanvas.height;
+        this.computeMouseCoords(e);
         this.dragged = true;
         if (this.dragStart) {
             const pt = context.transformedPoint(this.lastX, this.lastY);
@@ -118,19 +142,47 @@ class MediaViewer extends React.Component {
         }
     }
 
-    handleResize() {
-        context = this.mediaCanvas.getContext('2d');
-        this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
-        this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;
+    onResizeAnimation() {
+        this.handleResize();
+        this.resizeRequest = requestAnimationFrame(this.onResizeAnimation);
+    }
 
-        this.trackTransforms(context);
-        this.redraw();
+    handleResize() {
+        if (this.mediaCanvas) {
+            context = this.mediaCanvas.getContext('2d');
+            this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
+            this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;
+            this.trackTransforms(context);
+            this.redraw();
+        }
     }
 
     handleScroll(e) {
-        const delta = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0;
-        if (delta) this.zoom(delta);
-        return e.preventDefault() && false;
+        this.computeMouseCoords(e);
+        let delta;
+        if (e.deltaMode === 0) {
+            delta = -e.deltaY / 33;
+        } else {
+            delta = -e.deltaY;
+        }
+        const factor = Math.pow(this.scaleFactor, delta);
+        const xform = context.getTransform();
+        const scaledXform = xform.scaleNonUniform(factor, factor);
+        const nextScale = scaledXform.a;
+
+        if (!this.props.interactive) {
+            return e.preventDefault();
+        }
+        if (nextScale >= 1) {
+            e.stopPropagation();
+            if (delta) this.zoom(delta);
+            return e.preventDefault() && false;
+        } else {
+            e.stopPropagation();
+            if (this.props.handleScrollExit) {
+                this.props.handleScrollExit();
+            }
+        }
     }
 
     zoom(clicks) {
@@ -249,30 +301,45 @@ class MediaViewer extends React.Component {
 
     render() {
         return (
-            <div className={styles.previewMediaContainer}>
+            <div
+                className={styles.interactiveImage}
+                onClick={e => {
+                    e.stopPropagation();
+                }}
+                onMouseDown={e => {
+                    e.stopPropagation();
+                }}
+            >
                 {this.state.loading && (
-                    <div className={styles.previewLoaderContainer}>
+                    <div className={styles.interactiveImageLoader}>
                         <ProgressBar type="circular" mode="indeterminate" />
                     </div>
                 )}
                 <canvas
+                    onWheel={this.handleScroll}
                     ref={mediaCanvas => (this.mediaCanvas = mediaCanvas)}
-                    className={styles.previewMedia}
                 />
             </div>
         );
     }
 }
 
-MediaViewer.propTypes = {
-    /** currently selected media, inherited from Viewer */
-    media: PropTypes.shape({
-        properties: PropTypes.object,
-        geometry: PropTypes.object
-    }).isRequired,
-
-    /** whether MediaViewer is in preview mode, inherited from Viewer */
-    previewMode: PropTypes.bool
+InteractiveCanvas.propTypes = {
+    /** a fallback url of the image to display (loaded in case mediaUrl is not available)*/
+    fallbackMediaUrl: PropTypes.string,
+    /** function to call when user scrolls out of the media (ie zoom level is < 1), optional */
+    handleScrollExit: PropTypes.func,
+    /** whether image is interactive or not (zoomable/movable) */
+    interactive: PropTypes.bool,
+    /** the url of the image to display */
+    mediaUrl: PropTypes.string.isRequired,
+    /** the orientation of the canvas (0,1,2 or 3)*/
+    quarter: PropTypes.number,
+    /** whether an animation is on going : if so, canvas should resize on requestAnimationFrame
+     * until animation is finished*/
+    resizeAnimationOnGoing: PropTypes.bool,
+    /** function to set resize handler so that parent can call it when a resize is necessary */
+    setResizeHandler: PropTypes.func.isRequired
 };
 
-export default MediaViewer;
+export default InteractiveCanvas;

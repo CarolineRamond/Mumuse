@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 
-import InteractiveCanvas from './InteractiveCanvas';
+import InteractiveImage from '../../Common/InteractiveImage';
 import ResizableComponent from '../../Common/AnimationComponents/ResizableComponent';
 import ClippableComponent from '../../Common/AnimationComponents/ClippableComponent';
 import styles from './mediaViewer.css';
@@ -195,7 +195,7 @@ class MediaViewer extends React.Component {
                                 transitionDuration={clipTransitionDuration}
                                 onTransitionComplete={this.handleClipTransitionComplete}
                             >
-                                <InteractiveCanvas
+                                <InteractiveImage
                                     mediaUrl={this.props.media.src}
                                     quarter={this.props.media.quarter}
                                     interactive={isCanvasInteractive}

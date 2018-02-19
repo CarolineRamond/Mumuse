@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import InteractiveCanvas from '../Potree/MediaViewer/InteractiveCanvas';
+import InteractiveImage from '../Common/InteractiveImage';
 import PotreeViewer from '../Potree/PotreeViewer/PotreeViewer';
 import { actions } from '../../modules';
 import { selectors } from '../../modules';
@@ -21,9 +21,29 @@ class Viewer extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.previewMode !== this.props.previewMode) {
+        if (nextProps.previewMode !== this.props.previewMode && this.props.pointCloud) {
             this.handleResize();
         }
+    }
+
+    shouldComponentUpdate(nextProps) {
+        const didMediaChange =
+            (this.props.media &&
+                nextProps.media &&
+                this.props.media.properties._id !== nextProps.media.properties._id) ||
+            (this.props.media && !nextProps.media) ||
+            (!this.props.media && nextProps.media);
+        const didPointCloudChange =
+            (this.props.pointCloud &&
+                nextProps.pointCloud &&
+                this.props.pointCloud.properties._id !== nextProps.pointCloud.properties._id) ||
+            (this.props.pointCloud && !nextProps.pointCloud) ||
+            (!this.props.pointCloud && nextProps.pointCloud);
+        return (
+            didMediaChange ||
+            didPointCloudChange ||
+            this.props.previewMode !== nextProps.previewMode
+        );
     }
 
     componentWillUnmount() {
@@ -53,13 +73,18 @@ class Viewer extends React.Component {
             >
                 {isMediaSelected &&
                     !this.props.pointCloud && (
-                        <InteractiveCanvas
+                        <InteractiveImage
                             setResizeHandler={resizeHandler => {
                                 this.handleMediaResize = resizeHandler;
                             }}
-                            mediaUrl={this.props.media.properties.url}
+                            mediaUrl={
+                                this.props.previewMode
+                                    ? this.props.media.properties.preview_url
+                                    : this.props.media.properties.url
+                            }
+                            fallbackMediaUrl={this.props.media.properties.url}
                             quarter={0}
-                            interactive={true}
+                            interactive
                         />
                     )}
                 {this.props.pointCloud && (
@@ -77,16 +102,16 @@ class Viewer extends React.Component {
 Viewer.propTypes = {
     dispatch: PropTypes.func.isRequired,
 
-    /** media: currently selected media (if any), provided by connect */
+    /** currently selected media (if any), provided by connect */
     media: PropTypes.shape({
         properties: PropTypes.object,
         geometry: PropTypes.object
     }),
 
-    /** pointCloud : currently selected pointcloud (if any), provided by connect */
+    /** currently selected pointcloud (if any), provided by connect */
     pointCloud: PropTypes.object,
 
-    /** previewMode : whether the previewer should be in preview mode (ie small) or not, provided by connect */
+    /** whether the viewer is in preview mode (ie small) or not, provided by connect */
     previewMode: PropTypes.bool,
 
     /** function called on mount to transmit handleResize function to component's parent (MainPanel), inherited from MainPanel */
@@ -97,7 +122,7 @@ const ConnectedViewer = connect(store => {
     const selectedMedias = getSelectedMedias(store);
     const selectedPointCloud = getSelectedPointCloud(store);
     return {
-        previewMode: getMapPreviewMode(store),
+        previewMode: !getMapPreviewMode(store),
         media: selectedMedias[0],
         pointCloud: selectedPointCloud
     };
