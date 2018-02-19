@@ -664,6 +664,9 @@ class PotreeViewer extends React.Component {
     }
 
     handleMouseMove(event) {
+        if (this.isDragging) {
+            this.hasMoved = true;
+        }
         if (this.isDragging && this.state.media !== null && !this.navigating) {
             this.deselectMediaCamera();
         }
@@ -745,10 +748,14 @@ class PotreeViewer extends React.Component {
 
     handleMouseDown() {
         this.isDragging = true;
+        this.hasMoved = false;
     }
 
     handleMouseUp() {
         this.isDragging = false;
+        if (!this.hasMoved) {
+            this.handleClick();
+        }
     }
 
     handleClick() {
@@ -781,7 +788,6 @@ class PotreeViewer extends React.Component {
                 <div
                     id="potree"
                     className={styles.potree}
-                    onClick={this.handleClick}
                     onMouseMove={this.handleMouseMove}
                     onMouseDown={this.handleMouseDown}
                     onMouseUp={this.handleMouseUp}
