@@ -1,9 +1,8 @@
 import React from 'react';
 import SplitPane from 'react-split-pane';
 
-import AuthButton from '../Auth/AuthButton';
-import MainPanel from './MainPanel';
-import SidePanel from './SidePanel';
+import View2D from './View2D';
+import View3D from './View3D';
 
 class Main extends React.Component {
     constructor(props) {
@@ -14,6 +13,10 @@ class Main extends React.Component {
         this.state = {
             isResizing: false
         };
+    }
+
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize, false);
     }
 
     handleDragStarted() {
@@ -29,8 +32,11 @@ class Main extends React.Component {
     }
 
     handleResize() {
-        if (this.handleMainPanelResize) {
-            this.handleMainPanelResize();
+        if (this.handle2DResize) {
+            this.handle2DResize();
+        }
+        if (this.handle3DResize) {
+            this.handle3DResize();
         }
     }
 
@@ -47,22 +53,24 @@ class Main extends React.Component {
         });
         return (
             <div>
-                <AuthButton />
                 <SplitPane
                     split="vertical"
-                    defaultSize="70%"
-                    minSize={750}
+                    defaultSize="50%"
                     resizerStyle={this.state.isResizing ? resizerStyleHover : resizerStyle}
                     onDragStarted={this.handleDragStarted}
                     onDragFinished={this.handleDragFinished}
                     onChange={this.handleResize}
                 >
-                    <MainPanel
+                    <View3D
                         setResizeHandler={resizeHandler => {
-                            this.handleMainPanelResize = resizeHandler;
+                            this.handle3DResize = resizeHandler;
                         }}
                     />
-                    <SidePanel />
+                    <View2D
+                        setResizeHandler={resizeHandler => {
+                            this.handle2DResize = resizeHandler;
+                        }}
+                    />
                 </SplitPane>
             </div>
         );

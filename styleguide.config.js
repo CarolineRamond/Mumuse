@@ -30,28 +30,8 @@ module.exports = {
   				components: 'src/frontend/components/Common/**/[A-Z]*.js'
   			},
         {
-          name: 'Admin Components',
-          components: 'src/frontend/components/Admin/**/[A-Z]*.js'
-        },
-        {
-          name: 'Authentication Components',
-          components: 'src/frontend/components/Auth/**/[A-Z]*.js'
-        },
-        {
           name: 'Main Layout Components',
           components: 'src/frontend/components/Main/**/[A-Z]*.js'
-        },
-        {
-          name: 'Map-related Components',
-          components: 'src/frontend/components/Map/**/[A-Z]*.js'
-        },
-        {
-          name: 'Media-related Components',
-          components: 'src/frontend/components/Medias/**/[A-Z]*.js'
-        },
-        {
-          name: 'Potree-related Components',
-          components: 'src/frontend/components/Potree/**/[A-Z]*.js'
         }
   		]
   	}
@@ -61,7 +41,7 @@ module.exports = {
       base: '#333',
       light: '#999',
       lightest: '#ccc',
-      link: '#333',
+      link: '#f28a25',
       linkHover: '#f28a25',
       border: '#e8e8e8',
       name: '#7f9a44',

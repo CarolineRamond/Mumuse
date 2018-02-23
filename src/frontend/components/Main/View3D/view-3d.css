@@ -1,0 +1,6 @@
+.view3D {
+	height: 100%;
+	width: 100%;
+	border: 2px solid blue;
+	box-sizing: border-box;
+}

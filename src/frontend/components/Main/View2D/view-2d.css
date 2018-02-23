@@ -1,0 +1,7 @@
+.view2D {
+	height: 100%;
+	width: 100%;
+	border: 2px solid red;
+	box-sizing: border-box;
+	margin-left: -12px;
+}

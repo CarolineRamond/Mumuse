@@ -175,11 +175,11 @@ module.exports = function makeWebpackConfig() {
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
       "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
     },
-    proxy : {
-      "*": {
-        target: "http://localhost:9000"
-      }
-    }
+    // proxy : {
+    //   "*": {
+    //     target: "http://localhost:9000"
+    //   }
+    // }
   };
 
   return config;

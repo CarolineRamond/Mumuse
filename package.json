@@ -1,7 +1,7 @@
 {
-  "name": "@iconem/frontend",
-  "description": "Iconem platform frontend using react",
-  "version": "0.0.13",
+  "name": "@iconem/recalage",
+  "description": "Iconem tool for adjusting photos",
+  "version": "0.0.1",
   "author": "Iconem (http://github.com/Iconem)",
   "bugs": {
     "url": "https://github.com/Iconem/Product-Backlog"
@@ -43,7 +43,9 @@
     "redux-promise-middleware": "^4.4.1",
     "redux-throttle": "^0.1.1",
     "redux-thunk": "^2.2.0",
+    "redux-undo": "^0.6.1",
     "turf-extent": "^1.0.4",
+    "uuid": "^3.2.1",
     "validator": "^9.1.1"
   },
   "devDependencies": {
@@ -105,13 +107,13 @@
     "test:watch": "npm test -- --watch",
     "test:coverage": "jest --runInBand --coverage",
     "docs": "styleguidist server",
-    "docs:build": "documentation build --document-exported src/frontend/modules/**/*.selectors.js -f md --markdown-toc=false > docs/selectors.md && documentation build --document-exported src/frontend/modules/**/*.actions.js -f md --markdown-toc=false > docs/actions.md && styleguidist build"
+    "docs:build": "documentation build --document-exported src/frontend/redux/**/*.selectors.js -f md --markdown-toc=false > docs/selectors.md && documentation build --document-exported src/frontend/redux/**/*.actions.js -f md --markdown-toc=false > docs/actions.md && styleguidist build"
   },
   "main": "gulpfile.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Iconem/Frontend.git"
+    "url": "git+https://github.com/Iconem/Recalage.git"
   },
   "license": "ISC",
-  "homepage": "https://github.com/Iconem/Frontend#readme"
+  "homepage": "https://github.com/Iconem/Recalage#readme"
 }
