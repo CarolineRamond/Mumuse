@@ -140,32 +140,9 @@ class InteractiveImage extends React.Component {
             if (!this.props.addMode || rightClick) {
                 // handle drag start
                 this.dragStart = context.transformedPoint(this.lastX, this.lastY);
-            } else if (this.props.addMode && this.props.addPoint) {
+            } else if (this.props.addMode && this.props.addPoint && this.mouseMediaCoords) {
                 // add point
-                const pt = context.transformedPoint(this.lastX, this.lastY);
-
-                const hRatio = this.mediaCanvas.width / this.media.width;
-                const vRatio = this.mediaCanvas.height / this.media.height;
-                const ratio = Math.min(hRatio, vRatio);
-                const centerShift_x = (this.mediaCanvas.width - this.media.width * ratio) / 2;
-                const centerShift_y = (this.mediaCanvas.height - this.media.height * ratio) / 2;
-
-                pt.x = pt.x - centerShift_x;
-                pt.y = pt.y - centerShift_y;
-                if (
-                    pt.x >= 0 &&
-                    pt.x <= this.media.width * ratio &&
-                    pt.y >= 0 &&
-                    pt.y <= this.media.height * ratio
-                ) {
-                    //user clicked inside photo
-                    const X = 2 * pt.x / (this.media.width * ratio) - 1;
-                    const Y = 2 * pt.y / (this.media.height * ratio) - 1;
-                    this.props.addPoint({
-                        x: X,
-                        y: Y
-                    });
-                }
+                this.props.addPoint(this.mouseMediaCoords);
             }
             this.dragged = false;
         }
@@ -191,6 +168,34 @@ class InteractiveImage extends React.Component {
             const pt = context.transformedPoint(this.lastX, this.lastY);
             context.translate(pt.x - this.dragStart.x, pt.y - this.dragStart.y);
             this.redraw();
+        }
+        if (this.props.addMode) {
+            const pt = context.transformedPoint(this.lastX, this.lastY);
+            const hRatio = this.mediaCanvas.width / this.media.width;
+            const vRatio = this.mediaCanvas.height / this.media.height;
+            const ratio = Math.min(hRatio, vRatio);
+            const centerShift_x = (this.mediaCanvas.width - this.media.width * ratio) / 2;
+            const centerShift_y = (this.mediaCanvas.height - this.media.height * ratio) / 2;
+
+            pt.x = pt.x - centerShift_x;
+            pt.y = pt.y - centerShift_y;
+            if (
+                pt.x >= 0 &&
+                pt.x <= this.media.width * ratio &&
+                pt.y >= 0 &&
+                pt.y <= this.media.height * ratio
+            ) {
+                //mouse is inside inside photo
+                this.mediaCanvas.style.cursor = 'crosshair';
+                this.mouseMediaCoords = {
+                    x: 2 * pt.x / (this.media.width * ratio) - 1,
+                    y: 2 * pt.y / (this.media.height * ratio) - 1
+                };
+            } else {
+                // mouse is outside photo
+                this.mediaCanvas.style.cursor = 'default';
+                this.mouseMediaCoords = null;
+            }
         }
     }
 
