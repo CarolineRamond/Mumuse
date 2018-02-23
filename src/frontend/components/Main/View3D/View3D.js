@@ -1,7 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import OrbitControls from 'orbit-controls-es6';
+
+import { actions, selectors } from '../../../redux';
+const { get3DPoints } = selectors;
+const { add3DPoint } = actions;
 
 import styles from './view-3D.css';
 
@@ -11,6 +16,7 @@ class View3D extends React.Component {
         this.animate = this.animate.bind(this);
         this.handleResize = this.handleResize.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
     }
 
     componentDidMount() {
@@ -63,18 +69,47 @@ class View3D extends React.Component {
         });
         const loader = new THREE.JSONLoader();
         loader.load('/public/mesh/amrit.json', geometry => {
+            this.modelContainer = new THREE.Object3D();
             const mesh = new THREE.Mesh(geometry, texture);
-            this.scene.add(mesh);
-        });
+            this.modelContainer.add(mesh);
+            this.scene.add(this.modelContainer);
 
-        // setup event handlers
-        // element_3D.addEventListener('mousewheel', onMouseWheel, false);
-        // element_3D.addEventListener('MozMousePixelScroll', onMouseWheel, false);
-        this.container3D.addEventListener('mousemove', this.onMouseMove, false);
-        // document.addEventListener('mousedown', onMouseDown, false);
-        //    document.addEventListener('mouseup', onMouseUp, false);
-        // window.addEventListener('keydown', onKeyDown, false);
-        // window.addEventListener('keyup', onKeyUp, false);
+            // addpoint helper
+            this.helperContainer = new THREE.Object3D();
+            const emptyGeometry = new THREE.Geometry();
+            const v1 = new THREE.Vector3(0.1, 0, 0);
+            const v2 = new THREE.Vector3(-0.1, 0, 0);
+            const v3 = new THREE.Vector3(0, 0.1, 0);
+            const v4 = new THREE.Vector3(0, -0.1, 0);
+            const v5 = new THREE.Vector3(0, 0, 0.1);
+            const v6 = new THREE.Vector3(0, 0, -0.1);
+            emptyGeometry.vertices.push(v1);
+            emptyGeometry.vertices.push(v2);
+            emptyGeometry.vertices.push(v3);
+            emptyGeometry.vertices.push(v4);
+            emptyGeometry.vertices.push(v5);
+            emptyGeometry.vertices.push(v6);
+            const materialRed = new THREE.LineBasicMaterial({
+                color: 0xcc0000,
+                transparent: true,
+                opacity: 0.5,
+                linewidth: 3
+            });
+            this.addPointHelper = new THREE.LineSegments(emptyGeometry, materialRed);
+            this.addPointHelper.scale.set(rect.width / 10, rect.width / 10, rect.width / 10);
+            this.addPointHelper.visible = false;
+            this.helperContainer.add(this.addPointHelper);
+            this.scene.add(this.helperContainer);
+
+            // setup event handlers
+            // element_3D.addEventListener('mousewheel', onMouseWheel, false);
+            // element_3D.addEventListener('MozMousePixelScroll', onMouseWheel, false);
+            this.container3D.addEventListener('mousemove', this.onMouseMove, false);
+            this.container3D.addEventListener('mousedown', this.onMouseDown, false);
+            //    document.addEventListener('mouseup', onMouseUp, false);
+            // window.addEventListener('keydown', onKeyDown, false);
+            // window.addEventListener('keyup', onKeyUp, false);
+        });
 
         // init variables
         this.mouse = {};
@@ -92,11 +127,11 @@ class View3D extends React.Component {
         requestAnimationFrame(this.animate);
     }
 
-    onMouseMove() {
+    onMouseMove(e) {
         // Calculate mouse position in normalized device coordinates (-1 to +1) for both components
         const rect = this.container3D.getBoundingClientRect();
-        this.mouse.x = (event.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
-        this.mouse.y = -((event.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
+        this.mouse.x = (e.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
+        this.mouse.y = -((e.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
 
         // Pick camera
         // Raycaster for picking selected camera mesh, see github source
@@ -105,12 +140,21 @@ class View3D extends React.Component {
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
         // find objects intersecting the picking ray
-        const intersects = this.raycaster.intersectObjects(this.scene.children);
+        const modelIntersect = this.raycaster.intersectObjects(this.modelContainer.children);
+        this.isModelIntersected = modelIntersect.length > 0;
 
-        if (intersects.length > 0 && this.props.addMode) {
-            this.container3D.style.cursor = 'crosshair';
+        if (this.isModelIntersected && this.props.addMode) {
+            this.addPointHelper.visible = true;
+            this.addPointHelper.position.copy(modelIntersect[0].point);
         } else {
-            this.container3D.style.cursor = 'default';
+            this.addPointHelper.visible = false;
+        }
+    }
+
+    onMouseDown(e) {
+        if (this.isModelIntersected && this.props.addMode) {
+            console.log(this.addPointHelper.position);
+            this.props.dispatch(add3DPoint(this.addPointHelper.position));
         }
     }
 
@@ -121,7 +165,14 @@ class View3D extends React.Component {
 
 View3D.propTypes = {
     addMode: PropTypes.bool,
+    dispatch: PropTypes.func.isRequired,
     setResizeHandler: PropTypes.func.isRequired
 };
 
-export default View3D;
+const ConnectedView3D = connect(store => {
+    return {
+        points: get3DPoints(store)
+    };
+})(View3D);
+
+export default ConnectedView3D;
