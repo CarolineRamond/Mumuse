@@ -289,11 +289,13 @@ class InteractiveImage extends React.Component {
             const X = mediaCenterX + point.x * this.media.width * ratio / 2;
             const Y = mediaCenterY + point.y * this.media.height * ratio / 2;
             context.lineWidth = 1;
+            context.strokeStyle = 'red';
             context.beginPath();
             context.moveTo(X, Y - crossHeight / 2);
             context.lineTo(X, Y + crossHeight / 2);
             context.stroke();
             context.lineWidth = 1;
+            context.strokeStyle = 'red';
             context.beginPath();
             context.moveTo(X - crossWidth / 2, Y);
             context.lineTo(X + crossWidth / 2, Y);

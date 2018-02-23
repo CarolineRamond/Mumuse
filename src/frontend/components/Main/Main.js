@@ -112,8 +112,8 @@ class Main extends React.Component {
                         split="vertical"
                         defaultSize="50%"
                         resizerStyle={this.state.isVResizing ? vResizerStyleHover : vResizerStyle}
-                        onDragStarted={this.handleHDragStarted}
-                        onDragFinished={this.handleHDragFinished}
+                        onDragStarted={this.handleVDragStarted}
+                        onDragFinished={this.handleVDragFinished}
                         onChange={this.handleResize}
                     >
                         <View3D

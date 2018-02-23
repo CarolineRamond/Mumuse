@@ -26,6 +26,7 @@
     "esdoc-standard-plugin": "^1.0.0",
     "exif-parser": "^0.1.12",
     "mapbox-gl": "^0.41.0",
+    "orbit-controls-es6": "^1.0.11",
     "prop-types": "^15.6.0",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
@@ -44,6 +45,7 @@
     "redux-throttle": "^0.1.1",
     "redux-thunk": "^2.2.0",
     "redux-undo": "^0.6.1",
+    "three": "^0.90.0",
     "turf-extent": "^1.0.4",
     "uuid": "^3.2.1",
     "validator": "^9.1.1"
