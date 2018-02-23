@@ -4,12 +4,18 @@ import promise from 'redux-promise-middleware';
 import thunk from 'redux-thunk';
 import Validator from './validator';
 
-import reducer from './redux';
+import reducer, { actions } from './redux';
+const { add2DPoint } = actions;
 
 const validator = new Validator();
 const middleware = applyMiddleware(validator, thunk, promise(), createLogger());
 // const middleware = applyMiddleware(validator, thunk, promise());
 
 const store = createStore(reducer, middleware);
+store.dispatch(add2DPoint({ x: 0, y: 0 }));
+store.dispatch(add2DPoint({ x: -1, y: -1 }));
+store.dispatch(add2DPoint({ x: -1, y: 1 }));
+store.dispatch(add2DPoint({ x: 1, y: -1 }));
+store.dispatch(add2DPoint({ x: 1, y: 1 }));
 
 export default store;

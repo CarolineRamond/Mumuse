@@ -16,7 +16,8 @@ class InteractiveImage extends React.Component {
         this.handleResize = this.handleResize.bind(this);
 
         this.state = {
-            loading: false
+            loading: false,
+            points: this.props.points
         };
     }
 
@@ -39,6 +40,16 @@ class InteractiveImage extends React.Component {
             this.setState({
                 loading: true
             });
+        }
+        if (nextProps.points.length !== this.props.points.length) {
+            this.setState(
+                {
+                    points: nextProps.points
+                },
+                () => {
+                    this.redraw();
+                }
+            );
         }
     }
 
@@ -131,12 +142,30 @@ class InteractiveImage extends React.Component {
                 this.dragStart = context.transformedPoint(this.lastX, this.lastY);
             } else if (this.props.addMode && this.props.addPoint) {
                 // add point
-                this.props.addPoint({
-                    // x: e.clientX,
-                    // y: e.clientY
-                    x: 0.3,
-                    y: 0.1
-                });
+                const pt = context.transformedPoint(this.lastX, this.lastY);
+
+                const hRatio = this.mediaCanvas.width / this.media.width;
+                const vRatio = this.mediaCanvas.height / this.media.height;
+                const ratio = Math.min(hRatio, vRatio);
+                const centerShift_x = (this.mediaCanvas.width - this.media.width * ratio) / 2;
+                const centerShift_y = (this.mediaCanvas.height - this.media.height * ratio) / 2;
+
+                pt.x = pt.x - centerShift_x;
+                pt.y = pt.y - centerShift_y;
+                if (
+                    pt.x >= 0 &&
+                    pt.x <= this.media.width * ratio &&
+                    pt.y >= 0 &&
+                    pt.y <= this.media.height * ratio
+                ) {
+                    //user clicked inside photo
+                    const X = 2 * pt.x / (this.media.width * ratio) - 1;
+                    const Y = 2 * pt.y / (this.media.height * ratio) - 1;
+                    this.props.addPoint({
+                        x: X,
+                        y: Y
+                    });
+                }
             }
             this.dragged = false;
         }
@@ -245,6 +274,20 @@ class InteractiveImage extends React.Component {
             this.media.width * ratio,
             this.media.height * ratio
         );
+
+        // We draw the points relatively to the media
+        const mediaCenterX = centerShift_x + this.media.width * ratio / 2;
+        const mediaCenterY = centerShift_y + this.media.height * ratio / 2;
+        const pointWidth = 10;
+        const pointHeight = 10;
+        this.state.points.map(point => {
+            const X = mediaCenterX + (point.x * this.media.width * ratio - pointWidth) / 2;
+            const Y = mediaCenterY + (point.y * this.media.height * ratio - pointHeight) / 2;
+            context.beginPath();
+            context.rect(X, Y, pointWidth, pointHeight);
+            context.fillStyle = 'red';
+            context.fill();
+        });
 
         //If we want to draw the full media without fitting and centering it in the canvas
         // context.drawImage(this.media, 0, 0);
@@ -360,6 +403,8 @@ InteractiveImage.propTypes = {
     interactive: PropTypes.bool,
     /** the url of the image to display */
     mediaUrl: PropTypes.string.isRequired,
+    /** list of points to draw on the image (with coords relative to image center)*/
+    points: PropTypes.arrayOf(PropTypes.object),
     /** the orientation of the canvas (0,1,2 or 3)*/
     quarter: PropTypes.number,
     /** whether an animation is on going : if so, canvas should resize on requestAnimationFrame
@@ -371,6 +416,7 @@ InteractiveImage.propTypes = {
 
 InteractiveImage.defaultProps = {
     interactive: false,
+    points: [],
     quarter: 0,
     resizeAnimationOnGoing: false
 };
