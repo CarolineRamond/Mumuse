@@ -1,3 +1,14 @@
 .calcPanel {
-	border: 2px solid green;	
+	height: 100%;
+	width: 100%;
+	background-color: #CCC;
+	padding: 15px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+.lightText {
+	/*color: white;*/
 }

@@ -283,15 +283,21 @@ class InteractiveImage extends React.Component {
         // We draw the points relatively to the media
         const mediaCenterX = centerShift_x + this.media.width * ratio / 2;
         const mediaCenterY = centerShift_y + this.media.height * ratio / 2;
-        const pointWidth = 10;
-        const pointHeight = 10;
+        const crossWidth = 10;
+        const crossHeight = 10;
         this.state.points.map(point => {
-            const X = mediaCenterX + (point.x * this.media.width * ratio - pointWidth) / 2;
-            const Y = mediaCenterY + (point.y * this.media.height * ratio - pointHeight) / 2;
+            const X = mediaCenterX + point.x * this.media.width * ratio / 2;
+            const Y = mediaCenterY + point.y * this.media.height * ratio / 2;
+            context.lineWidth = 1;
             context.beginPath();
-            context.rect(X, Y, pointWidth, pointHeight);
-            context.fillStyle = 'red';
-            context.fill();
+            context.moveTo(X, Y - crossHeight / 2);
+            context.lineTo(X, Y + crossHeight / 2);
+            context.stroke();
+            context.lineWidth = 1;
+            context.beginPath();
+            context.moveTo(X - crossWidth / 2, Y);
+            context.lineTo(X + crossWidth / 2, Y);
+            context.stroke();
         });
 
         //If we want to draw the full media without fitting and centering it in the canvas
