@@ -1,7 +1,24 @@
 .view2D {
+	position: relative;
 	height: 100%;
 	width: 100%;
-	border: 2px solid red;
 	box-sizing: border-box;
 	margin-left: -12px;
+}
+
+.toolbar2D {
+	position: absolute;
+	width: 100%;
+	z-index: 1;
+	top: 0;
+	background-color: rgba(255,255,255,0.5);
+	padding: 15px;
+	display: flex;
+	flex-grow: 0;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.lightText {
+	/*color: white;*/
 }

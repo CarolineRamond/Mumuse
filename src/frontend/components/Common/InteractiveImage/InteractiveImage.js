@@ -62,6 +62,10 @@ class InteractiveImage extends React.Component {
 
         this.media.onload = () => this.handleMediaLoad();
         this.media.onerror = e => this.handleMediaLoadError(e);
+        // disable context menu when right-click on canvas
+        this.mediaCanvas.oncontextmenu = e => {
+            e.preventDefault();
+        };
         this.mediaCanvas.addEventListener('mousedown', this.handleMouseDown.bind(this), false);
         this.mediaCanvas.addEventListener('mousemove', this.handleMouseMove.bind(this), false);
         this.mediaCanvas.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
@@ -114,25 +118,41 @@ class InteractiveImage extends React.Component {
     }
 
     handleMouseDown(e) {
+        e.preventDefault();
         if (this.props.interactive) {
             e.stopPropagation();
+            document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect =
+                'none';
+            this.computeMouseCoords(e);
+
+            const rightClick = e.which === 3;
+            if (!this.props.addMode || rightClick) {
+                // handle drag start
+                this.dragStart = context.transformedPoint(this.lastX, this.lastY);
+            } else if (this.props.addMode && this.props.addPoint) {
+                // add point
+                this.props.addPoint({
+                    // x: e.clientX,
+                    // y: e.clientY
+                    x: 0.3,
+                    y: 0.1
+                });
+            }
+            this.dragged = false;
         }
-        if (!this.props.interactive) {
-            return e.preventDefault();
-        }
-        document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect =
-            'none';
-        this.computeMouseCoords(e);
-        this.dragStart = context.transformedPoint(this.lastX, this.lastY);
-        this.dragged = false;
     }
 
     handleMouseUp(e) {
+        e.preventDefault();
         if (this.props.interactive) {
             e.stopPropagation();
+            this.dragStart = null;
+
+            // zoom if addMode is disabled & user was not dragging
+            // if (!this.dragged && !this.props.addMode) {
+            //     this.zoom(e.shiftKey ? -1 : 1);
+            // }
         }
-        this.dragStart = null;
-        if (!this.dragged) this.zoom(e.shiftKey ? -1 : 1);
     }
 
     handleMouseMove(e) {
@@ -328,6 +348,10 @@ class InteractiveImage extends React.Component {
 }
 
 InteractiveImage.propTypes = {
+    /** whether add mode is active or not*/
+    addMode: PropTypes.bool,
+    /** add point function */
+    addPoint: PropTypes.func,
     /** a fallback url of the image to display (loaded in case mediaUrl is not available)*/
     fallbackMediaUrl: PropTypes.string,
     /** function to call when user scrolls out of the media (ie zoom level is < 1), optional */
