@@ -1,6 +1,20 @@
-import reducer, { initialState }
+import reducer, { defaultReducer, initialState }
     from "../../../src/frontend/redux/points/reducers/points3D.reducer"
 import { actions } from "../../../src/frontend/redux"
+
+describe('view3D default reducer', ()=> {
+    it('should return the initial state', () => {
+        expect(defaultReducer(undefined, {})).toEqual(initialState);
+    });
+
+    it('should put didChange to false', () => {
+        const state = {
+            ...initialState,
+            didChange: true
+        };
+        expect(defaultReducer(state, {})).toEqual(initialState);
+    });
+});
 
 describe('view3D reducer', () => {
 
@@ -22,9 +36,10 @@ describe('view3D reducer', () => {
         });
         const state = reducer(reducer(initialState, action1), action2);
 
-        expect(state.length).toEqual(2);
-        const firstPoint = state[0];
-        const secondPoint = state[1];
+        expect(state.didChange).toEqual(true);
+        expect(state.list.length).toEqual(2);
+        const firstPoint = state.list[0];
+        const secondPoint = state.list[1];
 
         expect(firstPoint.x).toEqual(0.1);
         expect(firstPoint.y).toEqual(0.5);
@@ -56,11 +71,13 @@ describe('view3D reducer', () => {
         	name: 'point2'
         });
     	const state = reducer(reducer(initialState, action1), action2);
-    	const id1 = state[0].id;
-    	const id2 = state[1].id;
+    	const id1 = state.list[0].id;
+    	const id2 = state.list[1].id;
 
     	const action3 = actions.remove3DPoint(id2);
-    	expect(reducer(state, action3)).toEqual([state[0]]);
+    	const result = reducer(state, action3);
+        expect(result.didChange).toEqual(true);
+        expect(result.list).toEqual([state.list[0]]);
     });
 
     it('should handle 3D_POINT_UPDATE', () => {
@@ -77,8 +94,8 @@ describe('view3D reducer', () => {
         	name: 'point2'
         });
     	const state = reducer(reducer(initialState, action1), action2);
-    	const id1 = state[0].id;
-    	const id2 = state[1].id;
+    	const id1 = state.list[0].id;
+    	const id2 = state.list[1].id;
 
     	const action3 = actions.update3DPoint(id2, {
     		x: 0.6, 
@@ -87,9 +104,10 @@ describe('view3D reducer', () => {
     		name: 'point2-updated'
     	});
     	const state2 = reducer(state, action3);
+        expect(state2.didChange).toEqual(true);
 
-    	const firstPoint = state2[0];
-        const secondPoint = state2[1];
+    	const firstPoint = state2.list[0];
+        const secondPoint = state2.list[1];
 
         expect(firstPoint.x).toEqual(0.1);
         expect(firstPoint.y).toEqual(0.5);
@@ -120,14 +138,15 @@ describe('view3D reducer', () => {
         	name: 'point2'
         });
     	const state = reducer(reducer(initialState, action1), action2);
-    	const id1 = state[0].id;
-    	const id2 = state[1].id;
+    	const id1 = state.list[0].id;
+    	const id2 = state.list[1].id;
 
     	const action3 = actions.toggle3DPointSelection(id2);
     	const state2 = reducer(state, action3);
+        expect(state2.didChange).toEqual(true);
 
-    	const firstPoint = state2[0];
-        const secondPoint = state2[1];
+    	const firstPoint = state2.list[0];
+        const secondPoint = state2.list[1];
 
         expect(firstPoint.x).toEqual(0.1);
         expect(firstPoint.y).toEqual(0.5);

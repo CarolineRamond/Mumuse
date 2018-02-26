@@ -5,8 +5,8 @@ import * as THREE from 'three';
 import OrbitControls from 'orbit-controls-es6';
 
 import { actions, selectors } from '../../../redux';
-const { get3DPoints } = selectors;
-const { add3DPoint } = actions;
+const { get3DPoints, did3DPointsChange } = selectors;
+const { add3DPoint, update3DPoint } = actions;
 
 import styles from './view-3D.css';
 
@@ -43,6 +43,7 @@ class View3D extends React.Component {
         this.handleResize = this.handleResize.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
         this.drawPoints = this.drawPoints.bind(this);
     }
 
@@ -52,7 +53,7 @@ class View3D extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.points.length !== this.props.points.length) {
+        if (nextProps.didPointsChange) {
             this.drawPoints(nextProps.points);
         }
         if (this.props.addMode && !nextProps.addMode) {
@@ -124,7 +125,7 @@ class View3D extends React.Component {
             // element_3D.addEventListener('MozMousePixelScroll', onMouseWheel, false);
             this.container3D.addEventListener('mousemove', this.onMouseMove, false);
             this.container3D.addEventListener('mousedown', this.onMouseDown, false);
-            //    document.addEventListener('mouseup', onMouseUp, false);
+            this.container3D.addEventListener('mouseup', this.onMouseUp, false);
             // window.addEventListener('keydown', onKeyDown, false);
             // window.addEventListener('keyup', onKeyUp, false);
         });
@@ -179,7 +180,7 @@ class View3D extends React.Component {
         // update the picking ray with the camera and mouse position
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
-        if (this.props.addMode) {
+        if (this.props.addMode || this.draggedPoint) {
             // add mode is on : check if model is intersecting the picking ray
             const modelIntersect = this.raycaster.intersectObjects(
                 this.modelContainer.children,
@@ -215,6 +216,36 @@ class View3D extends React.Component {
         if (this.props.addMode && this.isModelIntersected) {
             this.props.dispatch(add3DPoint(this.addPointHelper.position));
         }
+        if (!this.props.addMode && this.pointIntersected) {
+            // start dragging a point
+            // 1. disable controls
+            this.cameraControls.enabled = false;
+            // 2. hide dragged point (to keep original position)
+            this.draggedPoint = this.pointIntersected;
+            this.draggedPoint.visible = false;
+            // 3. show addPointHelper (this is the THREE object that is effectively dragged)
+            this.addPointHelper.position.copy(this.draggedPoint.position);
+            this.addPointHelper.material = selectedPointMaterial;
+            this.addPointHelper.visible = true;
+        }
+    }
+
+    onMouseUp(e) {
+        if (this.draggedPoint) {
+            // stop dragging point
+            if (this.isModelIntersected) {
+                this.props.dispatch(
+                    update3DPoint(this.draggedPoint.metadata.id, this.addPointHelper.position)
+                );
+            } else {
+                // the point could not be placed : show it back
+                this.draggedPoint.visible = true;
+            }
+            this.addPointHelper.visible = false;
+            this.addPointHelper.material = pointMaterial;
+            this.cameraControls.enabled = true;
+            this.draggedPoint = null;
+        }
     }
 
     render() {
@@ -224,6 +255,7 @@ class View3D extends React.Component {
 
 View3D.propTypes = {
     addMode: PropTypes.bool,
+    didPointsChange: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
     setResizeHandler: PropTypes.func.isRequired
@@ -231,6 +263,7 @@ View3D.propTypes = {
 
 const ConnectedView3D = connect(store => {
     return {
+        didPointsChange: did3DPointsChange(store),
         points: get3DPoints(store)
     };
 })(View3D);

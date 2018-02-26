@@ -1,6 +1,16 @@
 import uuid from 'uuid/v1';
 
-export const initialState = [];
+export const initialState = {
+    didChange: false,
+    list: []
+};
+
+export const defaultReducer = (state = initialState) => {
+    return {
+        ...state,
+        didChange: false
+    };
+};
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
@@ -13,15 +23,24 @@ const reducer = (state = initialState, action) => {
                 id: uuid(),
                 selected: true
             };
-            return state.concat([newPoint]);
+            return {
+                ...state,
+                list: state.list.concat([newPoint]),
+                didChange: true
+            };
         }
         case '3D_POINT_REMOVE': {
-            return state.filter(point => {
+            const newList = state.list.filter(point => {
                 return point.id !== action.payload.pointId;
             });
+            return {
+                ...state,
+                list: newList,
+                didChange: true
+            };
         }
         case '3D_POINT_UPDATE': {
-            return state.map(point => {
+            const newList = state.list.map(point => {
                 if (point.id === action.payload.pointId) {
                     return {
                         ...point,
@@ -34,9 +53,14 @@ const reducer = (state = initialState, action) => {
                     return point;
                 }
             });
+            return {
+                ...state,
+                list: newList,
+                didChange: true
+            };
         }
         case '3D_POINT_TOGGLE_SELECT': {
-            return state.map(point => {
+            const newList = state.list.map(point => {
                 if (point.id === action.payload.pointId) {
                     return {
                         ...point,
@@ -49,9 +73,14 @@ const reducer = (state = initialState, action) => {
                     };
                 }
             });
+            return {
+                ...state,
+                list: newList,
+                didChange: true
+            };
         }
         default:
-            return state;
+            return defaultReducer(state);
     }
 };
 
