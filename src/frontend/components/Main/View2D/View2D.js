@@ -1,10 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
-import { actions, selectors } from '../../../redux';
-const { get2DPoints } = selectors;
-const { add2DPoint } = actions;
 
 import InteractiveImage from '../../Common/InteractiveImage';
 import styles from './view-2D.css';
@@ -13,19 +8,15 @@ class View2D extends React.Component {
     constructor(props) {
         super(props);
         this.handleResize = this.handleResize.bind(this);
-        this.addPoint = this.addPoint.bind(this);
     }
 
     componentDidMount() {
         this.props.setResizeHandler(this.handleResize);
+        this.props.setPointsChangedHandler(this.handlePointsChanged);
     }
 
     handleResize() {
         this.handleImageResize();
-    }
-
-    addPoint(coords) {
-        this.props.dispatch(add2DPoint(coords));
     }
 
     render() {
@@ -37,9 +28,15 @@ class View2D extends React.Component {
                     setResizeHandler={resizeHandler => {
                         this.handleImageResize = resizeHandler;
                     }}
+                    setPointsChangedHandler={pointsChangedHandler => {
+                        this.handlePointsChanged = pointsChangedHandler;
+                    }}
                     addMode={this.props.addMode}
-                    addPoint={this.addPoint}
+                    deleteMode={this.props.deleteMode}
                     points={this.props.points}
+                    onAddPoint={this.props.onAddPoint}
+                    onUpdatePoint={this.props.onUpdatePoint}
+                    onRemovePoint={this.props.onRemovePoint}
                 />
             </div>
         );
@@ -48,15 +45,13 @@ class View2D extends React.Component {
 
 View2D.propTypes = {
     addMode: PropTypes.bool,
-    dispatch: PropTypes.func.isRequired,
-    points: PropTypes.arrayOf(PropTypes.object).isRequired,
-    setResizeHandler: PropTypes.func
+    deleteMode: PropTypes.bool,
+    onAddPoint: PropTypes.func.isRequired,
+    onRemovePoint: PropTypes.func.isRequired,
+    onUpdatePoint: PropTypes.func.isRequired,
+    points: PropTypes.arrayOf(PropTypes.object),
+    setPointsChangedHandler: PropTypes.func.isRequired,
+    setResizeHandler: PropTypes.func.isRequired
 };
 
-const ConnectedView2D = connect(store => {
-    return {
-        points: get2DPoints(store)
-    };
-})(View2D);
-
-export default ConnectedView2D;
+export default View2D;

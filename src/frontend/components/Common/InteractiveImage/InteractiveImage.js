@@ -14,16 +14,19 @@ class InteractiveImage extends React.Component {
         this.handleScroll = this.handleScroll.bind(this);
         this.onResizeAnimation = this.onResizeAnimation.bind(this);
         this.handleResize = this.handleResize.bind(this);
+        this.redraw = this.redraw.bind(this);
 
         this.state = {
-            loading: false,
-            points: this.props.points
+            loading: false
         };
     }
 
     componentDidMount() {
         if (this.props.setResizeHandler) {
             this.props.setResizeHandler(this.handleResize);
+        }
+        if (this.props.setPointsChangedHandler) {
+            this.props.setPointsChangedHandler(this.redraw);
         }
         this.initViewer();
     }
@@ -40,16 +43,6 @@ class InteractiveImage extends React.Component {
             this.setState({
                 loading: true
             });
-        }
-        if (nextProps.points.length !== this.props.points.length) {
-            this.setState(
-                {
-                    points: nextProps.points
-                },
-                () => {
-                    this.redraw();
-                }
-            );
         }
     }
 
@@ -140,9 +133,9 @@ class InteractiveImage extends React.Component {
             if (!this.props.addMode || rightClick) {
                 // handle drag start
                 this.dragStart = context.transformedPoint(this.lastX, this.lastY);
-            } else if (this.props.addMode && this.props.addPoint && this.mouseMediaCoords) {
+            } else if (this.props.addMode && this.props.onAddPoint && this.mouseMediaCoords) {
                 // add point
-                this.props.addPoint(this.mouseMediaCoords);
+                this.props.onAddPoint(this.mouseMediaCoords);
             }
             this.dragged = false;
         }
@@ -251,7 +244,8 @@ class InteractiveImage extends React.Component {
         this.redraw();
     }
 
-    redraw() {
+    redraw(points) {
+        console.log('REDRAW 2D POINTS');
         // Clear the entire canvas
         const p1 = context.transformedPoint(0, 0);
         const p2 = context.transformedPoint(this.mediaCanvas.width, this.mediaCanvas.height);
@@ -285,22 +279,24 @@ class InteractiveImage extends React.Component {
         const mediaCenterY = centerShift_y + this.media.height * ratio / 2;
         const crossWidth = 10;
         const crossHeight = 10;
-        this.state.points.map(point => {
-            const X = mediaCenterX + point.x * this.media.width * ratio / 2;
-            const Y = mediaCenterY + point.y * this.media.height * ratio / 2;
-            context.lineWidth = 1;
-            context.strokeStyle = 'red';
-            context.beginPath();
-            context.moveTo(X, Y - crossHeight / 2);
-            context.lineTo(X, Y + crossHeight / 2);
-            context.stroke();
-            context.lineWidth = 1;
-            context.strokeStyle = 'red';
-            context.beginPath();
-            context.moveTo(X - crossWidth / 2, Y);
-            context.lineTo(X + crossWidth / 2, Y);
-            context.stroke();
-        });
+        if (points) {
+            points.map(point => {
+                const X = mediaCenterX + point.x * this.media.width * ratio / 2;
+                const Y = mediaCenterY + point.y * this.media.height * ratio / 2;
+                context.lineWidth = 1;
+                context.strokeStyle = 'red';
+                context.beginPath();
+                context.moveTo(X, Y - crossHeight / 2);
+                context.lineTo(X, Y + crossHeight / 2);
+                context.stroke();
+                context.lineWidth = 1;
+                context.strokeStyle = 'red';
+                context.beginPath();
+                context.moveTo(X - crossWidth / 2, Y);
+                context.lineTo(X + crossWidth / 2, Y);
+                context.stroke();
+            });
+        }
 
         //If we want to draw the full media without fitting and centering it in the canvas
         // context.drawImage(this.media, 0, 0);
@@ -406,8 +402,7 @@ class InteractiveImage extends React.Component {
 InteractiveImage.propTypes = {
     /** whether add mode is active or not*/
     addMode: PropTypes.bool,
-    /** add point function */
-    addPoint: PropTypes.func,
+    deleteMode: PropTypes.bool,
     /** a fallback url of the image to display (loaded in case mediaUrl is not available)*/
     fallbackMediaUrl: PropTypes.string,
     /** function to call when user scrolls out of the media (ie zoom level is < 1), optional */
@@ -416,6 +411,8 @@ InteractiveImage.propTypes = {
     interactive: PropTypes.bool,
     /** the url of the image to display */
     mediaUrl: PropTypes.string.isRequired,
+    /** add point function */
+    onAddPoint: PropTypes.func,
     /** list of points to draw on the image (with coords relative to image center)*/
     points: PropTypes.arrayOf(PropTypes.object),
     /** the orientation of the canvas (0,1,2 or 3)*/
@@ -423,6 +420,7 @@ InteractiveImage.propTypes = {
     /** whether an animation is on going : if so, canvas should resize on requestAnimationFrame
      * until animation is finished*/
     resizeAnimationOnGoing: PropTypes.bool,
+    setPointsChangedHandler: PropTypes.func.isRequired,
     /** function to set resize handler so that parent can call it when a resize is necessary */
     setResizeHandler: PropTypes.func.isRequired
 };

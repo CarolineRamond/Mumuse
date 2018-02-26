@@ -1,12 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import OrbitControls from 'orbit-controls-es6';
-
-import { actions, selectors } from '../../../redux';
-const { get3DPoints, did3DPointsChange } = selectors;
-const { add3DPoint, update3DPoint, remove3DPoint } = actions;
 
 import styles from './view-3D.css';
 
@@ -44,11 +39,12 @@ class View3D extends React.Component {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
-        this.drawPoints = this.drawPoints.bind(this);
+        this.redrawPoints = this.redrawPoints.bind(this);
     }
 
     componentDidMount() {
         this.props.setResizeHandler(this.handleResize);
+        this.props.setPointsChangedHandler(this.redrawPoints);
         setTimeout(this.initViewer.bind(this), 2000);
     }
 
@@ -57,7 +53,8 @@ class View3D extends React.Component {
             this.drawPoints(nextProps.points);
         }
         if (this.props.addMode && !nextProps.addMode) {
-            //addMode is off : hide addpoint helper
+            //addMode is off : hide addpoint helper & update cursor
+            this.container3D.style.cursor = 'default';
             this.addPointHelper.visible = false;
         }
     }
@@ -136,13 +133,14 @@ class View3D extends React.Component {
         this.scene.add(this.pointsContainer);
 
         //draw points
-        this.drawPoints(this.props.points);
+        this.redrawPoints(this.props.points);
 
         // start rendering
         this.animate();
     }
 
-    drawPoints(points) {
+    redrawPoints(points) {
+        console.log('REDRAW 3D POINTS');
         // remove previously drawn points
         for (let i = this.pointsContainer.children.length - 1; i >= 0; i--) {
             this.pointsContainer.remove(this.pointsContainer.children[i]);
@@ -192,8 +190,15 @@ class View3D extends React.Component {
             if (this.isModelIntersected) {
                 this.addPointHelper.visible = true;
                 this.addPointHelper.position.copy(modelIntersect[0].point);
+                // model is intersected : change cursor accordingly
+                if (this.props.addMode) {
+                    this.container3D.style.cursor = 'crosshair';
+                } else {
+                    this.container3D.style.cursor = 'move';
+                }
             } else {
                 this.addPointHelper.visible = false;
+                this.container3D.style.cursor = 'default';
             }
         } else {
             // else, delete/update mode is on : find points intersecting the picking ray
@@ -204,18 +209,25 @@ class View3D extends React.Component {
             if (pointsIntersect.length > 0) {
                 this.pointIntersected = pointsIntersect[0].object;
                 this.pointIntersected.material = selectedPointMaterial;
+                // a point is intersected : change cursor accordingly
+                if (this.props.deleteMode) {
+                    this.container3D.style.cursor = 'not-allowed';
+                } else {
+                    this.container3D.style.cursor = 'pointer';
+                }
             } else {
                 if (this.pointIntersected) {
                     this.pointIntersected.material = pointMaterial;
                 }
                 this.pointIntersected = null;
+                this.container3D.style.cursor = 'default';
             }
         }
     }
 
     onMouseDown(e) {
         if (this.props.addMode && this.isModelIntersected) {
-            this.props.dispatch(add3DPoint(this.addPointHelper.position));
+            this.props.onAddPoint(this.addPointHelper.position);
         }
         if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
             this.didDrag = false;
@@ -236,21 +248,27 @@ class View3D extends React.Component {
         if (this.draggedPoint) {
             // stop dragging point
             if (this.isModelIntersected && this.didDrag) {
-                this.props.dispatch(
-                    update3DPoint(this.draggedPoint.metadata.id, this.addPointHelper.position)
+                // a point was dragged : update it
+                this.props.onUpdatePoint(
+                    this.draggedPoint.metadata.id,
+                    this.addPointHelper.position
                 );
             } else {
                 // the point could not be placed : show it back
                 this.draggedPoint.visible = true;
             }
+            // 1. hide back addPointHelper
             this.addPointHelper.visible = false;
             this.addPointHelper.material = pointMaterial;
+            // 2. re-enable camera controls
             this.cameraControls.enabled = true;
+            // 3. reset drag variables
             this.draggedPoint = null;
             this.didDrag = false;
         }
         if (this.pointIntersected && this.props.deleteMode) {
-            this.props.dispatch(remove3DPoint(this.pointIntersected.metadata.id));
+            // a point was clicked in delete mote : remote it
+            this.props.onRemovePoint(this.pointIntersected.metadata.id);
         }
     }
 
@@ -263,16 +281,12 @@ View3D.propTypes = {
     addMode: PropTypes.bool,
     deleteMode: PropTypes.bool,
     didPointsChange: PropTypes.bool,
-    dispatch: PropTypes.func.isRequired,
+    onAddPoint: PropTypes.func.isRequired,
+    onRemovePoint: PropTypes.func.isRequired,
+    onUpdatePoint: PropTypes.func.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
+    setPointsChangedHandler: PropTypes.func.isRequired,
     setResizeHandler: PropTypes.func.isRequired
 };
 
-const ConnectedView3D = connect(store => {
-    return {
-        didPointsChange: did3DPointsChange(store),
-        points: get3DPoints(store)
-    };
-})(View3D);
-
-export default ConnectedView3D;
+export default View3D;

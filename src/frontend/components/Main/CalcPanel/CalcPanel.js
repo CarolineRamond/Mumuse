@@ -45,7 +45,7 @@ class CalcPanel extends React.Component {
                         text: styles.lightText
                     }}
                     checked={this.props.deleteMode}
-                    label="Add point (press 'd' to toggle)"
+                    label="Delete point (press 'd' to toggle)"
                     onChange={this.props.toggleDeleteMode}
                 />
                 <div>

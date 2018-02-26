@@ -12,10 +12,5 @@ const middleware = applyMiddleware(validator, thunk, promise(), createLogger());
 // const middleware = applyMiddleware(validator, thunk, promise());
 
 const store = createStore(reducer, middleware);
-store.dispatch(add2DPoint({ x: 0, y: 0 }));
-store.dispatch(add2DPoint({ x: -1, y: -1 }));
-store.dispatch(add2DPoint({ x: -1, y: 1 }));
-store.dispatch(add2DPoint({ x: 1, y: -1 }));
-store.dispatch(add2DPoint({ x: 1, y: 1 }));
 
 export default store;
