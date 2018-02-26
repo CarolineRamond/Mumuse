@@ -56,6 +56,7 @@ class Main extends React.Component {
             this.handle3DPointsChanged(nextProps.points3D);
         }
         if (nextProps.did2DPointsChange && this.handle2DPointsChanged) {
+            console.log('2D POINTS CHANGED');
             this.handle2DPointsChanged(nextProps.points2D);
         }
     }

@@ -5,6 +5,8 @@ import ProgressBar from 'react-toolbox/lib/progress_bar';
 import styles from './interactive-image.css';
 
 let context = null;
+const crossWidth = 10;
+const crossHeight = 10;
 
 /** A component representing a zoomable and movable image. Implemented with canvas. */
 class InteractiveImage extends React.Component {
@@ -17,7 +19,8 @@ class InteractiveImage extends React.Component {
         this.redraw = this.redraw.bind(this);
 
         this.state = {
-            loading: false
+            loading: false,
+            points: this.props.points
         };
     }
 
@@ -26,7 +29,17 @@ class InteractiveImage extends React.Component {
             this.props.setResizeHandler(this.handleResize);
         }
         if (this.props.setPointsChangedHandler) {
-            this.props.setPointsChangedHandler(this.redraw);
+            this.props.setPointsChangedHandler(newPoints => {
+                console.log('REDRAW 2D POINTS');
+                this.setState(
+                    {
+                        points: newPoints
+                    },
+                    () => {
+                        this.redraw();
+                    }
+                );
+            });
         }
         this.initViewer();
     }
@@ -43,6 +56,9 @@ class InteractiveImage extends React.Component {
             this.setState({
                 loading: true
             });
+        }
+        if (nextProps.addMode && this.props.addMode) {
+            this.mediaCanvas.style.cursor = 'default';
         }
     }
 
@@ -161,8 +177,7 @@ class InteractiveImage extends React.Component {
             const pt = context.transformedPoint(this.lastX, this.lastY);
             context.translate(pt.x - this.dragStart.x, pt.y - this.dragStart.y);
             this.redraw();
-        }
-        if (this.props.addMode) {
+        } else {
             const pt = context.transformedPoint(this.lastX, this.lastY);
             const hRatio = this.mediaCanvas.width / this.media.width;
             const vRatio = this.mediaCanvas.height / this.media.height;
@@ -178,12 +193,41 @@ class InteractiveImage extends React.Component {
                 pt.y >= 0 &&
                 pt.y <= this.media.height * ratio
             ) {
-                //mouse is inside inside photo
-                this.mediaCanvas.style.cursor = 'crosshair';
-                this.mouseMediaCoords = {
-                    x: 2 * pt.x / (this.media.width * ratio) - 1,
-                    y: 2 * pt.y / (this.media.height * ratio) - 1
-                };
+                if (this.props.addMode) {
+                    //mouse is inside inside photo
+                    this.mediaCanvas.style.cursor = 'crosshair';
+                    this.mouseMediaCoords = {
+                        x: 2 * pt.x / (this.media.width * ratio) - 1,
+                        y: 2 * pt.y / (this.media.height * ratio) - 1
+                    };
+                } else {
+                    const intersectedPoints = [];
+                    this.state.points.map(point => {
+                        const X =
+                            this.media.width * ratio / 2 + point.x * this.media.width * ratio / 2;
+                        const Y =
+                            this.media.height * ratio / 2 + point.y * this.media.height * ratio / 2;
+                        if (
+                            pt.x >= X - crossWidth &&
+                            pt.x <= X + crossWidth &&
+                            pt.y >= Y - crossHeight &&
+                            pt.y <= Y + crossHeight
+                        ) {
+                            intersectedPoints.push(point);
+                        }
+                    });
+                    const formerIntersected = this.pointIntersected;
+                    this.pointIntersected = intersectedPoints[0];
+                    if (
+                        (formerIntersected && !this.pointIntersected) ||
+                        (this.pointIntersected && !formerIntersected) ||
+                        (this.pointIntersected &&
+                            formerIntersected &&
+                            this.pointIntersected.id !== formerIntersected.id)
+                    ) {
+                        this.redraw();
+                    }
+                }
             } else {
                 // mouse is outside photo
                 this.mediaCanvas.style.cursor = 'default';
@@ -245,7 +289,6 @@ class InteractiveImage extends React.Component {
     }
 
     redraw(points) {
-        console.log('REDRAW 2D POINTS');
         // Clear the entire canvas
         const p1 = context.transformedPoint(0, 0);
         const p2 = context.transformedPoint(this.mediaCanvas.width, this.mediaCanvas.height);
@@ -277,20 +320,22 @@ class InteractiveImage extends React.Component {
         // We draw the points relatively to the media
         const mediaCenterX = centerShift_x + this.media.width * ratio / 2;
         const mediaCenterY = centerShift_y + this.media.height * ratio / 2;
-        const crossWidth = 10;
-        const crossHeight = 10;
-        if (points) {
-            points.map(point => {
+        if (this.state.points) {
+            this.state.points.map(point => {
+                let color = 'red';
+                if (this.pointIntersected && point.id === this.pointIntersected.id) {
+                    color = 'green';
+                }
                 const X = mediaCenterX + point.x * this.media.width * ratio / 2;
                 const Y = mediaCenterY + point.y * this.media.height * ratio / 2;
                 context.lineWidth = 1;
-                context.strokeStyle = 'red';
+                context.strokeStyle = color;
                 context.beginPath();
                 context.moveTo(X, Y - crossHeight / 2);
                 context.lineTo(X, Y + crossHeight / 2);
                 context.stroke();
                 context.lineWidth = 1;
-                context.strokeStyle = 'red';
+                context.strokeStyle = color;
                 context.beginPath();
                 context.moveTo(X - crossWidth / 2, Y);
                 context.lineTo(X + crossWidth / 2, Y);

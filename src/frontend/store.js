@@ -4,8 +4,7 @@ import promise from 'redux-promise-middleware';
 import thunk from 'redux-thunk';
 import Validator from './validator';
 
-import reducer, { actions } from './redux';
-const { add2DPoint } = actions;
+import reducer from './redux';
 
 const validator = new Validator();
 const middleware = applyMiddleware(validator, thunk, promise(), createLogger());
