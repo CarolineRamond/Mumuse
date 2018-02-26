@@ -12,18 +12,7 @@ class CalcPanel extends React.Component {
         super(props);
         this.undo = this.undo.bind(this);
         this.redo = this.redo.bind(this);
-        // this.state = {
-        //     addMode: this.props.addMode
-        // };
     }
-
-    // componentWillReceiveProps(nextProps) {
-    //     if (nextProps.addMode !== this.props.addMode) {
-    //         this.setState({
-    //             addMode: nextProps.addMode
-    //         });
-    //     }
-    // }
 
     undo() {
         this.props.dispatch(ActionCreators.undo());
@@ -51,6 +40,14 @@ class CalcPanel extends React.Component {
                     label="Add point (press 'a' to toggle)"
                     onChange={this.props.toggleAddMode}
                 />
+                <Switch
+                    theme={{
+                        text: styles.lightText
+                    }}
+                    checked={this.props.deleteMode}
+                    label="Add point (press 'd' to toggle)"
+                    onChange={this.props.toggleDeleteMode}
+                />
                 <div>
                     <IconButton icon="undo" onClick={this.undo} />
                     <IconButton icon="redo" onClick={this.redo} />
@@ -62,8 +59,10 @@ class CalcPanel extends React.Component {
 
 CalcPanel.propTypes = {
     addMode: PropTypes.bool,
+    deleteMode: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
-    toggleAddMode: PropTypes.func.isRequired
+    toggleAddMode: PropTypes.func.isRequired,
+    toggleDeleteMode: PropTypes.func.isRequired
 };
 
 const ConnectedCalcPanel = connect(() => {

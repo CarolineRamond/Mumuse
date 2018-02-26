@@ -15,10 +15,12 @@ class Main extends React.Component {
         this.handleResize = this.handleResize.bind(this);
         this.handleKeypress = this.handleKeypress.bind(this);
         this.toggleAddMode = this.toggleAddMode.bind(this);
+        this.toggleDeleteMode = this.toggleDeleteMode.bind(this);
         this.state = {
             isHResizing: false,
             isVResizing: false,
-            addMode: false
+            addMode: false,
+            deleteMode: false
         };
     }
 
@@ -68,11 +70,22 @@ class Main extends React.Component {
         if (e.key === 'a') {
             this.toggleAddMode();
         }
+        if (e.key === 'd') {
+            this.toggleDeleteMode();
+        }
     }
 
     toggleAddMode() {
         this.setState({
-            addMode: !this.state.addMode
+            addMode: !this.state.addMode,
+            deleteMode: false
+        });
+    }
+
+    toggleDeleteMode() {
+        this.setState({
+            addMode: false,
+            deleteMode: !this.state.deleteMode
         });
     }
 
@@ -121,16 +134,23 @@ class Main extends React.Component {
                                 this.handle3DResize = resizeHandler;
                             }}
                             addMode={this.state.addMode}
+                            deleteMode={this.state.deleteMode}
                         />
                         <View2D
                             setResizeHandler={resizeHandler => {
                                 this.handle2DResize = resizeHandler;
                             }}
                             addMode={this.state.addMode}
+                            deleteMode={this.state.deleteMode}
                         />
                     </SplitPane>
                 </div>
-                <CalcPanel addMode={this.state.addMode} toggleAddMode={this.toggleAddMode} />
+                <CalcPanel
+                    addMode={this.state.addMode}
+                    deleteMode={this.state.deleteMode}
+                    toggleAddMode={this.toggleAddMode}
+                    toggleDeleteMode={this.toggleDeleteMode}
+                />
             </SplitPane>
         );
     }

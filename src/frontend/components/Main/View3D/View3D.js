@@ -6,7 +6,7 @@ import OrbitControls from 'orbit-controls-es6';
 
 import { actions, selectors } from '../../../redux';
 const { get3DPoints, did3DPointsChange } = selectors;
-const { add3DPoint, update3DPoint } = actions;
+const { add3DPoint, update3DPoint, remove3DPoint } = actions;
 
 import styles from './view-3D.css';
 
@@ -181,7 +181,8 @@ class View3D extends React.Component {
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
         if (this.props.addMode || this.draggedPoint) {
-            // add mode is on : check if model is intersecting the picking ray
+            // add/dragpoint mode is on : check if model is intersecting the picking ray
+            this.didDrag = true;
             const modelIntersect = this.raycaster.intersectObjects(
                 this.modelContainer.children,
                 true
@@ -195,7 +196,7 @@ class View3D extends React.Component {
                 this.addPointHelper.visible = false;
             }
         } else {
-            // find points intersecting the picking ray
+            // else, delete/update mode is on : find points intersecting the picking ray
             const pointsIntersect = this.raycaster.intersectObjects(
                 this.pointsContainer.children,
                 true
@@ -216,7 +217,8 @@ class View3D extends React.Component {
         if (this.props.addMode && this.isModelIntersected) {
             this.props.dispatch(add3DPoint(this.addPointHelper.position));
         }
-        if (!this.props.addMode && this.pointIntersected) {
+        if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
+            this.didDrag = false;
             // start dragging a point
             // 1. disable controls
             this.cameraControls.enabled = false;
@@ -233,7 +235,7 @@ class View3D extends React.Component {
     onMouseUp(e) {
         if (this.draggedPoint) {
             // stop dragging point
-            if (this.isModelIntersected) {
+            if (this.isModelIntersected && this.didDrag) {
                 this.props.dispatch(
                     update3DPoint(this.draggedPoint.metadata.id, this.addPointHelper.position)
                 );
@@ -245,6 +247,10 @@ class View3D extends React.Component {
             this.addPointHelper.material = pointMaterial;
             this.cameraControls.enabled = true;
             this.draggedPoint = null;
+            this.didDrag = false;
+        }
+        if (this.pointIntersected && this.props.deleteMode) {
+            this.props.dispatch(remove3DPoint(this.pointIntersected.metadata.id));
         }
     }
 
@@ -255,6 +261,7 @@ class View3D extends React.Component {
 
 View3D.propTypes = {
     addMode: PropTypes.bool,
+    deleteMode: PropTypes.bool,
     didPointsChange: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
