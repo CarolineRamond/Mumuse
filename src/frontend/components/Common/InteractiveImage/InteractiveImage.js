@@ -8,6 +8,59 @@ let context = null;
 const crossWidth = 10;
 const crossHeight = 10;
 
+/** Transforms canvas-relative coords into normalized image-relative coords
+ * canvas origin is NW, image origin is at the center of the image
+ */
+const canvasToImageFactory = (imgNWCorner, imgDim) => {
+    return canvasCoords => {
+        return {
+            x: 2 * (canvasCoords.x - imgNWCorner.x) / imgDim.width - 1,
+            y: 2 * (canvasCoords.y - imgNWCorner.y) / imgDim.height - 1
+        };
+    };
+};
+
+/** Transforms normalized image-relative coords into canvas-relative coords
+ * canvas origin is NW, image origin is at the center of the image
+ */
+const imageToCanvasFactory = (imgNWCorner, imgDim) => {
+    return imageCoords => {
+        return {
+            x: imgNWCorner.x + imgDim.width * (1 + imageCoords.x) / 2,
+            y: imgNWCorner.y + imgDim.height * (1 + imageCoords.y) / 2
+        };
+    };
+};
+
+const isCanvasPointIntoImageFactory = (imgNWCorner, imgDim) => {
+    return canvasCoords => {
+        return (
+            canvasCoords.x >= imgNWCorner.x &&
+            canvasCoords.x <= imgNWCorner.x + imgDim.width &&
+            canvasCoords.y >= imgNWCorner.y &&
+            canvasCoords.y <= imgNWCorner.y + imgDim.height
+        );
+    };
+};
+
+const intersectFactory = (imgNWCorner, imgDim) => {
+    return (canvasPoint, imagePoints) => {
+        const intersectedPoints = [];
+        imagePoints.map(_point => {
+            const _canvasPoint = imageToCanvasFactory(imgNWCorner, imgDim)(_point);
+            if (
+                canvasPoint.x >= _canvasPoint.x - crossWidth &&
+                canvasPoint.x <= _canvasPoint.x + crossWidth &&
+                canvasPoint.y >= _canvasPoint.y - crossHeight &&
+                canvasPoint.y <= _canvasPoint.y + crossHeight
+            ) {
+                intersectedPoints.push({ ..._canvasPoint, id: _point.id });
+            }
+        });
+        return intersectedPoints;
+    };
+};
+
 /** A component representing a zoomable and movable image. Implemented with canvas. */
 class InteractiveImage extends React.Component {
     constructor(props) {
@@ -30,7 +83,6 @@ class InteractiveImage extends React.Component {
         }
         if (this.props.setPointsChangedHandler) {
             this.props.setPointsChangedHandler(newPoints => {
-                console.log('REDRAW 2D POINTS');
                 this.setState(
                     {
                         points: newPoints
@@ -45,19 +97,23 @@ class InteractiveImage extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        // start resizing canvas on request animation frame
         if (nextProps.resizeAnimationOnGoing && !this.props.resizeAnimationOnGoing) {
             this.resizeRequest = requestAnimationFrame(this.onResizeAnimation);
         }
+        // stop resizing canvas on request animation frame
         if (!nextProps.resizeAnimationOnGoing && this.props.resizeAnimationOnGoing) {
             cancelAnimationFrame(this.resizeRequest);
         }
+        // change image url
         if (nextProps.mediaUrl !== this.props.mediaUrl) {
             this.media.src = nextProps.mediaUrl;
             this.setState({
                 loading: true
             });
         }
-        if (nextProps.addMode && this.props.addMode) {
+        // modify cursor if addMode is off
+        if (!nextProps.addMode && this.props.addMode) {
             this.mediaCanvas.style.cursor = 'default';
         }
     }
@@ -120,7 +176,7 @@ class InteractiveImage extends React.Component {
     }
 
     handleMediaLoad() {
-        this.redraw();
+        this.handleResize();
         this.setState({
             loading: false
         });
@@ -146,12 +202,15 @@ class InteractiveImage extends React.Component {
             this.computeMouseCoords(e);
 
             const rightClick = e.which === 3;
-            if (!this.props.addMode || rightClick) {
+            if (rightClick) {
                 // handle drag start
                 this.dragStart = context.transformedPoint(this.lastX, this.lastY);
-            } else if (this.props.addMode && this.props.onAddPoint && this.mouseMediaCoords) {
+            } else if (this.props.addMode && this.props.onAddPoint && this.mouseImageCoords) {
                 // add point
-                this.props.onAddPoint(this.mouseMediaCoords);
+                this.props.onAddPoint(this.mouseImageCoords);
+            } else if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
+                this.didDrag = false;
+                this.draggedPoint = this.pointIntersected;
             }
             this.dragged = false;
         }
@@ -162,6 +221,17 @@ class InteractiveImage extends React.Component {
         if (this.props.interactive) {
             e.stopPropagation();
             this.dragStart = null;
+
+            if (this.props.deleteMode && this.pointIntersected) {
+                this.props.onRemovePoint(this.pointIntersected.id);
+            }
+
+            if (this.draggedPoint && this.didDrag) {
+                // a point was dragged : update it
+                this.props.onUpdatePoint(this.draggedPoint.id, this.mouseImageCoords);
+                this.draggedPoint = null;
+                this.didDrag = false;
+            }
 
             // zoom if addMode is disabled & user was not dragging
             // if (!this.dragged && !this.props.addMode) {
@@ -179,43 +249,18 @@ class InteractiveImage extends React.Component {
             this.redraw();
         } else {
             const pt = context.transformedPoint(this.lastX, this.lastY);
-            const hRatio = this.mediaCanvas.width / this.media.width;
-            const vRatio = this.mediaCanvas.height / this.media.height;
-            const ratio = Math.min(hRatio, vRatio);
-            const centerShift_x = (this.mediaCanvas.width - this.media.width * ratio) / 2;
-            const centerShift_y = (this.mediaCanvas.height - this.media.height * ratio) / 2;
-
-            pt.x = pt.x - centerShift_x;
-            pt.y = pt.y - centerShift_y;
-            if (
-                pt.x >= 0 &&
-                pt.x <= this.media.width * ratio &&
-                pt.y >= 0 &&
-                pt.y <= this.media.height * ratio
-            ) {
+            if (this.isCanvasPointIntoImage(pt)) {
+                this.mouseImageCoords = this.canvasToImage(pt);
                 if (this.props.addMode) {
                     //mouse is inside inside photo
                     this.mediaCanvas.style.cursor = 'crosshair';
-                    this.mouseMediaCoords = {
-                        x: 2 * pt.x / (this.media.width * ratio) - 1,
-                        y: 2 * pt.y / (this.media.height * ratio) - 1
-                    };
+                } else if (this.draggedPoint) {
+                    this.didDrag = true;
+                    this.draggedPoint.x = pt.x;
+                    this.draggedPoint.y = pt.y;
+                    this.redraw();
                 } else {
-                    const intersectedPoints = [];
-                    this.state.points.map(point => {
-                        const X =
-                            this.media.width * ratio / 2 + point.x * this.media.width * ratio / 2;
-                        const Y =
-                            this.media.height * ratio / 2 + point.y * this.media.height * ratio / 2;
-                        if (
-                            pt.x >= X - crossWidth &&
-                            pt.x <= X + crossWidth &&
-                            pt.y >= Y - crossHeight &&
-                            pt.y <= Y + crossHeight
-                        ) {
-                            intersectedPoints.push(point);
-                        }
-                    });
+                    const intersectedPoints = this.intersect(pt, this.state.points);
                     const formerIntersected = this.pointIntersected;
                     this.pointIntersected = intersectedPoints[0];
                     if (
@@ -231,7 +276,7 @@ class InteractiveImage extends React.Component {
             } else {
                 // mouse is outside photo
                 this.mediaCanvas.style.cursor = 'default';
-                this.mouseMediaCoords = null;
+                this.mouseImageCoords = null;
             }
         }
     }
@@ -244,8 +289,37 @@ class InteractiveImage extends React.Component {
     handleResize() {
         if (this.mediaCanvas) {
             context = this.mediaCanvas.getContext('2d');
+            // readapt canvas size to parent size
             this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
             this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;
+
+            // recompute image dimensions
+            const hRatio = this.mediaCanvas.width / this.media.width;
+            const vRatio = this.mediaCanvas.height / this.media.height;
+            const ratio = Math.min(hRatio, vRatio);
+            this.imgDim = {
+                width: this.media.width * ratio,
+                height: this.media.height * ratio
+            };
+            this.imgCenter = {
+                x: this.mediaCanvas.width / 2,
+                y: this.mediaCanvas.height / 2
+            };
+            this.imgNWCorner = {
+                x: this.imgCenter.x - this.imgDim.width / 2,
+                y: this.imgCenter.y - this.imgDim.height / 2
+            };
+
+            // reset canvas-image transformation functions
+            this.canvasToImage = canvasToImageFactory(this.imgNWCorner, this.imgDim);
+            this.imageToCanvas = imageToCanvasFactory(this.imgNWCorner, this.imgDim);
+            this.isCanvasPointIntoImage = isCanvasPointIntoImageFactory(
+                this.imgNWCorner,
+                this.imgDim
+            );
+            this.intersect = intersectFactory(this.imgNWCorner, this.imgDim);
+
+            // reset track transform + redraw
             this.trackTransforms(context);
             this.redraw();
         }
@@ -288,7 +362,7 @@ class InteractiveImage extends React.Component {
         this.redraw();
     }
 
-    redraw(points) {
+    redraw() {
         // Clear the entire canvas
         const p1 = context.transformedPoint(0, 0);
         const p2 = context.transformedPoint(this.mediaCanvas.width, this.mediaCanvas.height);
@@ -299,11 +373,6 @@ class InteractiveImage extends React.Component {
         context.restore();
 
         //We draw the media fitting and centering it in the canvas
-        const hRatio = this.mediaCanvas.width / this.media.width;
-        const vRatio = this.mediaCanvas.height / this.media.height;
-        const ratio = Math.min(hRatio, vRatio);
-        const centerShift_x = (this.mediaCanvas.width - this.media.width * ratio) / 2;
-        const centerShift_y = (this.mediaCanvas.height - this.media.height * ratio) / 2;
         context.clearRect(0, 0, this.mediaCanvas.width, this.mediaCanvas.height);
         context.drawImage(
             this.media,
@@ -311,23 +380,25 @@ class InteractiveImage extends React.Component {
             0,
             this.media.width,
             this.media.height,
-            centerShift_x,
-            centerShift_y,
-            this.media.width * ratio,
-            this.media.height * ratio
+            this.imgNWCorner.x,
+            this.imgNWCorner.y,
+            this.imgDim.width,
+            this.imgDim.height
         );
 
         // We draw the points relatively to the media
-        const mediaCenterX = centerShift_x + this.media.width * ratio / 2;
-        const mediaCenterY = centerShift_y + this.media.height * ratio / 2;
         if (this.state.points) {
             this.state.points.map(point => {
                 let color = 'red';
                 if (this.pointIntersected && point.id === this.pointIntersected.id) {
                     color = 'green';
                 }
-                const X = mediaCenterX + point.x * this.media.width * ratio / 2;
-                const Y = mediaCenterY + point.y * this.media.height * ratio / 2;
+                let pointCanvasCoords = this.imageToCanvas(point);
+                if (this.draggedPoint && this.draggedPoint.id === point.id) {
+                    pointCanvasCoords = this.draggedPoint;
+                }
+                const X = pointCanvasCoords.x;
+                const Y = pointCanvasCoords.y;
                 context.lineWidth = 1;
                 context.strokeStyle = color;
                 context.beginPath();
@@ -458,6 +529,8 @@ InteractiveImage.propTypes = {
     mediaUrl: PropTypes.string.isRequired,
     /** add point function */
     onAddPoint: PropTypes.func,
+    onRemovePoint: PropTypes.func,
+    onUpdatePoint: PropTypes.func,
     /** list of points to draw on the image (with coords relative to image center)*/
     points: PropTypes.arrayOf(PropTypes.object),
     /** the orientation of the canvas (0,1,2 or 3)*/
