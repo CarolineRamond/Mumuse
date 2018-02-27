@@ -44,9 +44,10 @@ class CalcPanel extends React.Component {
         const mappedPoints3D = this.props.points3D.map((point, index) => {
             return (
                 <EditablePoint
+                    key={index}
                     point={point}
-                    onUpdatePoint={this.props.onUpdate2DPoint}
-                    onRemovePoint={this.props.onRemove2DPoint}
+                    onUpdatePoint={this.props.onUpdate3DPoint}
+                    onRemovePoint={this.props.onRemove3DPoint}
                 />
             );
         });

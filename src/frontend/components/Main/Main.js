@@ -233,23 +233,22 @@ class Main extends React.Component {
                         onDragFinished={this.handleVDragFinished}
                         onChange={this.handleResize}
                     >
-                        <div>3D</div>
-                        {/* <View3D
-                                                   setResizeHandler={resizeHandler => {
-                                                       this.handle3DResize = resizeHandler;
-                                                   }}
-                                                   setPointsChangedHandler={pointsChangeHandler => {
-                                                       this.handle3DPointsChanged = pointsChangeHandler;
-                                                   }}
-                                                   addMode={this.state.addMode}
-                                                   bindingMode={this.state.bindingMode}
-                                                   deleteMode={this.state.deleteMode}
-                                                   points={this.props.points3D}
-                                                   onAddPoint={this.onAdd3DPoint}
-                                                   onSelectPoint={this.onSelect3DPoint}
-                                                   onUpdatePoint={this.onUpdate3DPoint}
-                                                   onRemovePoint={this.onRemove3DPoint}
-                                               />*/}
+                        <View3D
+                            setResizeHandler={resizeHandler => {
+                                this.handle3DResize = resizeHandler;
+                            }}
+                            setPointsChangedHandler={pointsChangeHandler => {
+                                this.handle3DPointsChanged = pointsChangeHandler;
+                            }}
+                            addMode={this.state.addMode}
+                            bindingMode={this.state.bindingMode}
+                            deleteMode={this.state.deleteMode}
+                            points={this.props.points3D}
+                            onAddPoint={this.onAdd3DPoint}
+                            onSelectPoint={this.onSelect3DPoint}
+                            onUpdatePoint={this.onUpdate3DPoint}
+                            onRemovePoint={this.onRemove3DPoint}
+                        />
                         <View2D
                             setResizeHandler={resizeHandler => {
                                 this.handle2DResize = resizeHandler;
