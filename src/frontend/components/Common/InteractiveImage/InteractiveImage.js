@@ -367,7 +367,7 @@ class InteractiveImage extends React.Component {
         // We draw the points relatively to the media
         if (this.state.points) {
             this.state.points.map(point => {
-                let color = 'red';
+                let color = point.color || 'red';
                 /*if (
                     (this.pointIntersected && point.id === this.pointIntersected.id) ||
                     (this.bindedPoint && point.id === this.bindedPoint.id)

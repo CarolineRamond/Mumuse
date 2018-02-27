@@ -64,14 +64,15 @@ export const remove2DPoint = pointId => {
  * Must be between -1 (bottom edge of the photo) and 1 (top edge of the photo)
  * @param {String} [params.name] - a new name to identify the point
  */
-export const update2DPoint = (pointId, { x, y, name }) => {
+export const update2DPoint = (pointId, { x, y, name, color }) => {
     return {
         type: '2D_POINT_UPDATE',
         payload: {
             pointId: pointId,
             x: x,
             y: y,
-            name: name
+            name: name,
+            color: color
         },
         meta: {
             validator: {
@@ -83,13 +84,13 @@ export const update2DPoint = (pointId, { x, y, name }) => {
                 },
                 x: {
                     func: _x => {
-                        return typeof _x === 'number' && _x <= 1 && _x >= -1;
+                        return !_x || (typeof _x === 'number' && _x <= 1 && _x >= -1);
                     },
                     msg: 'x must be a number between -1 and 1.'
                 },
                 y: {
                     func: _y => {
-                        return typeof _y === 'number' && _y <= 1 && _y >= -1;
+                        return !_y || (typeof _y === 'number' && _y <= 1 && _y >= -1);
                     },
                     msg: 'y must be a number between -1 and 1.'
                 }

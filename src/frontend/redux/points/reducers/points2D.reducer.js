@@ -18,8 +18,9 @@ const reducer = (state = initialState, action) => {
             const newPoint = {
                 x: action.payload.x,
                 y: action.payload.y,
-                name: action.payload.name,
+                name: action.payload.name || `point2D-${state.list.length + 1}`,
                 id: uuid(),
+                color: '#FF0000',
                 selected: false
             };
             return {
@@ -43,9 +44,10 @@ const reducer = (state = initialState, action) => {
                 if (point.id === action.payload.pointId) {
                     return {
                         ...point,
-                        x: action.payload.x,
-                        y: action.payload.y,
-                        name: action.payload.name || point.name
+                        x: action.payload.x || point.x,
+                        y: action.payload.y || point.y,
+                        name: action.payload.name || point.name,
+                        color: action.payload.color || point.color
                     };
                 } else {
                     return point;

@@ -15,5 +15,5 @@ export const did3DPointsChange = state => {
 };
 
 export const getBindings = state => {
-    return state.present.getBindings;
+    return state.present.bindings;
 };

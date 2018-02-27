@@ -8,7 +8,7 @@ import View2D from './View2D';
 import View3D from './View3D';
 
 import { actions, selectors } from '../../redux';
-const { get2DPoints, did2DPointsChange, get3DPoints, did3DPointsChange } = selectors;
+const { get2DPoints, did2DPointsChange, get3DPoints, did3DPointsChange, getBindings } = selectors;
 const {
     add2DPoint,
     select2DPoint,
@@ -31,6 +31,7 @@ class Main extends React.Component {
         this.handleResize = this.handleResize.bind(this);
         this.handleKeypress = this.handleKeypress.bind(this);
         this.toggleAddMode = this.toggleAddMode.bind(this);
+        this.toggleBindingMode = this.toggleBindingMode.bind(this);
         this.toggleDeleteMode = this.toggleDeleteMode.bind(this);
 
         this.onAdd3DPoint = this.onAdd3DPoint.bind(this);
@@ -149,6 +150,12 @@ class Main extends React.Component {
 
     onSelect3DPoint(id) {
         this.props.dispatch(select3DPoint(id));
+        if (this.state.bindingMode) {
+            this.binding3D = id;
+            if (this.binding2D) {
+                this.onAddBinding();
+            }
+        }
     }
 
     onUpdate3DPoint(id, position) {
@@ -165,6 +172,12 @@ class Main extends React.Component {
 
     onSelect2DPoint(id) {
         this.props.dispatch(select2DPoint(id));
+        if (this.state.bindingMode) {
+            this.binding2D = id;
+            if (this.binding3D) {
+                this.onAddBinding();
+            }
+        }
     }
 
     onUpdate2DPoint(id, position) {
@@ -175,8 +188,10 @@ class Main extends React.Component {
         this.props.dispatch(remove2DPoint(id));
     }
 
-    onAddBinding(id2D, id3D) {
-        this.props.dispatch(addBinding(id2D, id3D));
+    onAddBinding() {
+        this.props.dispatch(addBinding(this.binding2D, this.binding3D));
+        this.binding2D = null;
+        this.binding3D = null;
     }
 
     render() {
@@ -203,7 +218,7 @@ class Main extends React.Component {
             <SplitPane
                 split="horizontal"
                 primary="second"
-                defaultSize="100px"
+                defaultSize="300px"
                 resizerStyle={this.state.isHResizing ? hResizerStyleHover : hResizerStyle}
                 onDragStarted={this.handleHDragStarted}
                 onDragFinished={this.handleHDragFinished}
@@ -218,22 +233,23 @@ class Main extends React.Component {
                         onDragFinished={this.handleVDragFinished}
                         onChange={this.handleResize}
                     >
-                        <View3D
-                            setResizeHandler={resizeHandler => {
-                                this.handle3DResize = resizeHandler;
-                            }}
-                            setPointsChangedHandler={pointsChangeHandler => {
-                                this.handle3DPointsChanged = pointsChangeHandler;
-                            }}
-                            addMode={this.state.addMode}
-                            bindingMode={this.state.bindingMode}
-                            deleteMode={this.state.deleteMode}
-                            points={this.props.points3D}
-                            onAddPoint={this.onAdd3DPoint}
-                            onSelectPoint={this.onSelect3DPoint}
-                            onUpdatePoint={this.onUpdate3DPoint}
-                            onRemovePoint={this.onRemove3DPoint}
-                        />
+                        <div>3D</div>
+                        {/* <View3D
+                                                   setResizeHandler={resizeHandler => {
+                                                       this.handle3DResize = resizeHandler;
+                                                   }}
+                                                   setPointsChangedHandler={pointsChangeHandler => {
+                                                       this.handle3DPointsChanged = pointsChangeHandler;
+                                                   }}
+                                                   addMode={this.state.addMode}
+                                                   bindingMode={this.state.bindingMode}
+                                                   deleteMode={this.state.deleteMode}
+                                                   points={this.props.points3D}
+                                                   onAddPoint={this.onAdd3DPoint}
+                                                   onSelectPoint={this.onSelect3DPoint}
+                                                   onUpdatePoint={this.onUpdate3DPoint}
+                                                   onRemovePoint={this.onRemove3DPoint}
+                                               />*/}
                         <View2D
                             setResizeHandler={resizeHandler => {
                                 this.handle2DResize = resizeHandler;
@@ -256,9 +272,16 @@ class Main extends React.Component {
                     addMode={this.state.addMode}
                     bindingMode={this.state.bindingMode}
                     deleteMode={this.state.deleteMode}
+                    onUpdate2DPoint={this.onUpdate2DPoint}
+                    onUpdate3DPoint={this.onUpdate3DPoint}
+                    onRemove2DPoint={this.onRemove2DPoint}
+                    onRemove3DPoint={this.onRemove3DPoint}
+                    points2D={this.props.points2D}
+                    points3D={this.props.points3D}
                     toggleAddMode={this.toggleAddMode}
                     toggleDeleteMode={this.toggleDeleteMode}
                     toggleBindingMode={this.toggleBindingMode}
+                    bindings={this.props.bindings}
                 />
             </SplitPane>
         );
@@ -266,6 +289,7 @@ class Main extends React.Component {
 }
 
 Main.propTypes = {
+    bindings: PropTypes.arrayOf(PropTypes.object),
     did2DPointsChange: PropTypes.bool,
     did3DPointsChange: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
@@ -278,7 +302,8 @@ const ConnectedMain = connect(store => {
         did2DPointsChange: did2DPointsChange(store),
         did3DPointsChange: did3DPointsChange(store),
         points2D: get2DPoints(store),
-        points3D: get3DPoints(store)
+        points3D: get3DPoints(store),
+        bindings: getBindings(store)
     };
 })(Main);
 
