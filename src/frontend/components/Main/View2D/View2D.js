@@ -13,7 +13,6 @@ class View2D extends React.Component {
     componentDidMount() {
         this.props.setResizeHandler(this.handleResize);
         this.props.setPointsChangedHandler(newPoints => {
-            console.log('VIEW 2D HANDLE POINTS CHANGED');
             this.handlePointsChanged(newPoints);
         });
     }

@@ -56,7 +56,6 @@ class Main extends React.Component {
             this.handle3DPointsChanged(nextProps.points3D);
         }
         if (nextProps.did2DPointsChange && this.handle2DPointsChanged) {
-            console.log('2D POINTS CHANGED');
             this.handle2DPointsChanged(nextProps.points2D);
         }
     }
@@ -160,8 +159,7 @@ class Main extends React.Component {
             background: 'transparent',
             borderLeft: '5px solid #ccc',
             cursor: 'ew-resize',
-            zIndex: '1',
-            width: '12px'
+            zIndex: '1'
         };
         const vResizerStyleHover = Object.assign({}, vResizerStyle, {
             borderLeft: '5px solid blue'

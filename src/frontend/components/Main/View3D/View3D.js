@@ -225,7 +225,7 @@ class View3D extends React.Component {
         }
     }
 
-    onMouseDown(e) {
+    onMouseDown() {
         if (this.props.addMode && this.isModelIntersected) {
             this.props.onAddPoint(this.addPointHelper.position);
         }
@@ -244,7 +244,7 @@ class View3D extends React.Component {
         }
     }
 
-    onMouseUp(e) {
+    onMouseUp() {
         if (this.draggedPoint) {
             // stop dragging point
             if (this.isModelIntersected && this.didDrag) {
