@@ -140,18 +140,19 @@ class View3D extends React.Component {
     }
 
     redrawPoints(points) {
-        console.log('REDRAW 3D POINTS');
         // remove previously drawn points
         for (let i = this.pointsContainer.children.length - 1; i >= 0; i--) {
             this.pointsContainer.remove(this.pointsContainer.children[i]);
         }
         // add new points
         points.map(point => {
-            const newPoint = new THREE.LineSegments(pointGeometry, pointMaterial);
+            const material = point.selected ? selectedPointMaterial : pointMaterial;
+            const newPoint = new THREE.LineSegments(pointGeometry, material);
             newPoint.scale.set(2, 2, 2);
             newPoint.position.set(point.x, point.y, point.z);
             newPoint.metadata = {
-                id: point.id
+                id: point.id,
+                selected: point.selected
             };
             this.pointsContainer.add(newPoint);
         });
@@ -201,7 +202,7 @@ class View3D extends React.Component {
                 this.container3D.style.cursor = 'default';
             }
         } else {
-            // else, delete/update mode is on : find points intersecting the picking ray
+            // else, bind/delete/update mode is on : find points intersecting the picking ray
             const pointsIntersect = this.raycaster.intersectObjects(
                 this.pointsContainer.children,
                 true
@@ -216,7 +217,7 @@ class View3D extends React.Component {
                     this.container3D.style.cursor = 'pointer';
                 }
             } else {
-                if (this.pointIntersected) {
+                if (this.pointIntersected && !this.pointIntersected.metadata.selected) {
                     this.pointIntersected.material = pointMaterial;
                 }
                 this.pointIntersected = null;
@@ -228,6 +229,22 @@ class View3D extends React.Component {
     onMouseDown() {
         if (this.props.addMode && this.isModelIntersected) {
             this.props.onAddPoint(this.addPointHelper.position);
+            return;
+        }
+        if (this.props.bindingMode) {
+            // if (this.bindedPoint) {
+            //     // reset previous binded point material
+            //     this.bindedPoint.material = pointMaterial;
+            // }
+            // // update binded point
+            // this.bindedPoint = this.pointIntersected;
+            // if (this.bindedPoint) {
+            //     this.bindedPoint.material = selectedPointMaterial;
+            // }
+            this.props.onSelectPoint(
+                this.pointIntersected ? this.pointIntersected.metadata.id : null
+            );
+            return;
         }
         if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
             this.didDrag = false;
@@ -279,9 +296,11 @@ class View3D extends React.Component {
 
 View3D.propTypes = {
     addMode: PropTypes.bool,
+    bindingMode: PropTypes.bool,
     deleteMode: PropTypes.bool,
     didPointsChange: PropTypes.bool,
     onAddPoint: PropTypes.func.isRequired,
+    onSelectPoint: PropTypes.func.isRequired,
     onRemovePoint: PropTypes.func.isRequired,
     onUpdatePoint: PropTypes.func.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),

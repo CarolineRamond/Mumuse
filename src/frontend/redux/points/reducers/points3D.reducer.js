@@ -21,7 +21,7 @@ const reducer = (state = initialState, action) => {
                 z: action.payload.z,
                 name: action.payload.name,
                 id: uuid(),
-                selected: true
+                selected: false
             };
             return {
                 ...state,
@@ -59,12 +59,32 @@ const reducer = (state = initialState, action) => {
                 didChange: true
             };
         }
-        case '3D_POINT_TOGGLE_SELECT': {
+        // case '3D_POINT_TOGGLE_SELECT': {
+        //     const newList = state.list.map(point => {
+        //         if (point.id === action.payload.pointId) {
+        //             return {
+        //                 ...point,
+        //                 selected: !point.selected
+        //             };
+        //         } else {
+        //             return {
+        //                 ...point,
+        //                 selected: false
+        //             };
+        //         }
+        //     });
+        //     return {
+        //         ...state,
+        //         list: newList,
+        //         didChange: true
+        //     };
+        // }
+        case '3D_POINT_SELECT': {
             const newList = state.list.map(point => {
                 if (point.id === action.payload.pointId) {
                     return {
                         ...point,
-                        selected: !point.selected
+                        selected: true
                     };
                 } else {
                     return {

@@ -1,4 +1,7 @@
-/** Transforms canvas-relative coords into normalized image-relative coords
+/** For InteractiveImage canvas :
+ * Given an image drawn at the center of a canvas,
+ * generate a function (depending on image position & dimensions)
+ * to transform canvas-relative coords into normalized image-relative coords
  * canvas origin is NW, image origin is at the center of the image
  */
 export const canvasToImageFactory = (imgNWCorner, imgDim) => {
@@ -10,7 +13,10 @@ export const canvasToImageFactory = (imgNWCorner, imgDim) => {
     };
 };
 
-/** Transforms normalized image-relative coords into canvas-relative coords
+/** For InteractiveImage canvas :
+ * Given an image drawn at the center of a canvas,
+ * generate a function (depending on image position & dimensions)
+ * to transform normalized image-relative coords into canvas coords
  * canvas origin is NW, image origin is at the center of the image
  */
 export const imageToCanvasFactory = (imgNWCorner, imgDim) => {
@@ -22,6 +28,11 @@ export const imageToCanvasFactory = (imgNWCorner, imgDim) => {
     };
 };
 
+/** For InteractiveImage canvas :
+ * Given an image drawn at the center of a canvas,
+ * generate a function (depending on image position & dimensions)
+ * to know if a point is inside the image or not.
+ */
 export const isCanvasPointIntoImageFactory = (imgNWCorner, imgDim) => {
     return canvasCoords => {
         return (
@@ -33,6 +44,11 @@ export const isCanvasPointIntoImageFactory = (imgNWCorner, imgDim) => {
     };
 };
 
+/** For InteractiveImage canvas :
+ * Given an image drawn at the center of a canvas,
+ * generate a function (depending on image position & dimensions)
+ * to know if a canvas point intersect an array of image points.
+ */
 export const intersectFactory = (imgNWCorner, imgDim, pointSize) => {
     return (canvasPoint, imagePoints) => {
         const intersectedPoints = [];

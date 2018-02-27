@@ -48,6 +48,14 @@ class CalcPanel extends React.Component {
                     label="Delete point (press 'd' to toggle)"
                     onChange={this.props.toggleDeleteMode}
                 />
+                <Switch
+                    theme={{
+                        text: styles.lightText
+                    }}
+                    checked={this.props.bindingMode}
+                    label="Bind 2D-3D points (press 'b' to toggle)"
+                    onChange={this.props.toggleBindingMode}
+                />
                 <div>
                     <IconButton icon="undo" onClick={this.undo} />
                     <IconButton icon="redo" onClick={this.redo} />
@@ -59,9 +67,11 @@ class CalcPanel extends React.Component {
 
 CalcPanel.propTypes = {
     addMode: PropTypes.bool,
+    bindingMode: PropTypes.bool,
     deleteMode: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
     toggleAddMode: PropTypes.func.isRequired,
+    toggleBindingMode: PropTypes.func.isRequired,
     toggleDeleteMode: PropTypes.func.isRequired
 };
 

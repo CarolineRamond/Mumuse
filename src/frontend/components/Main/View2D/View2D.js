@@ -34,9 +34,11 @@ class View2D extends React.Component {
                         this.handlePointsChanged = pointsChangedHandler;
                     }}
                     addMode={this.props.addMode}
+                    bindingMode={this.props.bindingMode}
                     deleteMode={this.props.deleteMode}
                     points={this.props.points}
                     onAddPoint={this.props.onAddPoint}
+                    onSelectPoint={this.props.onSelectPoint}
                     onUpdatePoint={this.props.onUpdatePoint}
                     onRemovePoint={this.props.onRemovePoint}
                 />
@@ -47,8 +49,10 @@ class View2D extends React.Component {
 
 View2D.propTypes = {
     addMode: PropTypes.bool,
+    bindingMode: PropTypes.bool,
     deleteMode: PropTypes.bool,
     onAddPoint: PropTypes.func.isRequired,
+    onSelectPoint: PropTypes.func.isRequired,
     onRemovePoint: PropTypes.func.isRequired,
     onUpdatePoint: PropTypes.func.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),

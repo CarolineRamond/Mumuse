@@ -99,23 +99,13 @@ export const update2DPoint = (pointId, { x, y, name }) => {
 };
 
 /** Select a point from the 2d photo.
- * @param {String} pointId - the id of the 2d point to select.
+ * @param {String} pointId - the id of the 2d point to select (can be undefined).
  */
-export const toggle2DPointSelection = pointId => {
+export const select2DPoint = pointId => {
     return {
-        type: '2D_POINT_TOGGLE_SELECT',
+        type: '2D_POINT_SELECT',
         payload: {
             pointId: pointId
-        },
-        meta: {
-            validator: {
-                pointId: {
-                    func: _pointId => {
-                        return typeof _pointId === 'string';
-                    },
-                    msg: 'pointId must be a string'
-                }
-            }
         }
     };
 };
@@ -233,23 +223,13 @@ export const update3DPoint = (pointId, { x, y, z, name }) => {
 };
 
 /** Select a point from the 3d photo.
- * @param {String} pointId - the id of the 3d point to remove.
+ * @param {String} pointId - the id of the 3d point to select (can be undefined).
  */
-export const toggle3DPointSelection = pointId => {
+export const select3DPoint = pointId => {
     return {
-        type: '3D_POINT_TOGGLE_SELECT',
+        type: '3D_POINT_SELECT',
         payload: {
             pointId: pointId
-        },
-        meta: {
-            validator: {
-                pointId: {
-                    func: _pointId => {
-                        return typeof _pointId === 'string';
-                    },
-                    msg: 'pointId must be a string'
-                }
-            }
         }
     };
 };

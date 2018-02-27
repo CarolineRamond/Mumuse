@@ -11,11 +11,14 @@ import { actions, selectors } from '../../redux';
 const { get2DPoints, did2DPointsChange, get3DPoints, did3DPointsChange } = selectors;
 const {
     add2DPoint,
+    select2DPoint,
     update2DPoint,
     remove2DPoint,
     add3DPoint,
+    select3DPoint,
     update3DPoint,
-    remove3DPoint
+    remove3DPoint,
+    addBinding
 } = actions;
 
 class Main extends React.Component {
@@ -31,18 +34,25 @@ class Main extends React.Component {
         this.toggleDeleteMode = this.toggleDeleteMode.bind(this);
 
         this.onAdd3DPoint = this.onAdd3DPoint.bind(this);
+        this.onSelect3DPoint = this.onSelect3DPoint.bind(this);
         this.onUpdate3DPoint = this.onUpdate3DPoint.bind(this);
         this.onRemove3DPoint = this.onRemove3DPoint.bind(this);
 
         this.onAdd2DPoint = this.onAdd2DPoint.bind(this);
+        this.onSelect2DPoint = this.onSelect2DPoint.bind(this);
         this.onUpdate2DPoint = this.onUpdate2DPoint.bind(this);
         this.onRemove2DPoint = this.onRemove2DPoint.bind(this);
+
+        this.onAddBinding = this.onAddBinding.bind(this);
+        this.binding3D = null;
+        this.binding2D = null;
 
         this.state = {
             isHResizing: false,
             isVResizing: false,
             addMode: false,
-            deleteMode: false
+            deleteMode: false,
+            bindingMode: false
         };
     }
 
@@ -101,6 +111,9 @@ class Main extends React.Component {
         if (e.key === 'a') {
             this.toggleAddMode();
         }
+        if (e.key === 'b') {
+            this.toggleBindingMode();
+        }
         if (e.key === 'd') {
             this.toggleDeleteMode();
         }
@@ -109,6 +122,7 @@ class Main extends React.Component {
     toggleAddMode() {
         this.setState({
             addMode: !this.state.addMode,
+            bindingMode: false,
             deleteMode: false
         });
     }
@@ -116,12 +130,25 @@ class Main extends React.Component {
     toggleDeleteMode() {
         this.setState({
             addMode: false,
+            bindingMode: false,
             deleteMode: !this.state.deleteMode
+        });
+    }
+
+    toggleBindingMode() {
+        this.setState({
+            addMode: false,
+            bindingMode: !this.state.bindingMode,
+            deleteMode: false
         });
     }
 
     onAdd3DPoint(position) {
         this.props.dispatch(add3DPoint(position));
+    }
+
+    onSelect3DPoint(id) {
+        this.props.dispatch(select3DPoint(id));
     }
 
     onUpdate3DPoint(id, position) {
@@ -136,12 +163,20 @@ class Main extends React.Component {
         this.props.dispatch(add2DPoint(position));
     }
 
+    onSelect2DPoint(id) {
+        this.props.dispatch(select2DPoint(id));
+    }
+
     onUpdate2DPoint(id, position) {
         this.props.dispatch(update2DPoint(id, position));
     }
 
     onRemove2DPoint(id) {
         this.props.dispatch(remove2DPoint(id));
+    }
+
+    onAddBinding(id2D, id3D) {
+        this.props.dispatch(addBinding(id2D, id3D));
     }
 
     render() {
@@ -191,9 +226,11 @@ class Main extends React.Component {
                                 this.handle3DPointsChanged = pointsChangeHandler;
                             }}
                             addMode={this.state.addMode}
+                            bindingMode={this.state.bindingMode}
                             deleteMode={this.state.deleteMode}
                             points={this.props.points3D}
                             onAddPoint={this.onAdd3DPoint}
+                            onSelectPoint={this.onSelect3DPoint}
                             onUpdatePoint={this.onUpdate3DPoint}
                             onRemovePoint={this.onRemove3DPoint}
                         />
@@ -205,9 +242,11 @@ class Main extends React.Component {
                                 this.handle2DPointsChanged = pointsChangeHandler;
                             }}
                             addMode={this.state.addMode}
+                            bindingMode={this.state.bindingMode}
                             deleteMode={this.state.deleteMode}
                             points={this.props.points2D}
                             onAddPoint={this.onAdd2DPoint}
+                            onSelectPoint={this.onSelect2DPoint}
                             onUpdatePoint={this.onUpdate2DPoint}
                             onRemovePoint={this.onRemove2DPoint}
                         />
@@ -215,9 +254,11 @@ class Main extends React.Component {
                 </div>
                 <CalcPanel
                     addMode={this.state.addMode}
+                    bindingMode={this.state.bindingMode}
                     deleteMode={this.state.deleteMode}
                     toggleAddMode={this.toggleAddMode}
                     toggleDeleteMode={this.toggleDeleteMode}
+                    toggleBindingMode={this.toggleBindingMode}
                 />
             </SplitPane>
         );

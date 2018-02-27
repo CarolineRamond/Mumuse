@@ -163,13 +163,26 @@ class InteractiveImage extends React.Component {
                 // handle image drag start
                 this.imgDragStart = context.transformedPoint(this.lastX, this.lastY);
                 this.didDragImg = false;
-            } else if (this.props.addMode && this.props.onAddPoint && this.mouseImageCoords) {
+                return;
+            }
+            if (this.props.bindingMode) {
+                // handle point bind
+                // this.bindedPoint = this.pointIntersected;
+                // this.props.onBindPoint(this.bindedPoint);
+                // this.redraw();
+                this.props.onSelectPoint(this.pointIntersected ? this.pointIntersected.id : null);
+                return;
+            }
+            if (this.props.addMode && this.props.onAddPoint && this.mouseImageCoords) {
                 // add point
                 this.props.onAddPoint(this.mouseImageCoords);
-            } else if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
+                return;
+            }
+            if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
                 // handle point drag start
                 this.draggedPoint = this.pointIntersected;
                 this.didDragPoint = false;
+                return;
             }
         }
     }
@@ -355,7 +368,14 @@ class InteractiveImage extends React.Component {
         if (this.state.points) {
             this.state.points.map(point => {
                 let color = 'red';
-                if (this.pointIntersected && point.id === this.pointIntersected.id) {
+                /*if (
+                    (this.pointIntersected && point.id === this.pointIntersected.id) ||
+                    (this.bindedPoint && point.id === this.bindedPoint.id)
+                ) {*/
+                if (
+                    (this.pointIntersected && point.id === this.pointIntersected.id) ||
+                    point.selected
+                ) {
                     color = 'green';
                 }
                 let pointCanvasCoords = this.imageToCanvas(point);
@@ -483,6 +503,8 @@ class InteractiveImage extends React.Component {
 InteractiveImage.propTypes = {
     /** whether add point mode is active or not*/
     addMode: PropTypes.bool,
+    /** whether binding point mode is active or not*/
+    bindingMode: PropTypes.bool,
     /** whether delete point mode is active or not*/
     deleteMode: PropTypes.bool,
     /** a fallback url of the image to display (loaded in case mediaUrl is not available)*/
@@ -495,6 +517,8 @@ InteractiveImage.propTypes = {
     mediaUrl: PropTypes.string.isRequired,
     /** add point function */
     onAddPoint: PropTypes.func,
+    /** select point function */
+    onSelectPoint: PropTypes.func,
     /** remove point function */
     onRemovePoint: PropTypes.func,
     /** update point function */
@@ -514,7 +538,7 @@ InteractiveImage.propTypes = {
 
 InteractiveImage.defaultProps = {
     interactive: false,
-    points: [],
+    points: null,
     quarter: 0,
     resizeAnimationOnGoing: false
 };
