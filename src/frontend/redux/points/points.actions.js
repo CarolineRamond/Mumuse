@@ -182,7 +182,7 @@ export const remove3DPoint = pointId => {
  * @param {Number} params.z - new z-coordinate.
  * @param {String} [params.name] - a new name to identify the point
  */
-export const update3DPoint = (pointId, { x, y, z, name }) => {
+export const update3DPoint = (pointId, { x, y, z, name, color }) => {
     return {
         type: '3D_POINT_UPDATE',
         payload: {
@@ -190,7 +190,8 @@ export const update3DPoint = (pointId, { x, y, z, name }) => {
             x: x,
             y: y,
             z: z,
-            name: name
+            name: name,
+            color: color
         },
         meta: {
             validator: {
@@ -202,19 +203,19 @@ export const update3DPoint = (pointId, { x, y, z, name }) => {
                 },
                 x: {
                     func: _x => {
-                        return typeof _x === 'number';
+                        return !_x || typeof _x === 'number';
                     },
                     msg: 'x must be a number.'
                 },
                 y: {
                     func: _y => {
-                        return typeof _y === 'number';
+                        return !_y || typeof _y === 'number';
                     },
                     msg: 'y must be a number.'
                 },
                 z: {
                     func: _z => {
-                        return typeof _z === 'number';
+                        return !_z || typeof _z === 'number';
                     },
                     msg: 'z must be a number.'
                 }

@@ -18,16 +18,26 @@ pointGeometry.vertices.push(v3);
 pointGeometry.vertices.push(v4);
 pointGeometry.vertices.push(v5);
 pointGeometry.vertices.push(v6);
+
+const getPointMaterial = color => {
+    let hexColor;
+    try {
+        hexColor = parseInt(color.split('#')[1], 16);
+    } catch (e) {
+        hexColor = 0xff0000;
+    }
+    return new THREE.LineBasicMaterial({
+        color: hexColor,
+        linewidth: 3
+    });
+};
+
 const pointMaterial = new THREE.LineBasicMaterial({
-    color: 0xcc0000,
-    transparent: true,
-    opacity: 0.5,
+    color: 0xff0000,
     linewidth: 3
 });
 const selectedPointMaterial = new THREE.LineBasicMaterial({
     color: 0x00cc00,
-    transparent: true,
-    opacity: 0.5,
     linewidth: 3
 });
 
@@ -146,7 +156,7 @@ class View3D extends React.Component {
         }
         // add new points
         points.map(point => {
-            const material = point.selected ? selectedPointMaterial : pointMaterial;
+            const material = point.selected ? selectedPointMaterial : getPointMaterial(point.color);
             const newPoint = new THREE.LineSegments(pointGeometry, material);
             newPoint.scale.set(2, 2, 2);
             newPoint.position.set(point.x, point.y, point.z);
@@ -232,15 +242,6 @@ class View3D extends React.Component {
             return;
         }
         if (this.props.bindingMode) {
-            // if (this.bindedPoint) {
-            //     // reset previous binded point material
-            //     this.bindedPoint.material = pointMaterial;
-            // }
-            // // update binded point
-            // this.bindedPoint = this.pointIntersected;
-            // if (this.bindedPoint) {
-            //     this.bindedPoint.material = selectedPointMaterial;
-            // }
             this.props.onSelectPoint(
                 this.pointIntersected ? this.pointIntersected.metadata.id : null
             );

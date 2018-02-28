@@ -21,7 +21,7 @@ const reducer = (state = initialState, action) => {
                 z: action.payload.z,
                 name: action.payload.name || `point3D-${state.list.length + 1}`,
                 id: uuid(),
-                color: '#FF0000',
+                color: '#ff0000',
                 selected: false
             };
             return {
@@ -45,9 +45,9 @@ const reducer = (state = initialState, action) => {
                 if (point.id === action.payload.pointId) {
                     return {
                         ...point,
-                        x: action.payload.x,
-                        y: action.payload.y,
-                        z: action.payload.z,
+                        x: action.payload.x || point.x,
+                        y: action.payload.y || point.y,
+                        z: action.payload.z || point.z,
                         name: action.payload.name || point.name,
                         color: action.payload.color || point.color
                     };

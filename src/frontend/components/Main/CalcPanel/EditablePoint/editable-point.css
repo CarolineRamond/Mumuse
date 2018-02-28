@@ -22,10 +22,10 @@
 	opacity: 0;
 	position: absolute;
 	top: 35px;
-	transition: opacity 0.2 linear;
-	-webkit-transition: opacity 0.2 linear;
-	-o-transition: opacity 0.2 linear;
-	-moz-transition: opacity 0.2 linear;
+	transition: opacity 0.2s ease-in-out;
+	-webkit-transition: opacity 0.2s ease-in-out;
+	-o-transition: opacity 0.2s ease-in-out;
+	-moz-transition: opacity 0.2s ease-in-out;
 }
 
 .input {
