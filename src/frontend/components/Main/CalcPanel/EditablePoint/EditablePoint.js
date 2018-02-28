@@ -92,7 +92,7 @@ class EditablePoint extends React.Component {
                     className={styles.colorPicker}
                     style={{
                         opacity: this.state.displayPicker ? 1 : 0,
-                        zIndex: this.state.displayPicker ? 1 : 0,
+                        zIndex: this.state.displayPicker ? 2 : 0,
                         pointerEvents: this.state.displayPicker ? 'initial' : 'none'
                     }}
                 >
@@ -101,6 +101,11 @@ class EditablePoint extends React.Component {
                         onChangeComplete={this.updateColor}
                     />
                 </div>
+                <div
+                    className={styles.colorPickerBackdrop}
+                    style={{ display: this.state.displayPicker ? 'block' : 'none' }}
+                    onClick={this.togglePicker}
+                />
             </div>
         );
     }
