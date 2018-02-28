@@ -99,7 +99,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: true
+                didChange: false
             };
         }
         case 'BINDING_REMOVE_BY_2D': {
@@ -116,7 +116,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: true
+                didChange: false
             };
         }
         case 'BINDING_REMOVE_BY_3D': {
@@ -133,7 +133,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: true
+                didChange: false
             };
         }
         case '3D_POINT_REMOVE': {
@@ -150,8 +150,29 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: true
+                didChange: false
             };
+        }
+        case '3D_POINT_UPDATE': {
+            if (action.payload.color) {
+                const newList = state.list.map(point => {
+                    if (point.bind === action.payload.pointId) {
+                        return {
+                            ...point,
+                            color: action.payload.color
+                        };
+                    } else {
+                        return point;
+                    }
+                });
+                return {
+                    ...state,
+                    list: newList,
+                    didChange: true
+                };
+            } else {
+                return defaultReducer(state);
+            }
         }
         default:
             return defaultReducer(state);

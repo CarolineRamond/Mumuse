@@ -1,12 +1,11 @@
-.calcPanel {
-	width: 100%;
-	background-color: #CCC;
-	padding: 15px;
+.pointsPanel {
 	display: flex;
 	flex-direction: column;
+	flex-grow: 1;
+	min-height: 0;
 }
 
-.calcPanelToolbar {
+.pointsPanelToolbar {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -15,35 +14,35 @@
     flex-shrink: 0;
 }
 
-.calcPanelContent{
+.pointsPanelContent{
     display: flex;
     flex-direction: row;
     width: 100%;
     flex-grow: 1;
 }
 
-.calcPanelPointsControl {
+.pointsPanelTab {
     width: 33.33333333%;
     display: flex;
     flex-direction: column;
     border: 1px solid #AAA;
     padding: 8px;
-    overflow-y: scroll;
     background-color: white;
     margin: 8px;
 }
 
-.calcPanelPointsList {
+.pointsPanelTabList {
 	display: flex;
 	flex-direction: column;
 	flex-grow: 1;
+    overflow-y: scroll;
 }
 
 .addBindingControl {
 	display: flex;
 	flex-direction: row;
 	flex-shrink: 0;
-	height: 100px;
+	height: 80px;
 	position: relative;
 }
 

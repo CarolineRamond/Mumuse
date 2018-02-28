@@ -2,22 +2,43 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { ActionCreators } from 'redux-undo';
 import PropTypes from 'prop-types';
-import Switch from 'react-toolbox/lib/switch';
 import { IconButton } from 'react-toolbox/lib/button';
+import Switch from 'react-toolbox/lib/switch';
 import EditablePoint from './EditablePoint';
 import EditableBinding from './EditableBinding';
 
-import styles from './calc-panel.css';
+import { actions, selectors } from '../../../redux';
+const { get2DPoints, get3DPoints, getBindings } = selectors;
+const {
+    update2DPoint,
+    remove2DPoint,
+    update3DPoint,
+    remove3DPoint,
+    addBinding,
+    removeBindingBy2D,
+    removeBindingBy3D
+} = actions;
 
-class CalcPanel extends React.Component {
+import styles from './points-control-panel.css';
+
+class PointsControlPanel extends React.Component {
     constructor(props) {
         super(props);
         this.undo = this.undo.bind(this);
         this.redo = this.redo.bind(this);
 
+        this.onUpdate2DPoint = this.onUpdate2DPoint.bind(this);
+        this.onRemove2DPoint = this.onRemove2DPoint.bind(this);
+        this.onUpdate3DPoint = this.onUpdate3DPoint.bind(this);
+        this.onRemove3DPoint = this.onRemove3DPoint.bind(this);
+
         this.onBind2DPoint = this.onBind2DPoint.bind(this);
         this.onBind3DPoint = this.onBind3DPoint.bind(this);
+        this.onUnbind2DPoint = this.onUnbind2DPoint.bind(this);
+        this.onUnbind3DPoint = this.onUnbind3DPoint.bind(this);
+
         this.onAddBinding = this.onAddBinding.bind(this);
+        this.onRemoveBinding = this.onRemoveBinding.bind(this);
 
         this.state = {
             bind2D: null,
@@ -33,6 +54,22 @@ class CalcPanel extends React.Component {
         this.props.dispatch(ActionCreators.redo());
     }
 
+    onUpdate2DPoint(pointId, params) {
+        this.props.dispatch(update2DPoint(pointId, params));
+    }
+
+    onRemove2DPoint(pointId) {
+        this.props.dispatch(remove2DPoint(pointId));
+    }
+
+    onUpdate3DPoint(pointId, params) {
+        this.props.dispatch(update3DPoint(pointId, params));
+    }
+
+    onRemove3DPoint(pointId) {
+        this.props.dispatch(remove3DPoint(pointId));
+    }
+
     onBind2DPoint(point) {
         this.setState({ bind2D: point });
     }
@@ -42,11 +79,23 @@ class CalcPanel extends React.Component {
     }
 
     onAddBinding() {
-        this.props.onAddBinding(this.state.bind2D.id, this.state.bind3D.id);
+        this.props.dispatch(addBinding(this.state.bind2D.id, this.state.bind3D.id));
         this.setState({
             bind2D: null,
             bind3D: null
         });
+    }
+
+    onRemoveBinding(binding) {
+        this.props.dispatch(removeBindingBy2D(binding.point2D.id));
+    }
+
+    onUnbind2DPoint(point) {
+        this.props.dispatch(removeBindingBy2D(point.id));
+    }
+
+    onUnbind3DPoint(point) {
+        this.props.dispatch(removeBindingBy3D(point.id));
     }
 
     render() {
@@ -55,29 +104,37 @@ class CalcPanel extends React.Component {
                 <EditablePoint
                     key={index}
                     point={point}
-                    onUpdatePoint={this.props.onUpdate2DPoint}
-                    onRemovePoint={this.props.onRemove2DPoint}
+                    onUpdatePoint={this.onUpdate2DPoint}
+                    onRemovePoint={this.onRemove2DPoint}
                     onBindPoint={this.onBind2DPoint}
+                    onUnbindPoint={this.onUnbind2DPoint}
                 />
             );
         });
         const mappedBindings = this.props.bindings.map((binding, index) => {
-            return <EditableBinding key={index} binding={binding} />;
+            return (
+                <EditableBinding
+                    key={index}
+                    binding={binding}
+                    onRemoveBinding={this.onRemoveBinding}
+                />
+            );
         });
         const mappedPoints3D = this.props.points3D.map((point, index) => {
             return (
                 <EditablePoint
                     key={index}
                     point={point}
-                    onUpdatePoint={this.props.onUpdate3DPoint}
-                    onRemovePoint={this.props.onRemove3DPoint}
+                    onUpdatePoint={this.onUpdate3DPoint}
+                    onRemovePoint={this.onRemove3DPoint}
                     onBindPoint={this.onBind3DPoint}
+                    onUnbindPoint={this.onUnbind3DPoint}
                 />
             );
         });
         return (
-            <div className={styles.calcPanel}>
-                <div className={styles.calcPanelToolbar}>
+            <div className={styles.pointsPanel}>
+                <div className={styles.pointsPanelToolbar}>
                     <Switch
                         checked={this.props.addMode}
                         label="Add point (press 'a' to toggle)"
@@ -98,14 +155,14 @@ class CalcPanel extends React.Component {
                         <IconButton icon="redo" onClick={this.redo} />
                     </div>
                 </div>
-                <div className={styles.calcPanelContent}>
-                    <div className={styles.calcPanelPointsControl}>
+                <div className={styles.pointsPanelContent}>
+                    <div className={styles.pointsPanelTab}>
                         3D Points
-                        {mappedPoints3D}
+                        <div className={styles.pointsPanelTabList}>{mappedPoints3D}</div>
                     </div>
-                    <div className={styles.calcPanelPointsControl}>
+                    <div className={styles.pointsPanelTab}>
                         Bindings
-                        <div className={styles.calcPanelPointsList}>{mappedBindings}</div>
+                        <div className={styles.pointsPanelTabList}>{mappedBindings}</div>
                         {(this.state.bind2D || this.state.bind3D) && (
                             <div className={styles.addBindingControl}>
                                 <div className={styles.addBindingPanel}>
@@ -115,7 +172,7 @@ class CalcPanel extends React.Component {
                                     {this.state.bind2D && this.state.bind2D.name}
                                 </div>
                                 <IconButton
-                                    icon="save"
+                                    icon="link"
                                     className={styles.addBindingButton}
                                     disabled={!this.state.bind2D || !this.state.bind3D}
                                     onClick={this.onAddBinding}
@@ -123,9 +180,9 @@ class CalcPanel extends React.Component {
                             </div>
                         )}
                     </div>
-                    <div className={styles.calcPanelPointsControl}>
+                    <div className={styles.pointsPanelTab}>
                         2D Points
-                        {mappedPoints2D}
+                        <div className={styles.pointsPanelTabList}>{mappedPoints2D}</div>
                     </div>
                 </div>
             </div>
@@ -133,17 +190,12 @@ class CalcPanel extends React.Component {
     }
 }
 
-CalcPanel.propTypes = {
+PointsControlPanel.propTypes = {
     addMode: PropTypes.bool,
     bindingMode: PropTypes.bool,
     bindings: PropTypes.arrayOf(PropTypes.object),
     deleteMode: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
-    onRemove2DPoint: PropTypes.func.isRequired,
-    onRemove3DPoint: PropTypes.func.isRequired,
-    onUpdate2DPoint: PropTypes.func.isRequired,
-    onUpdate3DPoint: PropTypes.func.isRequired,
-    onAddBinding: PropTypes.func.isRequired,
     points2D: PropTypes.arrayOf(PropTypes.object),
     points3D: PropTypes.arrayOf(PropTypes.object),
     toggleAddMode: PropTypes.func.isRequired,
@@ -151,8 +203,12 @@ CalcPanel.propTypes = {
     toggleDeleteMode: PropTypes.func.isRequired
 };
 
-const ConnectedCalcPanel = connect(() => {
-    return {};
-})(CalcPanel);
+const ConnectedPointsControlPanel = connect(store => {
+    return {
+        bindings: getBindings(store),
+        points2D: get2DPoints(store),
+        points3D: get3DPoints(store)
+    };
+})(PointsControlPanel);
 
-export default ConnectedCalcPanel;
+export default ConnectedPointsControlPanel;

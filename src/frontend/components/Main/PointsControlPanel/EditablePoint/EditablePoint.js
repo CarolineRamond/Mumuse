@@ -18,7 +18,7 @@ class EditablePoint extends React.Component {
         this.updateColor = this.updateColor.bind(this);
         this.updateName = this.updateName.bind(this);
         this.removePoint = this.removePoint.bind(this);
-        this.bindPoint = this.bindPoint.bind(this);
+        this.toggleBind = this.toggleBind.bind(this);
 
         this.state = {
             name: this.props.point.name,
@@ -63,8 +63,12 @@ class EditablePoint extends React.Component {
         this.props.onRemovePoint(this.props.point.id);
     }
 
-    bindPoint() {
-        this.props.onBindPoint(this.props.point);
+    toggleBind() {
+        if (this.props.point.bind) {
+            this.props.onUnbindPoint(this.props.point);
+        } else {
+            this.props.onBindPoint(this.props.point);
+        }
     }
 
     render() {
@@ -94,7 +98,7 @@ class EditablePoint extends React.Component {
                 <TooltipIconButton
                     tooltip={this.props.point.bind ? 'Unbind' : 'Bind'}
                     icon={this.props.point.bind ? 'sync_disabled' : 'sync'}
-                    onClick={this.bindPoint}
+                    onClick={this.toggleBind}
                 />
                 <TooltipIconButton
                     tooltip="Save"
@@ -129,15 +133,16 @@ class EditablePoint extends React.Component {
 }
 
 EditablePoint.propTypes = {
+    onBindPoint: PropTypes.func.isRequired,
+    onRemovePoint: PropTypes.func.isRequired,
+    onUnbindPoint: PropTypes.func.isRequired,
+    onUpdatePoint: PropTypes.func.isRequired,
     point: PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         color: PropTypes.string.isRequired,
         bind: PropTypes.string
-    }).isRequired,
-    onBindPoint: PropTypes.func.isRequired,
-    onRemovePoint: PropTypes.func.isRequired,
-    onUpdatePoint: PropTypes.func.isRequired
+    }).isRequired
 };
 
 export default EditablePoint;

@@ -517,10 +517,10 @@ InteractiveImage.propTypes = {
     mediaUrl: PropTypes.string.isRequired,
     /** add point function */
     onAddPoint: PropTypes.func,
-    /** select point function */
-    onSelectPoint: PropTypes.func,
     /** remove point function */
     onRemovePoint: PropTypes.func,
+    /** select point function */
+    onSelectPoint: PropTypes.func,
     /** update point function */
     onUpdatePoint: PropTypes.func,
     /** list of points to draw on the image (with coords relative to image center)*/

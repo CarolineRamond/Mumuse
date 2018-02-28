@@ -5,8 +5,7 @@ const reducer = (state = initialState, action) => {
         case 'BINDING_ADD': {
             const newBinding = {
                 pointId2D: action.payload.pointId2D,
-                pointId3D: action.payload.pointId3D,
-                color: '#ff0000'
+                pointId3D: action.payload.pointId3D
             };
             return state.concat([newBinding]);
         }
