@@ -188,10 +188,14 @@ class Main extends React.Component {
         this.props.dispatch(remove2DPoint(id));
     }
 
-    onAddBinding() {
-        this.props.dispatch(addBinding(this.binding2D, this.binding3D));
-        this.binding2D = null;
-        this.binding3D = null;
+    // onAddBinding() {
+    //     this.props.dispatch(addBinding(this.binding2D, this.binding3D));
+    //     this.binding2D = null;
+    //     this.binding3D = null;
+    // }
+
+    onAddBinding(pointId2D, pointId3D) {
+        this.props.dispatch(addBinding(pointId2D, pointId3D));
     }
 
     render() {
@@ -275,6 +279,7 @@ class Main extends React.Component {
                     onUpdate3DPoint={this.onUpdate3DPoint}
                     onRemove2DPoint={this.onRemove2DPoint}
                     onRemove3DPoint={this.onRemove3DPoint}
+                    onAddBinding={this.onAddBinding}
                     points2D={this.props.points2D}
                     points3D={this.props.points3D}
                     toggleAddMode={this.toggleAddMode}

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import Switch from 'react-toolbox/lib/switch';
 import { IconButton } from 'react-toolbox/lib/button';
 import EditablePoint from './EditablePoint';
+import EditableBinding from './EditableBinding';
 
 import styles from './calc-panel.css';
 
@@ -13,6 +14,15 @@ class CalcPanel extends React.Component {
         super(props);
         this.undo = this.undo.bind(this);
         this.redo = this.redo.bind(this);
+
+        this.onBind2DPoint = this.onBind2DPoint.bind(this);
+        this.onBind3DPoint = this.onBind3DPoint.bind(this);
+        this.onAddBinding = this.onAddBinding.bind(this);
+
+        this.state = {
+            bind2D: null,
+            bind3D: null
+        };
     }
 
     undo() {
@@ -23,6 +33,22 @@ class CalcPanel extends React.Component {
         this.props.dispatch(ActionCreators.redo());
     }
 
+    onBind2DPoint(point) {
+        this.setState({ bind2D: point });
+    }
+
+    onBind3DPoint(point) {
+        this.setState({ bind3D: point });
+    }
+
+    onAddBinding() {
+        this.props.onAddBinding(this.state.bind2D.id, this.state.bind3D.id);
+        this.setState({
+            bind2D: null,
+            bind3D: null
+        });
+    }
+
     render() {
         const mappedPoints2D = this.props.points2D.map((point, index) => {
             return (
@@ -31,15 +57,12 @@ class CalcPanel extends React.Component {
                     point={point}
                     onUpdatePoint={this.props.onUpdate2DPoint}
                     onRemovePoint={this.props.onRemove2DPoint}
+                    onBindPoint={this.onBind2DPoint}
                 />
             );
         });
         const mappedBindings = this.props.bindings.map((binding, index) => {
-            return (
-                <li key={index}>
-                    2D: {binding.pointId2D} ; 3D: {binding.pointId3D}
-                </li>
-            );
+            return <EditableBinding key={index} binding={binding} />;
         });
         const mappedPoints3D = this.props.points3D.map((point, index) => {
             return (
@@ -48,41 +71,24 @@ class CalcPanel extends React.Component {
                     point={point}
                     onUpdatePoint={this.props.onUpdate3DPoint}
                     onRemovePoint={this.props.onRemove3DPoint}
+                    onBindPoint={this.onBind3DPoint}
                 />
             );
         });
         return (
             <div className={styles.calcPanel}>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        width: '100%',
-                        flexShrink: 0
-                    }}
-                >
+                <div className={styles.calcPanelToolbar}>
                     <Switch
-                        theme={{
-                            text: styles.lightText
-                        }}
                         checked={this.props.addMode}
                         label="Add point (press 'a' to toggle)"
                         onChange={this.props.toggleAddMode}
                     />
                     <Switch
-                        theme={{
-                            text: styles.lightText
-                        }}
                         checked={this.props.deleteMode}
                         label="Delete point (press 'd' to toggle)"
                         onChange={this.props.toggleDeleteMode}
                     />
                     <Switch
-                        theme={{
-                            text: styles.lightText
-                        }}
                         checked={this.props.bindingMode}
                         label="Bind 2D-3D points (press 'b' to toggle)"
                         onChange={this.props.toggleBindingMode}
@@ -92,50 +98,32 @@ class CalcPanel extends React.Component {
                         <IconButton icon="redo" onClick={this.redo} />
                     </div>
                 </div>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        width: '100%',
-                        flexGrow: '1'
-                    }}
-                >
-                    <div
-                        style={{
-                            width: '33.33333333%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            border: '1px solid #666',
-                            padding: '8px',
-                            overflowY: 'scroll'
-                        }}
-                    >
+                <div className={styles.calcPanelContent}>
+                    <div className={styles.calcPanelPointsControl}>
                         3D Points
                         {mappedPoints3D}
                     </div>
-                    <div
-                        style={{
-                            width: '33.33333333%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            border: '1px solid #666a',
-                            padding: '8px',
-                            overflowY: 'scroll'
-                        }}
-                    >
+                    <div className={styles.calcPanelPointsControl}>
                         Bindings
-                        {mappedBindings}
+                        <div className={styles.calcPanelPointsList}>{mappedBindings}</div>
+                        {(this.state.bind2D || this.state.bind3D) && (
+                            <div className={styles.addBindingControl}>
+                                <div className={styles.addBindingPanel}>
+                                    {this.state.bind3D && this.state.bind3D.name}
+                                </div>
+                                <div className={styles.addBindingPanel}>
+                                    {this.state.bind2D && this.state.bind2D.name}
+                                </div>
+                                <IconButton
+                                    icon="save"
+                                    className={styles.addBindingButton}
+                                    disabled={!this.state.bind2D || !this.state.bind3D}
+                                    onClick={this.onAddBinding}
+                                />
+                            </div>
+                        )}
                     </div>
-                    <div
-                        style={{
-                            width: '33.33333333%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            border: '1px solid #666a',
-                            padding: '8px',
-                            overflowY: 'scroll'
-                        }}
-                    >
+                    <div className={styles.calcPanelPointsControl}>
                         2D Points
                         {mappedPoints2D}
                     </div>
@@ -155,6 +143,7 @@ CalcPanel.propTypes = {
     onRemove3DPoint: PropTypes.func.isRequired,
     onUpdate2DPoint: PropTypes.func.isRequired,
     onUpdate3DPoint: PropTypes.func.isRequired,
+    onAddBinding: PropTypes.func.isRequired,
     points2D: PropTypes.arrayOf(PropTypes.object),
     points3D: PropTypes.arrayOf(PropTypes.object),
     toggleAddMode: PropTypes.func.isRequired,

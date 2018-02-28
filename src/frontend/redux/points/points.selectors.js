@@ -15,5 +15,15 @@ export const did3DPointsChange = state => {
 };
 
 export const getBindings = state => {
-    return state.present.bindings;
+    return state.present.bindings.map(binding => {
+        return {
+            point2D: state.present.points2D.list.find(item => {
+                return item.id === binding.pointId2D;
+            }),
+            point3D: state.present.points3D.list.find(item => {
+                return item.id === binding.pointId3D;
+            }),
+            color: binding.color
+        };
+    });
 };

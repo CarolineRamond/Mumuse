@@ -22,7 +22,8 @@ const reducer = (state = initialState, action) => {
                 name: action.payload.name || `point3D-${state.list.length + 1}`,
                 id: uuid(),
                 color: '#ff0000',
-                selected: false
+                selected: false,
+                bind: null
             };
             return {
                 ...state,
@@ -61,26 +62,6 @@ const reducer = (state = initialState, action) => {
                 didChange: true
             };
         }
-        // case '3D_POINT_TOGGLE_SELECT': {
-        //     const newList = state.list.map(point => {
-        //         if (point.id === action.payload.pointId) {
-        //             return {
-        //                 ...point,
-        //                 selected: !point.selected
-        //             };
-        //         } else {
-        //             return {
-        //                 ...point,
-        //                 selected: false
-        //             };
-        //         }
-        //     });
-        //     return {
-        //         ...state,
-        //         list: newList,
-        //         didChange: true
-        //     };
-        // }
         case '3D_POINT_SELECT': {
             const newList = state.list.map(point => {
                 if (point.id === action.payload.pointId) {
@@ -93,6 +74,79 @@ const reducer = (state = initialState, action) => {
                         ...point,
                         selected: false
                     };
+                }
+            });
+            return {
+                ...state,
+                list: newList,
+                didChange: true
+            };
+        }
+        case 'BINDING_ADD': {
+            const newList = state.list.map(point => {
+                if (point.id === action.payload.pointId3D) {
+                    return {
+                        ...point,
+                        bind: action.payload.pointId2D
+                    };
+                } else if (point.bind === action.payload.pointId2D) {
+                    return {
+                        ...point,
+                        bind: null
+                    };
+                } else {
+                    return point;
+                }
+            });
+            return {
+                ...state,
+                list: newList,
+                didChange: true
+            };
+        }
+        case 'BINDING_REMOVE_BY_2D': {
+            const newList = state.list.map(point => {
+                if (point.bind === action.payload.pointId2D) {
+                    return {
+                        ...point,
+                        bind: null
+                    };
+                } else {
+                    return point;
+                }
+            });
+            return {
+                ...state,
+                list: newList,
+                didChange: true
+            };
+        }
+        case 'BINDING_REMOVE_BY_3D': {
+            const newList = state.list.map(point => {
+                if (point.id === action.payload.pointId3D) {
+                    return {
+                        ...point,
+                        bind: null
+                    };
+                } else {
+                    return point;
+                }
+            });
+            return {
+                ...state,
+                list: newList,
+                didChange: true
+            };
+        }
+        case '2D_POINT_REMOVE': {
+            const newList = state.list.map(point => {
+                if (point.bind === action.payload.pointId) {
+                    return {
+                        ...point,
+                        bind: null
+                    };
+                } else {
+                    return point;
                 }
             });
             return {

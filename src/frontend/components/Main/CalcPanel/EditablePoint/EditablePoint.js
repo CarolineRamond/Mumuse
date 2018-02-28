@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { IconButton } from 'react-toolbox/lib/button';
 import { CompactPicker } from 'react-color';
 import { Input } from 'react-toolbox/lib/input';
+import Tooltip from 'react-toolbox/lib/tooltip';
+
+const TooltipIconButton = Tooltip(IconButton);
 
 import styles from './editable-point.css';
 
@@ -15,6 +18,7 @@ class EditablePoint extends React.Component {
         this.updateColor = this.updateColor.bind(this);
         this.updateName = this.updateName.bind(this);
         this.removePoint = this.removePoint.bind(this);
+        this.bindPoint = this.bindPoint.bind(this);
 
         this.state = {
             name: this.props.point.name,
@@ -59,9 +63,14 @@ class EditablePoint extends React.Component {
         this.props.onRemovePoint(this.props.point.id);
     }
 
+    bindPoint() {
+        this.props.onBindPoint(this.props.point);
+    }
+
     render() {
         return (
             <div className={styles.editablePoint}>
+                {/* color picker toggle */}
                 <div
                     className={styles.colorButton}
                     style={{
@@ -69,7 +78,7 @@ class EditablePoint extends React.Component {
                     }}
                     onClick={this.togglePicker}
                 />
-
+                {/* name input */}
                 <Input
                     type="text"
                     value={this.state.name}
@@ -80,14 +89,22 @@ class EditablePoint extends React.Component {
                         bar: styles.inputBar
                     }}
                 />
-
                 <div className={styles.dummy} />
-                <IconButton
+                {/* buttons */}
+                <TooltipIconButton
+                    tooltip={this.props.point.bind ? 'Unbind' : 'Bind'}
+                    icon={this.props.point.bind ? 'sync_disabled' : 'sync'}
+                    onClick={this.bindPoint}
+                />
+                <TooltipIconButton
+                    tooltip="Save"
                     icon="save"
                     onClick={this.updateName}
                     disabled={!this.state.nameChanged}
                 />
-                <IconButton icon="delete" onClick={this.removePoint} />
+                <TooltipIconButton tooltip="Remove" icon="delete" onClick={this.removePoint} />
+
+                {/* color picker */}
                 <div
                     className={styles.colorPicker}
                     style={{
@@ -115,8 +132,10 @@ EditablePoint.propTypes = {
     point: PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        color: PropTypes.string.isRequired
+        color: PropTypes.string.isRequired,
+        bind: PropTypes.string
     }).isRequired,
+    onBindPoint: PropTypes.func.isRequired,
     onRemovePoint: PropTypes.func.isRequired,
     onUpdatePoint: PropTypes.func.isRequired
 };
