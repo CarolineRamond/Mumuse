@@ -204,9 +204,11 @@ class InteractiveImage extends React.Component {
             }
 
             // handle end drag point
-            if (this.draggedPoint && this.didDragPoint) {
+            if (this.draggedPoint) {
                 // a point was dragged : update it
-                this.props.onUpdatePoint(this.draggedPoint.id, this.mouseImageCoords);
+                if (this.didDragPoint) {
+                    this.props.onUpdatePoint(this.draggedPoint.id, this.mouseImageCoords);
+                }
                 this.draggedPoint = null;
                 this.didDragPoint = false;
             }
@@ -369,7 +371,7 @@ class InteractiveImage extends React.Component {
         // We draw the points relatively to the media
         if (this.state.points) {
             this.state.points.map(point => {
-                let color = point.color || 'red';
+                let color = point.color || 'black';
                 if (
                     (this.pointIntersected && point.id === this.pointIntersected.id) ||
                     point.selected
@@ -382,12 +384,32 @@ class InteractiveImage extends React.Component {
                 }
                 const X = pointCanvasCoords.x;
                 const Y = pointCanvasCoords.y;
+
+                // vertical bar, black
+                context.lineWidth = 2;
+                context.strokeStyle = 'white';
+                context.beginPath();
+                context.moveTo(X, Y - pointSize / 2 - 0.5);
+                context.lineTo(X, Y + pointSize / 2 + 0.5);
+                context.stroke();
+
+                // horizontal bar, black
+                context.lineWidth = 2;
+                context.strokeStyle = 'white';
+                context.beginPath();
+                context.moveTo(X - pointSize / 2 - 0.5, Y);
+                context.lineTo(X + pointSize / 2 + 0.5, Y);
+                context.stroke();
+
+                // vertical bar, colored
                 context.lineWidth = 1;
                 context.strokeStyle = color;
                 context.beginPath();
                 context.moveTo(X, Y - pointSize / 2);
                 context.lineTo(X, Y + pointSize / 2);
                 context.stroke();
+
+                // horizontal bar, colored
                 context.lineWidth = 1;
                 context.strokeStyle = color;
                 context.beginPath();

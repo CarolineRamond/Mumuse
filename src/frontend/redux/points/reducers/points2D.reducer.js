@@ -20,7 +20,7 @@ const reducer = (state = initialState, action) => {
                 y: action.payload.y,
                 name: action.payload.name || `point2D-${state.list.length + 1}`,
                 id: uuid(),
-                color: '#FF0000',
+                color: '#000000',
                 selected: false,
                 bind: null
             };

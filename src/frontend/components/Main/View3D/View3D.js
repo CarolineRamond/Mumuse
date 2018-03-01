@@ -56,24 +56,25 @@ class View3D extends React.Component {
     render() {
         return (
             <div className={styles.view3D}>
-                <InteractiveModel
-                    meshUrl="/public/mesh/amrit.json"
-                    textureUrl="/public/textures/Amrit_002_u1_v1_8k.jpg"
-                    setResizeHandler={resizeHandler => {
-                        this.handleModelResize = resizeHandler;
-                    }}
-                    setPointsChangedHandler={pointsChangedHandler => {
-                        this.handlePointsChanged = pointsChangedHandler;
-                    }}
-                    addMode={this.props.addMode}
-                    bindingMode={this.props.bindingMode}
-                    deleteMode={this.props.deleteMode}
-                    points={this.props.points}
-                    onAddPoint={this.onAddPoint}
-                    onSelectPoint={this.onSelectPoint}
-                    onUpdatePoint={this.onUpdatePoint}
-                    onRemovePoint={this.onRemovePoint}
-                />
+                3D
+                {/*<InteractiveModel
+                                    meshUrl="/public/mesh/amrit.json"
+                                    textureUrl="/public/textures/Amrit_002_u1_v1_8k.jpg"
+                                    setResizeHandler={resizeHandler => {
+                                        this.handleModelResize = resizeHandler;
+                                    }}
+                                    setPointsChangedHandler={pointsChangedHandler => {
+                                        this.handlePointsChanged = pointsChangedHandler;
+                                    }}
+                                    addMode={this.props.addMode}
+                                    bindingMode={this.props.bindingMode}
+                                    deleteMode={this.props.deleteMode}
+                                    points={this.props.points}
+                                    onAddPoint={this.onAddPoint}
+                                    onSelectPoint={this.onSelectPoint}
+                                    onUpdatePoint={this.onUpdatePoint}
+                                    onRemovePoint={this.onRemovePoint}
+                                />*/}
             </div>
         );
     }
