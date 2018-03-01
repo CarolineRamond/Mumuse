@@ -78,7 +78,7 @@ class EditablePoint extends React.Component {
                 <div
                     className={styles.colorButton}
                     style={{
-                        backgroundColor: this.props.point.color
+                        backgroundColor: this.props.point.color || this.props.defaultPointColor
                     }}
                     onClick={this.togglePicker}
                 />
@@ -133,6 +133,7 @@ class EditablePoint extends React.Component {
 }
 
 EditablePoint.propTypes = {
+    defaultPointColor: PropTypes.string.isRequired,
     onBindPoint: PropTypes.func.isRequired,
     onRemovePoint: PropTypes.func.isRequired,
     onUnbindPoint: PropTypes.func.isRequired,
@@ -140,7 +141,7 @@ EditablePoint.propTypes = {
     point: PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        color: PropTypes.string.isRequired,
+        color: PropTypes.string,
         bind: PropTypes.string
     }).isRequired
 };

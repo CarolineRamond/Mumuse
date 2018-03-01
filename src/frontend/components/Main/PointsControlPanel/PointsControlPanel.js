@@ -4,11 +4,25 @@ import { ActionCreators } from 'redux-undo';
 import PropTypes from 'prop-types';
 import { IconButton } from 'react-toolbox/lib/button';
 import Switch from 'react-toolbox/lib/switch';
+import Slider from 'react-toolbox/lib/slider';
+import { CompactPicker } from 'react-color';
 import EditablePoint from './EditablePoint';
 import EditableBinding from './EditableBinding';
 
 import { actions, selectors } from '../../../redux';
-const { get2DPoints, get3DPoints, getBindings, getBindingBuffer2D, getBindingBuffer3D } = selectors;
+const {
+    get2DPoints,
+    get3DPoints,
+    getBindings,
+    getBindingBuffer2D,
+    getBindingBuffer3D,
+    getAddMode,
+    getBindMode,
+    getDeleteMode,
+    getDefaultPointColor,
+    getDefaultPointSize,
+    shouldShowModelTexture
+} = selectors;
 const {
     update2DPoint,
     remove2DPoint,
@@ -18,7 +32,13 @@ const {
     addBindingBuffer3D,
     addBinding,
     removeBindingBy2D,
-    removeBindingBy3D
+    removeBindingBy3D,
+    toggleAddMode,
+    toggleBindMode,
+    toggleDeleteMode,
+    updateDefaultPointColor,
+    updateDefaultPointSize,
+    toggleModelTexture
 } = actions;
 
 import styles from './points-control-panel.css';
@@ -41,6 +61,19 @@ class PointsControlPanel extends React.Component {
 
         this.onAddBinding = this.onAddBinding.bind(this);
         this.onRemoveBinding = this.onRemoveBinding.bind(this);
+
+        this.onToggleAddMode = this.onToggleAddMode.bind(this);
+        this.onToggleBindMode = this.onToggleBindMode.bind(this);
+        this.onToggleDeleteMode = this.onToggleDeleteMode.bind(this);
+
+        this.onUpdateDefaultPointColor = this.onUpdateDefaultPointColor.bind(this);
+        this.onUpdateDefaultPointSize = this.onUpdateDefaultPointSize.bind(this);
+        this.onToggleModelTexture = this.onToggleModelTexture.bind(this);
+        this.togglePicker = this.togglePicker.bind(this);
+
+        this.state = {
+            displayPicker: false
+        };
     }
 
     undo() {
@@ -93,6 +126,36 @@ class PointsControlPanel extends React.Component {
         this.props.dispatch(removeBindingBy3D(point.id));
     }
 
+    onToggleAddMode() {
+        this.props.dispatch(toggleAddMode());
+    }
+
+    onToggleBindMode() {
+        this.props.dispatch(toggleBindMode());
+    }
+
+    onToggleDeleteMode() {
+        this.props.dispatch(toggleDeleteMode());
+    }
+
+    onUpdateDefaultPointColor(color) {
+        this.props.dispatch(updateDefaultPointColor(color.hex));
+    }
+
+    onUpdateDefaultPointSize(pointSize) {
+        this.props.dispatch(updateDefaultPointSize(pointSize));
+    }
+
+    onToggleModelTexture() {
+        this.props.dispatch(toggleModelTexture());
+    }
+
+    togglePicker() {
+        this.setState({
+            displayPicker: !this.state.displayPicker
+        });
+    }
+
     render() {
         const mappedPoints2D = this.props.points2D.map((point, index) => {
             return (
@@ -103,6 +166,7 @@ class PointsControlPanel extends React.Component {
                     onRemovePoint={this.onRemove2DPoint}
                     onBindPoint={this.onBind2DPoint}
                     onUnbindPoint={this.onUnbind2DPoint}
+                    defaultPointColor={this.props.defaultPointColor}
                 />
             );
         });
@@ -124,6 +188,7 @@ class PointsControlPanel extends React.Component {
                     onRemovePoint={this.onRemove3DPoint}
                     onBindPoint={this.onBind3DPoint}
                     onUnbindPoint={this.onUnbind3DPoint}
+                    defaultPointColor={this.props.defaultPointColor}
                 />
             );
         });
@@ -133,17 +198,17 @@ class PointsControlPanel extends React.Component {
                     <Switch
                         checked={this.props.addMode}
                         label="Add point (press 'a' to toggle)"
-                        onChange={this.props.toggleAddMode}
+                        onChange={this.onToggleAddMode}
                     />
                     <Switch
                         checked={this.props.deleteMode}
                         label="Delete point (press 'd' to toggle)"
-                        onChange={this.props.toggleDeleteMode}
+                        onChange={this.onToggleDeleteMode}
                     />
                     <Switch
-                        checked={this.props.bindingMode}
+                        checked={this.props.bindMode}
                         label="Bind 2D-3D points (press 'b' to toggle)"
-                        onChange={this.props.toggleBindingMode}
+                        onChange={this.onToggleBindMode}
                     />
                     <div>
                         <IconButton icon="undo" onClick={this.undo} />
@@ -188,6 +253,68 @@ class PointsControlPanel extends React.Component {
                         <div className={styles.pointsPanelTabList}>{mappedPoints2D}</div>
                     </div>
                 </div>
+                <div className={styles.pointsPanelToolbar}>
+                    {/* color picker toggle */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            position: 'relative'
+                        }}
+                    >
+                        Default point color :
+                        <div
+                            className={styles.colorButton}
+                            style={{
+                                backgroundColor: this.props.defaultPointColor
+                            }}
+                            onClick={this.togglePicker}
+                        />
+                    </div>
+                    {/* color picker */}
+                    <div
+                        className={styles.colorPicker}
+                        style={{
+                            opacity: this.state.displayPicker ? 1 : 0,
+                            zIndex: this.state.displayPicker ? 2 : 0,
+                            pointerEvents: this.state.displayPicker ? 'initial' : 'none'
+                        }}
+                    >
+                        <CompactPicker
+                            color={this.props.defaultPointColor}
+                            onChangeComplete={this.onUpdateDefaultPointColor}
+                        />
+                    </div>
+                    <div
+                        className={styles.colorPickerBackdrop}
+                        style={{ display: this.state.displayPicker ? 'block' : 'none' }}
+                        onClick={this.togglePicker}
+                    />
+                    {/* pointsize slider */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center'
+                        }}
+                    >
+                        Default point size :
+                        <Slider
+                            value={this.props.defaultPointSize}
+                            onChange={this.onUpdateDefaultPointSize}
+                            min={5}
+                            step={5}
+                            max={100}
+                        />
+                    </div>
+                    {/* toggle model texture */}
+                    <Switch
+                        checked={this.props.shouldShowModelTexture}
+                        label="Show model texture"
+                        onChange={this.onToggleModelTexture}
+                    />
+                </div>
             </div>
         );
     }
@@ -195,26 +322,32 @@ class PointsControlPanel extends React.Component {
 
 PointsControlPanel.propTypes = {
     addMode: PropTypes.bool,
+    bindMode: PropTypes.bool,
     bindingBuffer2D: PropTypes.object,
     bindingBuffer3D: PropTypes.object,
-    bindingMode: PropTypes.bool,
     bindings: PropTypes.arrayOf(PropTypes.object),
+    defaultPointColor: PropTypes.string.isRequired,
+    defaultPointSize: PropTypes.number.isRequired,
     deleteMode: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
     points2D: PropTypes.arrayOf(PropTypes.object),
     points3D: PropTypes.arrayOf(PropTypes.object),
-    toggleAddMode: PropTypes.func.isRequired,
-    toggleBindingMode: PropTypes.func.isRequired,
-    toggleDeleteMode: PropTypes.func.isRequired
+    shouldShowModelTexture: PropTypes.bool
 };
 
 const ConnectedPointsControlPanel = connect(store => {
     return {
+        addMode: getAddMode(store),
+        bindMode: getBindMode(store),
         bindings: getBindings(store),
         bindingBuffer2D: getBindingBuffer2D(store),
         bindingBuffer3D: getBindingBuffer3D(store),
+        defaultPointColor: getDefaultPointColor(store),
+        defaultPointSize: getDefaultPointSize(store),
+        deleteMode: getDeleteMode(store),
         points2D: get2DPoints(store),
-        points3D: get3DPoints(store)
+        points3D: get3DPoints(store),
+        shouldShowModelTexture: shouldShowModelTexture(store)
     };
 })(PointsControlPanel);
 

@@ -1,3 +1,3 @@
-import CalcPanel from './CalcPanel';
+import GeneralControlPanel from './GeneralControlPanel';
 
-export default CalcPanel;
+export default GeneralControlPanel;

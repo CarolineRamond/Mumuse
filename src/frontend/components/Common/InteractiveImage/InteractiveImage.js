@@ -6,7 +6,6 @@ import styles from './interactive-image.css';
 import * as utils from './utils';
 
 let context = null;
-const pointSize = 10;
 
 /** A component representing a zoomable and movable image. Implemented with canvas. */
 class InteractiveImage extends React.Component {
@@ -21,7 +20,9 @@ class InteractiveImage extends React.Component {
 
         this.state = {
             loading: false,
-            points: this.props.points
+            points: this.props.points,
+            pointSize: this.props.pointSize,
+            defaultPointColor: this.props.defaultPointColor
         };
     }
 
@@ -61,6 +62,30 @@ class InteractiveImage extends React.Component {
         this.setState({
             points: nextProps.points
         });
+
+        //update default color
+        if (nextProps.defaultPointColor !== this.props.defaultPointColor) {
+            this.setState(
+                {
+                    defaultPointColor: nextProps.defaultPointColor
+                },
+                () => {
+                    this.redraw();
+                }
+            );
+        }
+
+        //update point size
+        if (nextProps.pointSize !== this.props.pointSize) {
+            this.setState(
+                {
+                    pointSize: nextProps.pointSize
+                },
+                () => {
+                    this.redraw();
+                }
+            );
+        }
     }
 
     initViewer() {
@@ -170,7 +195,7 @@ class InteractiveImage extends React.Component {
                 this.didDragImg = false;
                 return;
             }
-            if (this.props.bindingMode) {
+            if (this.props.bindMode) {
                 // handle point bind
                 this.props.onSelectPoint(this.pointIntersected);
                 return;
@@ -299,7 +324,11 @@ class InteractiveImage extends React.Component {
                 this.imgNWCorner,
                 this.imgDim
             );
-            this.intersect = utils.intersectFactory(this.imgNWCorner, this.imgDim, pointSize);
+            this.intersect = utils.intersectFactory(
+                this.imgNWCorner,
+                this.imgDim,
+                this.state.pointSize
+            );
 
             // reset track transform + redraw
             this.trackTransforms(context);
@@ -371,56 +400,65 @@ class InteractiveImage extends React.Component {
         // We draw the points relatively to the media
         if (this.state.points) {
             this.state.points.map(point => {
-                let color = point.color || 'black';
+                let pointCanvasCoords = this.imageToCanvas(point);
+                if (this.draggedPoint && this.draggedPoint.id === point.id) {
+                    pointCanvasCoords = this.draggedPoint;
+                }
+                let color = point.color || this.state.defaultPointColor;
                 if (
                     (this.pointIntersected && point.id === this.pointIntersected.id) ||
                     point.selected
                 ) {
                     color = 'green';
                 }
-                let pointCanvasCoords = this.imageToCanvas(point);
-                if (this.draggedPoint && this.draggedPoint.id === point.id) {
-                    pointCanvasCoords = this.draggedPoint;
-                }
-                const X = pointCanvasCoords.x;
-                const Y = pointCanvasCoords.y;
-
-                // vertical bar, black
-                context.lineWidth = 2;
-                context.strokeStyle = 'white';
-                context.beginPath();
-                context.moveTo(X, Y - pointSize / 2 - 0.5);
-                context.lineTo(X, Y + pointSize / 2 + 0.5);
-                context.stroke();
-
-                // horizontal bar, black
-                context.lineWidth = 2;
-                context.strokeStyle = 'white';
-                context.beginPath();
-                context.moveTo(X - pointSize / 2 - 0.5, Y);
-                context.lineTo(X + pointSize / 2 + 0.5, Y);
-                context.stroke();
-
-                // vertical bar, colored
-                context.lineWidth = 1;
-                context.strokeStyle = color;
-                context.beginPath();
-                context.moveTo(X, Y - pointSize / 2);
-                context.lineTo(X, Y + pointSize / 2);
-                context.stroke();
-
-                // horizontal bar, colored
-                context.lineWidth = 1;
-                context.strokeStyle = color;
-                context.beginPath();
-                context.moveTo(X - pointSize / 2, Y);
-                context.lineTo(X + pointSize / 2, Y);
-                context.stroke();
+                this.drawPoint(pointCanvasCoords, color);
             });
         }
+    }
 
-        //If we want to draw the full media without fitting and centering it in the canvas
-        // context.drawImage(this.media, 0, 0);
+    drawPoint(coords, color) {
+        const X = coords.x;
+        const Y = coords.y;
+        const pointSize = this.state.pointSize;
+
+        // gradient
+        const grd = context.createRadialGradient(X + 2, Y + 2, 0, X + 2, Y + 2, pointSize);
+        grd.addColorStop(0, 'rgba(0,0,0,0.3)');
+        grd.addColorStop(1, 'transparent');
+        context.fillStyle = grd;
+        context.fillRect(X + 2 - pointSize, Y + 2 - pointSize, pointSize * 2, pointSize * 2);
+
+        // shadow vertical bar, black
+        context.lineWidth = 1;
+        context.strokeStyle = 'rgba(0,0,0,0.3)';
+        context.beginPath();
+        context.moveTo(X + 0.5, Y - pointSize / 2 + 0.5);
+        context.lineTo(X + 0.5, Y + pointSize / 2 + 0.5);
+        context.stroke();
+
+        // shadow horizontal bar, black
+        context.lineWidth = 1;
+        context.strokeStyle = 'rgba(0,0,0,0.3)';
+        context.beginPath();
+        context.moveTo(X - pointSize / 2 + 0.5, Y + 0.5);
+        context.lineTo(X + pointSize / 2 + 0.5, Y + 0.5);
+        context.stroke();
+
+        // point vertical bar, colored
+        context.lineWidth = 1;
+        context.strokeStyle = color;
+        context.beginPath();
+        context.moveTo(X, Y - pointSize / 2);
+        context.lineTo(X, Y + pointSize / 2);
+        context.stroke();
+
+        // point horizontal bar, colored
+        context.lineWidth = 1;
+        context.strokeStyle = color;
+        context.beginPath();
+        context.moveTo(X - pointSize / 2, Y);
+        context.lineTo(X + pointSize / 2, Y);
+        context.stroke();
     }
 
     // Adds ctx.getTransform() - returns an SVGMatrix
@@ -523,8 +561,9 @@ class InteractiveImage extends React.Component {
 InteractiveImage.propTypes = {
     /** whether add point mode is active or not*/
     addMode: PropTypes.bool,
-    /** whether binding point mode is active or not*/
-    bindingMode: PropTypes.bool,
+    /** whether bind point mode is active or not*/
+    bindMode: PropTypes.bool,
+    defaultPointColor: PropTypes.string,
     /** whether delete point mode is active or not*/
     deleteMode: PropTypes.bool,
     /** a fallback url of the image to display (loaded in case mediaUrl is not available)*/
@@ -543,6 +582,7 @@ InteractiveImage.propTypes = {
     onSelectPoint: PropTypes.func,
     /** update point function */
     onUpdatePoint: PropTypes.func,
+    pointSize: PropTypes.number,
     /** list of points to draw on the image (with coords relative to image center)*/
     points: PropTypes.arrayOf(PropTypes.object),
     /** the orientation of the canvas (0,1,2 or 3)*/

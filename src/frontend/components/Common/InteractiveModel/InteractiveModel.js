@@ -50,6 +50,10 @@ class InteractiveModel extends React.Component {
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
         this.redrawPoints = this.redrawPoints.bind(this);
+
+        this.state = {
+            defaultPointColor: props.defaultPointColor
+        };
     }
 
     componentDidMount() {
@@ -63,6 +67,25 @@ class InteractiveModel extends React.Component {
             //addMode is off : hide addpoint helper & update cursor
             this.container3D.style.cursor = 'default';
             this.addPointHelper.visible = false;
+        }
+        if (nextProps.shouldShowTexture !== this.props.shouldShowTexture) {
+            if (nextProps.shouldShowTexture && this.textureMaterial) {
+                this.mesh.material = this.textureMaterial;
+                this.directionalLight.visible = false;
+            } else {
+                this.mesh.material = this.flatMaterial;
+                this.directionalLight.visible = true;
+            }
+        }
+        if (nextProps.defaultPointColor !== this.props.defaultPointColor) {
+            this.setState(
+                {
+                    defaultPointColor: nextProps.defaultPointColor
+                },
+                () => {
+                    this.redrawPoints(nextProps.points);
+                }
+            );
         }
     }
 
@@ -79,11 +102,11 @@ class InteractiveModel extends React.Component {
 
         // light
         const light = new THREE.AmbientLight(0xffffff);
-        const directionalLight = new THREE.DirectionalLight(0xffffff); //activé si pas de texture
-        directionalLight.position.set(10, 10, 10);
-        directionalLight.visible = false;
+        this.directionalLight = new THREE.DirectionalLight(0xffffff); //activé si pas de texture
+        this.directionalLight.position.set(10, 10, 10);
+        this.directionalLight.visible = false;
         this.scene.add(light);
-        this.scene.add(directionalLight);
+        this.scene.add(this.directionalLight);
 
         //camera
         const rect = this.container3D.getBoundingClientRect();
@@ -104,20 +127,30 @@ class InteractiveModel extends React.Component {
         this.raycaster = new THREE.Raycaster();
         this.raycaster.linePrecision = 3;
 
-        // load mesh
+        // load texture (if any)
         const textureLoader = new THREE.TextureLoader();
-        let texture = new THREE.MeshBasicMaterial();
+        this.flatMaterial = new THREE.MeshPhongMaterial({
+            color: 0x777777,
+            flatShading: true,
+            vertexColors: THREE.VertexColors,
+            shininess: 0
+        }); //texture grise
         if (this.props.textureUrl) {
-            texture = new THREE.MeshPhongMaterial({
+            this.textureMaterial = new THREE.MeshPhongMaterial({
                 map: textureLoader.load(this.props.textureUrl)
             });
         }
 
+        // load mesh
         const loader = new THREE.JSONLoader();
         loader.load(this.props.meshUrl, geometry => {
             this.modelContainer = new THREE.Object3D();
-            const mesh = new THREE.Mesh(geometry, texture);
-            this.modelContainer.add(mesh);
+            const material =
+                this.props.shouldShowTexture && this.textureMaterial
+                    ? this.textureMaterial
+                    : this.flatMaterial;
+            this.mesh = new THREE.Mesh(geometry, material);
+            this.modelContainer.add(this.mesh);
             this.scene.add(this.modelContainer);
 
             // addpoint helper
@@ -153,7 +186,8 @@ class InteractiveModel extends React.Component {
         }
         // add new points
         points.map(point => {
-            const material = point.selected ? selectedPointMaterial : getPointMaterial(point.color);
+            const color = point.color || this.state.defaultPointColor;
+            const material = point.selected ? selectedPointMaterial : getPointMaterial(color);
             const newPoint = new THREE.LineSegments(pointGeometry, material);
             newPoint.scale.set(2, 2, 2);
             newPoint.position.set(point.x, point.y, point.z);
@@ -235,7 +269,7 @@ class InteractiveModel extends React.Component {
             this.props.onAddPoint(this.addPointHelper.position);
             return;
         }
-        if (this.props.bindingMode) {
+        if (this.props.bindMode) {
             this.props.onSelectPoint(this.pointIntersected.metadata);
             return;
         }
@@ -289,7 +323,8 @@ class InteractiveModel extends React.Component {
 
 InteractiveModel.propTypes = {
     addMode: PropTypes.bool,
-    bindingMode: PropTypes.bool,
+    bindMode: PropTypes.bool,
+    defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
     meshUrl: PropTypes.string.isRequired,
     onAddPoint: PropTypes.func.isRequired,
@@ -299,6 +334,7 @@ InteractiveModel.propTypes = {
     points: PropTypes.arrayOf(PropTypes.object),
     setPointsChangedHandler: PropTypes.func.isRequired,
     setResizeHandler: PropTypes.func.isRequired,
+    shouldShowTexture: PropTypes.bool,
     textureUrl: PropTypes.string
 };
 

@@ -6,7 +6,15 @@ import InteractiveModel from '../../Common/InteractiveModel';
 import styles from './view-3D.css';
 
 import { actions, selectors } from '../../../redux';
-const { get3DPoints, did3DPointsChange } = selectors;
+const {
+    get3DPoints,
+    did3DPointsChange,
+    getAddMode,
+    getBindMode,
+    getDeleteMode,
+    shouldShowModelTexture,
+    getDefaultPointColor
+} = selectors;
 const { add3DPoint, addBindingBuffer3D, update3DPoint, remove3DPoint } = actions;
 
 class View3D extends React.Component {
@@ -50,31 +58,34 @@ class View3D extends React.Component {
     }
 
     handleResize() {
-        this.handleModelResize();
+        if (this.handleModelResize) {
+            this.handleModelResize();
+        }
     }
 
     render() {
         return (
             <div className={styles.view3D}>
-                3D
-                {/*<InteractiveModel
-                                    meshUrl="/public/mesh/amrit.json"
-                                    textureUrl="/public/textures/Amrit_002_u1_v1_8k.jpg"
-                                    setResizeHandler={resizeHandler => {
-                                        this.handleModelResize = resizeHandler;
-                                    }}
-                                    setPointsChangedHandler={pointsChangedHandler => {
-                                        this.handlePointsChanged = pointsChangedHandler;
-                                    }}
-                                    addMode={this.props.addMode}
-                                    bindingMode={this.props.bindingMode}
-                                    deleteMode={this.props.deleteMode}
-                                    points={this.props.points}
-                                    onAddPoint={this.onAddPoint}
-                                    onSelectPoint={this.onSelectPoint}
-                                    onUpdatePoint={this.onUpdatePoint}
-                                    onRemovePoint={this.onRemovePoint}
-                                />*/}
+                <InteractiveModel
+                    meshUrl="/public/mesh/amrit.json"
+                    textureUrl="/public/textures/Amrit_002_u1_v1_8k.jpg"
+                    setResizeHandler={resizeHandler => {
+                        this.handleModelResize = resizeHandler;
+                    }}
+                    setPointsChangedHandler={pointsChangedHandler => {
+                        this.handlePointsChanged = pointsChangedHandler;
+                    }}
+                    addMode={this.props.addMode}
+                    bindMode={this.props.bindMode}
+                    deleteMode={this.props.deleteMode}
+                    defaultPointColor={this.props.defaultPointColor}
+                    points={this.props.points}
+                    onAddPoint={this.onAddPoint}
+                    onSelectPoint={this.onSelectPoint}
+                    onUpdatePoint={this.onUpdatePoint}
+                    onRemovePoint={this.onRemovePoint}
+                    shouldShowTexture={this.props.shouldShowModelTexture}
+                />
             </div>
         );
     }
@@ -82,19 +93,26 @@ class View3D extends React.Component {
 
 View3D.propTypes = {
     addMode: PropTypes.bool,
-    bindingMode: PropTypes.bool,
+    bindMode: PropTypes.bool,
+    defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
     didPointsChange: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
     setPointsChangedHandler: PropTypes.func.isRequired,
-    setResizeHandler: PropTypes.func.isRequired
+    setResizeHandler: PropTypes.func.isRequired,
+    shouldShowModelTexture: PropTypes.bool
 };
 
 const ConnectedView3D = connect(store => {
     return {
+        addMode: getAddMode(store),
+        bindMode: getBindMode(store),
+        defaultPointColor: getDefaultPointColor(store),
+        deleteMode: getDeleteMode(store),
         didPointsChange: did3DPointsChange(store),
-        points: get3DPoints(store)
+        points: get3DPoints(store),
+        shouldShowModelTexture: shouldShowModelTexture(store)
     };
 })(View3D);
 

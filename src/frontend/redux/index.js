@@ -3,14 +3,16 @@ import { forIn } from 'lodash';
 
 import calc from './calc';
 import points from './points';
+import settings from './settings';
 
-const modules = [calc, points];
+const modules = [calc, points, settings];
 
 // reducer
 // (combination of all modules' reducers)
 const reducer = combineReducers({
     calc: calc.reducer,
-    points: points.reducer
+    points: points.reducer,
+    settings: settings.reducer
 });
 
 // selectors

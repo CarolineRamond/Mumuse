@@ -21,7 +21,6 @@ const reducer = (state = initialState, action) => {
                 z: action.payload.z,
                 name: action.payload.name || `point3D-${state.list.length + 1}`,
                 id: uuid(),
-                color: '#ff0000',
                 selected: false,
                 bind: null
             };

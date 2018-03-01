@@ -9,6 +9,10 @@
 	flex-grow: 1;
 }
 
+.controlsPanelTabs:focus {
+	outline: none;
+}
+
 .controlsPanelTabsNav {
 	flex-shrink: 0;
 }

@@ -1,10 +1,16 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import SplitPane from 'react-split-pane';
 import { Tab, Tabs } from 'react-toolbox';
 
 import View2D from './View2D';
 import View3D from './View3D';
 import PointsControlPanel from './PointsControlPanel';
+import GeneralControlPanel from './GeneralControlPanel';
+
+import { actions } from '../../redux';
+const { toggleAddMode, toggleBindMode, toggleDeleteMode, resetMode } = actions;
 
 import styles from './main.css';
 
@@ -16,29 +22,22 @@ class Main extends React.Component {
         this.handleVDragStarted = this.handleVDragStarted.bind(this);
         this.handleVDragFinished = this.handleVDragFinished.bind(this);
         this.handleResize = this.handleResize.bind(this);
-        this.handleKeypress = this.handleKeypress.bind(this);
-        this.toggleAddMode = this.toggleAddMode.bind(this);
-        this.toggleBindingMode = this.toggleBindingMode.bind(this);
-        this.toggleDeleteMode = this.toggleDeleteMode.bind(this);
         this.toggleTab = this.toggleTab.bind(this);
 
         this.state = {
             isHResizing: false,
             isVResizing: false,
-            addMode: false,
-            deleteMode: false,
-            bindingMode: false,
             tabIndex: 0
         };
     }
 
     componentDidMount() {
         window.addEventListener('resize', this.handleResize, false);
-        window.addEventListener('keypress', this.handleKeypress, false);
+        window.addEventListener('keydown', this.handleKeydown.bind(this), false);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('keypress', this.handleKeypress, false);
+        window.removeEventListener('keydown', this.handleKeydown.bind(this), false);
     }
 
     handleHDragStarted() {
@@ -74,40 +73,20 @@ class Main extends React.Component {
         }
     }
 
-    handleKeypress(e) {
+    handleKeydown(e) {
         if (e.key === 'a') {
-            this.toggleAddMode();
+            this.props.dispatch(toggleAddMode());
         }
         if (e.key === 'b') {
-            this.toggleBindingMode();
+            this.props.dispatch(toggleBindMode());
         }
         if (e.key === 'd') {
-            this.toggleDeleteMode();
+            this.props.dispatch(toggleDeleteMode());
         }
-    }
-
-    toggleAddMode() {
-        this.setState({
-            addMode: !this.state.addMode,
-            bindingMode: false,
-            deleteMode: false
-        });
-    }
-
-    toggleDeleteMode() {
-        this.setState({
-            addMode: false,
-            bindingMode: false,
-            deleteMode: !this.state.deleteMode
-        });
-    }
-
-    toggleBindingMode() {
-        this.setState({
-            addMode: false,
-            bindingMode: !this.state.bindingMode,
-            deleteMode: false
-        });
+        if (e.keyCode === 27) {
+            //esc
+            this.props.dispatch(resetMode());
+        }
     }
 
     toggleTab(tabIndex) {
@@ -162,9 +141,6 @@ class Main extends React.Component {
                             setPointsChangedHandler={pointsChangeHandler => {
                                 this.handle3DPointsChanged = pointsChangeHandler;
                             }}
-                            addMode={this.state.addMode}
-                            bindingMode={this.state.bindingMode}
-                            deleteMode={this.state.deleteMode}
                         />
                         <View2D
                             setResizeHandler={resizeHandler => {
@@ -173,9 +149,6 @@ class Main extends React.Component {
                             setPointsChangedHandler={pointsChangeHandler => {
                                 this.handle2DPointsChanged = pointsChangeHandler;
                             }}
-                            addMode={this.state.addMode}
-                            bindingMode={this.state.bindingMode}
-                            deleteMode={this.state.deleteMode}
                         />
                     </SplitPane>
                 </div>
@@ -191,17 +164,9 @@ class Main extends React.Component {
                         }}
                     >
                         <Tab label="Points">
-                            <PointsControlPanel
-                                addMode={this.state.addMode}
-                                bindingMode={this.state.bindingMode}
-                                deleteMode={this.state.deleteMode}
-                                toggleAddMode={this.toggleAddMode}
-                                toggleDeleteMode={this.toggleDeleteMode}
-                                toggleBindingMode={this.toggleBindingMode}
-                            />
+                            <PointsControlPanel />
                         </Tab>
                         <Tab label="Camera Adjustment">COUCOU CALC</Tab>
-                        <Tab label="Additional Settings">COUCOU SETTINGS</Tab>
                     </Tabs>
                 </div>
             </SplitPane>
@@ -209,4 +174,12 @@ class Main extends React.Component {
     }
 }
 
-export default Main;
+Main.propTypes = {
+    dispatch: PropTypes.func.isRequired
+};
+
+const ConnectedMain = connect(() => {
+    return {};
+})(Main);
+
+export default ConnectedMain;

@@ -6,7 +6,15 @@ import InteractiveImage from '../../Common/InteractiveImage';
 import styles from './view-2D.css';
 
 import { actions, selectors } from '../../../redux';
-const { get2DPoints, did2DPointsChange } = selectors;
+const {
+    get2DPoints,
+    did2DPointsChange,
+    getAddMode,
+    getBindMode,
+    getDeleteMode,
+    getDefaultPointColor,
+    getDefaultPointSize
+} = selectors;
 const { add2DPoint, addBindingBuffer2D, update2DPoint, remove2DPoint } = actions;
 
 class View2D extends React.Component {
@@ -66,13 +74,15 @@ class View2D extends React.Component {
                         this.handlePointsChanged = pointsChangedHandler;
                     }}
                     addMode={this.props.addMode}
-                    bindingMode={this.props.bindingMode}
+                    bindMode={this.props.bindMode}
                     deleteMode={this.props.deleteMode}
                     points={this.props.points}
                     onAddPoint={this.onAddPoint}
                     onSelectPoint={this.onSelectPoint}
                     onUpdatePoint={this.onUpdatePoint}
                     onRemovePoint={this.onRemovePoint}
+                    defaultPointColor={this.props.defaultPointColor}
+                    pointSize={this.props.pointSize}
                 />
             </div>
         );
@@ -81,10 +91,12 @@ class View2D extends React.Component {
 
 View2D.propTypes = {
     addMode: PropTypes.bool,
-    bindingMode: PropTypes.bool,
+    bindMode: PropTypes.bool,
+    defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
     didPointsChange: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
+    pointSize: PropTypes.number.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
     setPointsChangedHandler: PropTypes.func.isRequired,
     setResizeHandler: PropTypes.func.isRequired
@@ -92,7 +104,12 @@ View2D.propTypes = {
 
 const ConnectedView2D = connect(store => {
     return {
+        addMode: getAddMode(store),
+        bindMode: getBindMode(store),
+        defaultPointColor: getDefaultPointColor(store),
+        deleteMode: getDeleteMode(store),
         didPointsChange: did2DPointsChange(store),
+        pointSize: getDefaultPointSize(store),
         points: get2DPoints(store)
     };
 })(View2D);

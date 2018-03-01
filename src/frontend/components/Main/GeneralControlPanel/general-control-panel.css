@@ -1,14 +1,8 @@
-.editablePoint {
+.settingsPanel {
 	display: flex;
-    flex-direction: row;
-    align-items: center;
-    min-height: 65px;
-    height: 65px;
-    position: relative;
-}
-
-.editablePoint:not(:last-child) {
-    border-bottom: 1px solid #AAA;
+	flex-direction: column;
+	flex-grow: 1;
+	min-height: 0;
 }
 
 .colorButton {
@@ -36,17 +30,4 @@
 	height: 100%;
 	width: 100%;
 	z-index: 1;
-}
-
-.input {
-	border: none;
-}
-
-.inputBar {
-	display: none;
-}
-
-.dummy {
-	display: flex;
-	flex-grow: 1;
 }
