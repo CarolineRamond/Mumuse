@@ -7,7 +7,6 @@ import { Tab, Tabs } from 'react-toolbox';
 import View2D from './View2D';
 import View3D from './View3D';
 import PointsControlPanel from './PointsControlPanel';
-import GeneralControlPanel from './GeneralControlPanel';
 
 import { actions } from '../../redux';
 const { toggleAddMode, toggleBindMode, toggleDeleteMode, resetMode } = actions;
