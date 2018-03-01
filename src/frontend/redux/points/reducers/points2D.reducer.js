@@ -25,7 +25,7 @@ const reducer = (state = initialState, action) => {
             };
             return {
                 ...state,
-                list: state.list.concat([newPoint]),
+                list: [newPoint].concat(state.list),
                 didChange: true
             };
         }

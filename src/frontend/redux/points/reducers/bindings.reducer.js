@@ -19,7 +19,7 @@ const reducer = (state = initialState, action) => {
             };
             return {
                 ...state,
-                list: newList.concat([newBinding]),
+                list: [newBinding].concat(newList),
                 buffer2D: null,
                 buffer3D: null
             };
