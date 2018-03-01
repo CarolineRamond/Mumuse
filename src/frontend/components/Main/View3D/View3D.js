@@ -7,7 +7,7 @@ import styles from './view-3D.css';
 
 import { actions, selectors } from '../../../redux';
 const { get3DPoints, did3DPointsChange } = selectors;
-const { add3DPoint, select3DPoint, update3DPoint, remove3DPoint } = actions;
+const { add3DPoint, addBindingBuffer3D, update3DPoint, remove3DPoint } = actions;
 
 class View3D extends React.Component {
     constructor(props) {
@@ -37,8 +37,8 @@ class View3D extends React.Component {
         this.props.dispatch(add3DPoint(position));
     }
 
-    onSelectPoint(id) {
-        this.props.dispatch(select3DPoint(id));
+    onSelectPoint(point) {
+        this.props.dispatch(addBindingBuffer3D(point));
     }
 
     onUpdatePoint(id, position) {

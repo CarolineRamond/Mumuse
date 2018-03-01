@@ -157,10 +157,7 @@ class InteractiveModel extends React.Component {
             const newPoint = new THREE.LineSegments(pointGeometry, material);
             newPoint.scale.set(2, 2, 2);
             newPoint.position.set(point.x, point.y, point.z);
-            newPoint.metadata = {
-                id: point.id,
-                selected: point.selected
-            };
+            newPoint.metadata = point;
             this.pointsContainer.add(newPoint);
         });
     }
@@ -239,9 +236,7 @@ class InteractiveModel extends React.Component {
             return;
         }
         if (this.props.bindingMode) {
-            this.props.onSelectPoint(
-                this.pointIntersected ? this.pointIntersected.metadata.id : null
-            );
+            this.props.onSelectPoint(this.pointIntersected.metadata);
             return;
         }
         if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {

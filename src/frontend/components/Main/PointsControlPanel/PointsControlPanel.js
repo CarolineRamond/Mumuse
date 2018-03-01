@@ -8,12 +8,14 @@ import EditablePoint from './EditablePoint';
 import EditableBinding from './EditableBinding';
 
 import { actions, selectors } from '../../../redux';
-const { get2DPoints, get3DPoints, getBindings } = selectors;
+const { get2DPoints, get3DPoints, getBindings, getBindingBuffer2D, getBindingBuffer3D } = selectors;
 const {
     update2DPoint,
     remove2DPoint,
     update3DPoint,
     remove3DPoint,
+    addBindingBuffer2D,
+    addBindingBuffer3D,
     addBinding,
     removeBindingBy2D,
     removeBindingBy3D
@@ -39,11 +41,6 @@ class PointsControlPanel extends React.Component {
 
         this.onAddBinding = this.onAddBinding.bind(this);
         this.onRemoveBinding = this.onRemoveBinding.bind(this);
-
-        this.state = {
-            bind2D: null,
-            bind3D: null
-        };
     }
 
     undo() {
@@ -71,19 +68,17 @@ class PointsControlPanel extends React.Component {
     }
 
     onBind2DPoint(point) {
-        this.setState({ bind2D: point });
+        this.props.dispatch(addBindingBuffer2D(point));
     }
 
     onBind3DPoint(point) {
-        this.setState({ bind3D: point });
+        this.props.dispatch(addBindingBuffer3D(point));
     }
 
     onAddBinding() {
-        this.props.dispatch(addBinding(this.state.bind2D.id, this.state.bind3D.id));
-        this.setState({
-            bind2D: null,
-            bind3D: null
-        });
+        this.props.dispatch(
+            addBinding(this.props.bindingBuffer2D.id, this.props.bindingBuffer3D.id)
+        );
     }
 
     onRemoveBinding(binding) {
@@ -163,20 +158,28 @@ class PointsControlPanel extends React.Component {
                     <div className={styles.pointsPanelTab}>
                         Bindings
                         <div className={styles.pointsPanelTabList}>{mappedBindings}</div>
-                        {(this.state.bind2D || this.state.bind3D) && (
-                            <div className={styles.addBindingControl}>
-                                <div className={styles.addBindingPanel}>
-                                    {this.state.bind3D && this.state.bind3D.name}
+                        {(this.props.bindingBuffer2D || this.props.bindingBuffer3D) && (
+                            <div>
+                                New Binding
+                                <div className={styles.addBindingControl}>
+                                    <div className={styles.addBindingPanel}>
+                                        {this.props.bindingBuffer3D &&
+                                            this.props.bindingBuffer3D.name}
+                                    </div>
+                                    <div className={styles.addBindingPanel}>
+                                        {this.props.bindingBuffer2D &&
+                                            this.props.bindingBuffer2D.name}
+                                    </div>
+                                    <IconButton
+                                        icon="save"
+                                        className={styles.addBindingButton}
+                                        disabled={
+                                            !this.props.bindingBuffer2D ||
+                                            !this.props.bindingBuffer3D
+                                        }
+                                        onClick={this.onAddBinding}
+                                    />
                                 </div>
-                                <div className={styles.addBindingPanel}>
-                                    {this.state.bind2D && this.state.bind2D.name}
-                                </div>
-                                <IconButton
-                                    icon="link"
-                                    className={styles.addBindingButton}
-                                    disabled={!this.state.bind2D || !this.state.bind3D}
-                                    onClick={this.onAddBinding}
-                                />
                             </div>
                         )}
                     </div>
@@ -192,6 +195,8 @@ class PointsControlPanel extends React.Component {
 
 PointsControlPanel.propTypes = {
     addMode: PropTypes.bool,
+    bindingBuffer2D: PropTypes.object,
+    bindingBuffer3D: PropTypes.object,
     bindingMode: PropTypes.bool,
     bindings: PropTypes.arrayOf(PropTypes.object),
     deleteMode: PropTypes.bool,
@@ -206,6 +211,8 @@ PointsControlPanel.propTypes = {
 const ConnectedPointsControlPanel = connect(store => {
     return {
         bindings: getBindings(store),
+        bindingBuffer2D: getBindingBuffer2D(store),
+        bindingBuffer3D: getBindingBuffer3D(store),
         points2D: get2DPoints(store),
         points3D: get3DPoints(store)
     };

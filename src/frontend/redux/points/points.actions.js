@@ -236,58 +236,6 @@ export const select3DPoint = pointId => {
     };
 };
 
-/** Toggle ortho camera mode.
- */
-export const toggleOrthoCamera = () => {
-    return {
-        type: 'CAMERA_TOGGLE_ORTHO'
-    };
-};
-
-/** Update camera focal length (in case ortho mode isn't toggled).
- * @param {Number} newFocal - the new camera focal length.
- */
-export const updateCameraFocal = newFocal => {
-    return {
-        type: 'CAMERA_UPDATE',
-        payload: {
-            focal: newFocal
-        },
-        meta: {
-            validator: {
-                focal: {
-                    func: _focal => {
-                        return typeof _focal === 'number';
-                    },
-                    msg: 'focal must be a number'
-                }
-            }
-        }
-    };
-};
-
-/** Update camera zoom (in case ortho mode is toggled).
- * @param {Number} newZoom - the new camera zoom.
- */
-export const updateCameraZoom = newZoom => {
-    return {
-        type: 'CAMERA_UPDATE',
-        payload: {
-            zoom: newZoom
-        },
-        meta: {
-            validator: {
-                zoom: {
-                    func: _zoom => {
-                        return typeof _zoom === 'number';
-                    },
-                    msg: 'zoom must be a number'
-                }
-            }
-        }
-    };
-};
-
 /** Link a 2d point to a 3d point.
  * @param {Number} pointId2D - the id of the 2D point.
  * @param {Number} pointId3D - the id of the 3D point.
@@ -358,6 +306,24 @@ export const removeBindingBy3D = pointId3D => {
                     msg: 'pointId3D must be a string'
                 }
             }
+        }
+    };
+};
+
+export const addBindingBuffer2D = point2D => {
+    return {
+        type: '2D_BINDING_BUFFER_ADD',
+        payload: {
+            point2D: point2D
+        }
+    };
+};
+
+export const addBindingBuffer3D = point3D => {
+    return {
+        type: '3D_BINDING_BUFFER_ADD',
+        payload: {
+            point3D: point3D
         }
     };
 };

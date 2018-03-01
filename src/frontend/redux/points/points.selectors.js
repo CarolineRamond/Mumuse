@@ -15,7 +15,7 @@ export const did3DPointsChange = state => {
 };
 
 export const getBindings = state => {
-    return state.present.bindings.map(binding => {
+    return state.present.bindings.list.map(binding => {
         return {
             point2D: state.present.points2D.list.find(item => {
                 return item.id === binding.pointId2D;
@@ -26,4 +26,12 @@ export const getBindings = state => {
             color: binding.color
         };
     });
+};
+
+export const getBindingBuffer2D = state => {
+    return state.present.bindings.buffer2D;
+};
+
+export const getBindingBuffer3D = state => {
+    return state.present.bindings.buffer3D;
 };

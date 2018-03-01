@@ -60,7 +60,7 @@ export const intersectFactory = (imgNWCorner, imgDim, pointSize) => {
                 canvasPoint.y >= _canvasPoint.y - pointSize &&
                 canvasPoint.y <= _canvasPoint.y + pointSize
             ) {
-                intersectedPoints.push({ ..._canvasPoint, id: _point.id });
+                intersectedPoints.push({ ..._point, ..._canvasPoint });
             }
         });
         return intersectedPoints;

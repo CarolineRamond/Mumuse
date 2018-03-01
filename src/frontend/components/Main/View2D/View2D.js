@@ -7,7 +7,7 @@ import styles from './view-2D.css';
 
 import { actions, selectors } from '../../../redux';
 const { get2DPoints, did2DPointsChange } = selectors;
-const { add2DPoint, select2DPoint, update2DPoint, remove2DPoint } = actions;
+const { add2DPoint, addBindingBuffer2D, update2DPoint, remove2DPoint } = actions;
 
 class View2D extends React.Component {
     constructor(props) {
@@ -37,8 +37,8 @@ class View2D extends React.Component {
         this.props.dispatch(add2DPoint(position));
     }
 
-    onSelectPoint(id) {
-        this.props.dispatch(select2DPoint(id));
+    onSelectPoint(point) {
+        this.props.dispatch(addBindingBuffer2D(point));
     }
 
     onUpdatePoint(id, position) {

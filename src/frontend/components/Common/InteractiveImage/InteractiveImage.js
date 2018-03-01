@@ -56,6 +56,11 @@ class InteractiveImage extends React.Component {
         if (!nextProps.addMode && this.props.addMode) {
             this.mediaCanvas.style.cursor = 'default';
         }
+
+        // update state's point list
+        this.setState({
+            points: nextProps.points
+        });
     }
 
     initViewer() {
@@ -167,10 +172,7 @@ class InteractiveImage extends React.Component {
             }
             if (this.props.bindingMode) {
                 // handle point bind
-                // this.bindedPoint = this.pointIntersected;
-                // this.props.onBindPoint(this.bindedPoint);
-                // this.redraw();
-                this.props.onSelectPoint(this.pointIntersected ? this.pointIntersected.id : null);
+                this.props.onSelectPoint(this.pointIntersected);
                 return;
             }
             if (this.props.addMode && this.props.onAddPoint && this.mouseImageCoords) {
@@ -368,10 +370,6 @@ class InteractiveImage extends React.Component {
         if (this.state.points) {
             this.state.points.map(point => {
                 let color = point.color || 'red';
-                /*if (
-                    (this.pointIntersected && point.id === this.pointIntersected.id) ||
-                    (this.bindedPoint && point.id === this.bindedPoint.id)
-                ) {*/
                 if (
                     (this.pointIntersected && point.id === this.pointIntersected.id) ||
                     point.selected
