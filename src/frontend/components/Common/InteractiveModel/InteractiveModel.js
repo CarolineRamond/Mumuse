@@ -24,7 +24,7 @@ const getPointMaterial = color => {
     try {
         hexColor = parseInt(color.split('#')[1], 16);
     } catch (e) {
-        hexColor = 0xff0000;
+        hexColor = 0xfcdc00;
     }
     return new THREE.LineBasicMaterial({
         color: hexColor,
@@ -33,7 +33,7 @@ const getPointMaterial = color => {
 };
 
 const pointMaterial = new THREE.LineBasicMaterial({
-    color: 0xff0000,
+    color: 0xfcdc00,
     linewidth: 3
 });
 const selectedPointMaterial = new THREE.LineBasicMaterial({

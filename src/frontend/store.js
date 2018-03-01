@@ -8,7 +8,6 @@ import { loadState, saveState } from './localStorage';
 import reducer from './redux';
 
 const persistedState = loadState();
-console.log(persistedState);
 const validator = new Validator();
 const middleware = applyMiddleware(validator, thunk, promise(), createLogger());
 // const middleware = applyMiddleware(validator, thunk, promise());

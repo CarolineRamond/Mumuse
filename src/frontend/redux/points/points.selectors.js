@@ -35,3 +35,11 @@ export const getBindingBuffer2D = state => {
 export const getBindingBuffer3D = state => {
     return state.present.bindings.buffer3D;
 };
+
+export const canUndo = state => {
+    return state.past.length > 0;
+};
+
+export const canRedo = state => {
+    return state.future.length > 0;
+};

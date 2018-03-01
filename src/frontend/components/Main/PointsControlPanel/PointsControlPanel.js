@@ -21,7 +21,9 @@ const {
     getDeleteMode,
     getDefaultPointColor,
     getDefaultPointSize,
-    shouldShowModelTexture
+    shouldShowModelTexture,
+    canUndo,
+    canRedo
 } = selectors;
 const {
     update2DPoint,
@@ -211,8 +213,16 @@ class PointsControlPanel extends React.Component {
                         onChange={this.onToggleBindMode}
                     />
                     <div>
-                        <IconButton icon="undo" onClick={this.undo} />
-                        <IconButton icon="redo" onClick={this.redo} />
+                        <IconButton
+                            icon="undo"
+                            disabled={!this.props.canUndo}
+                            onClick={this.undo}
+                        />
+                        <IconButton
+                            icon="redo"
+                            disabled={!this.props.canRedo}
+                            onClick={this.redo}
+                        />
                     </div>
                 </div>
                 <div className={styles.pointsPanelContent}>
@@ -326,6 +336,8 @@ PointsControlPanel.propTypes = {
     bindingBuffer2D: PropTypes.object,
     bindingBuffer3D: PropTypes.object,
     bindings: PropTypes.arrayOf(PropTypes.object),
+    canRedo: PropTypes.bool,
+    canUndo: PropTypes.bool,
     defaultPointColor: PropTypes.string.isRequired,
     defaultPointSize: PropTypes.number.isRequired,
     deleteMode: PropTypes.bool,
@@ -342,6 +354,8 @@ const ConnectedPointsControlPanel = connect(store => {
         bindings: getBindings(store),
         bindingBuffer2D: getBindingBuffer2D(store),
         bindingBuffer3D: getBindingBuffer3D(store),
+        canRedo: canRedo(store),
+        canUndo: canUndo(store),
         defaultPointColor: getDefaultPointColor(store),
         defaultPointSize: getDefaultPointSize(store),
         deleteMode: getDeleteMode(store),
