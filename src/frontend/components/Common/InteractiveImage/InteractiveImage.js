@@ -281,7 +281,11 @@ class InteractiveImage extends React.Component {
                 this.mediaCanvas.style.cursor = 'crosshair';
             } else if (this.state.points) {
                 // check intersected point
-                const intersectedPoints = this.intersect(pt, this.state.points);
+                const intersectedPoints = this.intersect(
+                    pt,
+                    this.state.points,
+                    this.state.pointSize
+                );
                 const formerIntersected = this.pointIntersected;
                 this.pointIntersected = intersectedPoints[0];
                 if (
@@ -337,11 +341,7 @@ class InteractiveImage extends React.Component {
                 this.imgNWCorner,
                 this.imgDim
             );
-            this.intersect = utils.intersectFactory(
-                this.imgNWCorner,
-                this.imgDim,
-                this.state.pointSize
-            );
+            this.intersect = utils.intersectFactory(this.imgNWCorner, this.imgDim);
 
             // reset track transform + redraw
             this.trackTransforms(context);

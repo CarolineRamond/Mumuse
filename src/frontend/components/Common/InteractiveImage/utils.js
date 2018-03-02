@@ -49,8 +49,8 @@ export const isCanvasPointIntoImageFactory = (imgNWCorner, imgDim) => {
  * generate a function (depending on image position & dimensions)
  * to know if a canvas point intersect an array of image points.
  */
-export const intersectFactory = (imgNWCorner, imgDim, pointSize) => {
-    return (canvasPoint, imagePoints) => {
+export const intersectFactory = (imgNWCorner, imgDim) => {
+    return (canvasPoint, imagePoints, pointSize) => {
         const intersectedPoints = [];
         imagePoints.map(_point => {
             const _canvasPoint = imageToCanvasFactory(imgNWCorner, imgDim)(_point);
