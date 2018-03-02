@@ -411,12 +411,13 @@ class InteractiveImage extends React.Component {
                 ) {
                     color = 'green';
                 }
-                this.drawPoint(pointCanvasCoords, color);
+                const shouldDisplayCircle = point.bind !== null;
+                this.drawPoint(pointCanvasCoords, color, shouldDisplayCircle);
             });
         }
     }
 
-    drawPoint(coords, color) {
+    drawPoint(coords, color, shouldDisplayCircle) {
         const X = coords.x;
         const Y = coords.y;
         const pointSize = this.state.pointSize;
@@ -459,6 +460,15 @@ class InteractiveImage extends React.Component {
         context.moveTo(X - pointSize / 2, Y);
         context.lineTo(X + pointSize / 2, Y);
         context.stroke();
+
+        // circle
+        if (shouldDisplayCircle) {
+            context.lineWidth = 1;
+            context.strokeStyle = color;
+            context.beginPath();
+            context.arc(X, Y, pointSize, 0, 2 * Math.PI);
+            context.stroke();
+        }
     }
 
     // Adds ctx.getTransform() - returns an SVGMatrix

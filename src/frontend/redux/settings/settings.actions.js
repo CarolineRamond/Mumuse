@@ -43,7 +43,7 @@ export const updateDefaultPointColor = color => {
 
 export const updateDefaultPointSize = pointSize => {
     return {
-        type: 'SETTINGS_UPDATE_DEFAULT_POINTSIZE',
+        type: 'SETTINGS_UPDATE_POINTSIZE',
         payload: {
             pointSize: pointSize
         },

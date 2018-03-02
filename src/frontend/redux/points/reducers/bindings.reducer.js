@@ -60,13 +60,13 @@ const reducer = (state = initialState, action) => {
                 list: newList
             };
         }
-        case '2D_BINDING_BUFFER_ADD': {
+        case 'BINDING_BUFFER_ADD_2D': {
             return {
                 ...state,
                 buffer2D: action.payload.point2D
             };
         }
-        case '3D_BINDING_BUFFER_ADD': {
+        case 'BINDING_BUFFER_ADD_3D': {
             return {
                 ...state,
                 buffer3D: action.payload.point3D

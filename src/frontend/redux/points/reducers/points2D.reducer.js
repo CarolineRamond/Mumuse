@@ -98,7 +98,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: false
+                didChange: true
             };
         }
         case 'BINDING_REMOVE_BY_2D': {
@@ -115,7 +115,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: false
+                didChange: true
             };
         }
         case 'BINDING_REMOVE_BY_3D': {
@@ -132,12 +132,14 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: false
+                didChange: true
             };
         }
         case '3D_POINT_REMOVE': {
+            let hadBinding = false;
             const newList = state.list.map(point => {
                 if (point.bind === action.payload.pointId) {
+                    hadBinding = true;
                     return {
                         ...point,
                         bind: null
@@ -149,13 +151,15 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: false
+                didChange: hadBinding
             };
         }
         case '3D_POINT_UPDATE': {
+            let hasBinding = false;
             if (action.payload.color) {
                 const newList = state.list.map(point => {
                     if (point.bind === action.payload.pointId) {
+                        hasBinding = true;
                         return {
                             ...point,
                             color: action.payload.color
@@ -167,7 +171,7 @@ const reducer = (state = initialState, action) => {
                 return {
                     ...state,
                     list: newList,
-                    didChange: true
+                    didChange: hasBinding
                 };
             } else {
                 return defaultReducer(state);

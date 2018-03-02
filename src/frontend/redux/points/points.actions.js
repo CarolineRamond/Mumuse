@@ -312,7 +312,7 @@ export const removeBindingBy3D = pointId3D => {
 
 export const addBindingBuffer2D = point2D => {
     return {
-        type: '2D_BINDING_BUFFER_ADD',
+        type: 'BINDING_BUFFER_ADD_2D',
         payload: {
             point2D: point2D
         }
@@ -321,7 +321,7 @@ export const addBindingBuffer2D = point2D => {
 
 export const addBindingBuffer3D = point3D => {
     return {
-        type: '3D_BINDING_BUFFER_ADD',
+        type: 'BINDING_BUFFER_ADD_3D',
         payload: {
             point3D: point3D
         }

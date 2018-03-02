@@ -14,6 +14,7 @@ const middleware = applyMiddleware(validator, thunk, promise(), createLogger());
 
 const store = createStore(reducer, persistedState, middleware);
 
+// to persist state in local storage
 store.subscribe(() => {
     saveState(store.getState());
 });

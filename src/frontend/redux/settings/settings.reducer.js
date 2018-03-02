@@ -47,7 +47,7 @@ const reducer = (state = initialState, action) => {
                 defaultPointColor: action.payload.color
             };
         }
-        case 'SETTINGS_UPDATE_DEFAULT_POINTSIZE': {
+        case 'SETTINGS_UPDATE_POINTSIZE': {
             return {
                 ...state,
                 defaultPointSize: action.payload.pointSize
