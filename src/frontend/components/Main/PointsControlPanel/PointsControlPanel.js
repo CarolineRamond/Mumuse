@@ -20,7 +20,8 @@ const {
     getBindMode,
     getDeleteMode,
     getDefaultPointColor,
-    getDefaultPointSize,
+    getPointSize,
+    getPointWeight,
     shouldShowModelTexture,
     canUndo,
     canRedo
@@ -39,7 +40,8 @@ const {
     toggleBindMode,
     toggleDeleteMode,
     updateDefaultPointColor,
-    updateDefaultPointSize,
+    updatePointSize,
+    updatePointWeight,
     toggleModelTexture
 } = actions;
 
@@ -69,7 +71,8 @@ class PointsControlPanel extends React.Component {
         this.onToggleDeleteMode = this.onToggleDeleteMode.bind(this);
 
         this.onUpdateDefaultPointColor = this.onUpdateDefaultPointColor.bind(this);
-        this.onUpdateDefaultPointSize = this.onUpdateDefaultPointSize.bind(this);
+        this.onUpdatePointSize = this.onUpdatePointSize.bind(this);
+        this.onUpdatePointWeight = this.onUpdatePointWeight.bind(this);
         this.onToggleModelTexture = this.onToggleModelTexture.bind(this);
         this.togglePicker = this.togglePicker.bind(this);
 
@@ -144,8 +147,12 @@ class PointsControlPanel extends React.Component {
         this.props.dispatch(updateDefaultPointColor(color.hex));
     }
 
-    onUpdateDefaultPointSize(pointSize) {
-        this.props.dispatch(updateDefaultPointSize(pointSize));
+    onUpdatePointSize(pointSize) {
+        this.props.dispatch(updatePointSize(pointSize));
+    }
+
+    onUpdatePointWeight(pointWeight) {
+        this.props.dispatch(updatePointWeight(pointWeight));
     }
 
     onToggleModelTexture() {
@@ -309,13 +316,38 @@ class PointsControlPanel extends React.Component {
                             alignItems: 'center'
                         }}
                     >
-                        Default point size :
+                        Point size :
                         <Slider
-                            value={this.props.defaultPointSize}
-                            onChange={this.onUpdateDefaultPointSize}
+                            theme={{
+                                slider: styles.slider,
+                                innerprogress: styles.sliderProgressBar
+                            }}
+                            value={this.props.pointSize}
+                            onChange={this.onUpdatePointSize}
                             min={5}
                             step={5}
                             max={100}
+                        />
+                    </div>
+                    {/* pointweight slider */}
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center'
+                        }}
+                    >
+                        Point weight :
+                        <Slider
+                            theme={{
+                                slider: styles.slider,
+                                innerprogress: styles.sliderProgressBar
+                            }}
+                            value={this.props.pointWeight}
+                            onChange={this.onUpdatePointWeight}
+                            min={1}
+                            step={1}
+                            max={20}
                         />
                     </div>
                     {/* toggle model texture */}
@@ -339,9 +371,10 @@ PointsControlPanel.propTypes = {
     canRedo: PropTypes.bool,
     canUndo: PropTypes.bool,
     defaultPointColor: PropTypes.string.isRequired,
-    defaultPointSize: PropTypes.number.isRequired,
     deleteMode: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
+    pointSize: PropTypes.number.isRequired,
+    pointWeight: PropTypes.number.isRequired,
     points2D: PropTypes.arrayOf(PropTypes.object),
     points3D: PropTypes.arrayOf(PropTypes.object),
     shouldShowModelTexture: PropTypes.bool
@@ -357,8 +390,9 @@ const ConnectedPointsControlPanel = connect(store => {
         canRedo: canRedo(store),
         canUndo: canUndo(store),
         defaultPointColor: getDefaultPointColor(store),
-        defaultPointSize: getDefaultPointSize(store),
         deleteMode: getDeleteMode(store),
+        pointSize: getPointSize(store),
+        pointWeight: getPointWeight(store),
         points2D: get2DPoints(store),
         points3D: get3DPoints(store),
         shouldShowModelTexture: shouldShowModelTexture(store)

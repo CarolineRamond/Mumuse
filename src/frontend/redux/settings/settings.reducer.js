@@ -3,7 +3,8 @@ export const initialState = {
     bindMode: false,
     deleteMode: false,
     defaultPointColor: '#FCDC00',
-    defaultPointSize: 10,
+    pointSize: 10,
+    pointWeight: 1,
     showModelTexture: true
 };
 
@@ -50,7 +51,13 @@ const reducer = (state = initialState, action) => {
         case 'SETTINGS_UPDATE_POINTSIZE': {
             return {
                 ...state,
-                defaultPointSize: action.payload.pointSize
+                pointSize: action.payload.pointSize
+            };
+        }
+        case 'SETTINGS_UPDATE_POINTWEIGHT': {
+            return {
+                ...state,
+                pointWeight: action.payload.pointWeight
             };
         }
         case 'SETTINGS_TOGGLE_MODEL_TEXTURE': {

@@ -86,3 +86,11 @@
 	width: 100%;
 	z-index: 1;
 }
+
+.slider {
+	min-width: 250px;
+}
+
+.sliderProgressBar {
+	background-color: #666;
+}

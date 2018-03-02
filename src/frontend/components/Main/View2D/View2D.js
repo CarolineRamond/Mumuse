@@ -13,7 +13,8 @@ const {
     getBindMode,
     getDeleteMode,
     getDefaultPointColor,
-    getDefaultPointSize
+    getPointSize,
+    getPointWeight
 } = selectors;
 const { add2DPoint, addBindingBuffer2D, update2DPoint, remove2DPoint } = actions;
 
@@ -83,6 +84,7 @@ class View2D extends React.Component {
                     onRemovePoint={this.onRemovePoint}
                     defaultPointColor={this.props.defaultPointColor}
                     pointSize={this.props.pointSize}
+                    pointWeight={this.props.pointWeight}
                 />
             </div>
         );
@@ -98,6 +100,7 @@ View2D.propTypes = {
     dispatch: PropTypes.func.isRequired,
     pointSize: PropTypes.number.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
+    pointWeight: PropTypes.number.isRequired,
     setPointsChangedHandler: PropTypes.func.isRequired,
     setResizeHandler: PropTypes.func.isRequired
 };
@@ -109,8 +112,9 @@ const ConnectedView2D = connect(store => {
         defaultPointColor: getDefaultPointColor(store),
         deleteMode: getDeleteMode(store),
         didPointsChange: did2DPointsChange(store),
-        pointSize: getDefaultPointSize(store),
-        points: get2DPoints(store)
+        pointSize: getPointSize(store),
+        points: get2DPoints(store),
+        pointWeight: getPointWeight(store)
     };
 })(View2D);
 

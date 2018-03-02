@@ -14,8 +14,12 @@ export const getDefaultPointColor = state => {
     return state.defaultPointColor;
 };
 
-export const getDefaultPointSize = state => {
-    return state.defaultPointSize;
+export const getPointSize = state => {
+    return state.pointSize;
+};
+
+export const getPointWeight = state => {
+    return state.pointWeight;
 };
 
 export const shouldShowModelTexture = state => {

@@ -41,7 +41,7 @@ export const updateDefaultPointColor = color => {
     };
 };
 
-export const updateDefaultPointSize = pointSize => {
+export const updatePointSize = pointSize => {
     return {
         type: 'SETTINGS_UPDATE_POINTSIZE',
         payload: {
@@ -54,6 +54,25 @@ export const updateDefaultPointSize = pointSize => {
                         return typeof _pointSize === 'number';
                     },
                     msg: 'pointSize must be a number'
+                }
+            }
+        }
+    };
+};
+
+export const updatePointWeight = pointWeight => {
+    return {
+        type: 'SETTINGS_UPDATE_POINTWEIGHT',
+        payload: {
+            pointWeight: pointWeight
+        },
+        meta: {
+            validator: {
+                pointWeight: {
+                    func: _pointWeight => {
+                        return typeof _pointWeight === 'number';
+                    },
+                    msg: 'pointWeight must be a number'
                 }
             }
         }

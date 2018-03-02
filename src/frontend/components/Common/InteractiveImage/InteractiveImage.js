@@ -22,6 +22,7 @@ class InteractiveImage extends React.Component {
             loading: false,
             points: this.props.points,
             pointSize: this.props.pointSize,
+            pointWeight: this.props.pointWeight,
             defaultPointColor: this.props.defaultPointColor
         };
     }
@@ -80,6 +81,18 @@ class InteractiveImage extends React.Component {
             this.setState(
                 {
                     pointSize: nextProps.pointSize
+                },
+                () => {
+                    this.redraw();
+                }
+            );
+        }
+
+        //update point weight
+        if (nextProps.pointWeight !== this.props.pointWeight) {
+            this.setState(
+                {
+                    pointWeight: nextProps.pointWeight
                 },
                 () => {
                     this.redraw();
@@ -421,6 +434,7 @@ class InteractiveImage extends React.Component {
         const X = coords.x;
         const Y = coords.y;
         const pointSize = this.state.pointSize;
+        const pointWeight = this.state.pointWeight;
 
         // gradient
         const grd = context.createRadialGradient(X + 2, Y + 2, 0, X + 2, Y + 2, pointSize);
@@ -430,7 +444,7 @@ class InteractiveImage extends React.Component {
         context.fillRect(X + 2 - pointSize, Y + 2 - pointSize, pointSize * 2, pointSize * 2);
 
         // shadow vertical bar, black
-        context.lineWidth = 1;
+        context.lineWidth = pointWeight;
         context.strokeStyle = 'rgba(0,0,0,0.3)';
         context.beginPath();
         context.moveTo(X + 0.5, Y - pointSize / 2 + 0.5);
@@ -438,7 +452,7 @@ class InteractiveImage extends React.Component {
         context.stroke();
 
         // shadow horizontal bar, black
-        context.lineWidth = 1;
+        context.lineWidth = pointWeight;
         context.strokeStyle = 'rgba(0,0,0,0.3)';
         context.beginPath();
         context.moveTo(X - pointSize / 2 + 0.5, Y + 0.5);
@@ -446,7 +460,7 @@ class InteractiveImage extends React.Component {
         context.stroke();
 
         // point vertical bar, colored
-        context.lineWidth = 1;
+        context.lineWidth = pointWeight;
         context.strokeStyle = color;
         context.beginPath();
         context.moveTo(X, Y - pointSize / 2);
@@ -454,7 +468,7 @@ class InteractiveImage extends React.Component {
         context.stroke();
 
         // point horizontal bar, colored
-        context.lineWidth = 1;
+        context.lineWidth = pointWeight;
         context.strokeStyle = color;
         context.beginPath();
         context.moveTo(X - pointSize / 2, Y);
@@ -463,7 +477,7 @@ class InteractiveImage extends React.Component {
 
         // circle
         if (shouldDisplayCircle) {
-            context.lineWidth = 1;
+            context.lineWidth = pointWeight;
             context.strokeStyle = color;
             context.beginPath();
             context.arc(X, Y, pointSize, 0, 2 * Math.PI);
@@ -595,6 +609,7 @@ InteractiveImage.propTypes = {
     pointSize: PropTypes.number,
     /** list of points to draw on the image (with coords relative to image center)*/
     points: PropTypes.arrayOf(PropTypes.object),
+    pointWeight: PropTypes.number,
     /** the orientation of the canvas (0,1,2 or 3)*/
     quarter: PropTypes.number,
     /** whether an animation is on going : if so, canvas should resize on requestAnimationFrame
