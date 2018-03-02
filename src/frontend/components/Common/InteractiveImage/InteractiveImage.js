@@ -288,6 +288,11 @@ class InteractiveImage extends React.Component {
                 );
                 const formerIntersected = this.pointIntersected;
                 this.pointIntersected = intersectedPoints[0];
+                if (this.pointIntersected) {
+                    this.mediaCanvas.style.cursor = 'pointer';
+                } else {
+                    this.mediaCanvas.style.cursor = 'default';
+                }
                 if (
                     (formerIntersected && !this.pointIntersected) ||
                     (this.pointIntersected && !formerIntersected) ||

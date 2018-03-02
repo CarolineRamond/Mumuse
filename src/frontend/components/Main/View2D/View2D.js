@@ -37,8 +37,15 @@ class View2D extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.didPointsChange && this.handlePointsChanged) {
-            this.handlePointsChanged(nextProps.points);
+        if (
+            nextProps.addMode === this.props.addMode &&
+            nextProps.bindMode === this.props.bindMode &&
+            nextProps.defaultPointColor === this.props.defaultPointColor &&
+            nextProps.deleteMode === this.props.deleteMode &&
+            nextProps.pointSize === this.props.pointSize &&
+            nextProps.pointWeight === this.props.pointWeight
+        ) {
+            this.handlePointsChanged();
         }
     }
 

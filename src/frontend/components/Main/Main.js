@@ -7,6 +7,7 @@ import { Tab, Tabs } from 'react-toolbox';
 import View2D from './View2D';
 import View3D from './View3D';
 import PointsControlPanel from './PointsControlPanel';
+import CalcControlPanel from './CalcControlPanel';
 
 import { actions } from '../../redux';
 const { toggleAddMode, toggleBindMode, toggleDeleteMode, resetMode } = actions;
@@ -165,7 +166,9 @@ class Main extends React.Component {
                         <Tab label="Points">
                             <PointsControlPanel />
                         </Tab>
-                        <Tab label="Camera Adjustment">COUCOU CALC</Tab>
+                        <Tab label="Camera Adjustment">
+                            <CalcControlPanel />
+                        </Tab>
                     </Tabs>
                 </div>
             </SplitPane>

@@ -49,6 +49,7 @@
     "redux-thunk": "^2.2.0",
     "redux-undo": "^0.6.1",
     "three": "^0.90.0",
+    "three.meshline": "^1.0.3",
     "turf-extent": "^1.0.4",
     "uuid": "^3.2.1",
     "validator": "^9.1.1"

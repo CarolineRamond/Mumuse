@@ -28,7 +28,7 @@ const getPointMaterial = color => {
     }
     return new THREE.LineBasicMaterial({
         color: hexColor,
-        linewidth: 3
+        linewidth: 10
     });
 };
 
@@ -97,6 +97,12 @@ class InteractiveModel extends React.Component {
     }
 
     initViewer() {
+        // stats = new Stats();
+        // stats.domElement.style.position = "absolute";
+        // stats.domElement.style.top = (windowHeight - 58) + 'px'; //48px de large + 10 bordure
+        // stats.domElement.style.left = (windowWidth - 90) + 'px'; //80px de haut + 10 bordure
+        // document.body.appendChild(stats.dom);
+
         //scenes
         this.scene = new THREE.Scene();
 
@@ -154,12 +160,25 @@ class InteractiveModel extends React.Component {
             this.scene.add(this.modelContainer);
 
             // addpoint helper
-            this.helperContainer = new THREE.Object3D();
-            this.addPointHelper = new THREE.LineSegments(pointGeometry, pointMaterial);
-            this.addPointHelper.scale.set(rect.width / 10, rect.width / 10, rect.width / 10);
+            this.addPointHelper = new THREE.Object3D();
+            // this.helperContainer = new THREE.Object3D();
+            // this.addPointHelper = new THREE.LineSegments(pointGeometry, pointMaterial);
+            // this.addPointHelper.scale.set(rect.width / 10, rect.width / 10, rect.width / 10);
+            // this.addPointHelper.visible = false;
+            // this.helperContainer.add(this.addPointHelper);
+            // this.scene.add(this.helperContainer);
+            const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xfcdc00 });
+            const cylinderGeometry = new THREE.CylinderGeometry(0.01, 0.01, 1, 8);
+            const cylinder1 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+            const cylinder2 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+            const cylinder3 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+            cylinder2.rotateX(Math.PI / 2);
+            cylinder3.rotateZ(Math.PI / 2);
+            this.addPointHelper.add(cylinder1);
+            this.addPointHelper.add(cylinder2);
+            this.addPointHelper.add(cylinder3);
             this.addPointHelper.visible = false;
-            this.helperContainer.add(this.addPointHelper);
-            this.scene.add(this.helperContainer);
+            this.scene.add(this.addPointHelper);
 
             // setup event handlers
             this.container3D.addEventListener('mousemove', this.onMouseMove, false);
@@ -180,20 +199,28 @@ class InteractiveModel extends React.Component {
     }
 
     redrawPoints(points) {
-        // remove previously drawn points
-        for (let i = this.pointsContainer.children.length - 1; i >= 0; i--) {
-            this.pointsContainer.remove(this.pointsContainer.children[i]);
-        }
-        // add new points
-        points.map(point => {
-            const color = point.color || this.state.defaultPointColor;
-            const material = point.selected ? selectedPointMaterial : getPointMaterial(color);
-            const newPoint = new THREE.LineSegments(pointGeometry, material);
-            newPoint.scale.set(2, 2, 2);
-            newPoint.position.set(point.x, point.y, point.z);
-            newPoint.metadata = point;
-            this.pointsContainer.add(newPoint);
-        });
+        // // remove previously drawn points
+        // for (let i = this.pointsContainer.children.length - 1; i >= 0; i--) {
+        //     this.pointsContainer.remove(this.pointsContainer.children[i]);
+        // }
+        // // add new points
+        // points.map(point => {
+        //     const color = point.color || this.state.defaultPointColor;
+        //     const material = new THREE.MeshBasicMaterial({ color: color });
+        //     const geometry = new THREE.CylinderGeometry(0.01, 0.01, 0.1, 8);
+        //     const cylinder1 = new THREE.Mesh(geometry, material);
+        //     const cylinder2 = new THREE.Mesh(geometry, material);
+        //     const cylinder3 = new THREE.Mesh(geometry, material);
+        //     cylinder2.rotateX(Math.PI / 2);
+        //     cylinder3.rotateZ(Math.PI / 2);
+        //     const newPoint = new THREE.Object3D();
+        //     newPoint.add(cylinder1);
+        //     newPoint.add(cylinder2);
+        //     newPoint.add(cylinder3);
+        //     newPoint.position.set(point.x, point.y, point.z);
+        //     newPoint.metadata = point;
+        //     this.pointsContainer.add(newPoint);
+        // });
     }
 
     animate() {
@@ -233,7 +260,7 @@ class InteractiveModel extends React.Component {
                 if (this.props.addMode) {
                     this.container3D.style.cursor = 'crosshair';
                 } else {
-                    this.container3D.style.cursor = 'move';
+                    this.container3D.style.cursor = 'pointer';
                 }
             } else {
                 this.addPointHelper.visible = false;
@@ -246,17 +273,16 @@ class InteractiveModel extends React.Component {
                 true
             );
             if (pointsIntersect.length > 0) {
-                this.pointIntersected = pointsIntersect[0].object;
-                this.pointIntersected.material = selectedPointMaterial;
-                // a point is intersected : change cursor accordingly
-                if (this.props.deleteMode) {
-                    this.container3D.style.cursor = 'not-allowed';
-                } else {
-                    this.container3D.style.cursor = 'pointer';
-                }
+                this.pointIntersected = pointsIntersect[0].object.parent;
+                this.pointIntersected.children[0].material.color.setHex(0x00ff00);
+                this.container3D.style.cursor = 'pointer';
             } else {
                 if (this.pointIntersected && !this.pointIntersected.metadata.selected) {
-                    this.pointIntersected.material = pointMaterial;
+                    const hexColor = parseInt(
+                        this.pointIntersected.metadata.color.split('#')[1],
+                        16
+                    );
+                    this.pointIntersected.children[0].material.color.setHex(hexColor);
                 }
                 this.pointIntersected = null;
                 this.container3D.style.cursor = 'default';
