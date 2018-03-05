@@ -8,12 +8,12 @@ import styles from './view-3D.css';
 import { actions, selectors } from '../../../redux';
 const {
     get3DPoints,
-    did3DPointsChange,
     getAddMode,
     getBindMode,
     getDeleteMode,
+    getDefaultPointColor,
     shouldShowModelTexture,
-    getDefaultPointColor
+    shouldRedraw3DPoints
 } = selectors;
 const { add3DPoint, addBindingBuffer3D, update3DPoint, remove3DPoint } = actions;
 
@@ -36,7 +36,8 @@ class View3D extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.didPointsChange && this.handlePointsChanged) {
+        if (nextProps.shouldRedraw3DPoints && this.handlePointsChanged) {
+            console.log('DRAW 3D POINTS, NB : ', nextProps.points.length);
             this.handlePointsChanged(nextProps.points);
         }
     }
@@ -96,11 +97,11 @@ View3D.propTypes = {
     bindMode: PropTypes.bool,
     defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
-    didPointsChange: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
     setPointsChangedHandler: PropTypes.func.isRequired,
     setResizeHandler: PropTypes.func.isRequired,
+    shouldRedraw3DPoints: PropTypes.bool,
     shouldShowModelTexture: PropTypes.bool
 };
 
@@ -110,9 +111,9 @@ const ConnectedView3D = connect(store => {
         bindMode: getBindMode(store),
         defaultPointColor: getDefaultPointColor(store),
         deleteMode: getDeleteMode(store),
-        didPointsChange: did3DPointsChange(store),
         points: get3DPoints(store),
-        shouldShowModelTexture: shouldShowModelTexture(store)
+        shouldShowModelTexture: shouldShowModelTexture(store),
+        shouldRedraw3DPoints: shouldRedraw3DPoints(store)
     };
 })(View3D);
 

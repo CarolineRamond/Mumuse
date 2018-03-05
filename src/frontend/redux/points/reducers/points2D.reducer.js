@@ -1,14 +1,14 @@
 import uuid from 'uuid/v1';
 
 export const initialState = {
-    didChange: false,
+    shouldRedraw: false,
     list: []
 };
 
 export const defaultReducer = (state = initialState) => {
     return {
         ...state,
-        didChange: false
+        shouldRedraw: false
     };
 };
 
@@ -25,8 +25,8 @@ const reducer = (state = initialState, action) => {
             };
             return {
                 ...state,
-                list: [newPoint].concat(state.list)
-                // didChange: true
+                list: [newPoint].concat(state.list),
+                shouldRedraw: true
             };
         }
         case '2D_POINT_REMOVE': {
@@ -35,8 +35,8 @@ const reducer = (state = initialState, action) => {
             });
             return {
                 ...state,
-                list: newList
-                // didChange: true
+                list: newList,
+                shouldRedraw: true
             };
         }
         case '2D_POINT_UPDATE': {
@@ -55,8 +55,8 @@ const reducer = (state = initialState, action) => {
             });
             return {
                 ...state,
-                list: newList
-                // didChange: true
+                list: newList,
+                shouldRedraw: true
             };
         }
         case '2D_POINT_SELECT': {
@@ -75,8 +75,8 @@ const reducer = (state = initialState, action) => {
             });
             return {
                 ...state,
-                list: newList
-                // didChange: true
+                list: newList,
+                shouldRedraw: true
             };
         }
         case 'BINDING_ADD': {
@@ -97,8 +97,8 @@ const reducer = (state = initialState, action) => {
             });
             return {
                 ...state,
-                list: newList
-                // didChange: true
+                list: newList,
+                shouldRedraw: true
             };
         }
         case 'BINDING_REMOVE_BY_2D': {
@@ -114,8 +114,8 @@ const reducer = (state = initialState, action) => {
             });
             return {
                 ...state,
-                list: newList
-                // didChange: true
+                list: newList,
+                shouldRedraw: true
             };
         }
         case 'BINDING_REMOVE_BY_3D': {
@@ -131,8 +131,8 @@ const reducer = (state = initialState, action) => {
             });
             return {
                 ...state,
-                list: newList
-                // didChange: true
+                list: newList,
+                shouldRedraw: true
             };
         }
         case '3D_POINT_REMOVE': {
@@ -150,8 +150,8 @@ const reducer = (state = initialState, action) => {
             });
             return {
                 ...state,
-                list: newList
-                // didChange: hadBinding
+                list: newList,
+                shouldRedraw: hadBinding
             };
         }
         case '3D_POINT_UPDATE': {
@@ -170,8 +170,8 @@ const reducer = (state = initialState, action) => {
                 });
                 return {
                     ...state,
-                    list: newList
-                    // didChange: hasBinding
+                    list: newList,
+                    shouldRedraw: hasBinding
                 };
             } else {
                 return defaultReducer(state);

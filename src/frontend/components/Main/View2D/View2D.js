@@ -8,13 +8,13 @@ import styles from './view-2D.css';
 import { actions, selectors } from '../../../redux';
 const {
     get2DPoints,
-    did2DPointsChange,
     getAddMode,
     getBindMode,
     getDeleteMode,
     getDefaultPointColor,
     getPointSize,
-    getPointWeight
+    getPointWeight,
+    shouldRedraw2DPoints
 } = selectors;
 const { add2DPoint, addBindingBuffer2D, update2DPoint, remove2DPoint } = actions;
 
@@ -37,14 +37,8 @@ class View2D extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (
-            nextProps.addMode === this.props.addMode &&
-            nextProps.bindMode === this.props.bindMode &&
-            nextProps.defaultPointColor === this.props.defaultPointColor &&
-            nextProps.deleteMode === this.props.deleteMode &&
-            nextProps.pointSize === this.props.pointSize &&
-            nextProps.pointWeight === this.props.pointWeight
-        ) {
+        if (nextProps.shouldRedraw2DPoints && this.handlePointsChanged) {
+            console.log('DRAW 2D POINTS, NB : ', nextProps.points.length);
             this.handlePointsChanged();
         }
     }
@@ -106,10 +100,11 @@ View2D.propTypes = {
     didPointsChange: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
     pointSize: PropTypes.number.isRequired,
-    points: PropTypes.arrayOf(PropTypes.object),
     pointWeight: PropTypes.number.isRequired,
+    points: PropTypes.arrayOf(PropTypes.object),
     setPointsChangedHandler: PropTypes.func.isRequired,
-    setResizeHandler: PropTypes.func.isRequired
+    setResizeHandler: PropTypes.func.isRequired,
+    shouldRedraw2DPoints: PropTypes.bool
 };
 
 const ConnectedView2D = connect(store => {
@@ -118,10 +113,10 @@ const ConnectedView2D = connect(store => {
         bindMode: getBindMode(store),
         defaultPointColor: getDefaultPointColor(store),
         deleteMode: getDeleteMode(store),
-        didPointsChange: did2DPointsChange(store),
         pointSize: getPointSize(store),
         points: get2DPoints(store),
-        pointWeight: getPointWeight(store)
+        pointWeight: getPointWeight(store),
+        shouldRedraw2DPoints: shouldRedraw2DPoints(store)
     };
 })(View2D);
 

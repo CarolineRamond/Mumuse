@@ -4,7 +4,7 @@ import bindingsReducer from './reducers/bindings.reducer';
 import points2DReducer from './reducers/points2D.reducer';
 import points3DReducer from './reducers/points3D.reducer';
 
-const reducer = combineReducers({
+const combineReducer = combineReducers({
     bindings: bindingsReducer,
     points2D: points2DReducer,
     points3D: points3DReducer
@@ -23,6 +23,31 @@ const modifyHistoryActions = [
     'BINDING_REMOVE_BY_3D'
 ];
 
-export default undoable(reducer, {
+const undoableReducer = undoable(combineReducer, {
     filter: includeAction(modifyHistoryActions)
 });
+
+const reducer = (state = undefined, action) => {
+    switch (action.type) {
+        case '@@redux-undo/UNDO': {
+            const shouldRedraw2D = state.present.points2D.shouldRedraw;
+            const shouldRedraw3D = state.present.points3D.shouldRedraw;
+            const newPartialState = undoableReducer(state, action);
+            return {
+                ...newPartialState,
+                shouldRedraw2D: shouldRedraw2D,
+                shouldRedraw3D: shouldRedraw3D
+            };
+        }
+        default: {
+            const newPartialState = undoableReducer(state, action);
+            return {
+                ...newPartialState,
+                shouldRedraw2D: newPartialState.present.points2D.shouldRedraw,
+                shouldRedraw3D: newPartialState.present.points3D.shouldRedraw
+            };
+        }
+    }
+};
+
+export default reducer;

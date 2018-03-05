@@ -1,14 +1,14 @@
 import uuid from 'uuid/v1';
 
 export const initialState = {
-    didChange: false,
+    shouldRedraw: false,
     list: []
 };
 
 export const defaultReducer = (state = initialState) => {
     return {
         ...state,
-        didChange: false
+        shouldRedraw: false
     };
 };
 
@@ -27,7 +27,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: [newPoint].concat(state.list),
-                didChange: true
+                shouldRedraw: true
             };
         }
         case '3D_POINT_REMOVE': {
@@ -37,7 +37,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: true
+                shouldRedraw: true
             };
         }
         case '3D_POINT_UPDATE': {
@@ -58,7 +58,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: true
+                shouldRedraw: true
             };
         }
         case '3D_POINT_SELECT': {
@@ -78,7 +78,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: true
+                shouldRedraw: true
             };
         }
         case 'BINDING_ADD': {
@@ -100,7 +100,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: false
+                shouldRedraw: false
             };
         }
         case 'BINDING_REMOVE_BY_2D': {
@@ -117,7 +117,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: false
+                shouldRedraw: false
             };
         }
         case 'BINDING_REMOVE_BY_3D': {
@@ -134,7 +134,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: false
+                shouldRedraw: false
             };
         }
         case '2D_POINT_REMOVE': {
@@ -151,7 +151,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                didChange: false
+                shouldRedraw: false
             };
         }
         case '2D_POINT_UPDATE': {
@@ -169,7 +169,7 @@ const reducer = (state = initialState, action) => {
                 return {
                     ...state,
                     list: newList,
-                    didChange: true
+                    shouldRedraw: true
                 };
             } else {
                 return defaultReducer(state);

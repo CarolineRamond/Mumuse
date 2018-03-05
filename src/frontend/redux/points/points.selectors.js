@@ -2,16 +2,16 @@ export const get2DPoints = state => {
     return state.present.points2D.list;
 };
 
-export const did2DPointsChange = state => {
-    return state.present.points2D.didChange;
+export const shouldRedraw2DPoints = state => {
+    return state.shouldRedraw2D;
 };
 
 export const get3DPoints = state => {
     return state.present.points3D.list;
 };
 
-export const did3DPointsChange = state => {
-    return state.present.points3D.didChange;
+export const shouldRedraw3DPoints = state => {
+    return state.shouldRedraw3D;
 };
 
 export const getBindings = state => {
