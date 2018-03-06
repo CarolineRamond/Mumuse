@@ -50,11 +50,12 @@ class InteractiveModel extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        // switch off addMode : hide addpoint helper & update cursor
         if (this.props.addMode && !nextProps.addMode) {
-            //addMode is off : hide addpoint helper & update cursor
             this.container3D.style.cursor = 'default';
             this.helper.visible = false;
         }
+        // toggle model texture
         if (nextProps.shouldShowTexture !== this.props.shouldShowTexture) {
             if (nextProps.shouldShowTexture && this.textureMaterial) {
                 this.mesh.material = this.textureMaterial;
@@ -64,6 +65,7 @@ class InteractiveModel extends React.Component {
                 this.directionalLight.visible = true;
             }
         }
+        // update default point color
         if (nextProps.defaultPointColor !== this.props.defaultPointColor) {
             const hexColor = strToHexColor(nextProps.defaultPointColor);
             this.helper.material.color.setHex(hexColor);
@@ -74,6 +76,7 @@ class InteractiveModel extends React.Component {
                 }
             });
         }
+        // update point size/weight
         if (
             nextProps.pointWeight !== this.props.pointWeight ||
             nextProps.pointSize !== this.props.pointSize
@@ -138,10 +141,10 @@ class InteractiveModel extends React.Component {
         const loader = new THREE.JSONLoader();
         loader.load(this.props.meshUrl, geometry => {
             this.modelContainer = new THREE.Object3D();
-            const material =
-                this.props.shouldShowTexture && this.textureMaterial
-                    ? this.textureMaterial
-                    : this.flatMaterial;
+            const noTexture = !this.props.shouldShowTexture || !this.textureMaterial;
+            const material = noTexture ? this.flatMaterial : this.textureMaterial;
+
+            this.directionalLight.visible = noTexture;
             this.mesh = new THREE.Mesh(geometry, material);
             this.modelContainer.add(this.mesh);
             this.scene.add(this.modelContainer);

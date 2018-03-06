@@ -19,7 +19,6 @@ const {
     getDeleteMode,
     getDefaultPointColor2D,
     getDefaultPointColor3D,
-    shouldShowModelTexture,
     canUndo,
     canRedo
 } = selectors;
@@ -35,8 +34,7 @@ const {
     removeBindingBy3D,
     toggleAddMode,
     toggleBindMode,
-    toggleDeleteMode,
-    toggleModelTexture
+    toggleDeleteMode
 } = actions;
 
 import styles from './points-control-panel.css';

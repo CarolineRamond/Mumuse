@@ -83,8 +83,8 @@ class View3D extends React.Component {
         return (
             <div className={styles.view3D}>
                 <InteractiveModel
-                    // meshUrl="/public/mesh/amrit.json"
-                    meshUrl="/public/mesh/suzanne.json"
+                    meshUrl="/public/mesh/amrit.json"
+                    // meshUrl="/public/mesh/suzanne.json"
                     textureUrl="/public/textures/Amrit_002_u1_v1_8k.jpg"
                     setResizeHandler={resizeHandler => {
                         this.handleModelResize = resizeHandler;

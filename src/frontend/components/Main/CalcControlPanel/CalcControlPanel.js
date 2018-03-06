@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Button from 'react-toolbox/lib/button';
 
-import { actions, selectors } from '../../../redux';
+import { selectors } from '../../../redux';
 const { getBindings } = selectors;
 
 import styles from './calc-control-panel.css';
