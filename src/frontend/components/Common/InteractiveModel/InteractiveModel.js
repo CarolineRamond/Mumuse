@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import OrbitControls from 'orbit-controls-es6';
+import ProgressBar from 'react-toolbox/lib/progress_bar';
 
 import styles from './interactive-model.css';
 
@@ -36,6 +37,10 @@ class InteractiveModel extends React.Component {
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
         this.redrawPoints = this.redrawPoints.bind(this);
+
+        this.state = {
+            loading: true
+        };
     }
 
     componentDidMount() {
@@ -152,19 +157,23 @@ class InteractiveModel extends React.Component {
             this.helperContainer.add(this.helper);
             this.scene.add(this.helperContainer);
 
+            //draw points
+            this.redrawPoints(this.props.points);
+
             // setup event handlers
             this.container3D.addEventListener('mousemove', this.onMouseMove, false);
             this.container3D.addEventListener('mousedown', this.onMouseDown, false);
             this.container3D.addEventListener('mouseup', this.onMouseUp, false);
+
+            this.setState({
+                loading: false
+            });
         });
 
         // init variables
         this.mouse = {};
         this.pointsContainer = new THREE.Object3D();
         this.scene.add(this.pointsContainer);
-
-        //draw points
-        this.redrawPoints(this.props.points);
 
         // start rendering
         this.animate();
@@ -332,7 +341,16 @@ class InteractiveModel extends React.Component {
     }
 
     render() {
-        return <div className={styles.interactiveModel} ref={el => (this.container3D = el)} />;
+        return (
+            <div className={styles.interactiveModelContainer}>
+                <div className={styles.interactiveModel} ref={el => (this.container3D = el)} />;
+                {this.state.loading && (
+                    <div className={styles.interactiveModelLoader}>
+                        <ProgressBar type="circular" mode="indeterminate" />
+                    </div>
+                )}
+            </div>
+        );
     }
 }
 
