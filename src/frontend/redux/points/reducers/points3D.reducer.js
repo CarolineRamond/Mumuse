@@ -100,7 +100,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                shouldRedraw: false
+                shouldRedraw: true
             };
         }
         case 'BINDING_REMOVE_BY_2D': {
@@ -117,7 +117,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                shouldRedraw: false
+                shouldRedraw: true
             };
         }
         case 'BINDING_REMOVE_BY_3D': {
@@ -134,12 +134,14 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                shouldRedraw: false
+                shouldRedraw: true
             };
         }
         case '2D_POINT_REMOVE': {
+            let hadBinding = false;
             const newList = state.list.map(point => {
                 if (point.bind === action.payload.pointId) {
+                    hadBinding = true;
                     return {
                         ...point,
                         bind: null
@@ -151,13 +153,15 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 list: newList,
-                shouldRedraw: false
+                shouldRedraw: hadBinding
             };
         }
         case '2D_POINT_UPDATE': {
+            let hasBinding;
             if (action.payload.color) {
                 const newList = state.list.map(point => {
                     if (point.bind === action.payload.pointId) {
+                        hasBinding = true;
                         return {
                             ...point,
                             color: action.payload.color
@@ -169,7 +173,7 @@ const reducer = (state = initialState, action) => {
                 return {
                     ...state,
                     list: newList,
-                    shouldRedraw: true
+                    shouldRedraw: hasBinding
                 };
             } else {
                 return defaultReducer(state);

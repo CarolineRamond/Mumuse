@@ -5,41 +5,27 @@ import OrbitControls from 'orbit-controls-es6';
 
 import styles from './interactive-model.css';
 
-const pointGeometry = new THREE.Geometry();
+const helperGeometry = new THREE.Geometry();
 const v1 = new THREE.Vector3(0.1, 0, 0);
 const v2 = new THREE.Vector3(-0.1, 0, 0);
 const v3 = new THREE.Vector3(0, 0.1, 0);
 const v4 = new THREE.Vector3(0, -0.1, 0);
 const v5 = new THREE.Vector3(0, 0, 0.1);
 const v6 = new THREE.Vector3(0, 0, -0.1);
-pointGeometry.vertices.push(v1);
-pointGeometry.vertices.push(v2);
-pointGeometry.vertices.push(v3);
-pointGeometry.vertices.push(v4);
-pointGeometry.vertices.push(v5);
-pointGeometry.vertices.push(v6);
+helperGeometry.vertices.push(v1);
+helperGeometry.vertices.push(v2);
+helperGeometry.vertices.push(v3);
+helperGeometry.vertices.push(v4);
+helperGeometry.vertices.push(v5);
+helperGeometry.vertices.push(v6);
 
-const getPointMaterial = color => {
-    let hexColor;
-    try {
-        hexColor = parseInt(color.split('#')[1], 16);
-    } catch (e) {
-        hexColor = 0xfcdc00;
-    }
-    return new THREE.LineBasicMaterial({
-        color: hexColor,
-        linewidth: 10
-    });
+const helperMaterial = new THREE.LineBasicMaterial({
+    linewidth: 3
+});
+
+const strToHexColor = str => {
+    return parseInt(str.split('#')[1], 16);
 };
-
-const pointMaterial = new THREE.LineBasicMaterial({
-    color: 0xfcdc00,
-    linewidth: 3
-});
-const selectedPointMaterial = new THREE.LineBasicMaterial({
-    color: 0x00cc00,
-    linewidth: 3
-});
 
 class InteractiveModel extends React.Component {
     constructor(props) {
@@ -50,10 +36,6 @@ class InteractiveModel extends React.Component {
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
         this.redrawPoints = this.redrawPoints.bind(this);
-
-        this.state = {
-            defaultPointColor: props.defaultPointColor
-        };
     }
 
     componentDidMount() {
@@ -66,7 +48,7 @@ class InteractiveModel extends React.Component {
         if (this.props.addMode && !nextProps.addMode) {
             //addMode is off : hide addpoint helper & update cursor
             this.container3D.style.cursor = 'default';
-            this.addPointHelper.visible = false;
+            this.helper.visible = false;
         }
         if (nextProps.shouldShowTexture !== this.props.shouldShowTexture) {
             if (nextProps.shouldShowTexture && this.textureMaterial) {
@@ -78,14 +60,22 @@ class InteractiveModel extends React.Component {
             }
         }
         if (nextProps.defaultPointColor !== this.props.defaultPointColor) {
-            this.setState(
-                {
-                    defaultPointColor: nextProps.defaultPointColor
-                },
-                () => {
-                    this.redrawPoints(nextProps.points);
+            const hexColor = strToHexColor(nextProps.defaultPointColor);
+            this.helper.material.color.setHex(hexColor);
+            this.pointsContainer.children.map(point => {
+                if (!point.metadata.color) {
+                    point.children[0].material.color.setHex(hexColor);
+                    if (point.metadata.bind) {
+                        point.children[3].material.color.setHex(hexColor);
+                    }
                 }
-            );
+            });
+        }
+        if (
+            nextProps.pointWeight !== this.props.pointWeight ||
+            nextProps.pointSize !== this.props.pointSize
+        ) {
+            this.redrawPoints(nextProps.points);
         }
     }
 
@@ -97,12 +87,6 @@ class InteractiveModel extends React.Component {
     }
 
     initViewer() {
-        // stats = new Stats();
-        // stats.domElement.style.position = "absolute";
-        // stats.domElement.style.top = (windowHeight - 58) + 'px'; //48px de large + 10 bordure
-        // stats.domElement.style.left = (windowWidth - 90) + 'px'; //80px de haut + 10 bordure
-        // document.body.appendChild(stats.dom);
-
         //scenes
         this.scene = new THREE.Scene();
 
@@ -159,26 +143,16 @@ class InteractiveModel extends React.Component {
             this.modelContainer.add(this.mesh);
             this.scene.add(this.modelContainer);
 
-            // addpoint helper
-            this.addPointHelper = new THREE.Object3D();
-            // this.helperContainer = new THREE.Object3D();
-            // this.addPointHelper = new THREE.LineSegments(pointGeometry, pointMaterial);
-            // this.addPointHelper.scale.set(rect.width / 10, rect.width / 10, rect.width / 10);
-            // this.addPointHelper.visible = false;
-            // this.helperContainer.add(this.addPointHelper);
-            // this.scene.add(this.helperContainer);
-            const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xfcdc00 });
-            const cylinderGeometry = new THREE.CylinderGeometry(0.01, 0.01, 1, 8);
-            const cylinder1 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-            const cylinder2 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-            const cylinder3 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-            cylinder2.rotateX(Math.PI / 2);
-            cylinder3.rotateZ(Math.PI / 2);
-            this.addPointHelper.add(cylinder1);
-            this.addPointHelper.add(cylinder2);
-            this.addPointHelper.add(cylinder3);
-            this.addPointHelper.visible = false;
-            this.scene.add(this.addPointHelper);
+            // helper
+            this.helper = new THREE.Object3D();
+            this.helperContainer = new THREE.Object3D();
+            this.helper = new THREE.LineSegments(helperGeometry, helperMaterial);
+            this.helper.scale.set(rect.width / 10, rect.width / 10, rect.width / 10);
+            const hexColor = strToHexColor(this.props.defaultPointColor);
+            this.helper.material.color.setHex(hexColor);
+            this.helper.visible = false;
+            this.helperContainer.add(this.helper);
+            this.scene.add(this.helperContainer);
 
             // setup event handlers
             this.container3D.addEventListener('mousemove', this.onMouseMove, false);
@@ -199,28 +173,49 @@ class InteractiveModel extends React.Component {
     }
 
     redrawPoints(points) {
-        // // remove previously drawn points
-        // for (let i = this.pointsContainer.children.length - 1; i >= 0; i--) {
-        //     this.pointsContainer.remove(this.pointsContainer.children[i]);
-        // }
-        // // add new points
-        // points.map(point => {
-        //     const color = point.color || this.state.defaultPointColor;
-        //     const material = new THREE.MeshBasicMaterial({ color: color });
-        //     const geometry = new THREE.CylinderGeometry(0.01, 0.01, 0.1, 8);
-        //     const cylinder1 = new THREE.Mesh(geometry, material);
-        //     const cylinder2 = new THREE.Mesh(geometry, material);
-        //     const cylinder3 = new THREE.Mesh(geometry, material);
-        //     cylinder2.rotateX(Math.PI / 2);
-        //     cylinder3.rotateZ(Math.PI / 2);
-        //     const newPoint = new THREE.Object3D();
-        //     newPoint.add(cylinder1);
-        //     newPoint.add(cylinder2);
-        //     newPoint.add(cylinder3);
-        //     newPoint.position.set(point.x, point.y, point.z);
-        //     newPoint.metadata = point;
-        //     this.pointsContainer.add(newPoint);
-        // });
+        // remove previously drawn points
+        for (let i = this.pointsContainer.children.length - 1; i >= 0; i--) {
+            this.pointsContainer.remove(this.pointsContainer.children[i]);
+        }
+        // add new points
+        points.map(point => {
+            const color = point.color || this.props.defaultPointColor;
+            const material = new THREE.MeshBasicMaterial({ color: color });
+            const geometry = new THREE.CylinderGeometry(
+                this.props.pointWeight / 400,
+                this.props.pointWeight / 400,
+                this.props.pointSize / 100,
+                8
+            );
+            const cylinder1 = new THREE.Mesh(geometry, material);
+            const cylinder2 = new THREE.Mesh(geometry, material);
+            const cylinder3 = new THREE.Mesh(geometry, material);
+            cylinder2.rotateX(Math.PI / 2);
+            cylinder3.rotateZ(Math.PI / 2);
+            const newPoint = new THREE.Object3D();
+            newPoint.add(cylinder1);
+            newPoint.add(cylinder2);
+            newPoint.add(cylinder3);
+
+            if (point.bind) {
+                const sphereMaterial = new THREE.MeshBasicMaterial({
+                    color: color,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                const sphereGeometry = new THREE.SphereGeometry(
+                    this.props.pointSize / 100 / 2,
+                    8,
+                    8
+                );
+                const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                newPoint.add(sphere);
+            }
+
+            newPoint.position.set(point.x, point.y, point.z);
+            newPoint.metadata = point;
+            this.pointsContainer.add(newPoint);
+        });
     }
 
     animate() {
@@ -238,61 +233,69 @@ class InteractiveModel extends React.Component {
         this.mouse.x = (e.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
         this.mouse.y = -((e.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
 
-        // Pick camera
-        // Raycaster for picking selected camera mesh, see github source
-        // https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes.html
-        // update the picking ray with the camera and mouse position
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
         if (this.props.addMode || this.draggedPoint) {
-            // add/dragpoint mode is on : check if model is intersecting the picking ray
             this.didDrag = true;
-            const modelIntersect = this.raycaster.intersectObjects(
-                this.modelContainer.children,
-                true
-            );
-            this.isModelIntersected = modelIntersect.length > 0;
-
-            if (this.isModelIntersected) {
-                this.addPointHelper.visible = true;
-                this.addPointHelper.position.copy(modelIntersect[0].point);
-                // model is intersected : change cursor accordingly
-                if (this.props.addMode) {
-                    this.container3D.style.cursor = 'crosshair';
-                } else {
-                    this.container3D.style.cursor = 'pointer';
-                }
-            } else {
-                this.addPointHelper.visible = false;
-                this.container3D.style.cursor = 'default';
-            }
+            this.checkModelIntersection();
         } else {
             // else, bind/delete/update mode is on : find points intersecting the picking ray
-            const pointsIntersect = this.raycaster.intersectObjects(
-                this.pointsContainer.children,
-                true
-            );
-            if (pointsIntersect.length > 0) {
-                this.pointIntersected = pointsIntersect[0].object.parent;
-                this.pointIntersected.children[0].material.color.setHex(0x00ff00);
-                this.container3D.style.cursor = 'pointer';
-            } else {
-                if (this.pointIntersected && !this.pointIntersected.metadata.selected) {
-                    const hexColor = parseInt(
-                        this.pointIntersected.metadata.color.split('#')[1],
-                        16
-                    );
-                    this.pointIntersected.children[0].material.color.setHex(hexColor);
-                }
-                this.pointIntersected = null;
-                this.container3D.style.cursor = 'default';
+            this.checkPointIntersection();
+        }
+    }
+
+    checkModelIntersection() {
+        const modelIntersect = this.raycaster.intersectObjects(this.modelContainer.children, true);
+        this.isModelIntersected = modelIntersect.length > 0;
+
+        if (this.isModelIntersected) {
+            // model is intersected : display helper at mouse position
+            this.helper.visible = true;
+            this.helper.position.copy(modelIntersect[0].point);
+        } else {
+            // model is not intersected : hide helper
+            this.helper.visible = false;
+        }
+    }
+
+    checkPointIntersection() {
+        const pointsIntersect = this.raycaster.intersectObjects(
+            this.pointsContainer.children,
+            true
+        );
+        const previousPointIntersected = this.pointIntersected;
+        if (pointsIntersect.length > 0) {
+            // a point is intersected : highlight it
+            this.pointIntersected = pointsIntersect[0].object.parent;
+            this.pointIntersected.children[0].material.color.setHex(0x00ff00);
+            if (this.pointIntersected.metadata.bind) {
+                this.pointIntersected.children[3].material.color.setHex(0x00ff00);
+            }
+            this.container3D.style.cursor = 'pointer';
+        } else {
+            // no point is intersected
+            this.pointIntersected = null;
+            this.container3D.style.cursor = 'default';
+        }
+        // un-highlight previously intersected point (if different from new one)
+        if (
+            previousPointIntersected &&
+            !previousPointIntersected.metadata.selected &&
+            (!this.pointIntersected ||
+                previousPointIntersected.metadata.id !== this.pointIntersected.metadata.id)
+        ) {
+            const color = previousPointIntersected.metadata.color || this.props.defaultPointColor;
+            const hexColor = strToHexColor(color);
+            previousPointIntersected.children[0].material.color.setHex(hexColor);
+            if (previousPointIntersected.metadata.bind) {
+                previousPointIntersected.children[3].material.color.setHex(hexColor);
             }
         }
     }
 
     onMouseDown() {
         if (this.props.addMode && this.isModelIntersected) {
-            this.props.onAddPoint(this.addPointHelper.position);
+            this.props.onAddPoint(this.helper.position);
             return;
         }
         if (this.props.bindMode) {
@@ -308,9 +311,9 @@ class InteractiveModel extends React.Component {
             this.draggedPoint = this.pointIntersected;
             this.draggedPoint.visible = false;
             // 3. show addPointHelper (this is the THREE object that is effectively dragged)
-            this.addPointHelper.position.copy(this.draggedPoint.position);
-            this.addPointHelper.material = selectedPointMaterial;
-            this.addPointHelper.visible = true;
+            this.helper.position.copy(this.draggedPoint.position);
+            this.helper.material.color.setHex(0x00ff00);
+            this.helper.visible = true;
         }
     }
 
@@ -319,17 +322,15 @@ class InteractiveModel extends React.Component {
             // stop dragging point
             if (this.isModelIntersected && this.didDrag) {
                 // a point was dragged : update it
-                this.props.onUpdatePoint(
-                    this.draggedPoint.metadata.id,
-                    this.addPointHelper.position
-                );
+                this.props.onUpdatePoint(this.draggedPoint.metadata.id, this.helper.position);
             } else {
                 // the point could not be placed : show it back
                 this.draggedPoint.visible = true;
             }
             // 1. hide back addPointHelper
-            this.addPointHelper.visible = false;
-            this.addPointHelper.material = pointMaterial;
+            this.helper.visible = false;
+            const hexColor = strToHexColor(this.props.defaultPointColor);
+            this.helper.material.color.setHex(hexColor);
             // 2. re-enable camera controls
             this.cameraControls.enabled = true;
             // 3. reset drag variables
@@ -357,6 +358,8 @@ InteractiveModel.propTypes = {
     onRemovePoint: PropTypes.func.isRequired,
     onSelectPoint: PropTypes.func.isRequired,
     onUpdatePoint: PropTypes.func.isRequired,
+    pointSize: PropTypes.number,
+    pointWeight: PropTypes.number,
     points: PropTypes.arrayOf(PropTypes.object),
     setPointsChangedHandler: PropTypes.func.isRequired,
     setResizeHandler: PropTypes.func.isRequired,

@@ -12,6 +12,8 @@ const {
     getBindMode,
     getDeleteMode,
     getDefaultPointColor,
+    getPointSize,
+    getPointWeight,
     shouldShowModelTexture,
     shouldRedraw3DPoints
 } = selectors;
@@ -37,7 +39,6 @@ class View3D extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.shouldRedraw3DPoints && this.handlePointsChanged) {
-            console.log('DRAW 3D POINTS, NB : ', nextProps.points.length);
             this.handlePointsChanged(nextProps.points);
         }
     }
@@ -80,6 +81,8 @@ class View3D extends React.Component {
                     bindMode={this.props.bindMode}
                     deleteMode={this.props.deleteMode}
                     defaultPointColor={this.props.defaultPointColor}
+                    pointSize={this.props.pointSize}
+                    pointWeight={this.props.pointWeight}
                     points={this.props.points}
                     onAddPoint={this.onAddPoint}
                     onSelectPoint={this.onSelectPoint}
@@ -98,6 +101,8 @@ View3D.propTypes = {
     defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
+    pointSize: PropTypes.number.isRequired,
+    pointWeight: PropTypes.number.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
     setPointsChangedHandler: PropTypes.func.isRequired,
     setResizeHandler: PropTypes.func.isRequired,
@@ -111,6 +116,8 @@ const ConnectedView3D = connect(store => {
         bindMode: getBindMode(store),
         defaultPointColor: getDefaultPointColor(store),
         deleteMode: getDeleteMode(store),
+        pointSize: getPointSize(store),
+        pointWeight: getPointWeight(store),
         points: get3DPoints(store),
         shouldShowModelTexture: shouldShowModelTexture(store),
         shouldRedraw3DPoints: shouldRedraw3DPoints(store)

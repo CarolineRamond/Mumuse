@@ -38,7 +38,6 @@ class View2D extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.shouldRedraw2DPoints && this.handlePointsChanged) {
-            console.log('DRAW 2D POINTS, NB : ', nextProps.points.length);
             this.handlePointsChanged();
         }
     }
