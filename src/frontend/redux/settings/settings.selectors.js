@@ -10,16 +10,28 @@ export const getDeleteMode = state => {
     return state.deleteMode;
 };
 
-export const getDefaultPointColor = state => {
-    return state.defaultPointColor;
+export const getDefaultPointColor2D = state => {
+    return state.defaultPointColor2D;
 };
 
-export const getPointSize = state => {
-    return state.pointSize;
+export const getPointSize2D = state => {
+    return state.pointSize2D;
 };
 
-export const getPointWeight = state => {
-    return state.pointWeight;
+export const getPointWeight2D = state => {
+    return state.pointWeight2D;
+};
+
+export const getDefaultPointColor3D = state => {
+    return state.defaultPointColor3D;
+};
+
+export const getPointSize3D = state => {
+    return state.pointSize3D;
+};
+
+export const getPointWeight3D = state => {
+    return state.pointWeight3D;
 };
 
 export const shouldShowModelTexture = state => {

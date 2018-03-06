@@ -3,5 +3,23 @@
 	height: 100%;
 	width: 100%;
 	box-sizing: border-box;
-	/*margin-left: -12px;*/
+}
+
+.view2DSettingsButton {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 10px;
+	z-index: 1;
+}
+
+.view2DSettings {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: rgba(0,0,0,0.4);
+	color: white;
+	width: 100%;
+	z-index: 0;
+	padding: 10px;
 }

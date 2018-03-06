@@ -2,6 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import { Button } from 'react-toolbox/lib/button';
+import FadeInComponent from '../../Common/AnimationComponents/FadeInComponent';
+import Settings3DPanel from './Settings3DPanel';
 import InteractiveModel from '../../Common/InteractiveModel';
 import styles from './view-3D.css';
 
@@ -11,9 +14,9 @@ const {
     getAddMode,
     getBindMode,
     getDeleteMode,
-    getDefaultPointColor,
-    getPointSize,
-    getPointWeight,
+    getDefaultPointColor3D,
+    getPointSize3D,
+    getPointWeight3D,
     shouldShowModelTexture,
     shouldRedraw3DPoints
 } = selectors;
@@ -28,6 +31,11 @@ class View3D extends React.Component {
         this.onUpdatePoint = this.onUpdatePoint.bind(this);
         this.onSelectPoint = this.onSelectPoint.bind(this);
         this.onRemovePoint = this.onRemovePoint.bind(this);
+        this.toggleSettings = this.toggleSettings.bind(this);
+
+        this.state = {
+            displaySettings: false
+        };
     }
 
     componentDidMount() {
@@ -65,11 +73,18 @@ class View3D extends React.Component {
         }
     }
 
+    toggleSettings() {
+        this.setState({
+            displaySettings: !this.state.displaySettings
+        });
+    }
+
     render() {
         return (
             <div className={styles.view3D}>
                 <InteractiveModel
-                    meshUrl="/public/mesh/amrit.json"
+                    // meshUrl="/public/mesh/amrit.json"
+                    meshUrl="/public/mesh/suzanne.json"
                     textureUrl="/public/textures/Amrit_002_u1_v1_8k.jpg"
                     setResizeHandler={resizeHandler => {
                         this.handleModelResize = resizeHandler;
@@ -90,6 +105,23 @@ class View3D extends React.Component {
                     onRemovePoint={this.onRemovePoint}
                     shouldShowTexture={this.props.shouldShowModelTexture}
                 />
+                <Button
+                    icon="settings"
+                    mini
+                    floating
+                    className={styles.view3DSettingsButton}
+                    onClick={this.toggleSettings}
+                />
+                <FadeInComponent
+                    className={styles.view3DSettings}
+                    display={this.state.displaySettings}
+                    transitionDuration={{
+                        enter: 200,
+                        exit: 200
+                    }}
+                >
+                    <Settings3DPanel />
+                </FadeInComponent>
             </div>
         );
     }
@@ -114,10 +146,10 @@ const ConnectedView3D = connect(store => {
     return {
         addMode: getAddMode(store),
         bindMode: getBindMode(store),
-        defaultPointColor: getDefaultPointColor(store),
+        defaultPointColor: getDefaultPointColor3D(store),
         deleteMode: getDeleteMode(store),
-        pointSize: getPointSize(store),
-        pointWeight: getPointWeight(store),
+        pointSize: getPointSize3D(store),
+        pointWeight: getPointWeight3D(store),
         points: get3DPoints(store),
         shouldShowModelTexture: shouldShowModelTexture(store),
         shouldRedraw3DPoints: shouldRedraw3DPoints(store)

@@ -2,6 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import { Button } from 'react-toolbox/lib/button';
+import FadeInComponent from '../../Common/AnimationComponents/FadeInComponent';
+import Settings2DPanel from './Settings2DPanel';
 import InteractiveImage from '../../Common/InteractiveImage';
 import styles from './view-2D.css';
 
@@ -11,9 +14,9 @@ const {
     getAddMode,
     getBindMode,
     getDeleteMode,
-    getDefaultPointColor,
-    getPointSize,
-    getPointWeight,
+    getDefaultPointColor2D,
+    getPointSize2D,
+    getPointWeight2D,
     shouldRedraw2DPoints
 } = selectors;
 const { add2DPoint, addBindingBuffer2D, update2DPoint, remove2DPoint } = actions;
@@ -27,6 +30,12 @@ class View2D extends React.Component {
         this.onUpdatePoint = this.onUpdatePoint.bind(this);
         this.onSelectPoint = this.onSelectPoint.bind(this);
         this.onRemovePoint = this.onRemovePoint.bind(this);
+
+        this.toggleSettings = this.toggleSettings.bind(this);
+
+        this.state = {
+            displaySettings: false
+        };
     }
 
     componentDidMount() {
@@ -62,6 +71,12 @@ class View2D extends React.Component {
         this.handleImageResize();
     }
 
+    toggleSettings() {
+        this.setState({
+            displaySettings: !this.state.displaySettings
+        });
+    }
+
     render() {
         return (
             <div className={styles.view2D}>
@@ -86,6 +101,23 @@ class View2D extends React.Component {
                     pointSize={this.props.pointSize}
                     pointWeight={this.props.pointWeight}
                 />
+                <Button
+                    icon="settings"
+                    mini
+                    floating
+                    className={styles.view2DSettingsButton}
+                    onClick={this.toggleSettings}
+                />
+                <FadeInComponent
+                    className={styles.view2DSettings}
+                    display={this.state.displaySettings}
+                    transitionDuration={{
+                        enter: 200,
+                        exit: 200
+                    }}
+                >
+                    <Settings2DPanel />
+                </FadeInComponent>
             </div>
         );
     }
@@ -110,11 +142,11 @@ const ConnectedView2D = connect(store => {
     return {
         addMode: getAddMode(store),
         bindMode: getBindMode(store),
-        defaultPointColor: getDefaultPointColor(store),
+        defaultPointColor: getDefaultPointColor2D(store),
         deleteMode: getDeleteMode(store),
-        pointSize: getPointSize(store),
+        pointSize: getPointSize2D(store),
         points: get2DPoints(store),
-        pointWeight: getPointWeight(store),
+        pointWeight: getPointWeight2D(store),
         shouldRedraw2DPoints: shouldRedraw2DPoints(store)
     };
 })(View2D);
