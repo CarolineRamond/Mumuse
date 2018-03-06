@@ -15,7 +15,8 @@ const reducer = (state = initialState, action) => {
             });
             const newBinding = {
                 pointId2D: action.payload.pointId2D,
-                pointId3D: action.payload.pointId3D
+                pointId3D: action.payload.pointId3D,
+                selected: false
             };
             return {
                 ...state,
@@ -46,8 +47,13 @@ const reducer = (state = initialState, action) => {
             const newList = state.list.filter(binding => {
                 return binding.pointId2D !== action.payload.pointId;
             });
+            let newBuffer2D = state.buffer2D;
+            if (action.payload.pointId === newBuffer2D.id) {
+                newBuffer2D = null;
+            }
             return {
                 ...state,
+                buffer2D: newBuffer2D,
                 list: newList
             };
         }
@@ -55,8 +61,13 @@ const reducer = (state = initialState, action) => {
             const newList = state.list.filter(binding => {
                 return binding.pointId3D !== action.payload.pointId;
             });
+            let newBuffer3D = state.buffer3D;
+            if (action.payload.pointId === newBuffer3D.id) {
+                newBuffer3D = null;
+            }
             return {
                 ...state,
+                buffer3D: newBuffer3D,
                 list: newList
             };
         }
@@ -70,6 +81,34 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 buffer3D: action.payload.point3D
+            };
+        }
+        case 'BINDING_SELECT_BY_2D':
+        case '2D_POINT_SELECT': {
+            const pointId2D = action.payload.pointId2D || action.payload.pointId;
+            const newList = state.list.map(binding => {
+                return {
+                    ...binding,
+                    selected: binding.pointId2D === pointId2D
+                };
+            });
+            return {
+                ...state,
+                list: newList
+            };
+        }
+        case 'BINDING_SELECT_BY_3D':
+        case '3D_POINT_SELECT': {
+            const pointId3D = action.payload.pointId3D || action.payload.pointId;
+            const newList = state.list.map(binding => {
+                return {
+                    ...binding,
+                    selected: binding.pointId3D === pointId3D
+                };
+            });
+            return {
+                ...state,
+                list: newList
             };
         }
         default:

@@ -23,7 +23,7 @@ export const getBindings = state => {
             point3D: state.present.points3D.list.find(item => {
                 return item.id === binding.pointId3D;
             }),
-            color: binding.color
+            selected: binding.selected
         };
     });
 };

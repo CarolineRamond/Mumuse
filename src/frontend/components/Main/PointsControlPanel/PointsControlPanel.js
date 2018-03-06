@@ -25,11 +25,14 @@ const {
 const {
     update2DPoint,
     remove2DPoint,
+    select2DPoint,
     update3DPoint,
     remove3DPoint,
+    select3DPoint,
     addBindingBuffer2D,
     addBindingBuffer3D,
     addBinding,
+    selectBindingBy2D,
     removeBindingBy2D,
     removeBindingBy3D,
     toggleAddMode,
@@ -47,8 +50,10 @@ class PointsControlPanel extends React.Component {
 
         this.onUpdate2DPoint = this.onUpdate2DPoint.bind(this);
         this.onRemove2DPoint = this.onRemove2DPoint.bind(this);
+        this.onSelect2DPoint = this.onSelect2DPoint.bind(this);
         this.onUpdate3DPoint = this.onUpdate3DPoint.bind(this);
         this.onRemove3DPoint = this.onRemove3DPoint.bind(this);
+        this.onSelect3DPoint = this.onSelect3DPoint.bind(this);
 
         this.onBind2DPoint = this.onBind2DPoint.bind(this);
         this.onBind3DPoint = this.onBind3DPoint.bind(this);
@@ -57,6 +62,7 @@ class PointsControlPanel extends React.Component {
 
         this.onAddBinding = this.onAddBinding.bind(this);
         this.onRemoveBinding = this.onRemoveBinding.bind(this);
+        this.onSelectBinding = this.onSelectBinding.bind(this);
 
         this.onToggleAddMode = this.onToggleAddMode.bind(this);
         this.onToggleBindMode = this.onToggleBindMode.bind(this);
@@ -79,12 +85,20 @@ class PointsControlPanel extends React.Component {
         this.props.dispatch(remove2DPoint(pointId));
     }
 
+    onSelect2DPoint(pointId) {
+        this.props.dispatch(select2DPoint(pointId));
+    }
+
     onUpdate3DPoint(pointId, params) {
         this.props.dispatch(update3DPoint(pointId, params));
     }
 
     onRemove3DPoint(pointId) {
         this.props.dispatch(remove3DPoint(pointId));
+    }
+
+    onSelect3DPoint(pointId) {
+        this.props.dispatch(select3DPoint(pointId));
     }
 
     onBind2DPoint(point) {
@@ -103,6 +117,10 @@ class PointsControlPanel extends React.Component {
 
     onRemoveBinding(binding) {
         this.props.dispatch(removeBindingBy2D(binding.point2D.id));
+    }
+
+    onSelectBinding(binding) {
+        this.props.dispatch(selectBindingBy2D(binding.point2D.id));
     }
 
     onUnbind2DPoint(point) {
@@ -133,6 +151,7 @@ class PointsControlPanel extends React.Component {
                     point={point}
                     onUpdatePoint={this.onUpdate2DPoint}
                     onRemovePoint={this.onRemove2DPoint}
+                    onSelectPoint={this.onSelect2DPoint}
                     onBindPoint={this.onBind2DPoint}
                     onUnbindPoint={this.onUnbind2DPoint}
                     defaultPointColor={this.props.defaultPointColor2D}
@@ -145,6 +164,7 @@ class PointsControlPanel extends React.Component {
                     key={index}
                     binding={binding}
                     onRemoveBinding={this.onRemoveBinding}
+                    onSelectBinding={this.onSelectBinding}
                 />
             );
         });
@@ -155,6 +175,7 @@ class PointsControlPanel extends React.Component {
                     point={point}
                     onUpdatePoint={this.onUpdate3DPoint}
                     onRemovePoint={this.onRemove3DPoint}
+                    onSelectPoint={this.onSelect3DPoint}
                     onBindPoint={this.onBind3DPoint}
                     onUnbindPoint={this.onUnbind3DPoint}
                     defaultPointColor={this.props.defaultPointColor3D}

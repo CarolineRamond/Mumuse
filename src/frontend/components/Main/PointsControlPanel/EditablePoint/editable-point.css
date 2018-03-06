@@ -5,6 +5,7 @@
     min-height: 65px;
     height: 65px;
     position: relative;
+    cursor: pointer;
 }
 
 .editablePoint:not(:last-child) {

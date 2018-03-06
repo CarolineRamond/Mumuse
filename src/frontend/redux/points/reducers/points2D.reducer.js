@@ -59,9 +59,15 @@ const reducer = (state = initialState, action) => {
                 shouldRedraw: true
             };
         }
-        case '2D_POINT_SELECT': {
+        case '2D_POINT_SELECT':
+        case 'BINDING_BUFFER_ADD_2D':
+        case 'BINDING_SELECT_BY_2D': {
+            const id =
+                action.payload.pointId ||
+                (action.payload.point2D && action.payload.point2D.id) ||
+                action.payload.pointId2D;
             const newList = state.list.map(point => {
-                if (point.id === action.payload.pointId) {
+                if (point.id === id) {
                     return {
                         ...point,
                         selected: true

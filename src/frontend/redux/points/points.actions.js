@@ -310,6 +310,50 @@ export const removeBindingBy3D = pointId3D => {
     };
 };
 
+/** Select a link between a 2d point and a 3d point using 2d point id.
+ * @param {Number} pointId2D - the id of the 2D point.
+ */
+export const selectBindingBy2D = pointId2D => {
+    return {
+        type: 'BINDING_SELECT_BY_2D',
+        payload: {
+            pointId2D: pointId2D
+        },
+        meta: {
+            validator: {
+                pointId2D: {
+                    func: _pointId2D => {
+                        return typeof _pointId2D === 'string';
+                    },
+                    msg: 'pointId2D must be a string'
+                }
+            }
+        }
+    };
+};
+
+/** Select a link between a 2d point and a 3d point using 3d point id.
+ * @param {Number} pointId3D - the id of the 3D point.
+ */
+export const selectBindingBy3D = pointId3D => {
+    return {
+        type: 'BINDING_SELECT_BY_3D',
+        payload: {
+            pointId3D: pointId3D
+        },
+        meta: {
+            validator: {
+                pointId3D: {
+                    func: _pointId3D => {
+                        return typeof _pointId3D === 'string';
+                    },
+                    msg: 'pointId3D must be a string'
+                }
+            }
+        }
+    };
+};
+
 export const addBindingBuffer2D = point2D => {
     return {
         type: 'BINDING_BUFFER_ADD_2D',

@@ -208,12 +208,7 @@ class InteractiveImage extends React.Component {
                 this.didDragImg = false;
                 return;
             }
-            if (this.props.bindMode) {
-                // handle point bind
-                this.props.onSelectPoint(this.pointIntersected);
-                return;
-            }
-            if (this.props.addMode && this.props.onAddPoint && this.mouseImageCoords) {
+            if (this.props.addMode && this.mouseImageCoords) {
                 // add point
                 this.props.onAddPoint(this.mouseImageCoords);
                 return;
@@ -249,6 +244,11 @@ class InteractiveImage extends React.Component {
                 }
                 this.draggedPoint = null;
                 this.didDragPoint = false;
+            }
+
+            // handle select point
+            if (!this.props.addMode && !this.props.deleteMode) {
+                this.props.onSelectPoint(this.pointIntersected);
             }
 
             // zoom if addMode is disabled & user was not dragging
@@ -422,14 +422,10 @@ class InteractiveImage extends React.Component {
                 if (this.draggedPoint && this.draggedPoint.id === point.id) {
                     pointCanvasCoords = this.draggedPoint;
                 }
-                let color = point.color || this.state.defaultPointColor;
-                if (
+                const color = point.color || this.state.defaultPointColor;
+                const shouldDisplayCircle =
                     (this.pointIntersected && point.id === this.pointIntersected.id) ||
-                    point.selected
-                ) {
-                    color = 'green';
-                }
-                const shouldDisplayCircle = point.bind !== null;
+                    point.selected;
                 this.drawPoint(pointCanvasCoords, color, shouldDisplayCircle);
             });
         }
@@ -569,8 +565,6 @@ class InteractiveImage extends React.Component {
 InteractiveImage.propTypes = {
     /** whether add point mode is active or not*/
     addMode: PropTypes.bool,
-    /** whether bind point mode is active or not*/
-    bindMode: PropTypes.bool,
     defaultPointColor: PropTypes.string,
     /** whether delete point mode is active or not*/
     deleteMode: PropTypes.bool,

@@ -20,7 +20,7 @@ const {
     shouldShowModelTexture,
     shouldRedraw3DPoints
 } = selectors;
-const { add3DPoint, addBindingBuffer3D, update3DPoint, remove3DPoint } = actions;
+const { add3DPoint, addBindingBuffer3D, select3DPoint, update3DPoint, remove3DPoint } = actions;
 
 class View3D extends React.Component {
     constructor(props) {
@@ -56,7 +56,12 @@ class View3D extends React.Component {
     }
 
     onSelectPoint(point) {
-        this.props.dispatch(addBindingBuffer3D(point));
+        if (this.props.bindMode) {
+            this.props.dispatch(addBindingBuffer3D(point));
+        } else {
+            const pointId = point ? point.id : null;
+            this.props.dispatch(select3DPoint(pointId));
+        }
     }
 
     onUpdatePoint(id, position) {
@@ -83,8 +88,8 @@ class View3D extends React.Component {
         return (
             <div className={styles.view3D}>
                 <InteractiveModel
-                    meshUrl="/public/mesh/amrit.json"
-                    // meshUrl="/public/mesh/suzanne.json"
+                    // meshUrl="/public/mesh/amrit.json"
+                    meshUrl="/public/mesh/suzanne.json"
                     textureUrl="/public/textures/Amrit_002_u1_v1_8k.jpg"
                     setResizeHandler={resizeHandler => {
                         this.handleModelResize = resizeHandler;
@@ -93,7 +98,6 @@ class View3D extends React.Component {
                         this.handlePointsChanged = pointsChangedHandler;
                     }}
                     addMode={this.props.addMode}
-                    bindMode={this.props.bindMode}
                     deleteMode={this.props.deleteMode}
                     defaultPointColor={this.props.defaultPointColor}
                     pointSize={this.props.pointSize}

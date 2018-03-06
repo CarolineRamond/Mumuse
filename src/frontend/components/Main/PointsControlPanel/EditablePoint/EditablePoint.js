@@ -17,6 +17,7 @@ class EditablePoint extends React.Component {
         this.onChangeName = this.onChangeName.bind(this);
         this.updateColor = this.updateColor.bind(this);
         this.updateName = this.updateName.bind(this);
+        this.selectPoint = this.selectPoint.bind(this);
         this.removePoint = this.removePoint.bind(this);
         this.toggleBind = this.toggleBind.bind(this);
 
@@ -59,6 +60,10 @@ class EditablePoint extends React.Component {
         }
     }
 
+    selectPoint() {
+        this.props.onSelectPoint(this.props.point.id);
+    }
+
     removePoint() {
         this.props.onRemovePoint(this.props.point.id);
     }
@@ -73,7 +78,13 @@ class EditablePoint extends React.Component {
 
     render() {
         return (
-            <div className={styles.editablePoint}>
+            <div
+                className={styles.editablePoint}
+                style={{
+                    backgroundColor: this.props.point.selected ? '#AAA' : 'white'
+                }}
+                onClick={this.selectPoint}
+            >
                 {/* color picker toggle */}
                 <div
                     className={styles.colorButton}
@@ -136,13 +147,15 @@ EditablePoint.propTypes = {
     defaultPointColor: PropTypes.string.isRequired,
     onBindPoint: PropTypes.func.isRequired,
     onRemovePoint: PropTypes.func.isRequired,
+    onSelectPoint: PropTypes.func.isRequired,
     onUnbindPoint: PropTypes.func.isRequired,
     onUpdatePoint: PropTypes.func.isRequired,
     point: PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         color: PropTypes.string,
-        bind: PropTypes.string
+        bind: PropTypes.string,
+        selected: PropTypes.bool
     }).isRequired
 };
 

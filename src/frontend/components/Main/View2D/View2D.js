@@ -19,7 +19,7 @@ const {
     getPointWeight2D,
     shouldRedraw2DPoints
 } = selectors;
-const { add2DPoint, addBindingBuffer2D, update2DPoint, remove2DPoint } = actions;
+const { add2DPoint, addBindingBuffer2D, select2DPoint, update2DPoint, remove2DPoint } = actions;
 
 class View2D extends React.Component {
     constructor(props) {
@@ -56,7 +56,12 @@ class View2D extends React.Component {
     }
 
     onSelectPoint(point) {
-        this.props.dispatch(addBindingBuffer2D(point));
+        if (this.props.bindMode) {
+            this.props.dispatch(addBindingBuffer2D(point));
+        } else {
+            const pointId = point ? point.id : null;
+            this.props.dispatch(select2DPoint(pointId));
+        }
     }
 
     onUpdatePoint(id, position) {
@@ -90,7 +95,6 @@ class View2D extends React.Component {
                         this.handlePointsChanged = pointsChangedHandler;
                     }}
                     addMode={this.props.addMode}
-                    bindMode={this.props.bindMode}
                     deleteMode={this.props.deleteMode}
                     points={this.props.points}
                     onAddPoint={this.onAddPoint}

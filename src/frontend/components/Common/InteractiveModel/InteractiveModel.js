@@ -200,7 +200,7 @@ class InteractiveModel extends React.Component {
             const sphereMaterial = new THREE.MeshBasicMaterial({
                 color: color,
                 transparent: true,
-                opacity: point.bind ? 0.4 : 0
+                opacity: point.selected ? 0.4 : 0
             });
             const sphereGeometry = new THREE.SphereGeometry(this.props.pointSize / 100 / 2, 8, 8);
             const cylinder1 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
@@ -271,8 +271,7 @@ class InteractiveModel extends React.Component {
         if (pointsIntersect.length > 0) {
             // a point is intersected : highlight it
             this.pointIntersected = pointsIntersect[0].object.parent;
-            this.pointIntersected.children[0].material.color.setHex(0x00ff00);
-            this.pointIntersected.children[3].material.color.setHex(0x00ff00);
+            this.pointIntersected.children[3].material.opacity = 0.4;
             this.container3D.style.cursor = 'pointer';
         } else {
             // no point is intersected
@@ -286,20 +285,13 @@ class InteractiveModel extends React.Component {
             (!this.pointIntersected ||
                 previousPointIntersected.metadata.id !== this.pointIntersected.metadata.id)
         ) {
-            const color = previousPointIntersected.metadata.color || this.props.defaultPointColor;
-            const hexColor = strToHexColor(color);
-            previousPointIntersected.children[0].material.color.setHex(hexColor);
-            previousPointIntersected.children[3].material.color.setHex(hexColor);
+            previousPointIntersected.children[3].material.opacity = 0;
         }
     }
 
     onMouseDown() {
         if (this.props.addMode && this.isModelIntersected) {
             this.props.onAddPoint(this.helper.position);
-            return;
-        }
-        if (this.props.bindMode) {
-            this.props.onSelectPoint(this.pointIntersected.metadata);
             return;
         }
         if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
@@ -312,7 +304,6 @@ class InteractiveModel extends React.Component {
             this.draggedPoint.visible = false;
             // 3. show addPointHelper (this is the THREE object that is effectively dragged)
             this.helper.position.copy(this.draggedPoint.position);
-            this.helper.material.color.setHex(0x00ff00);
             this.helper.visible = true;
         }
     }
@@ -329,8 +320,6 @@ class InteractiveModel extends React.Component {
             }
             // 1. hide back addPointHelper
             this.helper.visible = false;
-            const hexColor = strToHexColor(this.props.defaultPointColor);
-            this.helper.material.color.setHex(hexColor);
             // 2. re-enable camera controls
             this.cameraControls.enabled = true;
             // 3. reset drag variables
@@ -340,6 +329,9 @@ class InteractiveModel extends React.Component {
         if (this.pointIntersected && this.props.deleteMode) {
             // a point was clicked in delete mote : remote it
             this.props.onRemovePoint(this.pointIntersected.metadata.id);
+        }
+        if (!this.props.addMode && !this.props.deleteMode) {
+            this.props.onSelectPoint(this.pointIntersected ? this.pointIntersected.metadata : null);
         }
     }
 
@@ -359,7 +351,6 @@ class InteractiveModel extends React.Component {
 
 InteractiveModel.propTypes = {
     addMode: PropTypes.bool,
-    bindMode: PropTypes.bool,
     defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
     meshUrl: PropTypes.string.isRequired,
