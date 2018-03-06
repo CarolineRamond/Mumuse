@@ -65,9 +65,7 @@ class InteractiveModel extends React.Component {
             this.pointsContainer.children.map(point => {
                 if (!point.metadata.color) {
                     point.children[0].material.color.setHex(hexColor);
-                    if (point.metadata.bind) {
-                        point.children[3].material.color.setHex(hexColor);
-                    }
+                    point.children[3].material.color.setHex(hexColor);
                 }
             });
         }
@@ -180,37 +178,31 @@ class InteractiveModel extends React.Component {
         // add new points
         points.map(point => {
             const color = point.color || this.props.defaultPointColor;
-            const material = new THREE.MeshBasicMaterial({ color: color });
-            const geometry = new THREE.CylinderGeometry(
+            const cylinderMaterial = new THREE.MeshBasicMaterial({ color: color });
+            const cylinderGeometry = new THREE.CylinderGeometry(
                 this.props.pointWeight / 400,
                 this.props.pointWeight / 400,
                 this.props.pointSize / 100,
                 8
             );
-            const cylinder1 = new THREE.Mesh(geometry, material);
-            const cylinder2 = new THREE.Mesh(geometry, material);
-            const cylinder3 = new THREE.Mesh(geometry, material);
+            const sphereMaterial = new THREE.MeshBasicMaterial({
+                color: color,
+                transparent: true,
+                opacity: point.bind ? 0.4 : 0
+            });
+            const sphereGeometry = new THREE.SphereGeometry(this.props.pointSize / 100 / 2, 8, 8);
+            const cylinder1 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+            const cylinder2 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+            const cylinder3 = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
             cylinder2.rotateX(Math.PI / 2);
             cylinder3.rotateZ(Math.PI / 2);
+
             const newPoint = new THREE.Object3D();
             newPoint.add(cylinder1);
             newPoint.add(cylinder2);
             newPoint.add(cylinder3);
-
-            if (point.bind) {
-                const sphereMaterial = new THREE.MeshBasicMaterial({
-                    color: color,
-                    transparent: true,
-                    opacity: 0.4
-                });
-                const sphereGeometry = new THREE.SphereGeometry(
-                    this.props.pointSize / 100 / 2,
-                    8,
-                    8
-                );
-                const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-                newPoint.add(sphere);
-            }
+            newPoint.add(sphere);
 
             newPoint.position.set(point.x, point.y, point.z);
             newPoint.metadata = point;
@@ -268,9 +260,7 @@ class InteractiveModel extends React.Component {
             // a point is intersected : highlight it
             this.pointIntersected = pointsIntersect[0].object.parent;
             this.pointIntersected.children[0].material.color.setHex(0x00ff00);
-            if (this.pointIntersected.metadata.bind) {
-                this.pointIntersected.children[3].material.color.setHex(0x00ff00);
-            }
+            this.pointIntersected.children[3].material.color.setHex(0x00ff00);
             this.container3D.style.cursor = 'pointer';
         } else {
             // no point is intersected
@@ -287,9 +277,7 @@ class InteractiveModel extends React.Component {
             const color = previousPointIntersected.metadata.color || this.props.defaultPointColor;
             const hexColor = strToHexColor(color);
             previousPointIntersected.children[0].material.color.setHex(hexColor);
-            if (previousPointIntersected.metadata.bind) {
-                previousPointIntersected.children[3].material.color.setHex(hexColor);
-            }
+            previousPointIntersected.children[3].material.color.setHex(hexColor);
         }
     }
 

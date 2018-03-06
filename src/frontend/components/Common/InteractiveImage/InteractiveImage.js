@@ -441,28 +441,16 @@ class InteractiveImage extends React.Component {
         const pointSize = this.state.pointSize;
         const pointWeight = this.state.pointWeight;
 
-        // gradient
-        const grd = context.createRadialGradient(X + 2, Y + 2, 0, X + 2, Y + 2, pointSize);
-        grd.addColorStop(0, 'rgba(0,0,0,0.3)');
-        grd.addColorStop(1, 'transparent');
-        context.fillStyle = grd;
-        context.fillRect(X + 2 - pointSize, Y + 2 - pointSize, pointSize * 2, pointSize * 2);
+        // circle
+        if (shouldDisplayCircle) {
+            context.globalAlpha = 0.4;
+            context.fillStyle = color;
+            context.beginPath();
+            context.arc(X, Y, pointSize / 2, 0, 2 * Math.PI);
+            context.fill();
+        }
 
-        // shadow vertical bar, black
-        context.lineWidth = pointWeight;
-        context.strokeStyle = 'rgba(0,0,0,0.3)';
-        context.beginPath();
-        context.moveTo(X + 0.5, Y - pointSize / 2 + 0.5);
-        context.lineTo(X + 0.5, Y + pointSize / 2 + 0.5);
-        context.stroke();
-
-        // shadow horizontal bar, black
-        context.lineWidth = pointWeight;
-        context.strokeStyle = 'rgba(0,0,0,0.3)';
-        context.beginPath();
-        context.moveTo(X - pointSize / 2 + 0.5, Y + 0.5);
-        context.lineTo(X + pointSize / 2 + 0.5, Y + 0.5);
-        context.stroke();
+        context.globalAlpha = 1;
 
         // point vertical bar, colored
         context.lineWidth = pointWeight;
@@ -479,15 +467,6 @@ class InteractiveImage extends React.Component {
         context.moveTo(X - pointSize / 2, Y);
         context.lineTo(X + pointSize / 2, Y);
         context.stroke();
-
-        // circle
-        if (shouldDisplayCircle) {
-            context.lineWidth = pointWeight;
-            context.strokeStyle = color;
-            context.beginPath();
-            context.arc(X, Y, pointSize, 0, 2 * Math.PI);
-            context.stroke();
-        }
     }
 
     // Adds ctx.getTransform() - returns an SVGMatrix
@@ -612,9 +591,9 @@ InteractiveImage.propTypes = {
     /** update point function */
     onUpdatePoint: PropTypes.func,
     pointSize: PropTypes.number,
+    pointWeight: PropTypes.number,
     /** list of points to draw on the image (with coords relative to image center)*/
     points: PropTypes.arrayOf(PropTypes.object),
-    pointWeight: PropTypes.number,
     /** the orientation of the canvas (0,1,2 or 3)*/
     quarter: PropTypes.number,
     /** whether an animation is on going : if so, canvas should resize on requestAnimationFrame
