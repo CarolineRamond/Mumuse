@@ -8,7 +8,10 @@ export const initialState = {
     defaultPointColor3D: '#FCDC00',
     pointSize3D: 10,
     pointWeight3D: 1,
-    showModelTexture: true
+    showModelTexture: true,
+    imageUrl: '/public/img/amrit_01.jpg',
+    meshUrl: '/public/mesh/suzanne.json',
+    textureUrl: '/public/textures/Amrit_002_u1_v1_8k.jpg'
 };
 
 const reducer = (state = initialState, action) => {
@@ -85,6 +88,24 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 showModelTexture: !state.showModelTexture
+            };
+        }
+        case 'SETTINGS_CHANGE_IMAGE_URL': {
+            return {
+                ...state,
+                imageUrl: action.payload.url
+            };
+        }
+        case 'SETTINGS_CHANGE_MESH_URL': {
+            return {
+                ...state,
+                meshUrl: action.payload.url
+            };
+        }
+        case 'SETTINGS_CHANGE_TEXTURE_URL': {
+            return {
+                ...state,
+                textureUrl: action.payload.url
             };
         }
         default: {

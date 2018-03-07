@@ -7,7 +7,12 @@ import { CompactPicker } from 'react-color';
 
 import { actions, selectors } from '../../../../redux';
 const { getDefaultPointColor2D, getPointSize2D, getPointWeight2D } = selectors;
-const { updateDefaultPointColor2D, updatePointSize2D, updatePointWeight2D } = actions;
+const {
+    updateDefaultPointColor2D,
+    updatePointSize2D,
+    updatePointWeight2D,
+    changeImageUrl
+} = actions;
 
 import styles from './settings-2d-panel.css';
 
@@ -39,8 +44,13 @@ class Settings2DPanel extends React.Component {
     }
 
     onFileChange(e) {
-        console.log('IMAGE FILE CHANGED');
-        // this.props.dispatch(uploadMedias(event.target.files));
+        const file = e.target.files[0];
+        if (file.type.match('image.*')) {
+            const url = URL.createObjectURL(file);
+            this.props.dispatch(changeImageUrl(url));
+        } else {
+            console.log('BAD FILE FORMAT');
+        }
     }
 
     togglePicker() {

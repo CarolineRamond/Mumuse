@@ -141,3 +141,60 @@ export const toggleModelTexture = () => {
         type: 'SETTINGS_TOGGLE_MODEL_TEXTURE'
     };
 };
+
+export const changeImageUrl = url => {
+    return {
+        type: 'SETTINGS_CHANGE_IMAGE_URL',
+        payload: {
+            url: url
+        },
+        meta: {
+            validator: {
+                url: {
+                    func: _url => {
+                        return typeof _url === 'string';
+                    },
+                    msg: 'url must be a string'
+                }
+            }
+        }
+    };
+};
+
+export const changeMeshUrl = url => {
+    return {
+        type: 'SETTINGS_CHANGE_MESH_URL',
+        payload: {
+            url: url
+        },
+        meta: {
+            validator: {
+                url: {
+                    func: _url => {
+                        return typeof _url === 'string';
+                    },
+                    msg: 'url must be a string'
+                }
+            }
+        }
+    };
+};
+
+export const changeTextureUrl = url => {
+    return {
+        type: 'SETTINGS_CHANGE_TEXTURE_URL',
+        payload: {
+            url: url
+        },
+        meta: {
+            validator: {
+                url: {
+                    func: _url => {
+                        return typeof _url === 'string';
+                    },
+                    msg: 'url must be a string'
+                }
+            }
+        }
+    };
+};

@@ -17,6 +17,8 @@ const {
     getDefaultPointColor3D,
     getPointSize3D,
     getPointWeight3D,
+    getMeshUrl,
+    getTextureUrl,
     shouldShowModelTexture,
     shouldRedraw3DPoints
 } = selectors;
@@ -88,9 +90,8 @@ class View3D extends React.Component {
         return (
             <div className={styles.view3D}>
                 <InteractiveModel
-                    // meshUrl="/public/mesh/amrit.json"
-                    meshUrl="/public/mesh/suzanne.json"
-                    textureUrl="/public/textures/Amrit_002_u1_v1_8k.jpg"
+                    meshUrl={this.props.meshUrl}
+                    textureUrl={this.props.textureUrl}
                     setResizeHandler={resizeHandler => {
                         this.handleModelResize = resizeHandler;
                     }}
@@ -137,13 +138,15 @@ View3D.propTypes = {
     defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
+    meshUrl: PropTypes.string,
     pointSize: PropTypes.number.isRequired,
     pointWeight: PropTypes.number.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
     setPointsChangedHandler: PropTypes.func.isRequired,
     setResizeHandler: PropTypes.func.isRequired,
     shouldRedraw3DPoints: PropTypes.bool,
-    shouldShowModelTexture: PropTypes.bool
+    shouldShowModelTexture: PropTypes.bool,
+    textureUrl: PropTypes.string
 };
 
 const ConnectedView3D = connect(store => {
@@ -152,11 +155,13 @@ const ConnectedView3D = connect(store => {
         bindMode: getBindMode(store),
         defaultPointColor: getDefaultPointColor3D(store),
         deleteMode: getDeleteMode(store),
+        meshUrl: getMeshUrl(store),
         pointSize: getPointSize3D(store),
         pointWeight: getPointWeight3D(store),
         points: get3DPoints(store),
         shouldShowModelTexture: shouldShowModelTexture(store),
-        shouldRedraw3DPoints: shouldRedraw3DPoints(store)
+        shouldRedraw3DPoints: shouldRedraw3DPoints(store),
+        textureUrl: getTextureUrl(store)
     };
 })(View3D);
 

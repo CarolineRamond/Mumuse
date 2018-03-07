@@ -15,6 +15,7 @@ const {
     getBindMode,
     getDeleteMode,
     getDefaultPointColor2D,
+    getImageUrl,
     getPointSize2D,
     getPointWeight2D,
     shouldRedraw2DPoints
@@ -87,7 +88,7 @@ class View2D extends React.Component {
             <div className={styles.view2D}>
                 <InteractiveImage
                     interactive
-                    mediaUrl="/public/img/amrit_01.jpg"
+                    mediaUrl={this.props.imgUrl}
                     setResizeHandler={resizeHandler => {
                         this.handleImageResize = resizeHandler;
                     }}
@@ -134,6 +135,7 @@ View2D.propTypes = {
     deleteMode: PropTypes.bool,
     didPointsChange: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
+    imgUrl: PropTypes.string,
     pointSize: PropTypes.number.isRequired,
     pointWeight: PropTypes.number.isRequired,
     points: PropTypes.arrayOf(PropTypes.object),
@@ -148,6 +150,7 @@ const ConnectedView2D = connect(store => {
         bindMode: getBindMode(store),
         defaultPointColor: getDefaultPointColor2D(store),
         deleteMode: getDeleteMode(store),
+        imgUrl: getImageUrl(store),
         pointSize: getPointSize2D(store),
         points: get2DPoints(store),
         pointWeight: getPointWeight2D(store),

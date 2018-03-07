@@ -37,3 +37,15 @@ export const getPointWeight3D = state => {
 export const shouldShowModelTexture = state => {
     return state.showModelTexture;
 };
+
+export const getImageUrl = state => {
+    return state.imageUrl;
+};
+
+export const getMeshUrl = state => {
+    return state.meshUrl;
+};
+
+export const getTextureUrl = state => {
+    return state.textureUrl;
+};

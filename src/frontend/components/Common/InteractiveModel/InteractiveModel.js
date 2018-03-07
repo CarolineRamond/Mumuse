@@ -50,6 +50,16 @@ class InteractiveModel extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        // change mesh url
+        if (nextProps.meshUrl !== this.props.meshUrl) {
+            this.reloadMesh(nextProps.meshUrl);
+        }
+
+        // change texture url
+        if (nextProps.textureUrl !== this.props.textureUrl) {
+            this.reloadTexture(nextProps.textureUrl);
+        }
+
         // switch off addMode : hide addpoint helper & update cursor
         if (this.props.addMode && !nextProps.addMode) {
             this.container3D.style.cursor = 'default';
@@ -187,6 +197,33 @@ class InteractiveModel extends React.Component {
         this.animate();
     }
 
+    reloadMesh(meshUrl) {
+        this.setState(
+            {
+                loading: true
+            },
+            () => {
+                const loader = new THREE.JSONLoader();
+                loader.load(meshUrl, geometry => {
+                    this.mesh.geometry = geometry;
+                    this.setState({
+                        loading: false
+                    });
+                });
+            }
+        );
+    }
+
+    reloadTexture(textureUrl) {
+        const textureLoader = new THREE.TextureLoader();
+        this.textureMaterial = new THREE.MeshPhongMaterial({
+            map: textureLoader.load(textureUrl)
+        });
+        if (this.props.shouldShowTexture) {
+            this.mesh.material = this.textureMaterial;
+        }
+    }
+
     redrawPoints(points) {
         // remove previously drawn points
         for (let i = this.pointsContainer.children.length - 1; i >= 0; i--) {
@@ -237,15 +274,13 @@ class InteractiveModel extends React.Component {
     }
 
     onMouseMove(e) {
-        // Calculate mouse position in normalized device coordinates (-1 to +1) for both components
+        this.didDrag = true;
         const rect = this.container3D.getBoundingClientRect();
         this.mouse.x = (e.clientX - rect.left) / (rect.right - rect.left) * 2 - 1;
         this.mouse.y = -((e.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
-
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
         if (this.props.addMode || this.draggedPoint) {
-            this.didDrag = true;
             this.checkModelIntersection();
         } else {
             // else, bind/delete/update mode is on : find points intersecting the picking ray
@@ -299,8 +334,8 @@ class InteractiveModel extends React.Component {
             this.props.onAddPoint(this.helper.position);
             return;
         }
+        this.didDrag = false;
         if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
-            this.didDrag = false;
             // start dragging a point
             // 1. disable controls
             this.cameraControls.enabled = false;
@@ -335,7 +370,8 @@ class InteractiveModel extends React.Component {
             // a point was clicked in delete mote : remote it
             this.props.onRemovePoint(this.pointIntersected.metadata.id);
         }
-        if (!this.props.addMode && !this.props.deleteMode) {
+        // select point on click
+        if (!this.props.addMode && !this.props.deleteMode && !this.didDrag) {
             this.props.onSelectPoint(this.pointIntersected ? this.pointIntersected.metadata : null);
         }
     }

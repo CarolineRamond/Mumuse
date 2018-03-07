@@ -17,7 +17,9 @@ const {
     updateDefaultPointColor3D,
     updatePointSize3D,
     updatePointWeight3D,
-    toggleModelTexture
+    toggleModelTexture,
+    changeMeshUrl,
+    changeTextureUrl
 } = actions;
 
 import styles from './settings-3d-panel.css';
@@ -55,12 +57,24 @@ class Settings3DPanel extends React.Component {
         this.props.dispatch(toggleModelTexture());
     }
 
-    onMeshFileChange() {
-        console.log('MESH FILE CHANGED');
+    onMeshFileChange(e) {
+        console.log('MESH FILE CHANGE');
+        const file = e.target.files[0];
+        console.log(file);
+        // if (file.type.match('json.*')) {
+        const url = URL.createObjectURL(file);
+        this.props.dispatch(changeMeshUrl(url));
+        // }
     }
 
-    onTextureFileChange() {
-        console.log('TEXTURE FILE CHANGED');
+    onTextureFileChange(e) {
+        const file = e.target.files[0];
+        if (file.type.match('image.*')) {
+            const url = URL.createObjectURL(file);
+            this.props.dispatch(changeTextureUrl(url));
+        } else {
+            console.log('BAD FILE FORMAT');
+        }
     }
 
     togglePicker() {
