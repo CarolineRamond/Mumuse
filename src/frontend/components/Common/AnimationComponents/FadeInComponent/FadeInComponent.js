@@ -4,22 +4,24 @@ import Transition from 'react-transition-group/Transition';
 
 const FadeInComponent = props => {
     const defaultStyle = {
-        opacity: 0
+        opacity: 0,
+        pointerEvents: 'none'
     };
 
     const activeStyle = {
-        opacity: 1
+        opacity: 1,
+        pointerEvents: 'auto'
     };
 
     const transitionStyles = {
         entering: {
             ...activeStyle,
-            transition: `all ${props.transitionDuration.enter}ms linear`
+            transition: `opacity ${props.transitionDuration.enter}ms linear`
         },
         entered: activeStyle,
         exiting: {
             ...defaultStyle,
-            transition: `all ${props.transitionDuration.exit}ms linear`
+            transition: `opacity ${props.transitionDuration.exit}ms linear`
         },
         exited: defaultStyle
     };

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Slider from 'react-toolbox/lib/slider';
+import FileInput from '../../../Common/FileInput';
 import Switch from 'react-toolbox/lib/switch';
 import { CompactPicker } from 'react-color';
 
@@ -29,6 +30,8 @@ class Settings3DPanel extends React.Component {
         this.onUpdatePointSize = this.onUpdatePointSize.bind(this);
         this.onUpdatePointWeight = this.onUpdatePointWeight.bind(this);
         this.onToggleModelTexture = this.onToggleModelTexture.bind(this);
+        this.onMeshFileChange = this.onMeshFileChange.bind(this);
+        this.onTextureFileChange = this.onTextureFileChange.bind(this);
         this.togglePicker = this.togglePicker.bind(this);
 
         this.state = {
@@ -50,6 +53,14 @@ class Settings3DPanel extends React.Component {
 
     onToggleModelTexture() {
         this.props.dispatch(toggleModelTexture());
+    }
+
+    onMeshFileChange() {
+        console.log('MESH FILE CHANGED');
+    }
+
+    onTextureFileChange() {
+        console.log('TEXTURE FILE CHANGED');
     }
 
     togglePicker() {
@@ -149,6 +160,10 @@ class Settings3DPanel extends React.Component {
                     label="Show model texture"
                     onChange={this.onToggleModelTexture}
                 />
+                {/* change mesh button */}
+                <FileInput onChange={this.onMeshFileChange} label="Change mesh file..." />
+                {/* change texture button */}
+                <FileInput onChange={this.onTextureFileChange} label="Change texture file..." />
             </div>
         );
     }

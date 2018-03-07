@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Slider from 'react-toolbox/lib/slider';
+import FileInput from '../../../Common/FileInput';
 import { CompactPicker } from 'react-color';
 
 import { actions, selectors } from '../../../../redux';
@@ -17,6 +18,7 @@ class Settings2DPanel extends React.Component {
         this.onUpdateDefaultPointColor = this.onUpdateDefaultPointColor.bind(this);
         this.onUpdatePointSize = this.onUpdatePointSize.bind(this);
         this.onUpdatePointWeight = this.onUpdatePointWeight.bind(this);
+        this.onFileChange = this.onFileChange.bind(this);
         this.togglePicker = this.togglePicker.bind(this);
 
         this.state = {
@@ -34,6 +36,11 @@ class Settings2DPanel extends React.Component {
 
     onUpdatePointWeight(pointWeight) {
         this.props.dispatch(updatePointWeight2D(pointWeight));
+    }
+
+    onFileChange(e) {
+        console.log('IMAGE FILE CHANGED');
+        // this.props.dispatch(uploadMedias(event.target.files));
     }
 
     togglePicker() {
@@ -124,6 +131,8 @@ class Settings2DPanel extends React.Component {
                         max={20}
                     />
                 </div>
+                {/* change file button */}
+                <FileInput onChange={this.onFileChange} label="Change image file..." />
             </div>
         );
     }
