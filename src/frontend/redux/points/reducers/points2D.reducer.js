@@ -61,10 +61,10 @@ const reducer = (state = initialState, action) => {
         }
         case '2D_POINT_SELECT':
         case 'BINDING_BUFFER_ADD_2D':
-        case 'BINDING_SELECT_BY_2D': {
+        case 'BINDING_SELECT': {
             const id =
                 action.payload.pointId ||
-                (action.payload.point2D && action.payload.point2D.id) ||
+                (action.payload.point && action.payload.point.id) ||
                 action.payload.pointId2D;
             const newList = state.list.map(point => {
                 if (point.id === id) {
@@ -109,7 +109,7 @@ const reducer = (state = initialState, action) => {
         }
         case 'BINDING_REMOVE_BY_2D': {
             const newList = state.list.map(point => {
-                if (point.id === action.payload.pointId2D) {
+                if (point.id === action.payload.pointId) {
                     return {
                         ...point,
                         bind: null
@@ -126,7 +126,7 @@ const reducer = (state = initialState, action) => {
         }
         case 'BINDING_REMOVE_BY_3D': {
             const newList = state.list.map(point => {
-                if (point.bind === action.payload.pointId3D) {
+                if (point.bind === action.payload.pointId) {
                     return {
                         ...point,
                         bind: null
@@ -182,6 +182,19 @@ const reducer = (state = initialState, action) => {
             } else {
                 return defaultReducer(state);
             }
+        }
+        case '3D_POINT_SELECT': {
+            const newList = state.list.map(point => {
+                return {
+                    ...point,
+                    selected: point.bind === action.payload.pointId && point.bind !== null
+                };
+            });
+            return {
+                ...state,
+                list: newList,
+                shouldRedraw: true
+            };
         }
         default:
             return defaultReducer(state);

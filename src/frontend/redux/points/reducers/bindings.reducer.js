@@ -27,7 +27,7 @@ const reducer = (state = initialState, action) => {
         }
         case 'BINDING_REMOVE_BY_2D': {
             const newList = state.list.filter(binding => {
-                return binding.pointId2D !== action.payload.pointId2D;
+                return binding.pointId2D !== action.payload.pointId;
             });
             return {
                 ...state,
@@ -36,7 +36,7 @@ const reducer = (state = initialState, action) => {
         }
         case 'BINDING_REMOVE_BY_3D': {
             const newList = state.list.filter(binding => {
-                return binding.pointId3D !== action.payload.pointId3D;
+                return binding.pointId3D !== action.payload.pointId;
             });
             return {
                 ...state,
@@ -74,16 +74,16 @@ const reducer = (state = initialState, action) => {
         case 'BINDING_BUFFER_ADD_2D': {
             return {
                 ...state,
-                buffer2D: action.payload.point2D
+                buffer2D: action.payload.point
             };
         }
         case 'BINDING_BUFFER_ADD_3D': {
             return {
                 ...state,
-                buffer3D: action.payload.point3D
+                buffer3D: action.payload.point
             };
         }
-        case 'BINDING_SELECT_BY_2D':
+        case 'BINDING_SELECT':
         case '2D_POINT_SELECT': {
             const pointId2D = action.payload.pointId2D || action.payload.pointId;
             const newList = state.list.map(binding => {
@@ -97,7 +97,6 @@ const reducer = (state = initialState, action) => {
                 list: newList
             };
         }
-        case 'BINDING_SELECT_BY_3D':
         case '3D_POINT_SELECT': {
             const pointId3D = action.payload.pointId3D || action.payload.pointId;
             const newList = state.list.map(binding => {

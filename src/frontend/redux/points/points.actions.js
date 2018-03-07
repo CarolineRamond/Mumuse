@@ -267,21 +267,21 @@ export const addBinding = (pointId2D, pointId3D) => {
 };
 
 /** Remove a link between a 2d point and a 3d point using 2d point id.
- * @param {Number} pointId2D - the id of the 2D point.
+ * @param {Number} pointId - the id of the 2D point.
  */
-export const removeBindingBy2D = pointId2D => {
+export const removeBindingBy2D = pointId => {
     return {
         type: 'BINDING_REMOVE_BY_2D',
         payload: {
-            pointId2D: pointId2D
+            pointId: pointId
         },
         meta: {
             validator: {
-                pointId2D: {
-                    func: _pointId2D => {
-                        return typeof _pointId2D === 'string';
+                pointId: {
+                    func: _pointId => {
+                        return typeof _pointId === 'string';
                     },
-                    msg: 'pointId2D must be a string'
+                    msg: 'pointId must be a string'
                 }
             }
         }
@@ -289,21 +289,21 @@ export const removeBindingBy2D = pointId2D => {
 };
 
 /** Remove a link between a 2d point and a 3d point using 3d point id.
- * @param {Number} pointId3D - the id of the 3D point.
+ * @param {Number} pointId - the id of the 3D point.
  */
-export const removeBindingBy3D = pointId3D => {
+export const removeBindingBy3D = pointId => {
     return {
         type: 'BINDING_REMOVE_BY_3D',
         payload: {
-            pointId3D: pointId3D
+            pointId: pointId
         },
         meta: {
             validator: {
-                pointId3D: {
-                    func: _pointId3D => {
-                        return typeof _pointId3D === 'string';
+                pointId: {
+                    func: _pointId => {
+                        return typeof _pointId === 'string';
                     },
-                    msg: 'pointId3D must be a string'
+                    msg: 'pointId must be a string'
                 }
             }
         }
@@ -313,39 +313,24 @@ export const removeBindingBy3D = pointId3D => {
 /** Select a link between a 2d point and a 3d point using 2d point id.
  * @param {Number} pointId2D - the id of the 2D point.
  */
-export const selectBindingBy2D = pointId2D => {
+export const selectBinding = (pointId2D, pointId3D) => {
     return {
-        type: 'BINDING_SELECT_BY_2D',
+        type: 'BINDING_SELECT',
         payload: {
-            pointId2D: pointId2D
+            pointId2D: pointId2D,
+            pointId3D: pointId3D
         },
         meta: {
             validator: {
                 pointId2D: {
                     func: _pointId2D => {
-                        return typeof _pointId2D === 'string';
+                        return !_pointId2D || typeof _pointId2D === 'string';
                     },
                     msg: 'pointId2D must be a string'
-                }
-            }
-        }
-    };
-};
-
-/** Select a link between a 2d point and a 3d point using 3d point id.
- * @param {Number} pointId3D - the id of the 3D point.
- */
-export const selectBindingBy3D = pointId3D => {
-    return {
-        type: 'BINDING_SELECT_BY_3D',
-        payload: {
-            pointId3D: pointId3D
-        },
-        meta: {
-            validator: {
+                },
                 pointId3D: {
                     func: _pointId3D => {
-                        return typeof _pointId3D === 'string';
+                        return !_pointId3D || typeof _pointId3D === 'string';
                     },
                     msg: 'pointId3D must be a string'
                 }
@@ -354,20 +339,20 @@ export const selectBindingBy3D = pointId3D => {
     };
 };
 
-export const addBindingBuffer2D = point2D => {
+export const addBindingBuffer2D = point => {
     return {
         type: 'BINDING_BUFFER_ADD_2D',
         payload: {
-            point2D: point2D
+            point: point
         }
     };
 };
 
-export const addBindingBuffer3D = point3D => {
+export const addBindingBuffer3D = point => {
     return {
         type: 'BINDING_BUFFER_ADD_3D',
         payload: {
-            point3D: point3D
+            point: point
         }
     };
 };

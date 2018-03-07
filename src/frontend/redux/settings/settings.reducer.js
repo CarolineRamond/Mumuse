@@ -87,13 +87,6 @@ const reducer = (state = initialState, action) => {
                 showModelTexture: !state.showModelTexture
             };
         }
-        case 'BINDING_BUFFER_ADD_2D':
-        case 'BINDING_BUFFER_ADD_3D': {
-            return {
-                ...state,
-                bindMode: true
-            };
-        }
         default: {
             return state;
         }

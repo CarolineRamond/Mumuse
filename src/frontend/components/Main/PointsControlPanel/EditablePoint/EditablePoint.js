@@ -83,7 +83,10 @@ class EditablePoint extends React.Component {
                 style={{
                     backgroundColor: this.props.point.selected ? '#AAA' : 'white'
                 }}
-                onClick={this.selectPoint}
+                onClick={e => {
+                    e.stopPropagation();
+                    this.selectPoint();
+                }}
             >
                 {/* color picker toggle */}
                 <div
@@ -91,7 +94,10 @@ class EditablePoint extends React.Component {
                     style={{
                         backgroundColor: this.props.point.color || this.props.defaultPointColor
                     }}
-                    onClick={this.togglePicker}
+                    onClick={e => {
+                        e.stopPropagation();
+                        this.togglePicker();
+                    }}
                 />
                 {/* name input */}
                 <Input
@@ -109,15 +115,28 @@ class EditablePoint extends React.Component {
                 <TooltipIconButton
                     tooltip={this.props.point.bind ? 'Unbind' : 'Bind'}
                     icon={this.props.point.bind ? 'sync_disabled' : 'sync'}
-                    onClick={this.toggleBind}
+                    onClick={e => {
+                        e.stopPropagation();
+                        this.toggleBind();
+                    }}
                 />
                 <TooltipIconButton
                     tooltip="Save"
                     icon="save"
-                    onClick={this.updateName}
+                    onClick={e => {
+                        e.stopPropagation();
+                        this.updateName();
+                    }}
                     disabled={!this.state.nameChanged}
                 />
-                <TooltipIconButton tooltip="Remove" icon="delete" onClick={this.removePoint} />
+                <TooltipIconButton
+                    tooltip="Remove"
+                    icon="delete"
+                    onClick={e => {
+                        e.stopPropagation();
+                        this.removePoint();
+                    }}
+                />
 
                 {/* color picker */}
                 <div
@@ -136,7 +155,10 @@ class EditablePoint extends React.Component {
                 <div
                     className={styles.colorPickerBackdrop}
                     style={{ display: this.state.displayPicker ? 'block' : 'none' }}
-                    onClick={this.togglePicker}
+                    onClick={e => {
+                        e.stopPropagation();
+                        this.togglePicker();
+                    }}
                 />
             </div>
         );

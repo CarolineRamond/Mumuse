@@ -13,7 +13,8 @@ class EditableBinding extends React.Component {
                 style={{
                     backgroundColor: this.props.binding.selected ? '#AAA' : 'white'
                 }}
-                onClick={() => {
+                onClick={e => {
+                    e.stopPropagation();
                     this.props.onSelectBinding(this.props.binding);
                 }}
             >
@@ -23,7 +24,8 @@ class EditableBinding extends React.Component {
                 <div className={styles.dummy} />
                 <IconButton
                     icon="delete"
-                    onClick={() => {
+                    onClick={e => {
+                        e.stopPropagation();
                         this.props.onRemoveBinding(this.props.binding);
                     }}
                 />

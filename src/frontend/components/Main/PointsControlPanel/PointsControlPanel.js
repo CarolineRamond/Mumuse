@@ -32,7 +32,7 @@ const {
     addBindingBuffer2D,
     addBindingBuffer3D,
     addBinding,
-    selectBindingBy2D,
+    selectBinding,
     removeBindingBy2D,
     removeBindingBy3D,
     toggleAddMode,
@@ -120,7 +120,9 @@ class PointsControlPanel extends React.Component {
     }
 
     onSelectBinding(binding) {
-        this.props.dispatch(selectBindingBy2D(binding.point2D.id));
+        const pointId2D = binding && binding.point2D.id;
+        const pointId3D = binding && binding.point3D.id;
+        this.props.dispatch(selectBinding(pointId2D, pointId3D));
     }
 
     onUnbind2DPoint(point) {
@@ -214,11 +216,23 @@ class PointsControlPanel extends React.Component {
                     </div>
                 </div>
                 <div className={styles.pointsPanelContent}>
-                    <div className={styles.pointsPanelTab}>
+                    {/* 3D points panel */}
+                    <div
+                        className={styles.pointsPanelTab}
+                        onClick={() => {
+                            this.onSelect3DPoint(null);
+                        }}
+                    >
                         3D Points
                         <div className={styles.pointsPanelTabList}>{mappedPoints3D}</div>
                     </div>
-                    <div className={styles.pointsPanelTab}>
+                    {/* bindings panel */}
+                    <div
+                        className={styles.pointsPanelTab}
+                        onClick={() => {
+                            this.onSelectBinding(null);
+                        }}
+                    >
                         Bindings
                         <div className={styles.pointsPanelTabList}>{mappedBindings}</div>
                         {(this.props.bindingBuffer2D || this.props.bindingBuffer3D) && (
@@ -246,7 +260,13 @@ class PointsControlPanel extends React.Component {
                             </div>
                         )}
                     </div>
-                    <div className={styles.pointsPanelTab}>
+                    {/* 2D points panel */}
+                    <div
+                        className={styles.pointsPanelTab}
+                        onClick={() => {
+                            this.onSelect2DPoint(null);
+                        }}
+                    >
                         2D Points
                         <div className={styles.pointsPanelTabList}>{mappedPoints2D}</div>
                     </div>
