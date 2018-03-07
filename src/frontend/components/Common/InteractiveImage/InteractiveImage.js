@@ -101,6 +101,11 @@ class InteractiveImage extends React.Component {
         }
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        // component should re-render only when img has finished loading
+        return nextState.loading !== this.state.loading;
+    }
+
     initViewer() {
         this.mediaCanvas.width = this.mediaCanvas.offsetParent.clientWidth;
         this.mediaCanvas.height = this.mediaCanvas.offsetParent.clientHeight;

@@ -48,7 +48,7 @@ const reducer = (state = initialState, action) => {
                 return binding.pointId2D !== action.payload.pointId;
             });
             let newBuffer2D = state.buffer2D;
-            if (action.payload.pointId === newBuffer2D.id) {
+            if (state.buffer2D && state.buffer2D.id === action.payload.pointId) {
                 newBuffer2D = null;
             }
             return {
@@ -62,7 +62,7 @@ const reducer = (state = initialState, action) => {
                 return binding.pointId3D !== action.payload.pointId;
             });
             let newBuffer3D = state.buffer3D;
-            if (action.payload.pointId === newBuffer3D.id) {
+            if (state.buffer3D && state.buffer3D.id === action.payload.pointId) {
                 newBuffer3D = null;
             }
             return {

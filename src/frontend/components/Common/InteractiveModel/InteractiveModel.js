@@ -85,6 +85,11 @@ class InteractiveModel extends React.Component {
         }
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        // component should re-render only when mesh has finished loading
+        return nextState.loading !== this.state.loading;
+    }
+
     handleResize() {
         const rect = this.container3D.getBoundingClientRect();
         this.camera.aspect = rect.width / rect.height;
