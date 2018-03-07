@@ -64,15 +64,14 @@ export const remove2DPoint = pointId => {
  * Must be between -1 (bottom edge of the photo) and 1 (top edge of the photo)
  * @param {String} [params.name] - a new name to identify the point
  */
-export const update2DPoint = (pointId, { x, y, name, color }) => {
+export const update2DPoint = (pointId, { x, y, name }) => {
     return {
         type: '2D_POINT_UPDATE',
         payload: {
             pointId: pointId,
             x: x,
             y: y,
-            name: name,
-            color: color
+            name: name
         },
         meta: {
             validator: {
@@ -182,7 +181,7 @@ export const remove3DPoint = pointId => {
  * @param {Number} params.z - new z-coordinate.
  * @param {String} [params.name] - a new name to identify the point
  */
-export const update3DPoint = (pointId, { x, y, z, name, color }) => {
+export const update3DPoint = (pointId, { x, y, z, name }) => {
     return {
         type: '3D_POINT_UPDATE',
         payload: {
@@ -190,8 +189,7 @@ export const update3DPoint = (pointId, { x, y, z, name, color }) => {
             x: x,
             y: y,
             z: z,
-            name: name,
-            color: color
+            name: name
         },
         meta: {
             validator: {
@@ -333,6 +331,39 @@ export const selectBinding = (pointId2D, pointId3D) => {
                         return !_pointId3D || typeof _pointId3D === 'string';
                     },
                     msg: 'pointId3D must be a string'
+                }
+            }
+        }
+    };
+};
+
+export const updateBindingColor = (pointId2D, pointId3D, color) => {
+    return {
+        type: 'BINDING_UPDATE_COLOR',
+        payload: {
+            pointId2D: pointId2D,
+            pointId3D: pointId3D,
+            color: color
+        },
+        meta: {
+            validator: {
+                pointId2D: {
+                    func: _pointId2D => {
+                        return typeof _pointId2D === 'string';
+                    },
+                    msg: 'pointId2D must be a string'
+                },
+                pointId3D: {
+                    func: _pointId3D => {
+                        return typeof _pointId3D === 'string';
+                    },
+                    msg: 'pointId3D must be a string'
+                },
+                color: {
+                    func: _color => {
+                        return typeof _color === 'string';
+                    },
+                    msg: 'color must be a string'
                 }
             }
         }

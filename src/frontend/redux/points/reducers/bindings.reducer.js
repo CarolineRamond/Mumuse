@@ -16,7 +16,8 @@ const reducer = (state = initialState, action) => {
             const newBinding = {
                 pointId2D: action.payload.pointId2D,
                 pointId3D: action.payload.pointId3D,
-                selected: false
+                selected: false,
+                color: '#FF0000'
             };
             return {
                 ...state,
@@ -37,6 +38,22 @@ const reducer = (state = initialState, action) => {
         case 'BINDING_REMOVE_BY_3D': {
             const newList = state.list.filter(binding => {
                 return binding.pointId3D !== action.payload.pointId;
+            });
+            return {
+                ...state,
+                list: newList
+            };
+        }
+        case 'BINDING_UPDATE_COLOR': {
+            const newList = state.list.map(binding => {
+                if (binding.pointId2D === action.payload.pointId2D) {
+                    return {
+                        ...binding,
+                        color: action.payload.color
+                    };
+                } else {
+                    return binding;
+                }
             });
             return {
                 ...state,

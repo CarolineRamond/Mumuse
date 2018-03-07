@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { IconButton } from 'react-toolbox/lib/button';
-import { CompactPicker } from 'react-color';
 import { Input } from 'react-toolbox/lib/input';
 import Tooltip from 'react-toolbox/lib/tooltip';
 
@@ -13,9 +12,7 @@ class EditablePoint extends React.Component {
     constructor(props) {
         super(props);
 
-        this.togglePicker = this.togglePicker.bind(this);
         this.onChangeName = this.onChangeName.bind(this);
-        this.updateColor = this.updateColor.bind(this);
         this.updateName = this.updateName.bind(this);
         this.selectPoint = this.selectPoint.bind(this);
         this.removePoint = this.removePoint.bind(this);
@@ -23,8 +20,7 @@ class EditablePoint extends React.Component {
 
         this.state = {
             name: this.props.point.name,
-            nameChanged: false,
-            displayPicker: false
+            nameChanged: false
         };
     }
 
@@ -34,21 +30,11 @@ class EditablePoint extends React.Component {
         });
     }
 
-    togglePicker() {
-        this.setState({
-            displayPicker: !this.state.displayPicker
-        });
-    }
-
     onChangeName(name) {
         this.setState({
             name: name,
             nameChanged: true
         });
-    }
-
-    updateColor(color) {
-        this.props.onUpdatePoint(this.props.point.id, { color: color.hex });
     }
 
     updateName() {
@@ -94,10 +80,6 @@ class EditablePoint extends React.Component {
                     style={{
                         backgroundColor: this.props.point.color || this.props.defaultPointColor
                     }}
-                    onClick={e => {
-                        e.stopPropagation();
-                        this.togglePicker();
-                    }}
                 />
                 {/* name input */}
                 <Input
@@ -135,29 +117,6 @@ class EditablePoint extends React.Component {
                     onClick={e => {
                         e.stopPropagation();
                         this.removePoint();
-                    }}
-                />
-
-                {/* color picker */}
-                <div
-                    className={styles.colorPicker}
-                    style={{
-                        opacity: this.state.displayPicker ? 1 : 0,
-                        zIndex: this.state.displayPicker ? 2 : 0,
-                        pointerEvents: this.state.displayPicker ? 'initial' : 'none'
-                    }}
-                >
-                    <CompactPicker
-                        color={this.props.point.color}
-                        onChangeComplete={this.updateColor}
-                    />
-                </div>
-                <div
-                    className={styles.colorPickerBackdrop}
-                    style={{ display: this.state.displayPicker ? 'block' : 'none' }}
-                    onClick={e => {
-                        e.stopPropagation();
-                        this.togglePicker();
                     }}
                 />
             </div>

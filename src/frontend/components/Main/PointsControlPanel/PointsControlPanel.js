@@ -33,6 +33,7 @@ const {
     addBindingBuffer3D,
     addBinding,
     selectBinding,
+    updateBindingColor,
     removeBindingBy2D,
     removeBindingBy3D,
     toggleAddMode,
@@ -63,6 +64,7 @@ class PointsControlPanel extends React.Component {
         this.onAddBinding = this.onAddBinding.bind(this);
         this.onRemoveBinding = this.onRemoveBinding.bind(this);
         this.onSelectBinding = this.onSelectBinding.bind(this);
+        this.onUpdateBindingColor = this.onUpdateBindingColor.bind(this);
 
         this.onToggleAddMode = this.onToggleAddMode.bind(this);
         this.onToggleBindMode = this.onToggleBindMode.bind(this);
@@ -125,6 +127,12 @@ class PointsControlPanel extends React.Component {
         this.props.dispatch(selectBinding(pointId2D, pointId3D));
     }
 
+    onUpdateBindingColor(binding, color) {
+        const pointId2D = binding.point2D.id;
+        const pointId3D = binding.point3D.id;
+        this.props.dispatch(updateBindingColor(pointId2D, pointId3D, color));
+    }
+
     onUnbind2DPoint(point) {
         this.props.dispatch(removeBindingBy2D(point.id));
     }
@@ -167,6 +175,7 @@ class PointsControlPanel extends React.Component {
                     binding={binding}
                     onRemoveBinding={this.onRemoveBinding}
                     onSelectBinding={this.onSelectBinding}
+                    onUpdateBindingColor={this.onUpdateBindingColor}
                 />
             );
         });

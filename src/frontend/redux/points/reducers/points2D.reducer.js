@@ -90,12 +90,32 @@ const reducer = (state = initialState, action) => {
                 if (point.id === action.payload.pointId2D) {
                     return {
                         ...point,
-                        bind: action.payload.pointId3D
+                        bind: action.payload.pointId3D,
+                        color: '#FF0000'
                     };
                 } else if (point.bind === action.payload.pointId3D) {
                     return {
                         ...point,
-                        bind: null
+                        bind: null,
+                        selected: false,
+                        color: null
+                    };
+                } else {
+                    return point;
+                }
+            });
+            return {
+                ...state,
+                list: newList,
+                shouldRedraw: true
+            };
+        }
+        case 'BINDING_UPDATE_COLOR': {
+            const newList = state.list.map(point => {
+                if (point.id === action.payload.pointId2D) {
+                    return {
+                        ...point,
+                        color: action.payload.color
                     };
                 } else {
                     return point;
@@ -112,7 +132,9 @@ const reducer = (state = initialState, action) => {
                 if (point.id === action.payload.pointId) {
                     return {
                         ...point,
-                        bind: null
+                        selected: false,
+                        bind: null,
+                        color: null
                     };
                 } else {
                     return point;
@@ -129,7 +151,9 @@ const reducer = (state = initialState, action) => {
                 if (point.bind === action.payload.pointId) {
                     return {
                         ...point,
-                        bind: null
+                        selected: false,
+                        bind: null,
+                        color: null
                     };
                 } else {
                     return point;
@@ -148,7 +172,9 @@ const reducer = (state = initialState, action) => {
                     hadBinding = true;
                     return {
                         ...point,
-                        bind: null
+                        selected: false,
+                        bind: null,
+                        color: null
                     };
                 } else {
                     return point;
@@ -159,29 +185,6 @@ const reducer = (state = initialState, action) => {
                 list: newList,
                 shouldRedraw: hadBinding
             };
-        }
-        case '3D_POINT_UPDATE': {
-            let hasBinding = false;
-            if (action.payload.color) {
-                const newList = state.list.map(point => {
-                    if (point.bind === action.payload.pointId) {
-                        hasBinding = true;
-                        return {
-                            ...point,
-                            color: action.payload.color
-                        };
-                    } else {
-                        return point;
-                    }
-                });
-                return {
-                    ...state,
-                    list: newList,
-                    shouldRedraw: hasBinding
-                };
-            } else {
-                return defaultReducer(state);
-            }
         }
         case '3D_POINT_SELECT': {
             const newList = state.list.map(point => {
