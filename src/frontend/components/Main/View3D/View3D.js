@@ -21,7 +21,8 @@ const {
     getTextureUrl,
     shouldShowModelTexture,
     shouldRedraw3DPoints,
-    getCamera
+    getCamera,
+    getCalcState
 } = selectors;
 const {
     add3DPoint,
@@ -57,8 +58,34 @@ class View3D extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        //redraw points
         if (nextProps.shouldRedraw3DPoints && this.handlePointsChanged) {
             this.handlePointsChanged(nextProps.points);
+        }
+
+        //handle calc solutions
+        if (
+            !nextProps.calcState.pending &&
+            nextProps.calcState.data &&
+            this.props.calcState.pending
+        ) {
+            const data = nextProps.calcState.data;
+            switch (data.nbFixed) {
+                case 1: {
+                    return this.translateCamera(data.solution.translateX, data.solution.translateY);
+                }
+                case 2: {
+                    this.translateCamera(data.solution.translateX, data.solution.translateY);
+                    return this.moveCameraAlongAxis(
+                        data.solution.axis,
+                        data.solution.rotateOnAxis,
+                        data.solution.translateOnAxis
+                    );
+                }
+                default: {
+                    return;
+                }
+            }
         }
     }
 
@@ -111,6 +138,12 @@ class View3D extends React.Component {
                     setPointsChangedHandler={pointsChangedHandler => {
                         this.handlePointsChanged = pointsChangedHandler;
                     }}
+                    setCameraTranslateHandler={cameraTranslateHandler => {
+                        this.translateCamera = cameraTranslateHandler;
+                    }}
+                    setCameraMoveAxisHandler={cameraMoveAxisHandler => {
+                        this.moveCameraAlongAxis = cameraMoveAxisHandler;
+                    }}
                     addMode={this.props.addMode}
                     camera={this.props.camera}
                     deleteMode={this.props.deleteMode}
@@ -150,6 +183,11 @@ class View3D extends React.Component {
 View3D.propTypes = {
     addMode: PropTypes.bool,
     bindMode: PropTypes.bool,
+    calcState: PropTypes.shape({
+        pending: PropTypes.bool,
+        data: PropTypes.object,
+        error: PropTypes.string
+    }),
     camera: PropTypes.object,
     defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
@@ -169,6 +207,7 @@ const ConnectedView3D = connect(store => {
     return {
         addMode: getAddMode(store),
         bindMode: getBindMode(store),
+        calcState: getCalcState(store),
         camera: getCamera(store),
         defaultPointColor: getDefaultPointColor3D(store),
         deleteMode: getDeleteMode(store),

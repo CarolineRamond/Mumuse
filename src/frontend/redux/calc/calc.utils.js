@@ -1,6 +1,10 @@
+import * as THREE from 'three';
+import * as numeric from 'numeric';
+import quartic from 'quartic';
+
 //utils points 2D-3D
 const point3D_to_photo = (point, camera) => {
-    const P = new THREE.Vector3().copy(point);
+    let P = new THREE.Vector3().copy(point);
     //point dans les coordonnées de la caméra
     P = P.applyMatrix4(camera.matrixWorldInverse);
     //point sur la photo
@@ -26,14 +30,17 @@ const rot_matrix_to_euler = R => {
 };
 
 //calcul de la caméra 1...n points
-export const fixFirst = (point2D, point3D, camera) => {
+export const fixFirst = (binding, cameraParams) => {
+    //copy camera params into tool camera
+    const loader = new THREE.ObjectLoader();
+    const camera = loader.parse(cameraParams);
+
     /*
     * -Calcul du vecteur entre le point de la photo et le projeté du point 3D correspondant
     * -Translation de la caméra proportionnellement à ce vecteur et à la profondeur du point 3D
     */
-    camera.updateProjectionMatrix();
-    camera.updateMatrix();
-    camera.updateMatrixWorld();
+    const point2D = binding.point2D;
+    const point3D = binding.point3D;
     const fx = camera.projectionMatrix.elements[0];
     const fy = camera.projectionMatrix.elements[5];
     //pixel dans les coordonnées de la caméra
@@ -41,17 +48,17 @@ export const fixFirst = (point2D, point3D, camera) => {
     //projection du point 3D sur l'écran de la caméra
     const P = point3D_to_photo(point3D, camera);
     //point 3D dans les coordonnées de la caméra
-    const Q = new THREE.Vector3().copy(point3D);
+    let Q = new THREE.Vector3().copy(point3D);
     Q = Q.applyMatrix4(camera.matrixWorldInverse);
     const q = -Q.z;
-    // if (new THREE.Vector3().subVectors(P, p).length() < 0.005) {
-    //     converge[0] = true;
-    // } else {
-    //     converge[0] = false;
-    // }
-    camera.translateX(q * (P.x - p.x) / 2);
-    camera.translateY(q * (P.y - p.y) / 2);
-    camera.updateProjectionMatrix();
+
+    return {
+        nbFixed: 1,
+        solution: {
+            translateX: q * (P.x - p.x) / 2,
+            translateY: q * (P.y - p.y) / 2
+        }
+    };
 };
 
 const rotateToSecond = (binding1, binding2, camera) => {
@@ -67,6 +74,7 @@ const rotateToSecond = (binding1, binding2, camera) => {
     // Rotation autour de (CP1) pour aligner (P1P2) sur l'écran de la caméra
     const fx = camera.projectionMatrix.elements[0];
     const fy = camera.projectionMatrix.elements[5];
+
     const p = point3D_to_photo(voxel1, camera);
     const q = point3D_to_photo(voxel2, camera);
     const q1 = new THREE.Vector3(1 / fx * pixel2.x, 1 / fy * pixel2.y, -1);
@@ -80,9 +88,9 @@ const rotateToSecond = (binding1, binding2, camera) => {
     if (pq.y * pq1.x - pq.x * pq1.y < 0) {
         th *= -1;
     }
-    const CPaxis = new THREE.Vector3().copy(p);
+    let CPaxis = new THREE.Vector3().copy(p);
     CPaxis = CPaxis.multiplyScalar(1 / CPaxis.length());
-    camera.rotateOnAxis(CPaxis, -th / 2);
+    return { axis: CPaxis, rotation: -th / 2 };
 };
 
 const translateToSecond = (binding1, binding2, camera) => {
@@ -99,11 +107,12 @@ const translateToSecond = (binding1, binding2, camera) => {
     const fx = camera.projectionMatrix.elements[0];
     const fy = camera.projectionMatrix.elements[5];
 
-    const CPaxis_w = new THREE.Vector3().subVectors(voxel1, camera.position);
-    const CPaxis = new THREE.Vector3().copy(voxel1).applyMatrix4(camera.matrixWorldInverse);
+    let CPaxis_w = new THREE.Vector3().subVectors(voxel1, camera.position);
+    let CPaxis = new THREE.Vector3().copy(voxel1).applyMatrix4(camera.matrixWorldInverse);
     const D = CPaxis.length();
     CPaxis = CPaxis.multiplyScalar(1 / D);
     CPaxis_w = CPaxis_w.multiplyScalar(1 / CPaxis_w.length());
+
     const p = point3D_to_photo(voxel1, camera);
     const q = point3D_to_photo(voxel2, camera);
     const q1 = new THREE.Vector3(1 / fx * pixel2.x, 1 / fy * pixel2.y, -1);
@@ -127,20 +136,44 @@ const translateToSecond = (binding1, binding2, camera) => {
     //d=P1Q, avec Q le projeté de q1 sur (P1P2)
     const d = D * Math.sin(alpha) / Math.cos(beta + alpha - Math.PI / 2);
 
-    // if (Math.abs(P1P2.length() - d) < 0.01 && Math.abs(th) < 0.01) {
-    //     converge[1] = true;
-    // } else {
-    //     converge[1] = false;
-    // }
-    camera.translateOnAxis(CPaxis, -D * (P1P2.length() / d - 1) / 2);
+    if (Math.abs(P1P2.length() - d) < 0.01 && Math.abs(th) < 0.01) {
+        return { translation: -D * (P1P2.length() / d - 1) / 2, error: null };
+    } else {
+        return { translation: null, error: 'Could not fix second point' };
+    }
 };
 
-export const fixSecond = (binding1, binding2, camera) => {
-    // if (!converge[0]) fixfirst(i);
-    // else {
-    rotateToSecond(binding1, binding2, camera);
-    translateToSecond(binding1, binding2, camera);
-    // }
+export const fixSecond = (binding1, binding2, cameraParams) => {
+    // fix first point params
+    const step1 = fixFirst(binding1, cameraParams);
+
+    //copy camera params into tool camera
+    const loader = new THREE.ObjectLoader();
+    const camera = loader.parse(cameraParams);
+
+    //fix first point on tool camera
+    camera.translateX(step1.solution.translateX);
+    camera.translateY(step1.solution.translateY);
+    camera.updateProjectionMatrix();
+
+    //rotate camera around correct axis
+    const { axis, rotation } = rotateToSecond(binding1, binding2, camera);
+    camera.rotateOnAxis(axis, rotation);
+
+    //compute translation along axis
+    const { translation, error } = translateToSecond(binding1, binding2, camera);
+
+    return {
+        nbFixed: 2,
+        solution: {
+            translateX: step1.solution.translateX,
+            translateY: step1.solution.translateY,
+            axis: axis,
+            rotateOnAxis: rotation,
+            translateOnAxis: translation
+        },
+        error: error
+    };
 };
 
 const fix3DTo3D = (P, Q) => {
@@ -157,15 +190,15 @@ const fix3DTo3D = (P, Q) => {
     centroid1.multiplyScalar(1.0 / P.length);
     centroid2.multiplyScalar(1.0 / P.length);
     //covariance
-    const h11 = 0;
-    const h12 = 0;
-    const h13 = 0;
-    const h21 = 0;
-    const h22 = 0;
-    const h23 = 0;
-    const h31 = 0;
-    const h32 = 0;
-    const h33 = 0;
+    let h11 = 0;
+    let h12 = 0;
+    let h13 = 0;
+    let h21 = 0;
+    let h22 = 0;
+    let h23 = 0;
+    let h31 = 0;
+    let h32 = 0;
+    let h33 = 0;
     for (let i = 0; i < P.length; i++) {
         P[i] = new THREE.Vector3().subVectors(P[i], centroid1);
         Q[i] = new THREE.Vector3().subVectors(Q[i], centroid2);
@@ -194,7 +227,7 @@ const fix3DTo3D = (P, Q) => {
         SVD.U[2][1],
         SVD.U[2][2]
     );
-    const Vt = new THREE.Matrix3().set(
+    let Vt = new THREE.Matrix3().set(
         SVD.V[0][0],
         SVD.V[1][0],
         SVD.V[2][0],
@@ -206,7 +239,11 @@ const fix3DTo3D = (P, Q) => {
         SVD.V[2][2]
     );
     //R = V*U.T avec H = U*S*V.T
-    const R = new THREE.Matrix3().fromArray(U.applyToVector3Array(Vt.toArray())).transpose();
+    // const R = new THREE.Matrix3().fromArray(U.applyToVector3Array(Vt.toArray())).transpose();
+    let R = U.clone()
+        .multiply(Vt)
+        .transpose();
+
     //determinant > 0
     if (R.determinant() < 0) {
         Vt = new THREE.Matrix3().set(
@@ -220,7 +257,10 @@ const fix3DTo3D = (P, Q) => {
             -Vt.elements[5],
             -Vt.elements[8]
         );
-        R = new THREE.Matrix3().fromArray(U.applyToVector3Array(Vt.toArray())).transpose();
+        // R = new THREE.Matrix3().fromArray(U.applyToVector3Array(Vt.toArray())).transpose();
+        R = U.clone()
+            .multiply(Vt)
+            .transpose();
     }
     //angles d'euler
     const Rt = new THREE.Matrix3().copy(R).transpose();
@@ -236,7 +276,11 @@ const fix3DTo3D = (P, Q) => {
     return { position: t, rotation: new THREE.Euler(e[0], e[1], e[2], 'ZYX') };
 };
 
-export const fixThird = (binding1, binding2, binding3, camera) => {
+export const fixThird = (binding1, binding2, binding3, cameraParams) => {
+    //copy camera params into tool camera
+    const loader = new THREE.ObjectLoader();
+    const camera = loader.parse(cameraParams);
+
     /*
     * Résolution de P3P
     * artcile : http://iplimage.com/blog/p3p-perspective-point-overview/
@@ -258,9 +302,9 @@ export const fixThird = (binding1, binding2, binding3, camera) => {
     const C = new THREE.Vector3(point3D_3.x, point3D_3.y, point3D_3.z);
 
     //3 vecteurs normalisés dans les coordonnées de la caméra
-    const u_ = new THREE.Vector3(1 / fx * pixel1.x, 1 / fy * pixel1.y, -1);
-    const v_ = new THREE.Vector3(1 / fx * pixel2.x, 1 / fy * pixel2.y, -1);
-    const w_ = new THREE.Vector3(1 / fx * pixel3.x, 1 / fy * pixel3.y, -1);
+    let u_ = new THREE.Vector3(1 / fx * pixel1.x, 1 / fy * pixel1.y, -1);
+    let v_ = new THREE.Vector3(1 / fx * pixel2.x, 1 / fy * pixel2.y, -1);
+    let w_ = new THREE.Vector3(1 / fx * pixel3.x, 1 / fy * pixel3.y, -1);
     u_ = u_.multiplyScalar(1 / u_.length());
     v_ = v_.multiplyScalar(1 / v_.length());
     w_ = w_.multiplyScalar(1 / w_.length());
@@ -356,250 +400,250 @@ export const fixThird = (binding1, binding2, binding3, camera) => {
     return { positions: positions, rotations: rotations };
 };
 
-export const fixfourth = (binding1, binding2, binding3, binding4, camera) => {
-    let prevdf1 = 0;
-    let prevdf2 = 0; //distances focales obtenues aux deux précédantes itérations (4points)
-    /*
-    * Placement de la caméra en fonction des 3 premiers points
-    * Sélection de la solution la meilleure par rapport au 4eme point
-    * Ajustement de la distance focale suivant l'erreur du 4ème point
-    * Si l'erreur augmente, ajustement de la distance focale dans l'autre sens
-    */
-    const fx = camera.projectionMatrix.elements[0];
-    const fy = camera.projectionMatrix.elements[5];
+// export const fixfourth = (binding1, binding2, binding3, binding4, camera) => {
+//     let prevdf1 = 0;
+//     let prevdf2 = 0; //distances focales obtenues aux deux précédantes itérations (4points)
+//     /*
+//     * Placement de la caméra en fonction des 3 premiers points
+//     * Sélection de la solution la meilleure par rapport au 4eme point
+//     * Ajustement de la distance focale suivant l'erreur du 4ème point
+//     * Si l'erreur augmente, ajustement de la distance focale dans l'autre sens
+//     */
+//     const fx = camera.projectionMatrix.elements[0];
+//     const fy = camera.projectionMatrix.elements[5];
 
-    const pixel4 = binding4.point2D;
-    const point3D_4 = binding4.point3D;
-    const voxel4 = new THREE.Vector3(point3D_4.x, point3D_4.y, point3D_4.z);
+//     const pixel4 = binding4.point2D;
+//     const point3D_4 = binding4.point3D;
+//     const voxel4 = new THREE.Vector3(point3D_4.x, point3D_4.y, point3D_4.z);
 
-    //sols:positions et rotations posible pour P1,P2,P3
-    const sols = fixThird(binding1, binding2, binding3);
-    const min = Math.SQRT2 * fx;
-    const i_min = 0;
-    const q_min = new THREE.Vector3();
-    const u_ = new THREE.Vector3(1 / fx * pixel4.x, 1 / fy * pixel4.y, -1);
-    if (sols.positions.length < 1) {
-        // converge[3] = true;
-        console.log('pas de solution');
-        return;
-    }
-    //selection du meilleur point de vue sur vox[k]
-    for (let i_ = 0; i_ < sols.positions.length; ++i_) {
-        camera.position.set(sols.positions[i_].x, sols.positions[i_].y, sols.positions[i_].z);
-        camera.rotation.set(
-            sols.rotations[i_].x,
-            sols.rotations[i_].y,
-            sols.rotations[i_].z,
-            sols.rotations[i_].order
-        );
-        camera.updateMatrix();
-        camera.updateMatrixWorld();
-        const q = point3D_to_photo_update(voxel4);
-        const d = new THREE.Vector3().subVectors(q, u_).length();
-        if (d < min) {
-            i_min = i_;
-            q_min.copy(q);
-            min = d;
-            if (d < 0.0075) {
-                // converge[3] = true;
-                return;
-            }
-        }
-    }
-    camera.position.set(sols.positions[i_min].x, sols.positions[i_min].y, sols.positions[i_min].z);
-    camera.rotation.set(
-        sols.rotations[i_min].x,
-        sols.rotations[i_min].y,
-        sols.rotations[i_min].z,
-        sols.rotations[i_min].order
-    );
-    //distance tp4-centre optique
-    const duO = u_.length();
-    //distance q-centre optique
-    const dqO = q_min.length();
-    //ajuster la distance focale : proportionnellement à l'erreur
-    const cP4Axis = new THREE.Vector3().copy(voxel4).applyMatrix4(camera.matrixWorldInverse);
-    const cP4 = cP4Axis.length();
-    //var maxdf = Math.min(20*cP4*min,0.7);
-    //var df = (dqO-duO)*maxdf/Math.abs(dqO-duO);
-    const df = Math.max(Math.min((dqO - duO) * cP4 / min, 0.7), -0.7);
-    // if (Math.abs(df) < 0.15) {
-    //     converge[3] = true;
-    // }
-    //focale trop grande ou trop petite
-    if (camera.getFocalLength() + df < 8 || camera.getFocalLength() + df > 65) {
-        // converge[3] = true;
-        return;
-    }
-    // effectController.focal += df;
-    // gui.__folders['Camera'].__controllers[0].updateDisplay();
-    camera.setFocalLength(camera.getFocalLength() + df);
-    const sols2 = fixThird(binding1, binding2, binding3);
-    const j_ = Math.min(i_min, sols2.positions.length - 1);
-    if (j_ === -1) {
-        // converge[3] = true;
-        console.log('pas de solution');
-        return;
-    }
-    camera.position.set(sols2.positions[j_].x, sols2.positions[j_].y, sols2.positions[j_].z);
-    camera.rotation.set(
-        sols2.rotations[j_].x,
-        sols2.rotations[j_].y,
-        sols2.rotations[j_].z,
-        sols2.rotations[j_].order
-    );
-    //verification si changement de la focale dans le bon sens
-    camera.updateMatrix();
-    camera.updateMatrixWorld();
-    const q2 = point3D_to_photo_update(voxel4);
-    const fx2 = camera.projectionMatrix.elements[0];
-    const fy2 = camera.projectionMatrix.elements[5];
-    const v_ = new THREE.Vector3(1 / fx2 * pixel4.x, 1 / fy2 * pixel4.y, -1);
-    const min2 = new THREE.Vector3().subVectors(q2, v_).length();
-    if (min < min2) {
-        //changement de distance focale dans le mauvais sens
-        df = -1.5 * df;
-        // effectController.focal += df;
-        // gui.__folders['Camera'].__controllers[0].updateDisplay();
-        camera.setFocalLength(camera.getFocalLength() + df);
-        const sols3 = fixThird(binding1, binding2, binding3, camera);
-        const k_ = Math.min(i_min, sols3.positions.length - 1);
-        if (k_ === -1) {
-            camera.setFocalLength(camera.getFocalLength() - df / 3);
-            camera.position.set(
-                sols.positions[i_min].x,
-                sols.positions[i_min].y,
-                sols.positions[i_min].z
-            );
-            camera.rotation.set(
-                sols.rotations[i_min].x,
-                sols.rotations[i_min].y,
-                sols.rotations[i_min].z,
-                sols.rotations[i_min].order
-            );
-            console.log('pas de solution');
-            // converge[3] = true;
-            return;
-        }
-        camera.position.set(sols3.positions[k_].x, sols3.positions[k_].y, sols3.positions[k_].z);
-        camera.rotation.set(
-            sols3.rotations[k_].x,
-            sols3.rotations[k_].y,
-            sols3.rotations[k_].z,
-            sols3.rotations[k_].order
-        );
-        camera.updateMatrix();
-        camera.updateMatrixWorld();
-    }
-    if (
-        Math.abs(df + prevdf1 + prevdf2) < 0.01 ||
-        Math.abs(df + prevdf1) < 0.01 ||
-        (df * prevdf2 > 0 && df * prevdf1 < 0) ||
-        (df * prevdf1 > 0 && df * prevdf2 < 0)
-    ) {
-        if (Math.abs(prevdf1) !== 0 || Math.abs(prevdf2) !== 0) {
-            //condition d'arrêt : plus de grandes variations ou changements de signe
-            // converge[3] = true;
-        }
-    }
-    prevdf2 = prevdf1 + 0;
-    prevdf1 = df;
-};
+//     //sols:positions et rotations posible pour P1,P2,P3
+//     const sols = fixThird(binding1, binding2, binding3);
+//     const min = Math.SQRT2 * fx;
+//     const i_min = 0;
+//     const q_min = new THREE.Vector3();
+//     const u_ = new THREE.Vector3(1 / fx * pixel4.x, 1 / fy * pixel4.y, -1);
+//     if (sols.positions.length < 1) {
+//         // converge[3] = true;
+//         console.log('pas de solution');
+//         return;
+//     }
+//     //selection du meilleur point de vue sur vox[k]
+//     for (let i_ = 0; i_ < sols.positions.length; ++i_) {
+//         camera.position.set(sols.positions[i_].x, sols.positions[i_].y, sols.positions[i_].z);
+//         camera.rotation.set(
+//             sols.rotations[i_].x,
+//             sols.rotations[i_].y,
+//             sols.rotations[i_].z,
+//             sols.rotations[i_].order
+//         );
+//         camera.updateMatrix();
+//         camera.updateMatrixWorld();
+//         const q = point3D_to_photo_update(voxel4);
+//         const d = new THREE.Vector3().subVectors(q, u_).length();
+//         if (d < min) {
+//             i_min = i_;
+//             q_min.copy(q);
+//             min = d;
+//             if (d < 0.0075) {
+//                 // converge[3] = true;
+//                 return;
+//             }
+//         }
+//     }
+//     camera.position.set(sols.positions[i_min].x, sols.positions[i_min].y, sols.positions[i_min].z);
+//     camera.rotation.set(
+//         sols.rotations[i_min].x,
+//         sols.rotations[i_min].y,
+//         sols.rotations[i_min].z,
+//         sols.rotations[i_min].order
+//     );
+//     //distance tp4-centre optique
+//     const duO = u_.length();
+//     //distance q-centre optique
+//     const dqO = q_min.length();
+//     //ajuster la distance focale : proportionnellement à l'erreur
+//     const cP4Axis = new THREE.Vector3().copy(voxel4).applyMatrix4(camera.matrixWorldInverse);
+//     const cP4 = cP4Axis.length();
+//     //var maxdf = Math.min(20*cP4*min,0.7);
+//     //var df = (dqO-duO)*maxdf/Math.abs(dqO-duO);
+//     const df = Math.max(Math.min((dqO - duO) * cP4 / min, 0.7), -0.7);
+//     // if (Math.abs(df) < 0.15) {
+//     //     converge[3] = true;
+//     // }
+//     //focale trop grande ou trop petite
+//     if (camera.getFocalLength() + df < 8 || camera.getFocalLength() + df > 65) {
+//         // converge[3] = true;
+//         return;
+//     }
+//     // effectController.focal += df;
+//     // gui.__folders['Camera'].__controllers[0].updateDisplay();
+//     camera.setFocalLength(camera.getFocalLength() + df);
+//     const sols2 = fixThird(binding1, binding2, binding3);
+//     const j_ = Math.min(i_min, sols2.positions.length - 1);
+//     if (j_ === -1) {
+//         // converge[3] = true;
+//         console.log('pas de solution');
+//         return;
+//     }
+//     camera.position.set(sols2.positions[j_].x, sols2.positions[j_].y, sols2.positions[j_].z);
+//     camera.rotation.set(
+//         sols2.rotations[j_].x,
+//         sols2.rotations[j_].y,
+//         sols2.rotations[j_].z,
+//         sols2.rotations[j_].order
+//     );
+//     //verification si changement de la focale dans le bon sens
+//     camera.updateMatrix();
+//     camera.updateMatrixWorld();
+//     const q2 = point3D_to_photo_update(voxel4);
+//     const fx2 = camera.projectionMatrix.elements[0];
+//     const fy2 = camera.projectionMatrix.elements[5];
+//     const v_ = new THREE.Vector3(1 / fx2 * pixel4.x, 1 / fy2 * pixel4.y, -1);
+//     const min2 = new THREE.Vector3().subVectors(q2, v_).length();
+//     if (min < min2) {
+//         //changement de distance focale dans le mauvais sens
+//         df = -1.5 * df;
+//         // effectController.focal += df;
+//         // gui.__folders['Camera'].__controllers[0].updateDisplay();
+//         camera.setFocalLength(camera.getFocalLength() + df);
+//         const sols3 = fixThird(binding1, binding2, binding3, camera);
+//         const k_ = Math.min(i_min, sols3.positions.length - 1);
+//         if (k_ === -1) {
+//             camera.setFocalLength(camera.getFocalLength() - df / 3);
+//             camera.position.set(
+//                 sols.positions[i_min].x,
+//                 sols.positions[i_min].y,
+//                 sols.positions[i_min].z
+//             );
+//             camera.rotation.set(
+//                 sols.rotations[i_min].x,
+//                 sols.rotations[i_min].y,
+//                 sols.rotations[i_min].z,
+//                 sols.rotations[i_min].order
+//             );
+//             console.log('pas de solution');
+//             // converge[3] = true;
+//             return;
+//         }
+//         camera.position.set(sols3.positions[k_].x, sols3.positions[k_].y, sols3.positions[k_].z);
+//         camera.rotation.set(
+//             sols3.rotations[k_].x,
+//             sols3.rotations[k_].y,
+//             sols3.rotations[k_].z,
+//             sols3.rotations[k_].order
+//         );
+//         camera.updateMatrix();
+//         camera.updateMatrixWorld();
+//     }
+//     if (
+//         Math.abs(df + prevdf1 + prevdf2) < 0.01 ||
+//         Math.abs(df + prevdf1) < 0.01 ||
+//         (df * prevdf2 > 0 && df * prevdf1 < 0) ||
+//         (df * prevdf1 > 0 && df * prevdf2 < 0)
+//     ) {
+//         if (Math.abs(prevdf1) !== 0 || Math.abs(prevdf2) !== 0) {
+//             //condition d'arrêt : plus de grandes variations ou changements de signe
+//             // converge[3] = true;
+//         }
+//     }
+//     prevdf2 = prevdf1 + 0;
+//     prevdf1 = df;
+// };
 
-export const fixthird_ortho = (binding1, binding2, binding3, camera) => {
-    const p1 = binding1.point2D;
-    const p2 = binding2.point2D;
-    const p3 = binding3.point2D;
+// export const fixthird_ortho = (binding1, binding2, binding3, camera) => {
+//     const p1 = binding1.point2D;
+//     const p2 = binding2.point2D;
+//     const p3 = binding3.point2D;
 
-    const point3D_1 = binding1.point3D;
-    const point3D_2 = binding2.point3D;
-    const point3D_3 = binding3.point3D;
+//     const point3D_1 = binding1.point3D;
+//     const point3D_2 = binding2.point3D;
+//     const point3D_3 = binding3.point3D;
 
-    const P1 = new THREE.Vector3(point3D_1.x, point3D_1.y, point3D_1.z);
-    const P2 = new THREE.Vector3(point3D_2.x, point3D_2.y, point3D_2.z);
-    const P3 = new THREE.Vector3(point3D_3.x, point3D_3.y, point3D_3.z);
+//     const P1 = new THREE.Vector3(point3D_1.x, point3D_1.y, point3D_1.z);
+//     const P2 = new THREE.Vector3(point3D_2.x, point3D_2.y, point3D_2.z);
+//     const P3 = new THREE.Vector3(point3D_3.x, point3D_3.y, point3D_3.z);
 
-    const D1 = P1.y - P2.y;
-    const D2 = P1.y - P3.y;
-    const d1 = p1.y - p2.y;
-    const d2 = p1.y - p3.y;
-    if (Math.abs(D1) > Math.abs(D2)) {
-        const D3 = D1;
-        D1 = D2;
-        D2 = D3;
-        const d3 = d1;
-        d1 = d2;
-        d2 = d3;
-    }
-    /* cas 1 vue de coté (y conservé)
-     * R|t = a 0 b t1
-     *       0 1 0 t2
-     *      -b 0 a 0
-     * Il faut donc résoudre le systeme (1) aX+bZ+t1 = x (3 equations /3 inconnues)
-     * et (2) Y+t2 = y
-     */
-    if (Math.abs(D1 / D2 - d1 / d2) < 0.05) {
-        const zoom = Math.abs(d2 / D2);
-        //Résolution de (1) sous la forme M1X1 = Y1
-        const M1 = new THREE.Matrix3().set(P1.x, P1.z, 1, P2.x, P2.z, 1, P3.x, P3.z, 1);
-        const Y1 = new THREE.Vector3(p1.x, p2.x, p3.x);
-        const X1 = Y1.applyMatrix3(new THREE.Matrix3().getInverse(M1));
-        X1.multiplyScalar(1 / new THREE.Vector2(X1.x, X1.y).length());
-        const t1 = X1.z;
-        //Résolution de (2)
-        const t2 = ((p1.y + p2.y + p3.y) / zoom - (P1.y + P2.y + P3.y)) / 3;
-        //Matrice de rotation de la caméra : tR
-        const Rt = new THREE.Matrix3().set(X1.x, 0, -X1.y, 0, 1, 0, X1.y, 0, X1.x);
-        //Position de la caméra : tR*(tx,ty,0)
-        const t = new THREE.Vector3(-t1, -t2, 0).applyMatrix3(Rt);
-        const e = rot_matrix_to_euler(Rt.elements);
-        camera.zoom = zoom;
-        // effectController.zoom = zoom;
-        // gui.__folders['Camera'].__controllers[1].updateDisplay();
-        camera.rotation.set(e[0], e[1], e[2], 'ZYX');
-        camera.position.set(t.x, t.y, t.z);
-        camera.updateProjectionMatrix();
-        camera.translateZ(20);
-    } else {
-        /* cas 2 vue de dessus (y ignoré)
-     * R|t = a 0 b t1
-     *       b 0-a t2
-     *       0 1 0 0
-     * Il faut donc résoudre le systeme (1) aX+bZ+t1 = x (3 equations /3 inconnues)
-     * et (2) aX-bZ+t2 = y
-     */
-        const M = new THREE.Matrix3().set(P1.x, P1.z, 1, P2.x, P2.z, 1, P3.x, P3.z, 1);
-        const MI = new THREE.Matrix3().getInverse(M);
-        const Y1 = new THREE.Vector3(p1.x, p2.x, p3.x);
-        const Y2 = new THREE.Vector3(p1.y, p2.y, p3.y);
-        const X1 = Y1.applyMatrix3(MI);
-        const X2 = Y2.applyMatrix3(MI);
-        const zoom =
-            1 /
-            new THREE.Vector2()
-                .subVectors(new THREE.Vector2(P1.x, P1.z), new THREE.Vector2(P2.x, P2.z))
-                .length();
-        X1.multiplyScalar(1 / new THREE.Vector2(X1.x, X1.y).length());
-        X2.multiplyScalar(1 / new THREE.Vector2(X2.x, X2.y).length());
-        const t1 = X1.z;
-        const t2 = X2.z;
-        //Matrice de rotation de la caméra : tR
-        const Rt = new THREE.Matrix3().set(X1.x, X1.y, 0, 0, 0, 1, X1.y, -X1.x, 0);
-        //zoom = p1p2/M|t*P1P2
-        zoom *= new THREE.Vector3().subVectors(p1, p2).length();
-        //Position de la caméra : tR*(tx,ty,0)
-        const t = new THREE.Vector3(-t1, -t2, 0).applyMatrix3(Rt);
-        const e = rot_matrix_to_euler(Rt.elements);
-        camera.zoom = zoom;
-        // effectController.zoom = zoom;
-        // gui.__folders['Camera'].__controllers[1].updateDisplay();
-        camera.rotation.set(e[0], e[1], e[2], 'ZYX');
-        camera.position.set(t.x, t.y, t.z);
-        camera.updateProjectionMatrix();
-        camera.translateZ(20);
-    }
-    // converge[2] = true;
-};
+//     const D1 = P1.y - P2.y;
+//     const D2 = P1.y - P3.y;
+//     const d1 = p1.y - p2.y;
+//     const d2 = p1.y - p3.y;
+//     if (Math.abs(D1) > Math.abs(D2)) {
+//         const D3 = D1;
+//         D1 = D2;
+//         D2 = D3;
+//         const d3 = d1;
+//         d1 = d2;
+//         d2 = d3;
+//     }
+//     /* cas 1 vue de coté (y conservé)
+//      * R|t = a 0 b t1
+//      *       0 1 0 t2
+//      *      -b 0 a 0
+//      * Il faut donc résoudre le systeme (1) aX+bZ+t1 = x (3 equations /3 inconnues)
+//      * et (2) Y+t2 = y
+//      */
+//     if (Math.abs(D1 / D2 - d1 / d2) < 0.05) {
+//         const zoom = Math.abs(d2 / D2);
+//         //Résolution de (1) sous la forme M1X1 = Y1
+//         const M1 = new THREE.Matrix3().set(P1.x, P1.z, 1, P2.x, P2.z, 1, P3.x, P3.z, 1);
+//         const Y1 = new THREE.Vector3(p1.x, p2.x, p3.x);
+//         const X1 = Y1.applyMatrix3(new THREE.Matrix3().getInverse(M1));
+//         X1.multiplyScalar(1 / new THREE.Vector2(X1.x, X1.y).length());
+//         const t1 = X1.z;
+//         //Résolution de (2)
+//         const t2 = ((p1.y + p2.y + p3.y) / zoom - (P1.y + P2.y + P3.y)) / 3;
+//         //Matrice de rotation de la caméra : tR
+//         const Rt = new THREE.Matrix3().set(X1.x, 0, -X1.y, 0, 1, 0, X1.y, 0, X1.x);
+//         //Position de la caméra : tR*(tx,ty,0)
+//         const t = new THREE.Vector3(-t1, -t2, 0).applyMatrix3(Rt);
+//         const e = rot_matrix_to_euler(Rt.elements);
+//         camera.zoom = zoom;
+//         // effectController.zoom = zoom;
+//         // gui.__folders['Camera'].__controllers[1].updateDisplay();
+//         camera.rotation.set(e[0], e[1], e[2], 'ZYX');
+//         camera.position.set(t.x, t.y, t.z);
+//         camera.updateProjectionMatrix();
+//         camera.translateZ(20);
+//     } else {
+//         /* cas 2 vue de dessus (y ignoré)
+//      * R|t = a 0 b t1
+//      *       b 0-a t2
+//      *       0 1 0 0
+//      * Il faut donc résoudre le systeme (1) aX+bZ+t1 = x (3 equations /3 inconnues)
+//      * et (2) aX-bZ+t2 = y
+//      */
+//         const M = new THREE.Matrix3().set(P1.x, P1.z, 1, P2.x, P2.z, 1, P3.x, P3.z, 1);
+//         const MI = new THREE.Matrix3().getInverse(M);
+//         const Y1 = new THREE.Vector3(p1.x, p2.x, p3.x);
+//         const Y2 = new THREE.Vector3(p1.y, p2.y, p3.y);
+//         const X1 = Y1.applyMatrix3(MI);
+//         const X2 = Y2.applyMatrix3(MI);
+//         const zoom =
+//             1 /
+//             new THREE.Vector2()
+//                 .subVectors(new THREE.Vector2(P1.x, P1.z), new THREE.Vector2(P2.x, P2.z))
+//                 .length();
+//         X1.multiplyScalar(1 / new THREE.Vector2(X1.x, X1.y).length());
+//         X2.multiplyScalar(1 / new THREE.Vector2(X2.x, X2.y).length());
+//         const t1 = X1.z;
+//         const t2 = X2.z;
+//         //Matrice de rotation de la caméra : tR
+//         const Rt = new THREE.Matrix3().set(X1.x, X1.y, 0, 0, 0, 1, X1.y, -X1.x, 0);
+//         //zoom = p1p2/M|t*P1P2
+//         zoom *= new THREE.Vector3().subVectors(p1, p2).length();
+//         //Position de la caméra : tR*(tx,ty,0)
+//         const t = new THREE.Vector3(-t1, -t2, 0).applyMatrix3(Rt);
+//         const e = rot_matrix_to_euler(Rt.elements);
+//         camera.zoom = zoom;
+//         // effectController.zoom = zoom;
+//         // gui.__folders['Camera'].__controllers[1].updateDisplay();
+//         camera.rotation.set(e[0], e[1], e[2], 'ZYX');
+//         camera.position.set(t.x, t.y, t.z);
+//         camera.updateProjectionMatrix();
+//         camera.translateZ(20);
+//     }
+//     // converge[2] = true;
+// };
 
 // export const fixnth = fixed => {
 //     //Requête http POST avec les arguments du programme en C++

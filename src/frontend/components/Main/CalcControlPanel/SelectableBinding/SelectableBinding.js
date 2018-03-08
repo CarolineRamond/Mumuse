@@ -67,7 +67,8 @@ class SelectableBinding extends React.Component {
                 <FontIcon value="link" />
                 <div style={{ cursor: 'default' }}>{this.props.binding.point2D.name}</div>
                 <div className={styles.dummy} />
-                <Checkbox checked={this.props.toggled} onChange={this.toggleBinding} />
+                <input type="checkbox" checked={this.props.toggled} onClick={this.toggleBinding} />
+                {/*<Checkbox checked={this.props.toggled} onChange={this.toggleBinding} />*/}
                 {/* color picker */}
                 <div
                     className={styles.colorPicker}

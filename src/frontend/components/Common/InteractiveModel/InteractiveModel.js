@@ -38,7 +38,10 @@ class InteractiveModel extends React.Component {
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onMouseWheel = this.onMouseWheel.bind(this);
         this.updateCamera = this.updateCamera.bind(this);
+
         this.redrawPoints = this.redrawPoints.bind(this);
+        this.translateCamera = this.translateCamera.bind(this);
+        this.moveCameraAlongAxis = this.moveCameraAlongAxis.bind(this);
 
         this.state = {
             loading: true
@@ -47,7 +50,15 @@ class InteractiveModel extends React.Component {
 
     componentDidMount() {
         this.props.setResizeHandler(this.handleResize);
-        this.props.setPointsChangedHandler(this.redrawPoints);
+        if (this.props.setPointsChangedHandler) {
+            this.props.setPointsChangedHandler(this.redrawPoints);
+        }
+        if (this.props.setCameraTranslateHandler) {
+            this.props.setCameraTranslateHandler(this.translateCamera);
+        }
+        if (this.props.setCameraMoveAxisHandler) {
+            this.props.setCameraMoveAxisHandler(this.moveCameraAlongAxis);
+        }
         requestAnimationFrame(this.initViewer.bind(this));
     }
 
@@ -192,6 +203,11 @@ class InteractiveModel extends React.Component {
             //draw points
             this.redrawPoints(this.props.points);
 
+            //camera helper
+            this.cameraHelper = new THREE.CameraHelper(this.camera);
+            this.cameraHelper.layers.set(1);
+            this.scene.add(this.cameraHelper);
+
             // setup event handlers
             this.container3D.addEventListener('mousemove', this.onMouseMove, false);
             this.container3D.addEventListener('mousedown', this.onMouseDown, false);
@@ -279,6 +295,16 @@ class InteractiveModel extends React.Component {
             newPoint.metadata = point;
             this.pointsContainer.add(newPoint);
         });
+    }
+
+    translateCamera(translateX, translateY) {
+        this.camera.translateX(translateX);
+        this.camera.translateY(translateY);
+    }
+
+    moveCameraAlongAxis(axis, translation, rotation) {
+        this.camera.rotateOnAxis(axis, rotation);
+        this.camera.translateOnAxis(axis, translation);
     }
 
     animate() {
@@ -407,7 +433,7 @@ class InteractiveModel extends React.Component {
         this.camera.updateProjectionMatrix();
         this.camera.updateMatrixWorld();
         requestAnimationFrame(() => {
-            this.props.onChangeCamera(this.camera);
+            this.props.onChangeCamera(this.camera.toJSON());
         });
     }
 
@@ -439,7 +465,9 @@ InteractiveModel.propTypes = {
     pointSize: PropTypes.number,
     pointWeight: PropTypes.number,
     points: PropTypes.arrayOf(PropTypes.object),
-    setPointsChangedHandler: PropTypes.func.isRequired,
+    setCameraMoveAxisHandler: PropTypes.func,
+    setCameraTranslateHandler: PropTypes.func,
+    setPointsChangedHandler: PropTypes.func,
     setResizeHandler: PropTypes.func.isRequired,
     shouldShowTexture: PropTypes.bool,
     textureUrl: PropTypes.string

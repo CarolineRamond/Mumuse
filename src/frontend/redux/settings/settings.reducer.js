@@ -10,7 +10,7 @@ export const initialState = {
     pointWeight3D: 1,
     showModelTexture: true,
     imageUrl: '/public/img/amrit_01.jpg',
-    meshUrl: '/public/mesh/suzanne.json',
+    meshUrl: '/public/mesh/amrit.json',
     textureUrl: '/public/textures/Amrit_002_u1_v1_8k.jpg'
 };
 
