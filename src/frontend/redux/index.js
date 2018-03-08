@@ -2,15 +2,17 @@ import { combineReducers } from 'redux';
 import { forIn } from 'lodash';
 
 import calc from './calc';
+import camera from './camera';
 import points from './points';
 import settings from './settings';
 
-const modules = [calc, points, settings];
+const modules = [calc, camera, points, settings];
 
 // reducer
 // (combination of all modules' reducers)
 const reducer = combineReducers({
     calc: calc.reducer,
+    camera: camera.reducer,
     points: points.reducer,
     settings: settings.reducer
 });

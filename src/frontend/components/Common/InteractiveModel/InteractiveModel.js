@@ -36,6 +36,8 @@ class InteractiveModel extends React.Component {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
+        this.onMouseWheel = this.onMouseWheel.bind(this);
+        this.updateCamera = this.updateCamera.bind(this);
         this.redrawPoints = this.redrawPoints.bind(this);
 
         this.state = {
@@ -132,7 +134,7 @@ class InteractiveModel extends React.Component {
 
         // camera controls
         this.cameraControls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.cameraControls.enableKeys = false;
+        // this.cameraControls.enableKeys = false;
 
         //raycaster
         this.raycaster = new THREE.Raycaster();
@@ -182,6 +184,9 @@ class InteractiveModel extends React.Component {
             this.container3D.addEventListener('mousemove', this.onMouseMove, false);
             this.container3D.addEventListener('mousedown', this.onMouseDown, false);
             this.container3D.addEventListener('mouseup', this.onMouseUp, false);
+            if (this.props.onChangeCamera) {
+                this.renderer.domElement.addEventListener('wheel', this.onMouseWheel, false);
+            }
 
             this.setState({
                 loading: false
@@ -273,6 +278,25 @@ class InteractiveModel extends React.Component {
         requestAnimationFrame(this.animate);
     }
 
+    onMouseDown() {
+        if (this.props.addMode && this.isModelIntersected) {
+            this.props.onAddPoint(this.helper.position);
+            return;
+        }
+        this.didDrag = false;
+        if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
+            // start dragging a point
+            // 1. disable controls
+            this.cameraControls.enabled = false;
+            // 2. hide dragged point (to keep original position)
+            this.draggedPoint = this.pointIntersected;
+            this.draggedPoint.visible = false;
+            // 3. show addPointHelper (this is the THREE object that is effectively dragged)
+            this.helper.position.copy(this.draggedPoint.position);
+            this.helper.visible = true;
+        }
+    }
+
     onMouseMove(e) {
         this.didDrag = true;
         const rect = this.container3D.getBoundingClientRect();
@@ -329,26 +353,10 @@ class InteractiveModel extends React.Component {
         }
     }
 
-    onMouseDown() {
-        if (this.props.addMode && this.isModelIntersected) {
-            this.props.onAddPoint(this.helper.position);
-            return;
-        }
-        this.didDrag = false;
-        if (!this.props.addMode && !this.props.deleteMode && this.pointIntersected) {
-            // start dragging a point
-            // 1. disable controls
-            this.cameraControls.enabled = false;
-            // 2. hide dragged point (to keep original position)
-            this.draggedPoint = this.pointIntersected;
-            this.draggedPoint.visible = false;
-            // 3. show addPointHelper (this is the THREE object that is effectively dragged)
-            this.helper.position.copy(this.draggedPoint.position);
-            this.helper.visible = true;
-        }
-    }
-
     onMouseUp() {
+        if (this.cameraControls.enabled && this.didDrag && this.props.onChangeCamera) {
+            this.updateCamera();
+        }
         if (this.draggedPoint) {
             // stop dragging point
             if (this.isModelIntersected && this.didDrag) {
@@ -376,15 +384,30 @@ class InteractiveModel extends React.Component {
         }
     }
 
+    onMouseWheel() {
+        if (this.mousewheelTimeout) {
+            clearTimeout(this.mousewheelTimeout);
+        }
+        this.mousewheelTimeout = setTimeout(this.updateCamera, 100);
+    }
+
+    updateCamera() {
+        this.camera.updateProjectionMatrix();
+        this.camera.updateMatrixWorld();
+        requestAnimationFrame(() => {
+            this.props.onChangeCamera(this.camera);
+        });
+    }
+
     render() {
         return (
             <div className={styles.interactiveModelContainer}>
-                <div className={styles.interactiveModel} ref={el => (this.container3D = el)} />;
                 {this.state.loading && (
                     <div className={styles.interactiveModelLoader}>
                         <ProgressBar type="circular" mode="indeterminate" />
                     </div>
                 )}
+                <div className={styles.interactiveModel} ref={el => (this.container3D = el)} />;
             </div>
         );
     }
@@ -396,6 +419,7 @@ InteractiveModel.propTypes = {
     deleteMode: PropTypes.bool,
     meshUrl: PropTypes.string.isRequired,
     onAddPoint: PropTypes.func.isRequired,
+    onChangeCamera: PropTypes.func,
     onRemovePoint: PropTypes.func.isRequired,
     onSelectPoint: PropTypes.func.isRequired,
     onUpdatePoint: PropTypes.func.isRequired,

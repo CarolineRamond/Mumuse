@@ -1,5 +1,5 @@
-import reducer from './view3D.reducer';
-import * as selectors from './view3D.selectors';
-import * as actions from './view3D.actions';
+import reducer from './camera.reducer';
+import * as selectors from './camera.selectors';
+import * as actions from './camera.actions';
 
-export default { name: 'view3D', reducer, selectors, actions };
+export default { name: 'camera', reducer, selectors, actions };

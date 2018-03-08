@@ -22,7 +22,14 @@ const {
     shouldShowModelTexture,
     shouldRedraw3DPoints
 } = selectors;
-const { add3DPoint, addBindingBuffer3D, select3DPoint, update3DPoint, remove3DPoint } = actions;
+const {
+    add3DPoint,
+    addBindingBuffer3D,
+    select3DPoint,
+    update3DPoint,
+    remove3DPoint,
+    updateCamera
+} = actions;
 
 class View3D extends React.Component {
     constructor(props) {
@@ -33,6 +40,7 @@ class View3D extends React.Component {
         this.onUpdatePoint = this.onUpdatePoint.bind(this);
         this.onSelectPoint = this.onSelectPoint.bind(this);
         this.onRemovePoint = this.onRemovePoint.bind(this);
+        this.onChangeCamera = this.onChangeCamera.bind(this);
         this.toggleSettings = this.toggleSettings.bind(this);
 
         this.state = {
@@ -74,6 +82,10 @@ class View3D extends React.Component {
         this.props.dispatch(remove3DPoint(id));
     }
 
+    onChangeCamera(camera) {
+        this.props.dispatch(updateCamera(camera));
+    }
+
     handleResize() {
         if (this.handleModelResize) {
             this.handleModelResize();
@@ -105,6 +117,7 @@ class View3D extends React.Component {
                     pointWeight={this.props.pointWeight}
                     points={this.props.points}
                     onAddPoint={this.onAddPoint}
+                    onChangeCamera={this.onChangeCamera}
                     onSelectPoint={this.onSelectPoint}
                     onUpdatePoint={this.onUpdatePoint}
                     onRemovePoint={this.onRemovePoint}
