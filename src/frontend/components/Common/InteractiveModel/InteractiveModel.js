@@ -48,7 +48,7 @@ class InteractiveModel extends React.Component {
     componentDidMount() {
         this.props.setResizeHandler(this.handleResize);
         this.props.setPointsChangedHandler(this.redrawPoints);
-        setTimeout(this.initViewer.bind(this), 2000);
+        requestAnimationFrame(this.initViewer.bind(this));
     }
 
     componentWillReceiveProps(nextProps) {
@@ -107,9 +107,16 @@ class InteractiveModel extends React.Component {
         this.camera.aspect = rect.width / rect.height;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(rect.width, rect.height);
+
+        if (this.updateCameraTimeout) {
+            clearTimeout(this.updateCameraTimeout);
+        }
+        this.updateCameraTimeout = setTimeout(this.updateCamera, 100);
     }
 
     initViewer() {
+        const rect = this.container3D.getBoundingClientRect();
+
         //scenes
         this.scene = new THREE.Scene();
 
@@ -121,20 +128,25 @@ class InteractiveModel extends React.Component {
         this.scene.add(light);
         this.scene.add(this.directionalLight);
 
-        //camera
-        const rect = this.container3D.getBoundingClientRect();
-        this.camera = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.01, 1000);
-        this.camera.layers.enable(1);
-        this.camera.position.set(0, 5, 10);
-
         //renderer
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(rect.width, rect.height);
         this.container3D.appendChild(this.renderer.domElement);
 
+        //camera
+        if (this.props.camera) {
+            const loader = new THREE.ObjectLoader();
+            this.camera = loader.parse(this.props.camera);
+            requestAnimationFrame(this.handleResize);
+        } else {
+            this.camera = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.01, 1000);
+            this.camera.position.set(0, 5, 10);
+            this.camera.layers.enable(1);
+        }
+
         // camera controls
         this.cameraControls = new OrbitControls(this.camera, this.renderer.domElement);
-        // this.cameraControls.enableKeys = false;
+        this.cameraControls.enableKeys = false;
 
         //raycaster
         this.raycaster = new THREE.Raycaster();
@@ -385,10 +397,10 @@ class InteractiveModel extends React.Component {
     }
 
     onMouseWheel() {
-        if (this.mousewheelTimeout) {
-            clearTimeout(this.mousewheelTimeout);
+        if (this.updateCameraTimeout) {
+            clearTimeout(this.updateCameraTimeout);
         }
-        this.mousewheelTimeout = setTimeout(this.updateCamera, 100);
+        this.updateCameraTimeout = setTimeout(this.updateCamera, 100);
     }
 
     updateCamera() {
@@ -415,6 +427,7 @@ class InteractiveModel extends React.Component {
 
 InteractiveModel.propTypes = {
     addMode: PropTypes.bool,
+    camera: PropTypes.object,
     defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
     meshUrl: PropTypes.string.isRequired,

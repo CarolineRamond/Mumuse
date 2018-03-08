@@ -20,7 +20,8 @@ const {
     getMeshUrl,
     getTextureUrl,
     shouldShowModelTexture,
-    shouldRedraw3DPoints
+    shouldRedraw3DPoints,
+    getCamera
 } = selectors;
 const {
     add3DPoint,
@@ -111,6 +112,7 @@ class View3D extends React.Component {
                         this.handlePointsChanged = pointsChangedHandler;
                     }}
                     addMode={this.props.addMode}
+                    camera={this.props.camera}
                     deleteMode={this.props.deleteMode}
                     defaultPointColor={this.props.defaultPointColor}
                     pointSize={this.props.pointSize}
@@ -148,6 +150,7 @@ class View3D extends React.Component {
 View3D.propTypes = {
     addMode: PropTypes.bool,
     bindMode: PropTypes.bool,
+    camera: PropTypes.object,
     defaultPointColor: PropTypes.string.isRequired,
     deleteMode: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
@@ -166,6 +169,7 @@ const ConnectedView3D = connect(store => {
     return {
         addMode: getAddMode(store),
         bindMode: getBindMode(store),
+        camera: getCamera(store),
         defaultPointColor: getDefaultPointColor3D(store),
         deleteMode: getDeleteMode(store),
         meshUrl: getMeshUrl(store),
