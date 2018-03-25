@@ -1,26 +1,16 @@
 {
-  "name": "@iconem/recalage",
-  "description": "Iconem tool for adjusting photos",
+  "name": "mumuse",
+  "description": "Mumuse",
   "version": "0.0.1",
-  "author": "Iconem (http://github.com/Iconem)",
-  "bugs": {
-    "url": "https://github.com/Iconem/Product-Backlog"
-  },
+  "author": "Toto et Caro",
   "keywords": [
-    "iconem",
-    "frontend",
-    "react",
-    "react-toolbox",
-    "redux",
-    "mapbox",
-    "potree"
+    "mumuse"
   ],
   "engines": {
     "node": ">=4.3.0",
     "npm": ">=4.0.1"
   },
   "dependencies": {
-    "@iconem/iconem-potree": "0.0.23",
     "axios": "^0.17.0",
     "esdoc": "^1.0.4",
     "esdoc-standard-plugin": "^1.0.0",
@@ -51,7 +41,9 @@
     "redux-thunk": "^2.2.0",
     "redux-undo": "^0.6.1",
     "three": "^0.90.0",
+    "three-pointerlock": "0.0.2",
     "three.meshline": "^1.0.3",
+    "threejs-controls": "^1.0.6",
     "turf-extent": "^1.0.4",
     "uuid": "^3.2.1",
     "validator": "^9.1.1"
