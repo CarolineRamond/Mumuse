@@ -14,24 +14,13 @@
     "axios": "^0.17.0",
     "esdoc": "^1.0.4",
     "esdoc-standard-plugin": "^1.0.0",
-    "exif-parser": "^0.1.12",
-    "mapbox-gl": "^0.41.0",
-    "numeric": "^1.2.6",
     "orbit-controls-es6": "^1.0.11",
     "prop-types": "^15.6.0",
-    "quartic": "0.0.2",
     "react": "^15.4.2",
-    "react-addons-css-transition-group": "^15.4.2",
-    "react-color": "^2.13.8",
     "react-dom": "^15.4.2",
-    "react-draggable": "^3.0.5",
-    "react-infinite-scroller": "^1.0.15",
-    "react-lazy-load": "^3.0.13",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
-    "react-split-pane": "^0.1.68",
     "react-toolbox": "^2.0.0-beta.5",
-    "react-transition-group": "^2.2.1",
     "redux": "^3.7.2",
     "redux-ignore": "^1.2.5",
     "redux-logger": "^3.0.6",
@@ -41,10 +30,6 @@
     "redux-thunk": "^2.2.0",
     "redux-undo": "^0.6.1",
     "three": "^0.90.0",
-    "three-pointerlock": "0.0.2",
-    "three.meshline": "^1.0.3",
-    "threejs-controls": "^1.0.6",
-    "turf-extent": "^1.0.4",
     "uuid": "^3.2.1",
     "validator": "^9.1.1"
   },
@@ -76,8 +61,6 @@
     "eslint-plugin-react": "^6.9.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.5",
-    "gulp": "^3.9.1",
-    "gulp-bump": "^2.8.0",
     "html-webpack-plugin": "^2.30.1",
     "jest": "^21.2.1",
     "postcss-cssnext": "^2.9.0",
@@ -101,19 +84,12 @@
   },
   "scripts": {
     "dev": "webpack-dev-server --content-base src --inline --hot",
-    "build": "jest --runInBand && rimraf dist && cross-env NODE_ENV=production webpack --bail",
-    "deploy": "gh-pages -d build",
-    "test": "jest --runInBand",
-    "test:watch": "npm test -- --watch",
-    "test:coverage": "jest --runInBand --coverage",
-    "docs": "styleguidist server",
-    "docs:build": "documentation build --document-exported src/frontend/redux/**/*.selectors.js -f md --markdown-toc=false > docs/selectors.md && documentation build --document-exported src/frontend/redux/**/*.actions.js -f md --markdown-toc=false > docs/actions.md && styleguidist build"
+    "build": "rimraf dist && cross-env NODE_ENV=production webpack --bail",
   },
-  "main": "gulpfile.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Iconem/Recalage.git"
+    "url": "git+https://github.com/CarolineRamond/Mumuse.git"
   },
   "license": "ISC",
-  "homepage": "https://github.com/Iconem/Recalage#readme"
+  "homepage": "https://github.com/CarolineRamond/Mumuse#readme"
 }
